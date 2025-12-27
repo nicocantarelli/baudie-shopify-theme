@@ -25,12 +25,12 @@
               {{ product.featured_image | image_url: width: 800 | image_tag: class: 'hero-product__secondary-img' }}
             </div>
           {% endif %}
-
-          {%- comment -%} Color Block {%- endcomment -%}
-          <div class="hero-product__color-block" style="background-color: {{ product.metafields.custom.card_background_color | default: '#FCD8B3' }}"></div>
         </div>
       {% endfor %}
     </div>
+
+    {%- comment -%} Color Block - separate from images so it doesn't fade {%- endcomment -%}
+    <div class="hero-product__color-block" data-color-block></div>
 
     {%- comment -%} Main Heading {%- endcomment -%}
     <div class="hero-product__heading">
@@ -46,17 +46,16 @@
           aria-label="{{ 'general.previous' | t }}"
           data-hero-prev>
           <svg
+            xmlns="http://www.w3.org/2000/svg"
             width="12"
             height="24"
             viewBox="0 0 12 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg">
+            fill="none">
             <path
-              d="M10 2L2 12L10 22"
-              stroke="currentColor"
-              stroke-width="2.754"
-              stroke-linecap="round"
-              stroke-linejoin="round" />
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M1.84306 12.7106L7.50006 18.3676L8.91406 16.9536L3.96406 12.0036L8.91406 7.05365L7.50006 5.63965L1.84306 11.2966C1.65559 11.4842 1.55028 11.7385 1.55028 12.0036C1.55028 12.2688 1.65559 12.5231 1.84306 12.7106Z"
+              fill="white" />
           </svg>
         </button>
         <button
@@ -65,17 +64,16 @@
           aria-label="{{ 'general.next' | t }}"
           data-hero-next>
           <svg
+            xmlns="http://www.w3.org/2000/svg"
             width="12"
             height="24"
             viewBox="0 0 12 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg">
+            fill="none">
             <path
-              d="M2 2L10 12L2 22"
-              stroke="currentColor"
-              stroke-width="2.754"
-              stroke-linecap="round"
-              stroke-linejoin="round" />
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M10.1569 12.7106L4.49994 18.3676L3.08594 16.9536L8.03594 12.0036L3.08594 7.05365L4.49994 5.63965L10.1569 11.2966C10.3444 11.4842 10.4497 11.7385 10.4497 12.0036C10.4497 12.2688 10.3444 12.5231 10.1569 12.7106Z"
+              fill="white" />
           </svg>
         </button>
       </div>
@@ -85,32 +83,35 @@
     <div class="hero-product__cards" data-hero-cards>
       {% for product in section.settings.hero_products %}
         {% assign card_bg = product.metafields.custom.card_background_color | default: '#FCD8B3' %}
-
           <div
           class="hero-product__card {% if forloop.first %}is-active{% endif %}"
           data-product-index="{{ forloop.index0 }}"
-          style="--card-bg: {{ card_bg }}">
+          data-card-color="{{ card_bg }}"
+          data-product-card>
           {%- comment -%} Rating {%- endcomment -%}
-          {% if product.metafields.reviews.rating.value %}
-            <div class="hero-product__rating">
-              <div class="hero-product__stars">
+          <div class="hero-product__rating">
+            <div class="hero-product__stars">
+              {% if product.metafields.reviews.rating.value %}
                 {% assign rating = product.metafields.reviews.rating.value.rating %}
-                {% for i in (1..5) %}
-                  <svg
-                    width="14"
-                    height="13"
-                    viewBox="0 0 14 13"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6.66797 0.578125L8.42578 4.84766L13.1914 5.28516L9.73047 8.41797L10.6797 13.0781L6.66797 10.7852L2.65625 13.0781L3.60547 8.41797L0.144531 5.28516L4.91016 4.84766L6.66797 0.578125Z" fill="{% if i <= rating %}#3E2027{% else %}#E5E5E5{% endif %}" />
-                  </svg>
-                {% endfor %}
-              </div>
-              {% if product.metafields.reviews.rating.value.count %}
-                <span class="hero-product__rating-count">({{ product.metafields.reviews.rating.value.count }})</span>
+                {% assign review_count = product.metafields.reviews.rating.value.count | default: 0 %}
+              {% else %}
+                {% assign rating = 0 %}
+                {% assign review_count = 0 %}
               {% endif %}
+
+              {% for i in (1..5) %}
+                <svg
+                  width="14"
+                  height="13"
+                  viewBox="0 0 14 13"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.66797 0.578125L8.42578 4.84766L13.1914 5.28516L9.73047 8.41797L10.6797 13.0781L6.66797 10.7852L2.65625 13.0781L3.60547 8.41797L0.144531 5.28516L4.91016 4.84766L6.66797 0.578125Z" fill="{% if i <= rating %}#3E2027{% else %}#E5E5E5{% endif %}" />
+                </svg>
+              {% endfor %}
             </div>
-          {% endif %}
+            <span class="hero-product__rating-count">({{ review_count }})</span>
+          </div>
 
           {%- comment -%} Name and Price {%- endcomment -%}
           <div class="hero-product__info">
@@ -140,15 +141,15 @@
                 {% unless product.available %}
                 disabled{% endunless %}>
                 <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none">
                   <path
-                    d="M12 5V19M5 12H19"
-                    stroke="currentColor"
-                    stroke-width="2"
+                    d="M0.75 7.75H14.75M7.75 0.75V14.75"
+                    stroke="#3E2027"
+                    stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
@@ -216,7 +217,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 20%;
+    object-position: center 30%;
   }
 
   /* Gradient Overlay */
@@ -234,7 +235,6 @@
   /* Secondary Product Image - right 1/3 top */
   .hero-product__secondary-image {
     position: absolute;
-    /* top: 25px; */
     right: 0;
     width: 33.33%;
     height: calc(100% - 220px);
@@ -248,14 +248,16 @@
     object-position: center center;
   }
 
-  /* Color Block - right 1/3 bottom */
+  /* Color Block - separate from images, always visible, only color changes */
   .hero-product__color-block {
     position: absolute;
     bottom: 0;
     right: 0;
     width: 33.33%;
-    height: calc(220px);
+    height: 236px;
+    background-color: #FCD8B3;
     transition: background-color 0.6s ease-in-out;
+    z-index: 1;
   }
 
   /* Main Heading - positioned over left side */
@@ -263,13 +265,14 @@
     position: absolute;
     left: 40px;
     bottom: 47px;
-    max-width: 38%;
+    max-width: 40rem;
     z-index: 2;
   }
 
   .hero-product__heading h1 {
     font-family: var(--font-alyona);
     font-size: clamp(48px, 5.76vw, 82.938px);
+    font-weight: 400;
     line-height: 1;
     color: #FFFFFF;
     margin: 0;
@@ -332,7 +335,7 @@
     flex-direction: column;
     gap: 16px;
     padding: 16px;
-    background-color: var(--card-bg);
+    background-color: #FCD8B3;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.6s ease-in-out
@@ -561,8 +564,9 @@
     constructor(container) {
       this.container = container;
       this.currentIndex = 0;
-      this.cards = container.querySelectorAll('[data-hero-cards] [data-product-index]');
+      this.cards = container.querySelectorAll('[data-product-card]');
       this.images = container.querySelectorAll('[data-hero-images] [data-product-index]');
+      this.colorBlock = container.querySelector('[data-color-block]');
       this.prevBtn = container.querySelector('[data-hero-prev]');
       this.nextBtn = container.querySelector('[data-hero-next]');
 
@@ -594,6 +598,19 @@
     }
 
     goTo(index) {
+
+// Get the color for this product
+      const newCard = this.cards[index];
+      const bgColor = newCard ?. getAttribute('data-card-color') || '#FCD8B3';
+
+// Update color on the single color block and all cards
+      if (this.colorBlock) {
+        this.colorBlock.style.backgroundColor = bgColor;
+      }
+
+      this.cards.forEach(card => {
+        card.style.backgroundColor = bgColor;
+      });
 
 // Remove active class from all
       this.cards.forEach(card => card.classList.remove('is-active'));

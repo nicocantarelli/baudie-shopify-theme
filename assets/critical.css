@@ -74,9 +74,9 @@ p:empty {
 /** Theme styles below */
 body {
   font-family: var(--font-primary--family);
-  background-color: var(--color-background);
+  background-color: #FFF7EA;
   color: var(--color-foreground);
-}
+};
 
 /** Section layout utilities */
 
@@ -92,6 +92,7 @@ body {
  * the entire viewport.
  */
 .shopify-section {
+  background-color: #FFF7EA;
   --content-width: min(
     calc(var(--page-width) - var(--page-margin) * 2),
     calc(100% - var(--page-margin) * 2)
