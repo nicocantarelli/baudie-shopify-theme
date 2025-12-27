@@ -2,7 +2,10 @@
   Header section with announcement bar and main navigation
 {% endcomment %}
 
-<div class="header-wrapper full-width" style="
+<div
+  class="header-wrapper full-width"
+  data-sticky-behavior="{{ section.settings.sticky_behavior }}"
+  style="
     --header-bg: {{ section.settings.header_bg_color }};
     --header-text: {{ section.settings.header_text_color }};
     --announcement-bg: {{ section.settings.announcement_bg_color }};
@@ -127,7 +130,7 @@
     <div class="mobile-menu__overlay" id="mobile-menu-overlay"></div>
     <div class="mobile-menu__drawer">
       <div class="mobile-menu__header">
-        {% comment %} <span class="mobile-menu__title">{{ 'header.menu' | t }}</span> {% endcomment %}
+        <span class="mobile-menu__title">{{ 'header.menu' | t }}</span>
         <button
           type="button"
           class="mobile-menu__close"
@@ -160,8 +163,10 @@
 
 {% stylesheet %}
   .header-wrapper {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 100;
     transition: transform 0.3s ease-in-out;
   }
@@ -244,7 +249,7 @@
   .header {
     background-color: var(--header-bg);
     height: 70px;
-    padding: 0 20px;
+    padding: 0 40px;
   }
 
   .header__inner {
@@ -252,10 +257,8 @@
     align-items: center;
     justify-content: space-between;
     height: 100%;
-    max-width: 1440px;
     margin: 0 auto;
     position: relative;
-    padding: 0 40px;
   }
 
   /* Logo */
@@ -563,13 +566,23 @@
   class HeaderScrollBehavior {
     constructor() {
       this.header = document.querySelector('.header-wrapper');
+      if (!this.header) {
+        console.log('Header not found');
+        return;
+      }
+
       this.lastScrollY = window.scrollY;
       this.ticking = false;
       this.scrollThreshold = 10;
 
-      const stickyBehavior = '{{ section.settings.sticky_behavior }}';
+      const stickyBehavior = this.header.getAttribute('data-sticky-behavior');
+      console.log('Sticky behavior setting:', stickyBehavior);
+
       if (stickyBehavior === 'hide_on_scroll') {
         this.init();
+        console.log('Header scroll behavior initialized');
+      } else {
+        console.log('Header set to always visible');
       }
     }
 
@@ -662,7 +675,6 @@
       });
     }
 
-// Close on escape key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && menu.classList.contains('is-open')) {
         console.log('Escape key pressed');

@@ -1,0 +1,658 @@
+{% comment %}
+  Hero section with large product imagery and interactive product carousel.
+  Products display with their hero images from metafields and allow navigation between items.
+{% endcomment %}
+
+<div class="hero-product full-width">
+  <div class="hero-product__inner">
+    {%- comment -%} Hero Images Container {%- endcomment -%}
+    <div class="hero-product__images" data-hero-images>
+      {% for product in section.settings.hero_products %}
+        <div class="hero-product__image-wrapper {% if forloop.first %}is-active{% endif %}" data-product-index="{{ forloop.index0 }}">
+          {% if product.metafields.custom.hero_image %}
+            {%- comment -%} Main Hero Image {%- endcomment -%}
+            <div class="hero-product__main-image">
+              {{ product.metafields.custom.hero_image | image_url: width: 1600 | image_tag: loading: 'eager', class: 'hero-product__image' }}
+            </div>
+
+            {%- comment -%} Gradient Overlay {%- endcomment -%}
+            <div class="hero-product__image-gradient"></div>
+          {% endif %}
+
+          {%- comment -%} Secondary Product Image (top right) {%- endcomment -%}
+          {% if product.featured_image %}
+            <div class="hero-product__secondary-image">
+              {{ product.featured_image | image_url: width: 800 | image_tag: class: 'hero-product__secondary-img' }}
+            </div>
+          {% endif %}
+
+          {%- comment -%} Color Block {%- endcomment -%}
+          <div class="hero-product__color-block" style="background-color: {{ product.metafields.custom.card_background_color | default: '#FCD8B3' }}"></div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {%- comment -%} Main Heading {%- endcomment -%}
+    <div class="hero-product__heading">
+      <h1>{{ section.settings.heading }}</h1>
+    </div>
+
+    {%- comment -%} Navigation Controls {%- endcomment -%}
+    {% if section.settings.hero_products.size > 1 %}
+      <div class="hero-product__controls">
+        <button
+          type="button"
+          class="hero-product__arrow hero-product__arrow--prev"
+          aria-label="{{ 'general.previous' | t }}"
+          data-hero-prev>
+          <svg
+            width="12"
+            height="24"
+            viewBox="0 0 12 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M10 2L2 12L10 22"
+              stroke="currentColor"
+              stroke-width="2.754"
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="hero-product__arrow hero-product__arrow--next"
+          aria-label="{{ 'general.next' | t }}"
+          data-hero-next>
+          <svg
+            width="12"
+            height="24"
+            viewBox="0 0 12 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M2 2L10 12L2 22"
+              stroke="currentColor"
+              stroke-width="2.754"
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+    {% endif %}
+
+    {%- comment -%} Product Cards {%- endcomment -%}
+    <div class="hero-product__cards" data-hero-cards>
+      {% for product in section.settings.hero_products %}
+        {% assign card_bg = product.metafields.custom.card_background_color | default: '#FCD8B3' %}
+
+          <div
+          class="hero-product__card {% if forloop.first %}is-active{% endif %}"
+          data-product-index="{{ forloop.index0 }}"
+          style="--card-bg: {{ card_bg }}">
+          {%- comment -%} Rating {%- endcomment -%}
+          {% if product.metafields.reviews.rating.value %}
+            <div class="hero-product__rating">
+              <div class="hero-product__stars">
+                {% assign rating = product.metafields.reviews.rating.value.rating %}
+                {% for i in (1..5) %}
+                  <svg
+                    width="14"
+                    height="13"
+                    viewBox="0 0 14 13"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.66797 0.578125L8.42578 4.84766L13.1914 5.28516L9.73047 8.41797L10.6797 13.0781L6.66797 10.7852L2.65625 13.0781L3.60547 8.41797L0.144531 5.28516L4.91016 4.84766L6.66797 0.578125Z" fill="{% if i <= rating %}#3E2027{% else %}#E5E5E5{% endif %}" />
+                  </svg>
+                {% endfor %}
+              </div>
+              {% if product.metafields.reviews.rating.value.count %}
+                <span class="hero-product__rating-count">({{ product.metafields.reviews.rating.value.count }})</span>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {%- comment -%} Name and Price {%- endcomment -%}
+          <div class="hero-product__info">
+            <h3 class="hero-product__name">{{ product.title }}</h3>
+            <p class="hero-product__price">{{ product.price | money }}</p>
+          </div>
+
+          {%- comment -%} Description {%- endcomment -%}
+          {% if product.metafields.custom.short_description %}
+            <p class="hero-product__description">{{ product.metafields.custom.short_description }}</p>
+          {% elsif product.description != blank %}
+            <p class="hero-product__description">{{ product.description | strip_html | truncate: 120 }}</p>
+          {% endif %}
+
+          {%- comment -%} CTA Buttons {%- endcomment -%}
+          <div class="hero-product__actions">
+            {% form 'product'
+              , product %}
+              <input
+                type="hidden"
+                name="id"
+                value="{{ product.selected_or_first_available_variant.id }}">
+              <button
+                type="submit"
+                name="add"
+                class="hero-product__button hero-product__button--add"
+                {% unless product.available %}
+                disabled{% endunless %}>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 5V19M5 12H19"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                <span>{{ 'products.add_to_cart' | t }}</span>
+              </button>
+            {% endform %}
+            <a href="{{ product.url }}" class="hero-product__button hero-product__button--buy">{{ 'products.view_product' | t }}</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .hero-product {
+    position: relative;
+    width: 100%;
+    background-color: #FFF7EA;
+    overflow: hidden;
+    margin-top: 110px;
+  }
+
+  .hero-product__inner {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 110px);
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+  }
+
+  /* Hero Images - spans left column */
+  .hero-product__images {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .hero-product__image-wrapper {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .hero-product__image-wrapper.is-active {
+    opacity: 1;
+  }
+
+  /* Main Hero Image - left 2/3 */
+  .hero-product__main-image {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 66.67%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .hero-product__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+  }
+
+  /* Gradient Overlay */
+  .hero-product__image-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 66.67%;
+    height: 288px;
+    background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Secondary Product Image - right 1/3 top */
+  .hero-product__secondary-image {
+    position: absolute;
+    /* top: 25px; */
+    right: 0;
+    width: 33.33%;
+    height: calc(100% - 220px);
+    overflow: hidden;
+  }
+
+  .hero-product__secondary-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  /* Color Block - right 1/3 bottom */
+  .hero-product__color-block {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 33.33%;
+    height: calc(220px);
+    transition: background-color 0.6s ease-in-out;
+  }
+
+  /* Main Heading - positioned over left side */
+  .hero-product__heading {
+    position: absolute;
+    left: 40px;
+    bottom: 47px;
+    max-width: 38%;
+    z-index: 2;
+  }
+
+  .hero-product__heading h1 {
+    font-family: var(--font-alyona);
+    font-size: clamp(48px, 5.76vw, 82.938px);
+    line-height: 1;
+    color: #FFFFFF;
+    margin: 0;
+  }
+
+  /* Navigation Controls - positioned on right side */
+  .hero-product__controls {
+    position: absolute;
+    right: 40px;
+    top: 33px;
+    display: flex;
+    gap: 12px;
+    z-index: 3;
+  }
+
+  .hero-product__arrow {
+    width: 40px;
+    height: 40px;
+    border: 1.377px solid #FFFFFF;
+    border-radius: 23.602px;
+    background: transparent;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease
+    , transform 0.2s ease;
+    padding: 0;
+  }
+
+  .hero-product__arrow:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .hero-product__arrow:active {
+    transform: translateY(0);
+  }
+
+  /* Product Cards - positioned on right side */
+  .hero-product__cards {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 33.33%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    padding: 40px;
+    z-index: 2;
+  }
+
+  .hero-product__card {
+    position: absolute;
+    bottom: 25px;
+    right: 40px;
+    width: calc(100% - 80px);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background-color: var(--card-bg);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease-in-out
+    , background-color 0.6s ease-in-out;
+  }
+
+  .hero-product__card.is-active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Rating */
+  .hero-product__rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-product__stars {
+    display: flex;
+    gap: 4px;
+  }
+
+  .hero-product__rating-count {
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.5;
+    color: #3E2027;
+  }
+
+  /* Product Info */
+  .hero-product__info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .hero-product__name {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: normal;
+    letter-spacing: -0.18px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  .hero-product__price {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: normal;
+    letter-spacing: -0.18px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  /* Description */
+  .hero-product__description {
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    line-height: 1.5;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  /* Actions */
+  .hero-product__actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .hero-product__actions form {
+    flex: 1;
+    margin: 0;
+  }
+
+  .hero-product__button {
+    width: 100%;
+    height: 40px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease
+    , transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .hero-product__button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .hero-product__button:active {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+
+  .hero-product__button--add {
+    background-color: #FFFFFF;
+    color: #3E2027;
+  }
+
+  .hero-product__button--add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .hero-product__button--buy {
+    background-color: #3E2027;
+    color: #FFFFFF;
+    flex: 1;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .hero-product {
+      margin-top: 95px;
+    }
+
+    .hero-product__inner {
+      height: calc(100vh - 95px);
+      min-height: 600px;
+    }
+
+    .hero-product__heading {
+      left: 24px;
+      bottom: 120px;
+      max-width: 45%;
+    }
+
+    .hero-product__controls {
+      right: 24px;
+      top: 24px;
+    }
+
+    .hero-product__cards {
+      padding: 24px;
+    }
+
+    .hero-product__card {
+      bottom: 25px;
+      right: 24px;
+      width: calc(100% - 48px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-product {
+      margin-top: 95px;
+    }
+
+    .hero-product__inner {
+      height: calc(100vh - 95px);
+      min-height: 500px;
+      grid-template-columns: 1fr;
+    }
+
+    .hero-product__images {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-product__image-wrapper {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-product__main-image {
+      width: 100%;
+    }
+
+    .hero-product__image {
+      object-position: center center;
+    }
+
+    .hero-product__image-gradient {
+      width: 100%;
+    }
+
+    .hero-product__secondary-image {
+      display: none;
+    }
+
+    .hero-product__color-block {
+      display: none;
+    }
+
+    .hero-product__heading {
+      max-width: 70%;
+    }
+
+    .hero-product__cards {
+      width: 100%;
+      height: auto;
+      bottom: 20px;
+      padding: 20px;
+    }
+
+    .hero-product__card {
+      position: relative;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class HeroProductCarousel {
+    constructor(container) {
+      this.container = container;
+      this.currentIndex = 0;
+      this.cards = container.querySelectorAll('[data-hero-cards] [data-product-index]');
+      this.images = container.querySelectorAll('[data-hero-images] [data-product-index]');
+      this.prevBtn = container.querySelector('[data-hero-prev]');
+      this.nextBtn = container.querySelector('[data-hero-next]');
+
+      if (this.cards.length<= 1) return;
+
+      this.init();
+    }
+
+    init() {
+      this.prevBtn?.addEventListener('click', () => this.prev()) 
+
+        this.nextBtn ?. addEventListener('click', () => this.next());
+      
+
+
+// Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') 
+          this.prev();
+        
+
+
+        if (e.key === 'ArrowRight') 
+          this.next();
+        
+
+
+      });
+    }
+
+    goTo(index) {
+
+// Remove active class from all
+      this.cards.forEach(card => card.classList.remove('is-active'));
+      this.images.forEach(img => img.classList.remove('is-active'));
+
+// Add active class to current
+      this.cards[index] ?. classList.add('is-active');
+      this.images[index] ?. classList.add('is-active');
+
+      this.currentIndex = index;
+    }
+
+    next() {
+      const nextIndex = (this.currentIndex + 1) % this.cards.length;
+      this.goTo(nextIndex);
+    }
+
+    prev() {
+      const prevIndex = (this.currentIndex - 1 + this.cards.length) % this.cards.length;
+      this.goTo(prevIndex);
+    }
+  }
+
+// Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  function init() {
+    const heroSection = document.querySelector('.hero-product');
+    if (heroSection) {
+      new HeroProductCarousel(heroSection);
+    }
+  }
+{% endjavascript %}
+
+{% schema %}
+  {
+    "name": "Hero Product Carousel",
+    "class": "hero-product-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Smelling good shouldn't be a gamble."
+      }, {
+        "type": "product_list",
+        "id": "hero_products",
+        "label": "Products"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Hero Product Carousel",
+        "category": "Product"
+      }
+    ]
+  }
+{% endschema %}

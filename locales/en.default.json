@@ -30,6 +30,10 @@
   "collections": {
     "title": "Collections"
   },
+  "general": {
+    "previous": "Previous",
+    "next": "Next"
+  },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
     "card": "Gift card",
@@ -46,6 +50,10 @@
     "title": "This shop is private",
     "password": "Password",
     "enter": "Enter"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "view_product": "View product"
   },
   "search": {
     "title": "Search",
