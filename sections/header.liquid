@@ -99,9 +99,63 @@
               stroke-linecap="round" />
           </svg>
         </a>
+
+        <button
+          type="button"
+          class="header__icon header__menu-toggle"
+          aria-label="{{ 'header.menu' | t }}"
+          id="mobile-menu-toggle">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 28 28"
+            fill="none">
+            <path
+              d="M4 7H24M4 14H24M4 21H24"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round" />
+          </svg>
+        </button>
       </div>
     </div>
   </header>
+
+  {% comment %} Mobile Menu Drawer {% endcomment %}
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu__overlay" id="mobile-menu-overlay"></div>
+    <div class="mobile-menu__drawer">
+      <div class="mobile-menu__header">
+        {% comment %} <span class="mobile-menu__title">{{ 'header.menu' | t }}</span> {% endcomment %}
+        <button
+          type="button"
+          class="mobile-menu__close"
+          aria-label="{{ 'header.close_menu' | t }}"
+          id="mobile-menu-close">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M18 6L6 18M6 6L18 18"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <nav class="mobile-menu__nav">
+        {% for link in section.settings.menu.links %}
+          <a href="{{ link.url }}" class="mobile-menu__link">
+            {{ link.title }}
+          </a>
+        {% endfor %}
+      </nav>
+    </div>
+  </div>
 </div>
 
 {% stylesheet %}
@@ -116,7 +170,7 @@
     transform: translateY(-100%);
   }
 
-  /* Announcement Bar (true marquee: JS clones until no gaps) */
+  /* Announcement Bar */
   .announcement-bar {
     background-color: var(--announcement-bg);
     color: var(--announcement-text);
@@ -144,7 +198,6 @@
     transform: translateX(0);
   }
 
-  /* Start animation only after JS sets vars */
   .announcement-bar__track.is-ready {
     animation: announcement-marquee var(--marquee-duration, 30s) linear infinite;
   }
@@ -154,7 +207,6 @@
     align-items: center;
     gap: 50px;
     padding-right: 50px;
-    /* spacing between groups */
   }
 
   .announcement-bar__item {
@@ -263,7 +315,6 @@
     transform: translateX(-50%);
   }
 
-  /* Menu links: match logo + icons hover behavior exactly */
   .header__menu-link {
     font-family: 'Sweet Sans Pro'
     , -apple-system
@@ -310,6 +361,10 @@
     justify-content: center;
     position: relative;
     text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
     transition: opacity 0.2s ease
     , transform 0.2s ease;
   }
@@ -350,6 +405,122 @@
     text-align: center;
   }
 
+  /* Mobile menu toggle - hidden on desktop */
+  .header__menu-toggle {
+    display: none;
+  }
+
+  /* Mobile Menu Drawer */
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 200;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .mobile-menu.is-open {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .mobile-menu__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+  }
+
+  .mobile-menu.is-open .mobile-menu__overlay {
+    opacity: 1;
+  }
+
+  .mobile-menu__drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80%;
+    max-width: 400px;
+    height: 100%;
+    background-color: var(--header-bg);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-menu.is-open .mobile-menu__drawer {
+    transform: translateX(0);
+  }
+
+  .mobile-menu__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid rgba(62, 32, 39, 0.1);
+  }
+
+  .mobile-menu__title {
+    font-family: 'Jokker'
+    , Georgia
+    , serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--header-text);
+  }
+
+  .mobile-menu__close {
+    color: var(--header-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+  }
+
+  .mobile-menu__close:hover {
+    opacity: 0.7;
+  }
+
+  .mobile-menu__nav {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+  }
+
+  .mobile-menu__link {
+    font-family: 'Sweet Sans Pro'
+    , -apple-system
+    , BlinkMacSystemFont
+    , 'Segoe UI'
+    , sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: -0.16px;
+    text-transform: uppercase;
+    color: var(--header-text);
+    text-decoration: none;
+    padding: 16px 20px;
+    transition: background-color 0.2s ease;
+  }
+
+  .mobile-menu__link:hover {
+    background-color: rgba(62, 32, 39, 0.05);
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     .announcement-bar {
@@ -359,14 +530,31 @@
 
     .header {
       height: 60px;
+      padding: 0 16px;
+    }
+
+    .header__inner {
+      padding: 0;
+    }
+
+    .header__logo {
+      margin-right: auto;
+      margin-top: 13.5px;
+      margin-bottom: 13.5px;
+      height: 33px;
+      width: auto;
+    }
+
+    .header__logo-image {
+      max-height: 33px;
     }
 
     .header__menu {
       display: none;
     }
 
-    .header__logo-image {
-      max-height: 40px;
+    .header__menu-toggle {
+      display: flex;
     }
   }
 {% endstylesheet %}
@@ -379,7 +567,6 @@
       this.ticking = false;
       this.scrollThreshold = 10;
 
-// Only initialize if hide_on_scroll is enabled
       const stickyBehavior = '{{ section.settings.sticky_behavior }}';
       if (stickyBehavior === 'hide_on_scroll') {
         this.init();
@@ -401,21 +588,19 @@
     handleScroll() {
       const currentScrollY = window.scrollY;
 
-// Don't do anything if we're at the top
       if (currentScrollY <= 0) {
         this.header.classList.remove('header--hidden');
         this.lastScrollY = currentScrollY;
         return;
       }
 
-// Check scroll direction with threshold
       if (Math.abs(currentScrollY - this.lastScrollY) < this.scrollThreshold) {
         return;
       }
 
-      if (currentScrollY > this.lastScrollY) { // Scrolling down
+      if (currentScrollY > this.lastScrollY) {
         this.header.classList.add('header--hidden');
-      } else { // Scrolling up
+      } else {
         this.header.classList.remove('header--hidden');
       }
 
@@ -423,7 +608,6 @@
     }
   }
 
-// Initialize when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       new HeaderScrollBehavior();
@@ -432,7 +616,64 @@
     new HeaderScrollBehavior();
   }
 
-/* Announcement marquee: clones the group enough times so there are no gaps */
+/* Mobile Menu Toggle */
+  (function() {
+    const menu = document.getElementById('mobile-menu');
+    const toggleButton = document.getElementById('mobile-menu-toggle');
+    const closeButton = document.getElementById('mobile-menu-close');
+    const overlay = document.getElementById('mobile-menu-overlay');
+
+    if (! menu || ! toggleButton) {
+      console.log('Mobile menu elements not found');
+      return;
+    }
+
+    function openMenu() {
+      console.log('Opening mobile menu');
+      menu.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      console.log('Closing mobile menu');
+      menu.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+
+    toggleButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('Toggle button clicked');
+      openMenu();
+    });
+
+    if (closeButton) {
+      closeButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Close button clicked');
+        closeMenu();
+      });
+    }
+
+    if (overlay) {
+      overlay.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Overlay clicked');
+        closeMenu();
+      });
+    }
+
+// Close on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && menu.classList.contains('is-open')) {
+        console.log('Escape key pressed');
+        closeMenu();
+      }
+    });
+
+    console.log('Mobile menu initialized');
+  })();
+
+/* Announcement marquee */
   (function() {
     let resizeTimer;
 
@@ -441,13 +682,14 @@
       if (! bar) return;
       
 
+
       const viewport = bar.querySelector('.announcement-bar__viewport');
       const track = bar.querySelector('[data-announcement-marquee]');
       const group = track && track.querySelector('.announcement-bar__group');
       if (! viewport || ! track || ! group) return;
       
 
-// Remove previously cloned groups (if re-initializing)
+
       track.querySelectorAll('.announcement-bar__group[aria-hidden="true"]').forEach((n) => n.remove());
       track.classList.remove('is-ready');
 
@@ -456,7 +698,7 @@
       if (! groupWidth || ! viewportWidth) return;
       
 
-// Clone until the track is safely longer than the viewport (prevents blank space)
+
       let totalWidth = groupWidth;
       const targetWidth = viewportWidth * 3;
 
@@ -467,11 +709,9 @@
         totalWidth += groupWidth;
       }
 
-// Animate by exactly one original group width for a seamless loop
       track.style.setProperty('--marquee-distance', `${groupWidth}px`);
 
-// Constant speed (px/sec) -> duration adapts to content length
-      const speed = 70; // smaller = slower, bigger = faster
+      const speed = 70;
       const duration = Math.max(12, groupWidth / speed);
       track.style.setProperty('--marquee-duration', `${duration}s`);
 
@@ -479,8 +719,6 @@
     }
 
     function init() {
-
-// Wait for fonts so widths are measured correctly
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => requestAnimationFrame(buildMarquee));
       } else {

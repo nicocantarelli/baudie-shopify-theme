@@ -39,7 +39,8 @@
   },
   "header": {
     "account": "Account",
-    "cart": "Cart"
+    "cart": "Cart",
+    "menu": "Menu"
   },
   "password": {
     "title": "This shop is private",
