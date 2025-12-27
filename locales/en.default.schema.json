@@ -33,6 +33,34 @@
     "theme": "Theme",
     "typography": "Typography"
   },
+  "header": {
+    "settings": {
+      "behavior_header": "Behavior",
+      "sticky_behavior": "Header sticky behavior",
+      "sticky_behavior_info": "Choose how the header behaves when scrolling",
+      "sticky_behavior_options": {
+        "always_visible": "Always visible",
+        "hide_on_scroll": "Hide when scrolling down"
+      },
+      "logo_header": "Logo",
+      "logo": "Logo image",
+      "menu_header": "Menu",
+      "menu": "Menu",
+      "colors_header": "Colors",
+      "header_bg_color": "Header background color",
+      "header_text_color": "Header text color",
+      "announcement_bg_color": "Announcement bar background color",
+      "announcement_text_color": "Announcement bar text color"
+    },
+    "blocks": {
+      "announcement": {
+        "name": "Announcement",
+        "settings": {
+          "text": "Announcement text"
+        }
+      }
+    }
+  },
   "labels": {
     "alignment": "Alignment",
     "background": "Background",
@@ -71,6 +99,6 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
   }
 }
