@@ -25,6 +25,14 @@
               {{ product.featured_image | image_url: width: 800 | image_tag: class: 'hero-product__secondary-img' }}
             </div>
           {% endif %}
+
+          {%- comment -%} Mobile Product Image {%- endcomment -%}
+          {% if product.featured_image %}
+            <div class="hero-product__mobile-image">
+              {{ product.featured_image | image_url: width: 800 | image_tag: class: 'hero-product__mobile-img' }}
+              <div class="hero-product__mobile-gradient"></div>
+            </div>
+          {% endif %}
         </div>
       {% endfor %}
     </div>
@@ -33,8 +41,17 @@
     <div class="hero-product__color-block" data-color-block></div>
 
     {%- comment -%} Main Heading {%- endcomment -%}
-    <div class="hero-product__heading">
+    <div class="hero-product__heading" style="--heading-color: {{ section.settings.heading_color }}">
       <h1>{{ section.settings.heading }}</h1>
+    </div>
+
+    {%- comment -%} Mobile Content {%- endcomment -%}
+    <div class="hero-product__mobile-content">
+      <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
+      <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
+      <a href="{{ section.settings.mobile_button_url }}" class="hero-product__mobile-button">
+        {{ section.settings.mobile_button_text }}
+      </a>
     </div>
 
     {%- comment -%} Navigation Controls {%- endcomment -%}
@@ -101,12 +118,12 @@
 
               {% for i in (1..5) %}
                 <svg
-                  width="14"
-                  height="13"
-                  viewBox="0 0 14 13"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6.66797 0.578125L8.42578 4.84766L13.1914 5.28516L9.73047 8.41797L10.6797 13.0781L6.66797 10.7852L2.65625 13.0781L3.60547 8.41797L0.144531 5.28516L4.91016 4.84766L6.66797 0.578125Z" fill="{% if i <= rating %}#3E2027{% else %}#E5E5E5{% endif %}" />
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none">
+                  <path d="M4.76297 0.154621C4.78488 0.108197 4.81873 0.0691199 4.86069 0.0417987C4.90265 0.0144775 4.95106 0 5.00045 0C5.04984 0 5.09825 0.0144775 5.14021 0.0417987C5.18217 0.0691199 5.21602 0.108197 5.23793 0.154621L6.39282 2.60795C6.4689 2.76942 6.58121 2.90912 6.72011 3.01506C6.859 3.121 7.02033 3.19001 7.19025 3.21617L9.77302 3.61256C9.82196 3.61999 9.86793 3.64164 9.90575 3.67506C9.94357 3.70847 9.97171 3.75232 9.98701 3.80163C10.0023 3.85095 10.0041 3.90377 9.99229 3.95412C9.98045 4.00447 9.95541 4.05035 9.92001 4.08655L8.05217 5.99405C7.92899 6.11994 7.83683 6.27534 7.78362 6.44688C7.7304 6.61841 7.71773 6.80093 7.7467 6.97874L8.18766 9.67378C8.1963 9.72508 8.19102 9.77789 8.17241 9.82619C8.15381 9.87449 8.12263 9.91634 8.08244 9.94695C8.04225 9.97756 7.99467 9.99571 7.94512 9.99933C7.89556 10.0029 7.84604 9.99188 7.8022 9.9674L5.4934 8.69433C5.34128 8.61056 5.17202 8.56679 5.0002 8.56679C4.82837 8.56679 4.65912 8.61056 4.50699 8.69433L2.1987 9.9674C2.15487 9.99174 2.10541 10.0027 2.05594 9.99899C2.00647 9.99531 1.95898 9.97713 1.91887 9.94654C1.87877 9.91595 1.84765 9.87417 1.82906 9.82595C1.81048 9.77773 1.80517 9.72501 1.81374 9.67378L2.2542 6.97926C2.28329 6.80137 2.27069 6.61873 2.21747 6.44709C2.16425 6.27545 2.07202 6.11997 1.94872 5.99405L0.0808926 4.08707C0.0451927 4.05091 0.0198947 4.00496 0.00788036 3.95446C-0.00413394 3.90395 -0.00238147 3.85093 0.0129381 3.80142C0.0282576 3.7519 0.0565283 3.7079 0.0945297 3.67442C0.132531 3.64094 0.178735 3.61932 0.227879 3.61203L2.81015 3.21617C2.98026 3.19021 3.14181 3.12129 3.2809 3.01534C3.41998 2.90939 3.53243 2.76958 3.60857 2.60795L4.76297 0.154621Z" fill="#3E2027" />
                 </svg>
               {% endfor %}
             </div>
@@ -248,6 +265,16 @@
     object-position: center center;
   }
 
+  /* Mobile Product Image - hidden on desktop */
+  .hero-product__mobile-image {
+    display: none;
+  }
+
+  /* Mobile Content - hidden on desktop */
+  .hero-product__mobile-content {
+    display: none;
+  }
+
   /* Color Block - separate from images, always visible, only color changes */
   .hero-product__color-block {
     position: absolute;
@@ -274,7 +301,7 @@
     font-size: clamp(48px, 5.76vw, 82.938px);
     font-weight: 400;
     line-height: 1;
-    color: #FFFFFF;
+    color: var(--heading-color);
     margin: 0;
   }
 
@@ -505,7 +532,7 @@
 
     .hero-product__inner {
       height: calc(100vh - 95px);
-      min-height: 500px;
+      min-height: 682px;
       grid-template-columns: 1fr;
     }
 
@@ -517,44 +544,146 @@
       grid-template-columns: 1fr;
     }
 
-    .hero-product__main-image {
-      width: 100%;
-    }
-
-    .hero-product__image {
-      object-position: center center;
-    }
-
-    .hero-product__image-gradient {
-      width: 100%;
-    }
-
+    /* Hide desktop images on mobile */
+    .hero-product__main-image,
+    .hero-product__image-gradient,
     .hero-product__secondary-image {
       display: none;
     }
 
+    /* Show mobile image */
+    .hero-product__mobile-image {
+      display: block;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero-product__mobile-image-container {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      width: 440px;
+      height: 682px;
+      clip-path: url('#blob-mask');
+    }
+
+    .hero-product__mobile-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+    }
+
+    .hero-product__mobile-gradient {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 288px;
+      background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
+      pointer-events: none;
+    }
+
+    /* Hide color block on mobile */
     .hero-product__color-block {
       display: none;
     }
 
+    /* Mobile heading */
     .hero-product__heading {
-      max-width: 70%;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 51px;
+      bottom: auto;
+      max-width: 440px;
+      width: 100%;
+      padding: 0 16px;
     }
 
+    .hero-product__heading h1 {
+      font-size: 45px;
+      text-align: center;
+      font-weight: 400;
+    }
+
+    /* Show mobile content */
+    .hero-product__mobile-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 365px;
+      z-index: 3;
+      /* padding: 0 16px; */
+    }
+
+    .hero-product__mobile-title {
+      font-family: var(--font-alyona);
+      font-size: 30px;
+      font-weight: 400;
+      line-height: 1;
+      color: #FFFFFF;
+      text-align: center;
+      margin: 0;
+      width: 100%;
+    }
+
+    .hero-product__mobile-subtitle {
+      font-family: var(--font-jokker);
+      font-size: 14px;
+      line-height: 1.2;
+      color: #FFFFFF;
+      text-align: center;
+      margin: 0;
+      width: 100%;
+    }
+
+    .hero-product__mobile-button {
+      margin-top: 16px;
+      background-color: #3E2027;
+      color: #FFFFFF;
+      font-family: var(--font-sweet-sans);
+      font-weight: 500;
+      font-size: 12px;
+      width: 138px;
+      line-height: normal;
+      letter-spacing: -0.12px;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 10px 20px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease
+      , transform 0.2s ease;
+    }
+
+    .hero-product__mobile-button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .hero-product__mobile-button:active {
+      opacity: 0.8;
+      transform: translateY(0);
+    }
+
+    /* Hide navigation controls on mobile */
+    .hero-product__controls {
+      display: none;
+    }
+
+    /* Hide product cards on mobile */
     .hero-product__cards {
-      width: 100%;
-      height: auto;
-      bottom: 20px;
-      padding: 20px;
-    }
-
-    .hero-product__card {
-      position: relative;
-      bottom: 0;
-      right: 0;
-      width: 100%;
-      max-width: 400px;
-      margin: 0 auto;
+      display: none;
     }
   }
 {% endstylesheet %}
@@ -655,14 +784,47 @@
     "class": "hero-product-section",
     "settings": [
       {
+        "type": "header",
+        "content": "Desktop Settings"
+      },
+      {
         "type": "text",
         "id": "heading",
         "label": "Heading",
         "default": "Smelling good shouldn't be a gamble."
-      }, {
+      },
+      {
+        "type": "color",
+        "id": "heading_color",
+        "label": "Heading color",
+        "default": "#FFFFFF"
+      },
+      {
         "type": "product_list",
         "id": "hero_products",
         "label": "Products"
+      }, {
+        "type": "header",
+        "content": "Mobile Settings"
+      }, {
+        "type": "text",
+        "id": "mobile_title",
+        "label": "Mobile title",
+        "default": "Deodorant enhancer."
+      }, {
+        "type": "textarea",
+        "id": "mobile_subtitle",
+        "label": "Mobile subtitle",
+        "default": "Not a deodorant — the step that makes it work better."
+      }, {
+        "type": "text",
+        "id": "mobile_button_text",
+        "label": "Mobile button text",
+        "default": "BUY NOW"
+      }, {
+        "type": "url",
+        "id": "mobile_button_url",
+        "label": "Mobile button URL"
       }
     ],
     "presets": [
