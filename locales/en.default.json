@@ -1,12 +1,3 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin language editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "404": {
     "title": "404",
@@ -41,7 +32,8 @@
   },
   "general": {
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "product_details": "Product Details"
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
@@ -53,7 +45,8 @@
   "header": {
     "account": "Account",
     "cart": "Cart",
-    "menu": "Menu"
+    "menu": "Menu",
+    "close_menu": "Close menu"
   },
   "password": {
     "title": "This shop is private",
@@ -70,5 +63,20 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "sections": {
+    "product_details": {
+      "step_spray": "Spray",
+      "step_wipe": "Wipe",
+      "step_apply_deo": "Apply Deo",
+      "step_stay_fresh": "Stay Fresh",
+      "content_header": "Content",
+      "image_header": "Image"
+    }
+  },
+  "labels": {
+    "heading": "Heading",
+    "description": "Description",
+    "product_image": "Product image"
   }
 }

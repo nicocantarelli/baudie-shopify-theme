@@ -1,12 +1,4 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin language editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
+
 {
   "general": {
     "404": "Not found",
@@ -32,6 +24,7 @@
     "password": "Password",
     "primary": "Primary",
     "product": "Product",
+    "product_details": "Product Details",
     "row": "Row",
     "search": "Search",
     "secondary": "Secondary",
@@ -88,7 +81,11 @@
     "text": "Text",
     "title": "Title",
     "press_logo_image": "Press logo image",
-    "logo_description": "Logo description"
+    "logo_description": "Logo description",
+    "heading": "Heading",
+    "description": "Description",
+    "product_image": "Product image",
+    "second_heading": "Second Line for Heading"
   },
   "options": {
     "alignment": {
@@ -112,6 +109,12 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
+    }
+  },
+  "sections": {
+    "product_details": {
+      "content_header": "Content",
+      "image_header": "Image"
     }
   }
 }

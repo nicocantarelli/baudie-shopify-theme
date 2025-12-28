@@ -16,6 +16,14 @@
         "mobile_button_url": ""
       }
     },
+    "product_details_XyZ123": {
+      "type": "product-details",
+      "settings": {
+        "heading": "Not a deodorant. The step your deodorant's been missing.",
+        "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
+        "product_image": ""
+      }
+    },
     "in_press_9ChkGH": {
       "type": "in-press",
       "blocks": {
@@ -66,6 +74,7 @@
   },
   "order": [
     "hero_product_tkHfVy",
-    "in_press_9ChkGH"
+    "in_press_9ChkGH",
+    "product_details_XyZ123"
   ]
 }
