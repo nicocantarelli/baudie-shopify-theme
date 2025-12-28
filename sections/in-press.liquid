@@ -1,0 +1,286 @@
+{% comment %}
+  In Press section - marquee scrolling logos with horizontal line
+{% endcomment %}
+
+<div class="in-press full-width">
+  <div class="in-press__container">
+    {% if section.settings.title != blank %}
+      <p class="in-press__title">{{ section.settings.title }}</p>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="in-press__viewport">
+        <div class="in-press__track" data-press-marquee>
+          <div class="in-press__group">
+            {% for block in section.blocks %}
+              {% if block.type == 'press_logo' and block.settings.logo %}
+                <div class="in-press__logo-wrapper" {{ block.shopify_attributes }}>
+                  {{ block.settings.logo | image_url: width: 400 | image_tag: alt: block.settings.alt_text, class: 'in-press__logo', loading: 'lazy' }}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="in-press__line"></div>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .in-press {
+    background-color: #FFF7EA;
+    padding: 50px 0 60px;
+  }
+
+  .in-press__container {
+    /* max-width: 1360px; */
+    margin: 0 auto;
+    /* padding: 0 40px; */
+  }
+
+  .in-press__title {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: normal;
+    letter-spacing: -0.16px;
+    text-transform: uppercase;
+    text-align: center;
+    color: #3E2027;
+    margin-bottom: 30px;
+  }
+
+  .in-press__viewport {
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 30px;
+  }
+
+  .in-press__track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    white-space: nowrap;
+    will-change: transform;
+    transform: translateX(0);
+  }
+
+  .in-press__track.is-ready {
+    animation: press-marquee var(--marquee-duration, 40s) linear infinite;
+  }
+
+  .in-press__group {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding-right: 0;
+  }
+
+  .in-press__logo-wrapper {
+    width: 220px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .in-press__logo {
+    max-width: 140px;
+    max-height: 43px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .in-press__line {
+    width: calc(100% - 80px);
+    margin: 20px auto 0;
+    height: 1px;
+    background-color: #3E2027;
+    opacity: 0.1;
+  }
+
+  @keyframes press-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-1 * var(--marquee-distance)));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .in-press__track.is-ready {
+      animation: none;
+      transform: translateX(0);
+      justify-content: center;
+    }
+
+    .in-press__group[aria-hidden="true"] {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .in-press {
+      padding: 40px 0 50px;
+    }
+
+    .in-press__container {
+      padding: 0 16px;
+    }
+
+    .in-press__title {
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    .in-press__logo-wrapper {
+      width: 180px;
+      height: 80px;
+    }
+
+    .in-press__logo {
+      max-width: 120px;
+      max-height: 35px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class PressMarquee {
+    constructor() {
+      this.init();
+      this.setupResizeHandler();
+    }
+
+    init() {
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => requestAnimationFrame(() => this.buildMarquee()));
+      } else {
+        requestAnimationFrame(() => this.buildMarquee());
+      }
+    }
+
+    buildMarquee() {
+      const section = document.querySelector('.in-press');
+      if (! section) return;
+      
+
+
+      const viewport = section.querySelector('.in-press__viewport');
+      const track = section.querySelector('[data-press-marquee]');
+      const group = track && track.querySelector('.in-press__group');
+      if (! viewport || ! track || ! group) return;
+      
+
+
+// Remove existing clones
+      track.querySelectorAll('.in-press__group[aria-hidden="true"]').forEach((n) => n.remove());
+      track.classList.remove('is-ready');
+
+      const groupWidth = group.scrollWidth;
+      const viewportWidth = viewport.clientWidth;
+      if (! groupWidth || ! viewportWidth) return;
+      
+
+
+      let totalWidth = groupWidth;
+      const targetWidth = viewportWidth * 3;
+
+// Clone groups until we have enough width
+      while (totalWidth < targetWidth) {
+        const clone = group.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+        totalWidth += groupWidth;
+      }
+
+// Set marquee distance
+      track.style.setProperty('--marquee-distance', `${groupWidth}px`);
+
+// Calculate duration (slower than announcement bar - 50 pixels per second)
+      const speed = 30;
+      const duration = Math.max(20, groupWidth / speed);
+      track.style.setProperty('--marquee-duration', `${duration}s`);
+
+      track.classList.add('is-ready');
+    }
+
+    setupResizeHandler() {
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => this.buildMarquee(), 150);
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      new PressMarquee();
+    });
+  } else {
+    new PressMarquee();
+  }
+{% endjavascript %}
+
+{% schema %}
+  {
+    "name": "In Press",
+    "class": "in-press-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Section title",
+        "default": "IN PRESS"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "press_logo",
+        "name": "Press Logo",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "logo",
+            "label": "Press logo image"
+          }, {
+            "type": "text",
+            "id": "alt_text",
+            "label": "Logo description",
+            "info": "Describe the press outlet for accessibility (e.g., 'The New York Times')",
+            "default": "Press logo"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "In Press",
+        "blocks": [
+          {
+            "type": "press_logo"
+          },
+          {
+            "type": "press_logo"
+          },
+          {
+            "type": "press_logo"
+          },
+          {
+            "type": "press_logo"
+          }, {
+            "type": "press_logo"
+          }, {
+            "type": "press_logo"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

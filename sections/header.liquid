@@ -130,7 +130,7 @@
     <div class="mobile-menu__overlay" id="mobile-menu-overlay"></div>
     <div class="mobile-menu__drawer">
       <div class="mobile-menu__header">
-        {% comment %} <span class="mobile-menu__title">{{ 'header.menu' | t }}</span> {% endcomment %}
+        <span class="mobile-menu__title">{{ 'header.menu' | t }}</span>
         <button
           type="button"
           class="mobile-menu__close"
@@ -249,7 +249,7 @@
   .header {
     background-color: var(--header-bg);
     height: 70px;
-    padding: 0 40px;
+    padding: 0 20px;
   }
 
   .header__inner {
@@ -257,8 +257,10 @@
     align-items: center;
     justify-content: space-between;
     height: 100%;
+    /* max-width: 1440px; */
     margin: 0 auto;
     position: relative;
+    padding: 0 40px;
   }
 
   /* Logo */
@@ -575,6 +577,10 @@
       this.ticking = false;
       this.scrollThreshold = 10;
 
+// Get header height and add buffer (30px extra)
+      this.headerHeight = this.header.offsetHeight + 30;
+      console.log('Header height + buffer:', this.headerHeight + 'px');
+
       const stickyBehavior = this.header.getAttribute('data-sticky-behavior');
       console.log('Sticky behavior setting:', stickyBehavior);
 
@@ -601,19 +607,22 @@
     handleScroll() {
       const currentScrollY = window.scrollY;
 
+// Always show header when at the top
       if (currentScrollY <= 0) {
         this.header.classList.remove('header--hidden');
         this.lastScrollY = currentScrollY;
         return;
       }
 
+// Ignore small scroll movements
       if (Math.abs(currentScrollY - this.lastScrollY) < this.scrollThreshold) {
         return;
       }
 
-      if (currentScrollY > this.lastScrollY) {
+// Only hide header if we've scrolled past the header height + buffer
+      if (currentScrollY > this.lastScrollY && currentScrollY > this.headerHeight) {
         this.header.classList.add('header--hidden');
-      } else {
+      } else if (currentScrollY < this.lastScrollY) { // Always show when scrolling up
         this.header.classList.remove('header--hidden');
       }
 
@@ -642,27 +651,23 @@
     }
 
     function openMenu() {
-      console.log('Opening mobile menu');
       menu.classList.add('is-open');
       document.body.style.overflow = 'hidden';
     }
 
     function closeMenu() {
-      console.log('Closing mobile menu');
       menu.classList.remove('is-open');
       document.body.style.overflow = '';
     }
 
     toggleButton.addEventListener('click', function(e) {
       e.preventDefault();
-      console.log('Toggle button clicked');
       openMenu();
     });
 
     if (closeButton) {
       closeButton.addEventListener('click', function(e) {
         e.preventDefault();
-        console.log('Close button clicked');
         closeMenu();
       });
     }
@@ -670,14 +675,12 @@
     if (overlay) {
       overlay.addEventListener('click', function(e) {
         e.preventDefault();
-        console.log('Overlay clicked');
         closeMenu();
       });
     }
 
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && menu.classList.contains('is-open')) {
-        console.log('Escape key pressed');
         closeMenu();
       }
     });
