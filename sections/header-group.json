@@ -13,6 +13,24 @@
   "sections": {
     "header": {
       "type": "header",
+      "blocks": {
+        "announcement_DGNCU3": {
+          "type": "announcement",
+          "settings": {
+            "text": "24/7 Support"
+          }
+        },
+        "announcement_yxJFMy": {
+          "type": "announcement",
+          "settings": {
+            "text": "Worldwide Shipping"
+          }
+        }
+      },
+      "block_order": [
+        "announcement_DGNCU3",
+        "announcement_yxJFMy"
+      ],
       "settings": {
         "sticky_behavior": "hide_on_scroll",
         "logo": "shopify://shop_images/baudie-logo.svg",
