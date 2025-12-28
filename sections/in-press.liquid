@@ -244,30 +244,30 @@
 
 {% schema %}
   {
-    "name": "In Press",
+    "name": "t:general.in_press",
     "class": "in-press-section",
     "settings": [
       {
         "type": "text",
         "id": "title",
-        "label": "Section title",
+        "label": "t:labels.title",
         "default": "IN PRESS"
       }
     ],
     "blocks": [
       {
         "type": "press_logo",
-        "name": "Press Logo",
+        "name": "t:general.in_press",
         "settings": [
           {
             "type": "image_picker",
             "id": "logo",
-            "label": "Press logo image"
+            "label": "t:labels.press_logo_image"
           }, {
             "type": "text",
             "id": "alt_text",
-            "label": "Logo description",
-            "info": "Describe the press outlet for accessibility (e.g., 'The New York Times')",
+            "label": "t:labels.logo_description",
+            "info": "Describe the press outlet for accessibility",
             "default": "Press logo"
           }
         ]
@@ -275,25 +275,7 @@
     ],
     "presets": [
       {
-        "name": "In Press",
-        "blocks": [
-          {
-            "type": "press_logo"
-          },
-          {
-            "type": "press_logo"
-          },
-          {
-            "type": "press_logo"
-          },
-          {
-            "type": "press_logo"
-          }, {
-            "type": "press_logo"
-          }, {
-            "type": "press_logo"
-          }
-        ]
+        "name": "t:general.in_press"
       }
     ]
   }

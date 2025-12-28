@@ -31,7 +31,8 @@
     "sidebar": "Sidebar",
     "text": "Text",
     "theme": "Theme",
-    "typography": "Typography"
+    "typography": "Typography",
+    "in_press": "In Press"
   },
   "header": {
     "settings": {
@@ -75,7 +76,10 @@
     "page_width": "Page width",
     "show_payment_icons": "Show payment icons",
     "text_style": "Text style",
-    "text": "Text"
+    "text": "Text",
+    "title": "Title",
+    "press_logo_image": "Press logo image",
+    "logo_description": "Logo description"
   },
   "options": {
     "alignment": {
