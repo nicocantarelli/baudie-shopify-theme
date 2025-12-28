@@ -1,5 +1,6 @@
 {
   "sections": {
+<<<<<<< HEAD
     "hero": {
       "type": "hero",
       "settings": {}
@@ -12,5 +13,74 @@
   "order": [
     "hero",
     "in_press"
+=======
+    "hero_product_tkHfVy": {
+      "type": "hero-product",
+      "name": "Hero Product Carousel",
+      "settings": {
+        "heading": "Smelling good shouldn't be a gamble.",
+        "heading_color": "#FFFFFF",
+        "hero_products": [
+          "capri-seaside",
+          "deep-ritual"
+        ],
+        "mobile_title": "Deodorant enhancer.",
+        "mobile_subtitle": "Not a deodorant — the step that makes it work better.",
+        "mobile_button_text": "BUY NOW",
+        "mobile_button_url": ""
+      }
+    },
+    "in_press_9ChkGH": {
+      "type": "in-press",
+      "blocks": {
+        "press_logo_ghD8X7": {
+          "type": "press_logo",
+          "name": "Goop Logo",
+          "settings": {
+            "logo": "shopify://shop_images/goop-logo.png",
+            "alt_text": "Goop Logo"
+          }
+        },
+        "press_logo_YXxpJy": {
+          "type": "press_logo",
+          "name": "The New Yorker Logo",
+          "settings": {
+            "logo": "shopify://shop_images/the-new-yorker-logo.png",
+            "alt_text": "The New Yorker Logo"
+          }
+        },
+        "press_logo_Acaiwg": {
+          "type": "press_logo",
+          "name": "Vice Logo",
+          "settings": {
+            "logo": "shopify://shop_images/vice-logo.png",
+            "alt_text": "Vice Logo"
+          }
+        },
+        "press_logo_aKkAft": {
+          "type": "press_logo",
+          "name": "Bustle Logo",
+          "settings": {
+            "logo": "shopify://shop_images/bustle-logo.png",
+            "alt_text": "Bustle Logo"
+          }
+        }
+      },
+      "block_order": [
+        "press_logo_ghD8X7",
+        "press_logo_YXxpJy",
+        "press_logo_Acaiwg",
+        "press_logo_aKkAft"
+      ],
+      "name": "t:general.in_press",
+      "settings": {
+        "title": "IN PRESS"
+      }
+    }
+  },
+  "order": [
+    "hero_product_tkHfVy",
+    "in_press_9ChkGH"
+>>>>>>> refs/remotes/origin/main
   ]
 }
