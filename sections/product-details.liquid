@@ -45,7 +45,6 @@
 
         <div class="product-details__step">
           <div class="product-details__step-icon">
-
             <svg
               width="60"
               height="60"
@@ -97,14 +96,12 @@
                 </clipPath>
               </defs>
             </svg>
-
           </div>
           <p class="product-details__step-label">{{ 'sections.product_details.step_apply_deo' | t }}</p>
         </div>
 
         <div class="product-details__step">
           <div class="product-details__step-icon">
-
             <svg
               width="60"
               height="60"
@@ -241,7 +238,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* margin-right: -100px; */
   }
 
   .product-details__mask-svg {
@@ -280,34 +276,48 @@
 
   @media (max-width: 768px) {
     .product-details {
-      padding: 40px 0 50px;
+      padding: 30px 0 40px;
     }
 
     .product-details__container {
       grid-template-columns: 1fr;
       gap: 40px;
-      padding: 0 16px;
+      padding: 0 12px;
       min-height: auto;
     }
 
     .product-details__content {
-      gap: 30px;
+      gap: 35px;
     }
 
     .product-details__heading {
-      font-size: 32px;
+      font-size: 34px;
       max-width: 100%;
+      line-height: 1.1;
+    }
+
+    .product-details__second-heading {
+      font-size: 30px;
+      max-width: 100%;
+      line-height: 1.1;
     }
 
     .product-details__description {
-      font-size: 16px;
+      font-size: 14px;
       max-width: 100%;
+      line-height: 1.4;
+      margin-top: 0;
     }
 
     .product-details__steps {
-      gap: 30px;
-      flex-wrap: wrap;
+      gap: 25px;
+      flex-wrap: nowrap;
       justify-content: center;
+      margin-top: 8px;
+    }
+
+    .product-details__step {
+      gap: 8px;
     }
 
     .product-details__step-icon {
@@ -319,8 +329,15 @@
       font-size: 14px;
     }
 
+    /* Image stays at BOTTOM on mobile */
     .product-details__image {
-      order: -1;
+      width: 100%;
+      max-width: 480px;
+      margin: 35px auto;
+    }
+
+    .product-details__img {
+      width: 100%;
     }
   }
 {% endstylesheet %}
