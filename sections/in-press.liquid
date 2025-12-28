@@ -64,7 +64,7 @@
     width: max-content;
     white-space: nowrap;
     will-change: transform;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 
   .in-press__track.is-ready {
@@ -105,10 +105,10 @@
 
   @keyframes press-marquee {
     from {
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
     to {
-      transform: translateX(calc(-1 * var(--marquee-distance)));
+      transform: translate3d(calc(-1 * var(--marquee-distance)), 0, 0);
     }
   }
 
@@ -153,24 +153,28 @@
 {% javascript %}
   class PressMarquee {
     constructor() {
+      this.sections = Array.from(document.querySelectorAll('.in-press'));
+      if (!this.sections.length) return;
+      
+
+
       this.init();
       this.setupResizeHandler();
     }
 
     init() {
       if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => requestAnimationFrame(() => this.buildMarquee()));
+        document.fonts.ready.then(() => requestAnimationFrame(() => this.buildAll()));
       } else {
-        requestAnimationFrame(() => this.buildMarquee());
+        requestAnimationFrame(() => this.buildAll());
       }
     }
 
-    buildMarquee() {
-      const section = document.querySelector('.in-press');
-      if (! section) return;
-      
+    buildAll() {
+      this.sections.forEach((section) => this.buildMarquee(section));
+    }
 
-
+    buildMarquee(section) {
       const viewport = section.querySelector('.in-press__viewport');
       const track = section.querySelector('[data-press-marquee]');
       const group = track && track.querySelector('.in-press__group');
@@ -180,18 +184,26 @@
 
 // Remove existing clones
       track.querySelectorAll('.in-press__group[aria-hidden="true"]').forEach((n) => n.remove());
-      track.classList.remove('is-ready');
 
-      const groupWidth = group.scrollWidth;
-      const viewportWidth = viewport.clientWidth;
+// Hard reset animation to avoid any snap
+      track.classList.remove('is-ready');
+      track.style.animation = 'none';
+      track.style.transform = 'translate3d(0,0,0)';
+
+// Force reflow
+      void track.offsetHeight;
+
+      const viewportWidth = viewport.getBoundingClientRect().width;
+      const groupWidth = group.getBoundingClientRect().width;
+
       if (! groupWidth || ! viewportWidth) return;
       
 
 
+// Clone until safely longer than viewport (prevents any empty gap)
       let totalWidth = groupWidth;
       const targetWidth = viewportWidth * 3;
 
-// Clone groups until we have enough width
       while (totalWidth < targetWidth) {
         const clone = group.cloneNode(true);
         clone.setAttribute('aria-hidden', 'true');
@@ -199,14 +211,17 @@
         totalWidth += groupWidth;
       }
 
-// Set marquee distance
-      track.style.setProperty('--marquee-distance', `${groupWidth}px`);
+// Animate by exactly one group width
+      const distance = Math.ceil(groupWidth); // ceil helps prevent 1px gaps from rounding
+      track.style.setProperty('--marquee-distance', `${distance}px`);
 
-// Calculate duration (slower than announcement bar - 50 pixels per second)
-      const speed = 30;
-      const duration = Math.max(20, groupWidth / speed);
+// Constant speed (px/sec)
+      const speed = 20;
+      const duration = Math.max(20, distance / speed);
       track.style.setProperty('--marquee-duration', `${duration}s`);
 
+// Re-enable animation cleanly
+      track.style.animation = '';
       track.classList.add('is-ready');
     }
 
@@ -214,18 +229,17 @@
       let resizeTimer;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => this.buildMarquee(), 150);
+        resizeTimer = setTimeout(() => this.buildAll(), 150);
       });
     }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      new PressMarquee();
-    });
+    document.addEventListener('DOMContentLoaded', () => new PressMarquee());
   } else {
     new PressMarquee();
   }
+
 {% endjavascript %}
 
 {% schema %}
