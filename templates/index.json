@@ -9,12 +9,24 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "hero_product_tkHfVy": {
+      "type": "hero-product",
+      "name": "Hero Product Carousel",
+      "settings": {
+        "heading": "Smelling good shouldn't be a gamble.",
+        "heading_color": "#FFFFFF",
+        "hero_products": [
+          "capri-seaside",
+          "deep-ritual"
+        ],
+        "mobile_title": "Deodorant enhancer.",
+        "mobile_subtitle": "Not a deodorant — the step that makes it work better.",
+        "mobile_button_text": "BUY NOW",
+        "mobile_button_url": ""
+      }
     }
   },
   "order": [
-    "main"
+    "hero_product_tkHfVy"
   ]
 }
