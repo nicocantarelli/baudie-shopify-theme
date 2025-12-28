@@ -1,19 +1,5 @@
 {
   "sections": {
-<<<<<<< HEAD
-    "hero": {
-      "type": "hero",
-      "settings": {}
-    },
-    "in_press": {
-      "type": "in-press",
-      "settings": {}
-    }
-  },
-  "order": [
-    "hero",
-    "in_press"
-=======
     "hero_product_tkHfVy": {
       "type": "hero-product",
       "name": "Hero Product Carousel",
@@ -81,6 +67,5 @@
   "order": [
     "hero_product_tkHfVy",
     "in_press_9ChkGH"
->>>>>>> refs/remotes/origin/main
   ]
 }
