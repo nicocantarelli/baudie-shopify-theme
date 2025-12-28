@@ -54,8 +54,10 @@
         },
         "press_logo_aKkAft": {
           "type": "press_logo",
+          "name": "Bustle Logo",
           "settings": {
-            "alt_text": "Press logo"
+            "logo": "shopify://shop_images/bustle-logo.png",
+            "alt_text": "Bustle Logo"
           }
         }
       },
