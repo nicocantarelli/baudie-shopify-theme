@@ -152,10 +152,10 @@
         "video": "shopify://files/videos/meet-the-scents-video.mp4"
       }
     },
-    "explore_sets_3999nn": {
+    "explore_sets_UjtGBG": {
       "type": "explore-sets",
       "blocks": {
-        "bundle_card_enpjrX": {
+        "bundle_card_DJgHdm": {
           "type": "bundle_card",
           "settings": {
             "product": "deep-ritual",
@@ -163,11 +163,11 @@
             "custom_title": "",
             "custom_description": "",
             "card_bg_color": "#FCF0D2",
-            "show_badge": true,
+            "show_badge": false,
             "badge_text": "25% off"
           }
         },
-        "bundle_card_azPtjW": {
+        "bundle_card_Y7MARn": {
           "type": "bundle_card",
           "settings": {
             "product": "capri-seaside",
@@ -181,8 +181,8 @@
         }
       },
       "block_order": [
-        "bundle_card_enpjrX",
-        "bundle_card_azPtjW"
+        "bundle_card_DJgHdm",
+        "bundle_card_Y7MARn"
       ],
       "name": "t:general.explore_sets",
       "settings": {
@@ -199,6 +199,6 @@
     "in_press_9ChkGH",
     "product_details_XyZ123",
     "meet_scents_AbC456",
-    "explore_sets_3999nn"
+    "explore_sets_UjtGBG"
   ]
 }
