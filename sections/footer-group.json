@@ -15,9 +15,9 @@
       "type": "footer",
       "settings": {
         "footer_logo": "shopify://shop_images/large-baudie-logo-footer.svg",
-        "menu_shop": "",
-        "menu_company": "",
-        "menu_customer_care": "",
+        "menu_shop": "shop",
+        "menu_company": "company",
+        "menu_customer_care": "customer-care",
         "facebook_url": "",
         "instagram_url": "",
         "contact_email": "info@baudie.com"
