@@ -7,7 +7,7 @@
   <div class="explore-sets__wrapper">
     {%- comment -%} Background Image with Mask {%- endcomment -%}
     {% if section.settings.background_image %}
-      <div class="explore-sets__background">
+      <div class="explore-sets__background explore-sets__background--desktop">
         <svg
           class="explore-sets__mask-svg"
           width="0"
@@ -19,7 +19,27 @@
           </defs>
         </svg>
         <div class="explore-sets__bg-image">
-          {{ section.settings.background_image | image_url: width: 1600 | image_tag: class: 'explore-sets__bg-img', loading: 'lazy' }}
+          {{ section.settings.background_image | image_url: width: 2400 | image_tag: class: 'explore-sets__bg-img', loading: 'lazy' }}
+        </div>
+        <div class="explore-sets__bg-gradient"></div>
+      </div>
+    {% endif %}
+
+    {%- comment -%} Mobile Background Image with Mask {%- endcomment -%}
+    {% if section.settings.mobile_background_image %}
+      <div class="explore-sets__background explore-sets__background--mobile">
+        <svg
+          class="explore-sets__mask-svg"
+          width="0"
+          height="0">
+          <defs>
+            <clipPath id="explore-sets-mask-mobile-{{ section.id }}" clipPathUnits="objectBoundingBox">
+              <path d="M0.015,0.077 C0.159,0.058,0.304,0.05,0.45,0.052 C0.596,0.054,0.741,0.067,0.885,0.089 C0.972,0.102,0.969,0.146,0.976,0.233 C0.983,0.321,0.999,0.495,0.999,0.583 C0.998,0.67,0.991,0.758,0.977,0.845 C0.964,0.932,0.945,1.018,0.92,1.103 L0.086,1.062 C0.059,0.977,0.037,0.891,0.022,0.804 C0.006,0.717,-0.006,0.629,-0.013,0.541 C-0.02,0.453,-0.022,0.365,-0.019,0.277 C-0.015,0.19,-0.004,0.103,0.015,0.018" />
+            </clipPath>
+          </defs>
+        </svg>
+        <div class="explore-sets__bg-image">
+          {{ section.settings.mobile_background_image | image_url: width: 1200 | image_tag: class: 'explore-sets__bg-img', loading: 'lazy' }}
         </div>
         <div class="explore-sets__bg-gradient"></div>
       </div>
@@ -56,7 +76,7 @@
                     {% for product in block.settings.display_products %}
                       {% if product.featured_image %}
                         <div class="explore-sets__product-img">
-                          {{ product.featured_image | image_url: width: 400 | image_tag: alt: product.title, loading: 'lazy' }}
+                          {{ product.featured_image | image_url: width: 800 | image_tag: alt: product.title, loading: 'lazy' }}
                         </div>
                       {% endif %}
                     {% endfor %}
@@ -64,7 +84,7 @@
                 {% elsif bundle_product.featured_image %}
                   <div class="explore-sets__product-images explore-sets__product-images--1">
                     <div class="explore-sets__product-img">
-                      {{ bundle_product.featured_image | image_url: width: 400 | image_tag: alt: bundle_product.title, loading: 'lazy' }}
+                      {{ bundle_product.featured_image | image_url: width: 1200 | image_tag: alt: bundle_product.title, loading: 'lazy' }}
                     </div>
                   </div>
                 {% endif %}
@@ -181,6 +201,11 @@
     z-index: 1;
   }
 
+  /* Hide mobile background on desktop */
+  .explore-sets__background--mobile {
+    display: none;
+  }
+
   .explore-sets__mask-svg {
     position: absolute;
     width: 0;
@@ -190,7 +215,14 @@
   .explore-sets__bg-image {
     position: absolute;
     inset: 0;
+  }
+
+  .explore-sets__background--desktop .explore-sets__bg-image {
     clip-path: url('#explore-sets-mask-{{ section.id }}');
+  }
+
+  .explore-sets__background--mobile .explore-sets__bg-image {
+    clip-path: url('#explore-sets-mask-mobile-{{ section.id }}');
   }
 
   .explore-sets__bg-img {
@@ -572,10 +604,13 @@
       overflow: hidden;
     }
 
-    .explore-sets__bg-image {
-      position: absolute;
-      inset: 0;
-      clip-path: url('#explore-sets-mask-{{ section.id }}');
+    /* Show desktop background, hide mobile on tablet */
+    .explore-sets__background--mobile {
+      display: none;
+    }
+
+    .explore-sets__background--desktop {
+      display: block;
     }
 
     .explore-sets__bg-img {
@@ -796,11 +831,25 @@
     overflow: hidden;
   }
 
-  .explore-sets__bg-image {
-    position: absolute;
-    inset: 0;
-    clip-path: url('#explore-sets-mask-{{ section.id }}');
+  /* Show mobile background if available, otherwise desktop */
+  .explore-sets__background--desktop {
+    display: block;
   }
+
+  .explore-sets__background--mobile {
+    display: none;
+  }
+
+  /* If mobile background exists, show it instead of desktop */
+  {% if section.settings.mobile_background_image %}
+    .explore-sets__background--desktop {
+      display: none;
+    }
+
+    .explore-sets__background--mobile {
+      display: block;
+    }
+  {% endif %}
 
   .explore-sets__bg-img {
     width: 100%;
@@ -1044,6 +1093,12 @@
         "type": "image_picker",
         "id": "background_image",
         "label": "t:labels.background_image"
+      },
+      {
+        "type": "image_picker",
+        "id": "mobile_background_image",
+        "label": "Mobile Background Image",
+        "info": "Optional. If provided, this image will be used on mobile devices (below 768px) instead of the desktop background image."
       },
       {
         "type": "header",

@@ -12,7 +12,7 @@
           {% if product.metafields.custom.hero_image %}
             {%- comment -%} Main Hero Image {%- endcomment -%}
             <div class="hero-product__main-image">
-              {{ product.metafields.custom.hero_image | image_url: width: 1600 | image_tag: loading: 'eager', class: 'hero-product__image' }}
+              {{ product.metafields.custom.hero_image | image_url: width: 2400 | image_tag: loading: 'eager', class: 'hero-product__image' }}
             </div>
 
             {%- comment -%} Gradient Overlay {%- endcomment -%}
@@ -22,14 +22,14 @@
           {%- comment -%} Secondary Product Image (top right) {%- endcomment -%}
           {% if product.featured_image %}
             <div class="hero-product__secondary-image">
-              {{ product.featured_image | image_url: width: 800 | image_tag: class: 'hero-product__secondary-img' }}
+              {{ product.featured_image | image_url: width: 1200 | image_tag: class: 'hero-product__secondary-img' }}
             </div>
           {% endif %}
 
           {%- comment -%} Mobile Product Image {%- endcomment -%}
           {% if product.featured_image %}
             <div class="hero-product__mobile-image">
-              {{ product.featured_image | image_url: width: 800 | image_tag: class: 'hero-product__mobile-img' }}
+              {{ product.featured_image | image_url: width: 1200 | image_tag: class: 'hero-product__mobile-img' }}
               <div class="hero-product__mobile-gradient"></div>
             </div>
           {% endif %}
