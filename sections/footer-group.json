@@ -18,8 +18,8 @@
         "menu_shop": "shop",
         "menu_company": "company",
         "menu_customer_care": "customer-care",
-        "facebook_url": "",
-        "instagram_url": "",
+        "facebook_url": "https://facebook.com",
+        "instagram_url": "https://instagram.com",
         "contact_email": "info@baudie.com"
       }
     }
