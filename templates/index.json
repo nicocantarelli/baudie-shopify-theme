@@ -75,16 +75,87 @@
     "product_details_XyZ123": {
       "type": "product-details",
       "settings": {
-        "heading": "Not a deodorant. The step your deodorant's been missing.",
+        "heading": "Not a deodorant.",
         "second_heading": "The step your deodorant's been missing.",
         "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
         "product_image": "shopify://shop_images/product-details-image.png"
+      }
+    },
+    "meet_scents_AbC456": {
+      "type": "meet-your-scents",
+      "blocks": {
+        "marker_1": {
+          "type": "tooltip_marker",
+          "settings": {
+            "position_x": 15,
+            "position_y": 66,
+            "product": "capri-seaside",
+            "tooltip_description": "Fresh citrus and ocean notes"
+          }
+        },
+        "marker_2": {
+          "type": "tooltip_marker",
+          "settings": {
+            "position_x": 29,
+            "position_y": 61,
+            "product": "petal-kiss",
+            "tooltip_description": "Soft floral bouquet"
+          }
+        },
+        "marker_3": {
+          "type": "tooltip_marker",
+          "settings": {
+            "position_x": 49,
+            "position_y": 66,
+            "product": "deep-ritual",
+            "tooltip_description": "Pepper, sandalwood & cedarwood — grounding, clean, and a little mysterious."
+          }
+        },
+        "marker_4": {
+          "type": "tooltip_marker",
+          "settings": {
+            "position_x": 59,
+            "position_y": 37,
+            "product": "sweet-touch",
+            "tooltip_description": "Gentle vanilla and amber"
+          }
+        },
+        "marker_5": {
+          "type": "tooltip_marker",
+          "settings": {
+            "position_x": 65,
+            "position_y": 60,
+            "product": "it-proper",
+            "tooltip_description": "Bold and sophisticated"
+          }
+        },
+        "marker_6": {
+          "type": "tooltip_marker",
+          "settings": {
+            "position_x": 79,
+            "position_y": 64,
+            "product": "barely-there",
+            "tooltip_description": "Subtle and clean"
+          }
+        }
+      },
+      "block_order": [
+        "marker_1",
+        "marker_2",
+        "marker_3",
+        "marker_4",
+        "marker_5",
+        "marker_6"
+      ],
+      "settings": {
+        "heading": "Meet Your Scents"
       }
     }
   },
   "order": [
     "hero_product_tkHfVy",
     "in_press_9ChkGH",
-    "product_details_XyZ123"
+    "product_details_XyZ123",
+    "meet_scents_AbC456"
   ]
 }
