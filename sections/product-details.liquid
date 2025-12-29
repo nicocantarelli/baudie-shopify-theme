@@ -340,6 +340,51 @@
       width: 100%;
     }
   }
+
+  /* Tablet layout (768px only) - Icons vertical next to image */
+  @media (min-width: 481px) and (max-width: 768px) {
+    .product-details__container {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    /* Content section (heading and description) */
+    .product-details__content {
+      gap: 25px;
+    }
+
+    /* Create a horizontal layout for steps + image */
+    .product-details__container {
+      position: relative;
+    }
+
+    /* Steps become vertical column */
+    .product-details__steps {
+      flex-direction: column;
+      gap: 30px;
+      margin-top: 0;
+      position: absolute;
+      left: 110px;
+      bottom: 0;
+      align-items: center;
+      justify-content: center;
+      height: 480px;
+    }
+
+    /* Image positioned to the right, with left padding for icons */
+    .product-details__image {
+      margin: 0 0 0 auto;
+      max-width: calc(100% - 100px);
+      padding-left: 100px;
+      justify-content: flex-end;
+    }
+
+    .product-details__img {
+      width: 100%;
+      max-width: 450px;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
