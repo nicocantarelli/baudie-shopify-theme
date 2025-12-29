@@ -34,7 +34,8 @@
     "text": "Text",
     "theme": "Theme",
     "typography": "Typography",
-    "in_press": "In Press"
+    "in_press": "In Press",
+    "meet_your_scents": "Meet Your Scents"
   },
   "header": {
     "settings": {
@@ -85,7 +86,13 @@
     "heading": "Heading",
     "description": "Description",
     "product_image": "Product image",
-    "second_heading": "Second Line for Heading"
+    "second_heading": "Second Line for Heading",
+    "video": "Video",
+"placeholder_image": "Placeholder image",
+"horizontal_position": "Horizontal position",
+"vertical_position": "Vertical position",
+"tooltip_title": "Tooltip title",
+"tooltip_description": "Tooltip description"
   },
   "options": {
     "alignment": {
@@ -115,6 +122,20 @@
     "product_details": {
       "content_header": "Content",
       "image_header": "Image"
-    }
+    },
+    "meet_scents": {
+  "content_header": "Content",
+  "video_header": "Video",
+  "placeholder_info": "Shows when no video is uploaded"
+}
+  },
+  "blocks": {
+  "tooltip_marker": {
+    "name": "Tooltip Marker",
+    "position_header": "Position",
+    "position_x_info": "Horizontal position from left edge (0 = left, 100 = right)",
+    "position_y_info": "Vertical position from top edge (0 = top, 100 = bottom)",
+    "tooltip_header": "Tooltip Content"
   }
+}
 }

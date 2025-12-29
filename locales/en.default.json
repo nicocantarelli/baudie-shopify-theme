@@ -72,11 +72,32 @@
       "step_stay_fresh": "Stay Fresh",
       "content_header": "Content",
       "image_header": "Image"
+    },
+    "meet_scents": {
+      "content_header": "Content",
+      "video_header": "Video",
+      "placeholder_info": "Shows when no video is uploaded"
     }
   },
   "labels": {
     "heading": "Heading",
     "description": "Description",
-    "product_image": "Product image"
-  }
+    "product_image": "Product image",
+    "video": "Video",
+"placeholder_image": "Placeholder image",
+"horizontal_position": "Horizontal position (%)",
+"vertical_position": "Vertical position (%)",
+"tooltip_title": "Tooltip title",
+"tooltip_description": "Tooltip description"
+  },
+
+  "blocks": {
+    "tooltip_marker": {
+      "name": "Tooltip Marker",
+      "position_header": "Position",
+      "position_x_info": "Horizontal position from left edge",
+      "position_y_info": "Vertical position from top edge",
+      "tooltip_header": "Tooltip Content"
+    }
+}
 }
