@@ -44,7 +44,8 @@
     "previous": "Previous",
     "next": "Next",
     "product_details": "Product Details",
-    "explore_sets": "Explore Our Sets"
+    "explore_sets": "Explore Our Sets",
+     "newsletter": "Newsletter"
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
@@ -93,7 +94,10 @@
     "explore_sets": {
       "background_header": "Background",
       "content_header": "Content"
-    }
+    },
+     "newsletter": {
+    "content_header": "Content"
+  }
   },
   "labels": {
     "heading": "Heading",
@@ -115,7 +119,10 @@
     "custom_description": "Custom description",
     "card_background_color": "Card background color",
     "show_badge": "Show badge",
-    "badge_text": "Badge text"
+    "badge_text": "Badge text",
+    "email_placeholder": "Email placeholder",
+    "button_text": "Button text",
+    "fine_print": "Fine print"
   },
   "blocks": {
     "tooltip_marker": {

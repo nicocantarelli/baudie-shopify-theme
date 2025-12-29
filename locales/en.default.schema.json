@@ -45,7 +45,8 @@
     "typography": "Typography",
     "in_press": "In Press",
     "meet_your_scents": "Meet Your Scents",
-    "explore_sets": "Explore Our Sets"
+    "explore_sets": "Explore Our Sets",
+     "newsletter": "Newsletter"
   },
   "header": {
     "settings": {
@@ -128,7 +129,10 @@
     "custom_description": "Custom description",
     "card_background_color": "Card background color",
     "show_badge": "Show badge",
-    "badge_text": "Badge text"
+    "badge_text": "Badge text",
+    "email_placeholder": "Email placeholder text",
+    "button_text": "Button text",
+    "fine_print": "Fine print text"
   },
   "options": {
     "alignment": {
@@ -167,7 +171,10 @@
     "explore_sets": {
       "background_header": "Background",
       "content_header": "Content"
-    }
+    },
+     "newsletter": {
+    "content_header": "Content"
+  }
   },
   "blocks": {
     "tooltip_marker": {
