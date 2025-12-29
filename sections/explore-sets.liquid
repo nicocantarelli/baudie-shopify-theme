@@ -1,0 +1,802 @@
+{% comment %}
+  Explore Our Sets section - Showcase bundle products with overlapping images
+  Fixed background positioning and product image display
+{% endcomment %}
+
+<div class="explore-sets full-width">
+  <div class="explore-sets__wrapper">
+    {%- comment -%} Background Image with Mask {%- endcomment -%}
+    {% if section.settings.background_image %}
+      <div class="explore-sets__background">
+        <svg
+          class="explore-sets__mask-svg"
+          width="0"
+          height="0">
+          <defs>
+            <clipPath id="explore-sets-mask-{{ section.id }}" clipPathUnits="objectBoundingBox">
+              <path d="M0.015,0.077 C0.159,0.058,0.304,0.05,0.45,0.052 C0.596,0.054,0.741,0.067,0.885,0.089 C0.972,0.102,0.969,0.146,0.976,0.233 C0.983,0.321,0.999,0.495,0.999,0.583 C0.998,0.67,0.991,0.758,0.977,0.845 C0.964,0.932,0.945,1.018,0.92,1.103 L0.086,1.062 C0.059,0.977,0.037,0.891,0.022,0.804 C0.006,0.717,-0.006,0.629,-0.013,0.541 C-0.02,0.453,-0.022,0.365,-0.019,0.277 C-0.015,0.19,-0.004,0.103,0.015,0.018" />
+            </clipPath>
+          </defs>
+        </svg>
+        <div class="explore-sets__bg-image">
+          {{ section.settings.background_image | image_url: width: 1600 | image_tag: class: 'explore-sets__bg-img', loading: 'lazy' }}
+        </div>
+        <div class="explore-sets__bg-gradient"></div>
+      </div>
+    {% endif %}
+
+    {%- comment -%} Content Container {%- endcomment -%}
+    <div class="explore-sets__content">
+      {%- comment -%} Heading {%- endcomment -%}
+      {% if section.settings.heading != blank %}
+        <h2 class="explore-sets__heading" style="--heading-color: {{ section.settings.heading_color }}">
+          {{ section.settings.heading }}
+        </h2>
+      {% endif %}
+
+      {%- comment -%} Description {%- endcomment -%}
+      {% if section.settings.description != blank %}
+        <div class="explore-sets__description" style="--description-color: {{ section.settings.description_color }}">
+          {{ section.settings.description }}
+        </div>
+      {% endif %}
+
+      {%- comment -%} Cards {%- endcomment -%}
+      <div class="explore-sets__cards">
+        {% for block in section.blocks %}
+          {% if block.type == 'bundle_card' and block.settings.product != blank %}
+            {% assign bundle_product = block.settings.product %}
+            {% assign card_index = forloop.index0 %}
+
+              <div class="explore-sets__card" {{ block.shopify_attributes }}>
+              {%- comment -%} Product Images Container {%- endcomment -%}
+              <div class="explore-sets__card-image-box" style="background-color: {{ block.settings.card_bg_color }}">>
+                {% if block.settings.display_products.size > 0 %}
+                  <div class="explore-sets__product-images explore-sets__product-images--{{ block.settings.display_products.size }}">
+                    {% for product in block.settings.display_products %}
+                      {% if product.featured_image %}
+                        <div class="explore-sets__product-img">
+                          {{ product.featured_image | image_url: width: 400 | image_tag: alt: product.title, loading: 'lazy' }}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                {% elsif bundle_product.featured_image %}
+                  <div class="explore-sets__product-images explore-sets__product-images--1">
+                    <div class="explore-sets__product-img">
+                      {{ bundle_product.featured_image | image_url: width: 400 | image_tag: alt: bundle_product.title, loading: 'lazy' }}
+                    </div>
+                  </div>
+                {% endif %}
+
+                {%- comment -%} Badge {%- endcomment -%}
+                {% if block.settings.show_badge and block.settings.badge_text != blank %}
+                  <div class="explore-sets__badge">
+                    <p class="explore-sets__badge-text">{{ block.settings.badge_text }}</p>
+                  </div>
+                {% endif %}
+              </div>
+
+              {%- comment -%} Card Content {%- endcomment -%}
+              <div class="explore-sets__card-content">
+                {%- comment -%} Title and Price Row {%- endcomment -%}
+                <div class="explore-sets__card-header">
+                  <div class="explore-sets__card-title">
+                    {% if block.settings.custom_title != blank %}
+                      {{ block.settings.custom_title }}
+                    {% else %}
+                      {{ bundle_product.title }}
+                    {% endif %}
+                  </div>
+
+                  <div class="explore-sets__card-price">
+                    {% if bundle_product.compare_at_price > bundle_product.price %}
+                      <span class="explore-sets__price-compare">{{ bundle_product.compare_at_price | money }}</span>
+                      <span class="explore-sets__price-sale">{{ bundle_product.price | money }}</span>
+                    {% else %}
+                      <span class="explore-sets__price-regular">{{ bundle_product.price | money }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+
+                {%- comment -%} Description {%- endcomment -%}
+                {% if block.settings.custom_description != blank %}
+                  <div class="explore-sets__card-description">
+                    {{ block.settings.custom_description }}
+                  </div>
+                {% elsif bundle_product.metafields.custom.short_description %}
+                  <div class="explore-sets__card-description">
+                    {{ bundle_product.metafields.custom.short_description }}
+                  </div>
+                {% endif %}
+
+                {%- comment -%} Action Buttons {%- endcomment -%}
+                <div class="explore-sets__card-actions">
+                  {% form 'product'
+                    , bundle_product %}
+                    <input
+                      type="hidden"
+                      name="id"
+                      value="{{ bundle_product.selected_or_first_available_variant.id }}">
+                    <button
+                      type="submit"
+                      name="add"
+                      class="explore-sets__btn explore-sets__btn--add"
+                      {% unless bundle_product.available %}
+                      disabled{% endunless %}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none">
+                        <path
+                          d="M0.75 7.75H14.75M7.75 0.75V14.75"
+                          stroke="#3E2027"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round" />
+                      </svg>
+                      <span>{{ 'products.add_to_cart' | t }}</span>
+                    </button>
+                  {% endform %}
+                  <a href="{{ bundle_product.url }}" class="explore-sets__btn explore-sets__btn--buy">
+                    {{ 'products.buy_now' | t }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .explore-sets {
+    background-color: #FFF7EA;
+    padding: 80px 0 100px;
+    position: relative;
+    min-height: 1352px;
+  }
+
+  .explore-sets__wrapper {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 40px;
+    position: relative;
+    min-height: 1352px;
+  }
+
+  /* Background Image - 1520px to fit within padded area */
+  .explore-sets__background {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 587px;
+    width: 1520px;
+    height: 765px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .explore-sets__mask-svg {
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+
+  .explore-sets__bg-image {
+    position: absolute;
+    inset: 0;
+    clip-path: url('#explore-sets-mask-{{ section.id }}');
+  }
+
+  .explore-sets__bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+    display: block;
+  }
+
+  .explore-sets__bg-gradient {
+    position: absolute;
+    /* bottom: 607px; */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1520px;
+    height: 765px;
+    background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95.154%);
+    clip-path: url('#explore-sets-mask-{{ section.id }}');
+  }
+
+  /* Content Container */
+  .explore-sets__content {
+    position: relative;
+    z-index: 2;
+    min-height: 1352px;
+  }
+
+  /* Heading */
+  .explore-sets__heading {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 432px;
+    font-family: var(--font-alyona);
+    font-size: 70px;
+    font-weight: 400;
+    line-height: normal;
+    color: var(--heading-color);
+    text-align: center;
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  /* Description */
+  .explore-sets__description {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 512px;
+    width: 466px;
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--description-color);
+    text-align: center;
+    margin: 0;
+  }
+
+  .explore-sets__description p {
+    margin: 0;
+  }
+
+  /* Cards Container */
+  .explore-sets__cards {
+    position: absolute;
+    left: 180px;
+    top: 630px;
+    width: 1160px;
+  }
+
+  /* Individual Card */
+  .explore-sets__card {
+    position: absolute;
+    width: 555px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .explore-sets__card:first-child {
+    left: 0;
+  }
+
+  .explore-sets__card:last-child {
+    left: 605px;
+  }
+
+  /* Card Image Box */
+  .explore-sets__card-image-box {
+    position: relative;
+    width: 100%;
+    height: 530px;
+    overflow: hidden;
+  }
+
+  /* Product Images Container */
+  .explore-sets__product-images {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Single product layout (fallback) */
+  .explore-sets__product-images--1 {
+    left: 0;
+    top: 0;
+    transform: none;
+  }
+
+  .explore-sets__product-images--1 .explore-sets__product-img {
+    width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    margin-right: 0;
+  }
+
+  /* 3 products layout */
+  .explore-sets__product-images--3 {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .explore-sets__product-images--3 .explore-sets__product-img {
+    width: 195px;
+    height: 293px;
+    margin-right: -87.64px;
+    flex-shrink: 0;
+  }
+
+  .explore-sets__product-images--3 .explore-sets__product-img:last-child {
+    margin-right: 0;
+  }
+
+  .explore-sets__product-images--3 .explore-sets__product-img img {
+    object-fit: cover;
+  }
+
+  /* 6 products layout */
+  .explore-sets__product-images--6 {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .explore-sets__product-images--6 .explore-sets__product-img {
+    width: 138px;
+    height: 207px;
+    margin-right: -62px;
+    flex-shrink: 0;
+  }
+
+  .explore-sets__product-images--6 .explore-sets__product-img:last-child {
+    margin-right: 0;
+  }
+
+  .explore-sets__product-images--6 .explore-sets__product-img img {
+    object-fit: cover;
+  }
+
+  /* Product Image */
+  .explore-sets__product-img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .explore-sets__product-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* Badge */
+  .explore-sets__badge {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    background: #FFFFFF;
+    border-radius: 70px;
+    padding: 10px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+  }
+
+  .explore-sets__badge-text {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 13px;
+    line-height: normal;
+    letter-spacing: -0.13px;
+    text-transform: uppercase;
+    color: #3E2027;
+    text-align: center;
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  /* Card Content */
+  .explore-sets__card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Card Header - Title and Price */
+  .explore-sets__card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+  }
+
+  .explore-sets__card-title {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 19px;
+    line-height: normal;
+    letter-spacing: -0.19px;
+    text-transform: uppercase;
+    color: #3E2027;
+    /* white-space: pre-line; */
+    flex-shrink: 1;
+  }
+
+  .explore-sets__card-price {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 400;
+    font-size: 19px;
+    line-height: normal;
+    letter-spacing: -0.19px;
+    text-transform: uppercase;
+    text-align: right;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .explore-sets__price-compare {
+    color: #3E2027;
+    opacity: 0.5;
+    text-decoration: line-through;
+    text-decoration-skip-ink: none;
+  }
+
+  .explore-sets__price-sale {
+    color: #E26046;
+  }
+
+  .explore-sets__price-regular {
+    color: #3E2027;
+  }
+
+  /* Card Description */
+  .explore-sets__card-description {
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    line-height: 1.5;
+    color: #3E2027;
+  }
+
+  .explore-sets__card-description p {
+    margin: 0;
+  }
+
+  /* Action Buttons */
+  .explore-sets__card-actions {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .explore-sets__card-actions form {
+    /* flex: 1; */
+    margin: 0;
+    display: flex;
+  }
+
+  .explore-sets__btn {
+    height: 40px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease
+    , transform 0.2s ease;
+    white-space: nowrap;
+    /* flex: 1; */
+  }
+
+  .explore-sets__btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .explore-sets__btn:active {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+
+  .explore-sets__btn--add {
+    background: #FFFFFF;
+    color: #3E2027;
+  }
+
+  .explore-sets__btn--add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .explore-sets__btn--add svg {
+  ;
+  /* width: 24px; */
+  /* height: 24px; */
+  /* flex-shrink: 0; */
+}
+
+.explore-sets__btn--buy {
+  background: #3E2027;
+  color: #FFFFFF;
+  /* padding: 10px 20px; */
+  /* flex: 1; */
+}
+
+/* Responsive */
+@media (max-width: 1600px) {
+  .explore-sets {
+    min-height: auto;
+  }
+
+  .explore-sets__wrapper {
+    padding: 0 40px;
+    min-height: auto;
+  }
+
+  .explore-sets__background {
+    width: 100%;
+    max-width: 1320px;
+    bottom: 400px;
+  }
+
+  .explore-sets__bg-gradient {
+    width: 100%;
+    max-width: 1320px;
+  }
+
+  .explore-sets__content {
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .explore-sets__heading {
+    position: relative;
+    left: auto;
+    transform: none;
+    top: auto;
+    margin-bottom: 10px;
+  }
+
+  .explore-sets__description {
+    position: relative;
+    left: auto;
+    transform: none;
+    top: auto;
+    margin-bottom: 80px;
+  }
+
+  .explore-sets__cards {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    max-width: 1160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .explore-sets__card {
+    position: relative;
+    left: auto !important;
+  }
+
+  .explore-sets__card:first-child,
+  .explore-sets__card:last-child {
+    left: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .explore-sets {
+    padding: 40px 0 60px;
+  }
+
+  .explore-sets__wrapper {
+    padding: 0 16px;
+  }
+
+  .explore-sets__background {
+    top: -100px;
+    bottom: auto;
+    height: 500px;
+  }
+
+  .explore-sets__bg-gradient {
+    bottom: auto;
+    top: -100px;
+    height: 400px;
+  }
+
+  .explore-sets__heading {
+    font-size: 48px;
+  }
+
+  .explore-sets__description {
+    width: 100%;
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+
+  .explore-sets__cards {
+    gap: 30px;
+  }
+
+  .explore-sets__card {
+    width: 100%;
+    max-width: 555px;
+  }
+
+  .explore-sets__card-image-box {
+    height: 320px;
+  }
+
+  .explore-sets__product-images--3 {
+    left: 50px;
+    top: 40px;
+  }
+
+  .explore-sets__product-images--3 .explore-sets__product-img {
+    width: 140px;
+    height: 210px;
+    margin-right: -60px;
+  }
+
+  .explore-sets__product-images--6 {
+    left: 10px;
+    top: 60px;
+  }
+
+  .explore-sets__product-images--6 .explore-sets__product-img {
+    width: 100px;
+    height: 150px;
+    margin-right: -40px;
+  }
+
+  .explore-sets__card-title,
+  .explore-sets__card-price {
+    font-size: 16px;
+  }
+
+  .explore-sets__card-price {
+    gap: 12px;
+  }
+
+  .explore-sets__card-description {
+    font-size: 14px;
+  }
+
+  .explore-sets__btn {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+  {
+    "name": "t:general.explore_sets",
+    "class": "explore-sets-section",
+    "max_blocks": 2,
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:sections.explore_sets.background_header"
+      },
+      {
+        "type": "image_picker",
+        "id": "background_image",
+        "label": "t:labels.background_image"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.explore_sets.content_header"
+      },
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "t:labels.heading",
+        "default": "Explore our sets"
+      }, {
+        "type": "color",
+        "id": "heading_color",
+        "label": "t:labels.heading_color",
+        "default": "#FFFFFF"
+      }, {
+        "type": "richtext",
+        "id": "description",
+        "label": "t:labels.description",
+        "default": "<p>Meet six Baudie scents and them all.<br>Spray, wipe, and let your deodorant do its best work.</p>"
+      }, {
+        "type": "color",
+        "id": "description_color",
+        "label": "t:labels.description_color",
+        "default": "#FFFFFF"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "bundle_card",
+        "name": "t:blocks.bundle_card.name",
+        "limit": 2,
+        "settings": [
+          {
+            "type": "header",
+            "content": "t:blocks.bundle_card.product_header"
+          },
+          {
+            "type": "product",
+            "id": "product",
+            "label": "t:labels.bundle_product"
+          },
+          {
+            "type": "product_list",
+            "id": "display_products",
+            "label": "t:labels.display_products",
+            "info": "t:blocks.bundle_card.display_products_info",
+            "limit": 6
+          },
+          {
+            "type": "header",
+            "content": "t:blocks.bundle_card.content_header"
+          }, {
+            "type": "textarea",
+            "id": "custom_title",
+            "label": "t:labels.custom_title",
+            "info": "t:blocks.bundle_card.custom_title_info"
+          }, {
+            "type": "richtext",
+            "id": "custom_description",
+            "label": "t:labels.custom_description",
+            "info": "t:blocks.bundle_card.custom_description_info"
+          }, {
+            "type": "header",
+            "content": "t:blocks.bundle_card.styling_header"
+          }, {
+            "type": "color",
+            "id": "card_bg_color",
+            "label": "t:labels.card_background_color",
+            "default": "#FCF0D2"
+          }, {
+            "type": "checkbox",
+            "id": "show_badge",
+            "label": "t:labels.show_badge",
+            "default": false
+          }, {
+            "type": "text",
+            "id": "badge_text",
+            "label": "t:labels.badge_text",
+            "default": "25% off"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:general.explore_sets"
+      }
+    ]
+  }
+{% endschema %}

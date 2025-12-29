@@ -44,7 +44,8 @@
     "theme": "Theme",
     "typography": "Typography",
     "in_press": "In Press",
-    "meet_your_scents": "Meet Your Scents"
+    "meet_your_scents": "Meet Your Scents",
+    "explore_sets": "Explore Our Sets"
   },
   "header": {
     "settings": {
@@ -96,12 +97,22 @@
     "description": "Description",
     "product_image": "Product image",
     "second_heading": "Second Line for Heading",
-"video": "Video",
-"placeholder_image": "Placeholder image",
-"horizontal_position": "Horizontal position",
-"vertical_position": "Vertical position",
-"product": "Product",
-"tooltip_description": "Tooltip description"
+    "video": "Video",
+    "placeholder_image": "Placeholder image",
+    "horizontal_position": "Horizontal position",
+    "vertical_position": "Vertical position",
+    "product": "Product",
+    "tooltip_description": "Tooltip description",
+    "background_image": "Background image",
+    "heading_color": "Heading color",
+    "description_color": "Description color",
+    "bundle_product": "Bundle product",
+    "display_products": "Display products",
+    "custom_title": "Custom title",
+    "custom_description": "Custom description",
+    "card_background_color": "Card background color",
+    "show_badge": "Show badge",
+    "badge_text": "Badge text"
   },
   "options": {
     "alignment": {
@@ -133,19 +144,32 @@
       "image_header": "Image"
     },
     "meet_scents": {
-  "content_header": "Content",
-  "video_header": "Video",
-  "placeholder_info": "Shows when no video is uploaded"
-}
+      "content_header": "Content",
+      "video_header": "Video",
+      "placeholder_info": "Shows when no video is uploaded"
+    },
+    "explore_sets": {
+      "background_header": "Background",
+      "content_header": "Content"
+    }
   },
-"blocks": {
-  "tooltip_marker": {
-    "name": "Tooltip Marker",
-    "position_header": "Position",
-    "position_x_info": "Horizontal position from left edge (0 = left, 100 = right)",
-    "position_y_info": "Vertical position from top edge (0 = top, 100 = bottom)",
-    "tooltip_header": "Product & Content",
-    "description_info": "Optional custom description (uses product short_description metafield if empty)"
+  "blocks": {
+    "tooltip_marker": {
+      "name": "Tooltip Marker",
+      "position_header": "Position",
+      "position_x_info": "Horizontal position from left edge (0 = left, 100 = right)",
+      "position_y_info": "Vertical position from top edge (0 = top, 100 = bottom)",
+      "tooltip_header": "Product & Content",
+      "description_info": "Optional custom description (uses product short_description metafield if empty)"
+    },
+    "bundle_card": {
+      "name": "Bundle Card",
+      "product_header": "Product",
+      "content_header": "Content",
+      "styling_header": "Styling",
+      "display_products_info": "Products to show as overlapping images (leave empty to use bundle product image)",
+      "custom_title_info": "Override the product title (leave empty to use product title)",
+      "custom_description_info": "Override the product description (leave empty to use product description)"
+    }
   }
-}
 }
