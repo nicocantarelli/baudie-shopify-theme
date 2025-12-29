@@ -151,12 +151,54 @@
         "heading": "Meet Your Scents",
         "video": "shopify://files/videos/meet-the-scents-video.mp4"
       }
+    },
+    "explore_sets_UjtGBG": {
+      "type": "explore-sets",
+      "blocks": {
+        "bundle_card_DJgHdm": {
+          "type": "bundle_card",
+          "settings": {
+            "product": "deep-ritual",
+            "display_products": [],
+            "custom_title": "",
+            "custom_description": "",
+            "card_bg_color": "#FCF0D2",
+            "show_badge": false,
+            "badge_text": "25% off"
+          }
+        },
+        "bundle_card_Y7MARn": {
+          "type": "bundle_card",
+          "settings": {
+            "product": "capri-seaside",
+            "display_products": [],
+            "custom_title": "",
+            "custom_description": "",
+            "card_bg_color": "#FCF0D2",
+            "show_badge": false,
+            "badge_text": "25% off"
+          }
+        }
+      },
+      "block_order": [
+        "bundle_card_DJgHdm",
+        "bundle_card_Y7MARn"
+      ],
+      "name": "t:general.explore_sets",
+      "settings": {
+        "background_image": "shopify://shop_images/explore-our-sets-background.png",
+        "heading": "Explore our sets",
+        "heading_color": "#FFFFFF",
+        "description": "<p>Meet six Baudie scents and them all.<br/>Spray, wipe, and let your deodorant do its best work.</p>",
+        "description_color": "#FFFFFF"
+      }
     }
   },
   "order": [
     "hero_product_tkHfVy",
     "in_press_9ChkGH",
     "product_details_XyZ123",
-    "meet_scents_AbC456"
+    "meet_scents_AbC456",
+    "explore_sets_UjtGBG"
   ]
 }
