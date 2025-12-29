@@ -542,30 +542,48 @@
     /* flex: 1; */
   }
 
-  /* Tablet - EXACT same as mobile */
+
+  /*
+   ========================================
+   TABLET STYLES (768px - 1024px) ========================================
+*/
   @media (max-width: 1024px) {
     .explore-sets {
-      padding: 16px 0 40px;
+      padding: 50px 0 60px;
       min-height: auto;
     }
 
     .explore-sets__wrapper {
-      padding: 0 16px;
+      padding: 0 24px;
       min-height: auto;
+      position: relative;
     }
 
-    /* Make hero image a real "top block" */
+    /* Background image - larger for tablet, with text overlay */
     .explore-sets__background {
       position: relative;
       left: auto;
       transform: none;
       bottom: auto;
-      top: 0;
       width: 100%;
-      height: 420px;
-      /* closer to your reference */
-      margin: 0 auto 16px;
+      /* max-width: 900px; */
+      height: 550px;
+      margin: 0 auto 30px;
       overflow: hidden;
+    }
+
+    .explore-sets__bg-image {
+      position: absolute;
+      inset: 0;
+      clip-path: url('#explore-sets-mask-{{ section.id }}');
+    }
+
+    .explore-sets__bg-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
     }
 
     .explore-sets__bg-gradient {
@@ -574,77 +592,84 @@
       bottom: 0;
       transform: none;
       width: 100%;
-      height: 55%;
+      height: 550px;
+      background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
+      clip-path: url('#explore-sets-mask-{{ section.id }}');
     }
 
-    /* CRITICAL: remove positioned ancestor so heading/desc anchor to wrapper (not content) */
     .explore-sets__content {
       position: static;
       z-index: 2;
       min-height: auto;
-      padding-top: 0;
     }
 
-    /* Overlay text inside the hero */
+    /* Heading - positioned over background */
     .explore-sets__heading {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      top: 280px;
-      /* tuned for 420px hero height */
-      width: calc(100% - 32px);
-      font-size: 40px;
-      line-height: 1.05;
+      top: 410px;
+      width: calc(100% - 48px);
+      max-width: 600px;
+      font-size: 56px;
+      line-height: 1.1;
       text-align: center;
       white-space: normal;
-      /* allow wrap on mobile */
       margin: 0;
+      z-index: 3;
     }
 
     .explore-sets__description {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      top: 335px;
+      top: 470px;
       width: calc(100% - 48px);
-      font-size: 14px;
-      line-height: 1.35;
+      max-width: 500px;
+      font-size: 15px;
+      line-height: 1.5;
       text-align: center;
       margin: 0;
+      z-index: 3;
     }
 
-    /* Cards: 2 columns like reference */
+    /* Cards - two columns with better spacing */
     .explore-sets__cards {
       position: relative;
       left: auto;
       top: auto;
       width: 100%;
       display: flex;
-      /* you were missing this */
-      gap: 12px;
-      justify-content: space-between;
-      padding-bottom: 0;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 0;
     }
 
     .explore-sets__card {
       position: relative !important;
       left: auto !important;
-      width: calc(50% - 6px);
-      max-width: none;
-      gap: 14px;
+      width: calc(50% - 10px);
+      max-width: 420px;
+      gap: 18px;
     }
 
     .explore-sets__card-image-box {
-      height: 170px;
+      height: 380px;
     }
 
-    /* Keep images centered */
+    /* Product images - scaled for tablet */
     .explore-sets__product-images {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .explore-sets__product-images--1 {
+      left: 0;
+      top: 0;
+      transform: none;
     }
 
     .explore-sets__product-images--3 {
@@ -656,9 +681,9 @@
     }
 
     .explore-sets__product-images--3 .explore-sets__product-img {
-      width: 84px;
-      height: 126px;
-      margin-right: -38px;
+      width: 140px;
+      height: 210px;
+      margin-right: -63px;
     }
 
     .explore-sets__product-images--6 {
@@ -670,157 +695,337 @@
     }
 
     .explore-sets__product-images--6 .explore-sets__product-img {
-      width: 60px;
-      height: 90px;
-      margin-right: -27px;
+      width: 100px;
+      height: 150px;
+      margin-right: -45px;
     }
 
     .explore-sets__badge {
-      left: 16px;
-      top: 12px;
-      transform: none;
+      left: 18px;
+      top: 18px;
     }
 
     .explore-sets__badge-text {
-      font-size: 10px;
-      letter-spacing: -0.1px;
+      font-size: 12px;
+      letter-spacing: -0.12px;
     }
 
     .explore-sets__card-content {
-      gap: 14px;
+      gap: 18px;
     }
 
     .explore-sets__card-header {
       align-items: flex-start;
-      gap: 10px;
+      gap: 12px;
     }
 
     .explore-sets__card-title {
-      font-size: 14px;
-      letter-spacing: -0.14px;
+      font-size: 17px;
+      letter-spacing: -0.17px;
       line-height: 1.2;
     }
 
     .explore-sets__card-price {
-      font-size: 14px;
-      letter-spacing: -0.14px;
-      gap: 2px;
-      flex-direction: column;
-      align-items: flex-end;
-      white-space: nowrap;
+      font-size: 17px;
+      letter-spacing: -0.17px;
+      gap: 10px;
     }
 
     .explore-sets__card-description {
-      font-size: 12px;
-      line-height: 1.45;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
-    /* Buttons stacked like reference */
     .explore-sets__card-actions {
-      flex-direction: column;
-      gap: 8px;
+      flex-direction: row;
+      gap: 10px;
     }
 
     .explore-sets__card-actions form {
-      width: 100%;
-    }
-
-    .explore-sets__btn {
-      width: 100%;
-      height: 44px;
-      font-size: 12px;
-      padding: 0 16px;
-    }
-
-    .explore-sets__content {
-      position: relative;
-      z-index: 2;
-    }
-
-    .explore-sets__heading,
-    .explore-sets__description {
-      z-index: 3;
-    }
-
-    .explore-sets__background {
-      width: 100%;
-      max-width: 416px;
-      height: 265px;
-      margin: 16px auto 14px;
-      overflow: hidden;
-    }
-
-    /* Keep cover, but fix the "zoom" feeling by choosing a better crop point */
-    .explore-sets__bg-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: 60% 25%;
-      display: block;
-    }
-
-    /* Make sure overlay text is above the image */
-    .explore-sets__content {
-      position: relative;
-      z-index: 5;
-      min-height: auto;
-    }
-
-    /* Put title/desc where they are in the reference (inside hero area) */
-    .explore-sets__heading {
-      top: 970px;
-      /* positioned inside the 265px hero */
-      width: min(360px, calc(100% - 32px));
-      font-size: 38px;
-      line-height: 1.05;
-      white-space: normal;
-      z-index: 6;
-    }
-
-    .explore-sets__description {
-      bottom: 215px;
-      width: min(360px, calc(100% - 48px));
-      font-size: 14px;
-      line-height: 1.35;
-      z-index: 6;
-    }
-
-    /* Gradient should sit on the hero and help readability */
-    .explore-sets__bg-gradient {
-      width: 100%;
-      height: 65%;
-      left: 0;
-      bottom: 0;
-      transform: none;
-    }
-
-    /* Cards stay below hero (no overlap) */
-    .explore-sets__cards {
-      margin-top: 0;
-    }
-
-
+    ;
+    /* flex: 1; */
   }
 
-
-  @media (max-width: 480px) {
-    .explore-sets__background {
-      height: 390px;
-    }
-    .explore-sets__heading {
-      top: -140px;
-      font-size: 36px;
-    }
-    .explore-sets__description {
-      top: -100px;
-    }
-    .explore-sets__cards {
-      gap: 10px;
-    }
-    .explore-sets__card-image-box {
-      height: 160px;
-    }
+  .explore-sets__btn {
+    width: 100%;
+    height: 42px;
+    font-size: 13px;
+    padding: 0 18px;
   }
+
+  .explore-sets__btn--buy {
+    /* flex: 1; */
+    width: 100%;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .explore-sets__wrapper {
+    padding: 0 12px;
+  }
+}
+
+
+/*
+   ========================================
+   MOBILE STYLES (below 768px) ========================================
+*/
+@media (max-width: 767px) {
+  .explore-sets {
+    padding: 24px 0 40px;
+    min-height: auto;
+  }
+
+  .explore-sets__wrapper {
+    padding: 0 12px;
+    min-height: auto;
+    position: relative;
+  }
+
+  /* Background image - mobile optimized */
+  .explore-sets__background {
+    position: relative;
+    left: auto;
+    transform: none;
+    bottom: auto;
+    width: 100%;
+    max-width: 500px;
+    height: 380px;
+    margin: 0 auto 24px;
+    overflow: hidden;
+  }
+
+  .explore-sets__bg-image {
+    position: absolute;
+    inset: 0;
+    clip-path: url('#explore-sets-mask-{{ section.id }}');
+  }
+
+  .explore-sets__bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+  }
+
+  .explore-sets__bg-gradient {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    transform: none;
+    width: 100%;
+    height: 380px;
+    background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
+    clip-path: url('#explore-sets-mask-{{ section.id }}');
+  }
+
+  .explore-sets__content {
+    position: static;
+    z-index: 2;
+    min-height: auto;
+  }
+
+  /* Heading - positioned over background */
+  .explore-sets__heading {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 280px;
+    width: calc(100% - 24px);
+    max-width: 400px;
+    font-size: 42px;
+    line-height: 1.05;
+    text-align: center;
+    white-space: normal;
+    margin: 0;
+    z-index: 3;
+  }
+
+  .explore-sets__description {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 385px;
+    width: calc(100% - 24px);
+    max-width: 360px;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+    margin: 0;
+    z-index: 3;
+  }
+
+  /* Cards - two columns on mobile */
+  .explore-sets__cards {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    margin-top: 0;
+  }
+
+  .explore-sets__card {
+    position: relative !important;
+    left: auto !important;
+    width: calc(50% - 6px);
+    max-width: none;
+    gap: 14px;
+  }
+
+  .explore-sets__card-image-box {
+    height: 180px;
+  }
+
+  /* Product images - mobile sizing */
+  .explore-sets__product-images {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .explore-sets__product-images--1 {
+    left: 0;
+    top: 0;
+    transform: none;
+  }
+
+  .explore-sets__product-images--3 {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    height: auto;
+  }
+
+  .explore-sets__product-images--3 .explore-sets__product-img {
+    width: 84px;
+    height: 126px;
+    margin-right: -38px;
+  }
+
+  .explore-sets__product-images--6 {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    height: auto;
+  }
+
+  .explore-sets__product-images--6 .explore-sets__product-img {
+    width: 60px;
+    height: 90px;
+    margin-right: -27px;
+  }
+
+  .explore-sets__badge {
+    left: 12px;
+    top: 12px;
+  }
+
+  .explore-sets__badge-text {
+    font-size: 10px;
+    letter-spacing: -0.1px;
+  }
+
+  .explore-sets__card-content {
+    gap: 12px;
+  }
+
+  .explore-sets__card-header {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .explore-sets__card-title {
+    font-size: 13px;
+    letter-spacing: -0.13px;
+    line-height: 1.2;
+  }
+
+  .explore-sets__card-price {
+    font-size: 13px;
+    letter-spacing: -0.13px;
+    gap: 4px;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .explore-sets__card-description {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  /* Buttons stacked on mobile */
+  .explore-sets__card-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .explore-sets__card-actions form {
+    width: 100%;
+  }
+
+  .explore-sets__btn {
+    width: 100%;
+    height: 40px;
+    font-size: 12px;
+    padding: 0 16px;
+  }
+}
+
+
+/*
+   ========================================
+   SMALL MOBILE (below 480px) ========================================
+*/
+@media (max-width: 480px) {
+  .explore-sets__background {
+    height: 320px;
+    margin-bottom: 20px;
+  }
+
+  .explore-sets__bg-gradient {
+    height: 320px;
+  }
+
+  .explore-sets__heading {
+    top: 225px;
+    font-size: 36px;
+  }
+
+  .explore-sets__description {
+    top: 265px;
+    font-size: 13px;
+  }
+
+  .explore-sets__card-image-box {
+    height: 160px;
+  }
+
+  .explore-sets__product-images--3 .explore-sets__product-img {
+    width: 72px;
+    height: 108px;
+    margin-right: -32px;
+  }
+
+  .explore-sets__product-images--6 .explore-sets__product-img {
+    width: 52px;
+    height: 78px;
+    margin-right: -23px;
+  }
+
+  .explore-sets__btn--add,
+  .explore-sets__btn--buy {
+    height: 40px !important;
+  }
+}
 
 
 {% endstylesheet %}
