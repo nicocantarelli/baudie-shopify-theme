@@ -487,15 +487,15 @@
 
   .explore-sets__btn {
     height: 40px;
-    padding: 10px 20px;
-    display: flex;
+    padding: 0 20px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     font-family: var(--font-sweet-sans);
     font-weight: 500;
     font-size: 14px;
-    line-height: normal;
+    line-height: 1;
     letter-spacing: -0.14px;
     text-transform: uppercase;
     text-decoration: none;
@@ -505,6 +505,7 @@
     , transform 0.2s ease;
     white-space: nowrap;
     /* flex: 1; */
+    box-sizing: border-box;
   }
 
   .explore-sets__btn:hover {
@@ -528,171 +529,171 @@
   }
 
   .explore-sets__btn--add svg {
-  ;
-  /* width: 24px; */
-  /* height: 24px; */
-  /* flex-shrink: 0; */
-}
-
-.explore-sets__btn--buy {
-  background: #3E2027;
-  color: #FFFFFF;
-  /* padding: 10px 20px; */
-  /* flex: 1; */
-}
-
-/* Responsive */
-@media (max-width: 1600px) {
-  .explore-sets {
-    min-height: auto;
+    display: block;
+    /* width: 24px; */
+    /* height: 24px; */
+    /* flex: 0 0 24px; */
   }
 
-  .explore-sets__wrapper {
-    padding: 0 40px;
-    min-height: auto;
+  .explore-sets__btn--buy {
+    background: #3E2027;
+    color: #FFFFFF;
+    /* padding: 10px 20px; */
+    /* flex: 1; */
   }
 
-  .explore-sets__background {
-    width: 100%;
-    max-width: 1320px;
-    bottom: 400px;
+  /* Responsive */
+  @media (max-width: 1600px) {
+    .explore-sets {
+      min-height: auto;
+    }
+
+    .explore-sets__wrapper {
+      padding: 0 40px;
+      min-height: auto;
+    }
+
+    .explore-sets__background {
+      width: 100%;
+      max-width: 1320px;
+      bottom: 400px;
+    }
+
+    .explore-sets__bg-gradient {
+      width: 100%;
+      max-width: 1320px;
+    }
+
+    .explore-sets__content {
+      min-height: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .explore-sets__heading {
+      position: relative;
+      left: auto;
+      transform: none;
+      top: auto;
+      margin-bottom: 10px;
+    }
+
+    .explore-sets__description {
+      position: relative;
+      left: auto;
+      transform: none;
+      top: auto;
+      margin-bottom: 80px;
+    }
+
+    .explore-sets__cards {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: 100%;
+      max-width: 1160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .explore-sets__card {
+      position: relative;
+      left: auto !important;
+    }
+
+    .explore-sets__card:first-child,
+    .explore-sets__card:last-child {
+      left: auto;
+    }
   }
 
-  .explore-sets__bg-gradient {
-    width: 100%;
-    max-width: 1320px;
-  }
+  @media (max-width: 768px) {
+    .explore-sets {
+      padding: 40px 0 60px;
+    }
 
-  .explore-sets__content {
-    min-height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+    .explore-sets__wrapper {
+      padding: 0 16px;
+    }
 
-  .explore-sets__heading {
-    position: relative;
-    left: auto;
-    transform: none;
-    top: auto;
-    margin-bottom: 10px;
-  }
+    .explore-sets__background {
+      top: -100px;
+      bottom: auto;
+      height: 500px;
+    }
 
-  .explore-sets__description {
-    position: relative;
-    left: auto;
-    transform: none;
-    top: auto;
-    margin-bottom: 80px;
-  }
+    .explore-sets__bg-gradient {
+      bottom: auto;
+      top: -100px;
+      height: 400px;
+    }
 
-  .explore-sets__cards {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: 100%;
-    max-width: 1160px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
-  }
+    .explore-sets__heading {
+      font-size: 48px;
+    }
 
-  .explore-sets__card {
-    position: relative;
-    left: auto !important;
-  }
+    .explore-sets__description {
+      width: 100%;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
 
-  .explore-sets__card:first-child,
-  .explore-sets__card:last-child {
-    left: auto;
-  }
-}
+    .explore-sets__cards {
+      gap: 30px;
+    }
 
-@media (max-width: 768px) {
-  .explore-sets {
-    padding: 40px 0 60px;
-  }
+    .explore-sets__card {
+      width: 100%;
+      max-width: 555px;
+    }
 
-  .explore-sets__wrapper {
-    padding: 0 16px;
-  }
+    .explore-sets__card-image-box {
+      height: 320px;
+    }
 
-  .explore-sets__background {
-    top: -100px;
-    bottom: auto;
-    height: 500px;
-  }
+    .explore-sets__product-images--3 {
+      left: 50px;
+      top: 40px;
+    }
 
-  .explore-sets__bg-gradient {
-    bottom: auto;
-    top: -100px;
-    height: 400px;
-  }
+    .explore-sets__product-images--3 .explore-sets__product-img {
+      width: 140px;
+      height: 210px;
+      margin-right: -60px;
+    }
 
-  .explore-sets__heading {
-    font-size: 48px;
-  }
+    .explore-sets__product-images--6 {
+      left: 10px;
+      top: 60px;
+    }
 
-  .explore-sets__description {
-    width: 100%;
-    font-size: 14px;
-    margin-bottom: 32px;
-  }
+    .explore-sets__product-images--6 .explore-sets__product-img {
+      width: 100px;
+      height: 150px;
+      margin-right: -40px;
+    }
 
-  .explore-sets__cards {
-    gap: 30px;
-  }
+    .explore-sets__card-title,
+    .explore-sets__card-price {
+      font-size: 16px;
+    }
 
-  .explore-sets__card {
-    width: 100%;
-    max-width: 555px;
-  }
+    .explore-sets__card-price {
+      gap: 12px;
+    }
 
-  .explore-sets__card-image-box {
-    height: 320px;
-  }
+    .explore-sets__card-description {
+      font-size: 14px;
+    }
 
-  .explore-sets__product-images--3 {
-    left: 50px;
-    top: 40px;
+    .explore-sets__btn {
+      font-size: 12px;
+      padding: 8px 16px;
+    }
   }
-
-  .explore-sets__product-images--3 .explore-sets__product-img {
-    width: 140px;
-    height: 210px;
-    margin-right: -60px;
-  }
-
-  .explore-sets__product-images--6 {
-    left: 10px;
-    top: 60px;
-  }
-
-  .explore-sets__product-images--6 .explore-sets__product-img {
-    width: 100px;
-    height: 150px;
-    margin-right: -40px;
-  }
-
-  .explore-sets__card-title,
-  .explore-sets__card-price {
-    font-size: 16px;
-  }
-
-  .explore-sets__card-price {
-    gap: 12px;
-  }
-
-  .explore-sets__card-description {
-    font-size: 14px;
-  }
-
-  .explore-sets__btn {
-    font-size: 12px;
-    padding: 8px 16px;
-  }
-}
 {% endstylesheet %}
 
 {% schema %}
