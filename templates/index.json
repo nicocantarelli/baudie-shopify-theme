@@ -162,7 +162,7 @@
             "display_products": [],
             "custom_title": "",
             "custom_description": "",
-            "card_bg_color": "#FCF0D2",
+            "card_bg_color": "#fcf0d2",
             "show_badge": false,
             "badge_text": "25% off"
           }
@@ -174,7 +174,7 @@
             "display_products": [],
             "custom_title": "",
             "custom_description": "",
-            "card_bg_color": "#FCF0D2",
+            "card_bg_color": "#fcf0d2",
             "show_badge": false,
             "badge_text": "25% off"
           }
@@ -187,10 +187,11 @@
       "name": "t:general.explore_sets",
       "settings": {
         "background_image": "shopify://shop_images/explore-our-sets-background.png",
+        "mobile_background_image": "shopify://shop_images/explore-our-sets-background.png",
         "heading": "Explore our sets",
-        "heading_color": "#FFFFFF",
+        "heading_color": "#ffffff",
         "description": "<p>Meet six Baudie scents and them all.<br/>Spray, wipe, and let your deodorant do its best work.</p>",
-        "description_color": "#FFFFFF"
+        "description_color": "#ffffff"
       }
     }
   },
