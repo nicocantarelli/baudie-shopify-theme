@@ -148,7 +148,8 @@
         "marker_6"
       ],
       "settings": {
-        "heading": "Meet Your Scents"
+        "heading": "Meet Your Scents",
+        "video": "shopify://files/videos/meet-the-scents-video.mp4"
       }
     }
   },
