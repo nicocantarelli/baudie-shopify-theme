@@ -134,5 +134,14 @@
       "custom_title_info": "Override the product title (leave empty to use product title)",
       "custom_description_info": "Override the product description (leave empty to use product description)"
     }
-  }
+  },
+  "footer": {
+    "stay_connected": "Stay Connected",
+    "newsletter_description": "Join our nest to receive exclusive offers, seasonal drops, and sleep tips straight to your inbox.",
+    "email_placeholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "copyright": "© {{ shop_name }} {{ year }}. All rights reserved."
+}
 }

@@ -75,6 +75,22 @@
       }
     }
   },
+  "footer": {
+    "settings": {
+      "logo_header": "Logo",
+      "footer_logo": "Footer logo",
+      "footer_logo_info": "Large Baudie logo displayed at the top of the footer",
+      "menus_header": "Navigation Menus",
+      "menu_shop": "Shop menu",
+      "menu_company": "Company menu",
+      "menu_customer_care": "Customer care menu",
+      "social_header": "Social Media",
+      "facebook_url": "Facebook URL",
+      "instagram_url": "Instagram URL",
+      "contact_header": "Contact Information",
+      "contact_email": "Contact email"
+    }
+  },
   "labels": {
     "alignment": "Alignment",
     "background": "Background",
