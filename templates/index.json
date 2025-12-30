@@ -11,7 +11,7 @@
   "sections": {
     "hero_product_tkHfVy": {
       "type": "hero-product",
-      "name": "Hero Product Carousel",
+      "name": "Hero Section",
       "settings": {
         "heading": "Smelling good shouldn't be a gamble.",
         "heading_color": "#ffffff",
@@ -193,6 +193,17 @@
         "description": "<p>Meet six Baudie scents and them all.<br/>Spray, wipe, and let your deodorant do its best work.</p>",
         "description_color": "#ffffff"
       }
+    },
+    "newsletter_LECjXh": {
+      "type": "newsletter",
+      "name": "t:general.newsletter",
+      "settings": {
+        "heading": "Stay Fresh. Stay in the Loop.",
+        "description": "Be the first to know when new scents drop, bundles launch, and good pit news happens. No spam — just good vibes and better deodorant days.",
+        "placeholder": "Enter your email",
+        "button_text": "SUBSCRIBE",
+        "fine_print": "<p>We'll only text when it's worth it — new scents, early access, or something good for your pits.<br/>Standard rates apply. Reply STOP anytime. See our <a href=\"/pages/privacy-policy\">Privacy Policy</a> and <a href=\"/pages/terms\">Terms</a>.</p>"
+      }
     }
   },
   "order": [
@@ -200,6 +211,7 @@
     "in_press_9ChkGH",
     "product_details_XyZ123",
     "meet_scents_AbC456",
-    "explore_sets_UjtGBG"
+    "explore_sets_UjtGBG",
+    "newsletter_LECjXh"
   ]
 }

@@ -15,11 +15,11 @@
       "type": "footer",
       "settings": {
         "footer_logo": "shopify://shop_images/large-baudie-logo-footer.svg",
-        "menu_shop": "",
-        "menu_company": "",
-        "menu_customer_care": "",
-        "facebook_url": "",
-        "instagram_url": "",
+        "menu_shop": "shop",
+        "menu_company": "company",
+        "menu_customer_care": "customer-care",
+        "facebook_url": "https://facebook.com",
+        "instagram_url": "https://instagram.com",
         "contact_email": "info@baudie.com"
       }
     }
