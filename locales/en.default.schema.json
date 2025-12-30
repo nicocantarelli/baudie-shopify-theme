@@ -46,7 +46,8 @@
     "in_press": "In Press",
     "meet_your_scents": "Meet Your Scents",
     "explore_sets": "Explore Our Sets",
-     "newsletter": "Newsletter"
+    "newsletter": "Newsletter",
+    "reviews": "Reviews"
   },
   "header": {
     "settings": {
@@ -132,7 +133,13 @@
     "badge_text": "Badge text",
     "email_placeholder": "Email placeholder text",
     "button_text": "Button text",
-    "fine_print": "Fine print text"
+    "fine_print": "Fine print text",
+    "view_all_text": "View all text",
+    "view_all_url": "View all URL",
+    "yotpo_app_key": "Yotpo App Key",
+    "reviewer_name": "Reviewer name",
+    "review_date": "Review date",
+    "review_text": "Review text"
   },
   "options": {
     "alignment": {
@@ -172,9 +179,17 @@
       "background_header": "Background",
       "content_header": "Content"
     },
-     "newsletter": {
-    "content_header": "Content"
-  }
+    "newsletter": {
+      "content_header": "Content"
+    },
+    "reviews": {
+      "content_header": "Content",
+      "view_all_header": "View All Button",
+      "view_all_info": "Link to page with all reviews",
+      "yotpo_header": "Yotpo Integration",
+      "yotpo_app_key_info": "Find this in your Yotpo dashboard under Settings > API",
+      "product_info": "Leave empty to show site-wide reviews"
+    }
   },
   "blocks": {
     "tooltip_marker": {
@@ -193,6 +208,9 @@
       "display_products_info": "Products to show as overlapping images (leave empty to use bundle product image)",
       "custom_title_info": "Override the product title (leave empty to use product title)",
       "custom_description_info": "Override the product description (leave empty to use product description)"
+    },
+    "review": {
+      "name": "Review"
     }
   }
 }
