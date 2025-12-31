@@ -194,6 +194,233 @@
         "description_color": "#ffffff"
       }
     },
+    "reviews_wFhWb3": {
+      "type": "reviews",
+      "blocks": {
+        "review_ALLATw": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Mia T.",
+            "review_date": "06/2025",
+            "review_text": "My husband literally said, 'Wait, why do you smell like nothing?' Best compliment ever."
+          }
+        },
+        "review_gdK39L": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Lucas M.",
+            "review_date": "06/2025",
+            "review_text": "I've tried every natural deo out there — this is the first thing that actually works."
+          }
+        },
+        "review_XVBWBi": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Mia T.",
+            "review_date": "06/2025",
+            "review_text": "Didn't expect a pre-deodorant to change my life, but here we are."
+          }
+        },
+        "review_DY7Nz8": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Sarah K.",
+            "review_date": "06/2025",
+            "review_text": "This product exceeded my expectations!"
+          }
+        }
+      },
+      "block_order": [
+        "review_ALLATw",
+        "review_gdK39L",
+        "review_XVBWBi",
+        "review_DY7Nz8"
+      ],
+      "name": "t:general.reviews",
+      "settings": {
+        "heading": "Reviews",
+        "view_all_text": "VIEW ALL",
+        "view_all_url": "",
+        "yotpo_app_key": "",
+        "product_id": ""
+      }
+    },
+    "product_features_aNgxYb": {
+      "type": "product-features",
+      "blocks": {
+        "feature_badge_CqEEJL": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/aluminium-free-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Aluminum\nFree"
+          }
+        },
+        "feature_badge_ixpCFW": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/paraben-free-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Paraben\nFree"
+          }
+        },
+        "feature_badge_p6j3w9": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/sulfate-free-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Sulfate\nFree"
+          }
+        },
+        "feature_badge_VGJeea": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/cruelty-free-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Cruelty\nFree"
+          }
+        },
+        "feature_badge_n4Krwt": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/phthalate-free-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Phthalate\nFree"
+          }
+        },
+        "feature_badge_FjKLgd": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/plant-based-ingredients-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Plant-Based\nIngredients"
+          }
+        },
+        "feature_badge_PcNFYW": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/vegan-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Vegan"
+          }
+        }
+      },
+      "block_order": [
+        "feature_badge_CqEEJL",
+        "feature_badge_ixpCFW",
+        "feature_badge_p6j3w9",
+        "feature_badge_VGJeea",
+        "feature_badge_n4Krwt",
+        "feature_badge_FjKLgd",
+        "feature_badge_PcNFYW"
+      ],
+      "name": "t:sections.product_features.name",
+      "settings": {}
+    },
+    "what_makes_different_tVrMDA": {
+      "type": "what-makes-different",
+      "blocks": {
+        "feature_fh44J6": {
+          "type": "feature",
+          "settings": {
+            "number": "1",
+            "title": "Gentle AHAs (Lactic Acid)",
+            "description": "Keeps skin slightly acidic — stopping odor-causing bacteria before they start."
+          }
+        },
+        "feature_hrRVte": {
+          "type": "feature",
+          "settings": {
+            "number": "2",
+            "title": "Wipe-Off Formula",
+            "description": "Cleanses and preps skin for deodorant, leaving no residue or scent behind."
+          }
+        },
+        "feature_nYhdYz": {
+          "type": "feature",
+          "settings": {
+            "number": "3",
+            "title": "Plant-Powered Actives",
+            "description": "Naturally balance your underarm microbiome for long-lasting freshness."
+          }
+        },
+        "feature_TqVrwc": {
+          "type": "feature",
+          "settings": {
+            "number": "4",
+            "title": "Dermatologist-Tested",
+            "description": "Safe for sensitive skin. Proven effective in bacterial control."
+          }
+        },
+        "feature_XBjAqb": {
+          "type": "feature",
+          "settings": {
+            "number": "5",
+            "title": "Vegan & Cruelty-Free",
+            "description": "Never tested on animals — only tested on real, sweaty humans."
+          }
+        },
+        "feature_XLH7Dc": {
+          "type": "feature",
+          "settings": {
+            "number": "6",
+            "title": "Science-Backed Confidence",
+            "description": "Clinically developed and lab-tested to make your deodorant last longer."
+          }
+        }
+      },
+      "block_order": [
+        "feature_fh44J6",
+        "feature_hrRVte",
+        "feature_nYhdYz",
+        "feature_TqVrwc",
+        "feature_XBjAqb",
+        "feature_XLH7Dc"
+      ],
+      "name": "t:sections.what_makes_different.name",
+      "settings": {
+        "heading": "What Makes Baudie Different",
+        "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
+        "center_image": "shopify://shop_images/molecule-image.png",
+        "background_color": "#FFF7EA",
+        "text_color": "#3E2027",
+        "badge_color": "#3E2027",
+        "badge_text_color": "#F5F0EC"
+      }
+    },
+    "product_benefits_P36iK9": {
+      "type": "product-benefits",
+      "blocks": {
+        "benefit_EBtYzr": {
+          "type": "benefit",
+          "settings": {
+            "heading": "Unique Odor-Control Formula",
+            "description": "Clinically backed and powered by odor-eliminating bacterial technology. Targets the bacteria that cause smell — not sweat — for freshness that starts before your deodorant."
+          }
+        },
+        "benefit_9HPW3d": {
+          "type": "benefit",
+          "settings": {
+            "heading": "No Residue. No Scent. No Interference.",
+            "description": "The wipe-off formula leaves your skin clean, balanced, and scent-free — ready for deodorant or perfume without overlap or irritation."
+          }
+        },
+        "benefit_4XEJRL": {
+          "type": "benefit",
+          "settings": {
+            "heading": "For Life, Sweat & Everything In Between",
+            "description": "From yoga to long workdays, Baudie keeps odor-causing bacteria in check — so you stay fresh, confident, and completely unbothered."
+          }
+        }
+      },
+      "block_order": [
+        "benefit_EBtYzr",
+        "benefit_9HPW3d",
+        "benefit_4XEJRL"
+      ],
+      "name": "Product benefits",
+      "settings": {}
+    },
     "newsletter_LECjXh": {
       "type": "newsletter",
       "name": "t:general.newsletter",
@@ -212,6 +439,10 @@
     "product_details_XyZ123",
     "meet_scents_AbC456",
     "explore_sets_UjtGBG",
+    "reviews_wFhWb3",
+    "product_features_aNgxYb",
+    "what_makes_different_tVrMDA",
+    "product_benefits_P36iK9",
     "newsletter_LECjXh"
   ]
 }
