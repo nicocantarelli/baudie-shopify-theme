@@ -1,0 +1,499 @@
+{% comment %}
+  Product Features Section
+  Displays product badges/features in a horizontal carousel with arrow navigation
+  Themes/Sections/product-features.liquid
+{% endcomment %}
+
+<div class="product-features full-width">
+  <div class="product-features__container">
+    {% if section.blocks.size > 0 %}
+      <div class="product-features__wrapper" data-features-carousel>
+        <!-- Carousel Track -->
+        <div class="product-features__track" data-features-track>
+          <div class="product-features__items" data-features-items>
+            {% for block in section.blocks %}
+              {% if block.type == 'feature_badge' %}
+                <div class="product-features__item" {{ block.shopify_attributes }}>
+                  {% if block.settings.icon %}
+                    <div class="product-features__icon">
+                      {{ block.settings.icon | image_url: width: 120 | image_tag: alt: block.settings.icon_alt, class: 'product-features__icon-img', loading: 'lazy' }}
+                    </div>
+                  {% endif %}
+                  {% if block.settings.text != blank %}
+                    <p class="product-features__text">{{ block.settings.text }}</p>
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Navigation Arrows -->
+        <button
+          type="button"
+          class="product-features__arrow product-features__arrow--prev"
+          aria-label="{{ 'sections.product_features.scroll_left' | t }}"
+          data-features-prev>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="22"
+            viewBox="0 0 13 22"
+            fill="none">
+            <path
+              d="M11.4142 0.707031L1.41418 10.707L11.4142 20.707"
+              stroke="white"
+              stroke-width="2" />
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          class="product-features__arrow product-features__arrow--next"
+          aria-label="{{ 'sections.product_features.scroll_right' | t }}"
+          data-features-next>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="22"
+            viewBox="0 0 13 22"
+            fill="none">
+            <path
+              d="M0.707031 0.707031L10.707 10.707L0.707031 20.707"
+              stroke="white"
+              stroke-width="2" />
+          </svg>
+        </button>
+
+        <!-- Gradient Overlays -->
+        <div class="product-features__gradient product-features__gradient--left"></div>
+        <div class="product-features__gradient product-features__gradient--right"></div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .product-features {
+    background-color: #FFF7EA;
+    padding: 0;
+  }
+
+  .product-features__container {
+    margin: 0 auto;
+    background-color: #3E2027;
+  }
+
+  .product-features__wrapper {
+    position: relative;
+    background-color: #3E2027;
+    height: 130px;
+    overflow: hidden;
+    width: 1600px;
+    margin: 0 auto;
+    padding: 0 80px;
+  }
+
+  /* Carousel Track */
+  .product-features__track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0 10px;
+    overflow: hidden;
+  }
+
+  /* Items Container */
+  .product-features__items {
+    display: flex;
+    gap: 40px;
+    height: 100%;
+    align-items: center;
+    transition: transform 0.4s ease;
+    will-change: transform;
+  }
+
+  /* Feature Item */
+  .product-features__item {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .product-features__icon {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-features__icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .product-features__text {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: normal;
+    letter-spacing: -0.18px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    white-space: pre-line;
+    margin: 0;
+  }
+
+  /* Navigation Arrows */
+  .product-features__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    background: transparent;
+    border: none;
+    color: #FFFAE6;
+    cursor: pointer;
+    padding: 10px;
+    transition: opacity 0.2s ease
+    , transform 0.2s ease;
+    width: 30px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-features__arrow:hover {
+    opacity: 0.7;
+  }
+
+  .product-features__arrow:active {
+    opacity: 0.5;
+  }
+
+  .product-features__arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .product-features__arrow--prev {
+    left: 30px;
+  }
+
+  .product-features__arrow--next {
+    right: 30px;
+  }
+
+  .product-features__arrow svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Gradient Overlays */
+  .product-features__gradient {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 238px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .product-features__gradient--left {
+    left: 0;
+    background: linear-gradient(to right, rgba(62, 32, 39, 0.61), rgba(62, 32, 39, 0));
+  }
+
+  .product-features__gradient--right {
+    right: 0;
+    background: linear-gradient(to left, rgba(62, 32, 39, 0.61), rgba(62, 32, 39, 0));
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .product-features__wrapper {
+      height: 100px;
+    }
+
+    .product-features__arrow {
+      width: 24px;
+      height: 32px;
+    }
+
+    .product-features__arrow--prev {
+      left: 16px;
+    }
+
+    .product-features__arrow--next {
+      right: 16px;
+    }
+
+    .product-features__track {
+      padding: 0 40px;
+    }
+
+    .product-features__items {
+      gap: 30px;
+    }
+
+    .product-features__icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .product-features__text {
+      font-size: 14px;
+      letter-spacing: -0.14px;
+    }
+
+    .product-features__gradient {
+      width: 150px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .product-features__wrapper {
+      height: 90px;
+    }
+
+    .product-features__items {
+      gap: 24px;
+    }
+
+    .product-features__icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .product-features__text {
+      font-size: 12px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class FeaturesCarousel {
+    constructor(container) {
+      this.container = container;
+      this.track = container.querySelector('[data-features-track]');
+      this.items = container.querySelectorAll('.product-features__item');
+      this.prevBtn = container.querySelector('[data-features-prev]');
+      this.nextBtn = container.querySelector('[data-features-next]');
+      this.currentIndex = 0;
+      this.itemsToShow = this.getItemsToShow();
+
+      if (this.items.length<= this.itemsToShow) {
+        this.hideArrows();
+        return;
+      }
+
+      this.init();
+      this.setupResizeHandler();
+    }
+
+    init() {
+      this.updateCarousel();
+      this.prevBtn?.addEventListener('click', () => this.prev()) 
+
+        this.nextBtn ?. addEventListener('click', () => this.next());
+      
+
+
+// Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') 
+          this.prev();
+        
+
+
+        if (e.key === 'ArrowRight') 
+          this.next();
+        
+
+
+      });
+    }
+
+    getItemsToShow() {
+      const width = window.innerWidth;
+      if (width <= 480) 
+        return1;
+      
+
+
+      if (width <= 768) 
+        return2;
+      
+
+
+      if (width <= 1200) 
+        return4;
+      
+
+
+      return 6;
+    }
+
+    updateCarousel() {
+      const itemsContainer = this.container.querySelector('[data-features-items]');
+      if (! itemsContainer) return;
+      
+
+
+      const itemWidth = this.items[0].offsetWidth;
+      const gap = parseFloat(getComputedStyle(itemsContainer).gap);
+      const offset = -(this.currentIndex * (itemWidth + gap));
+
+      itemsContainer.style.transform = `translateX(${offset}px)`;
+
+// Update button states
+      if (this.prevBtn) {
+        this.prevBtn.disabled = this.currentIndex === 0;
+      }
+      if (this.nextBtn) {
+        this.nextBtn.disabled = this.currentIndex >= this.items.length - this.itemsToShow;
+      }
+    }
+
+    next() {
+      if (this.currentIndex<this.items.length - this.itemsToShow) {
+        this.currentIndex++;
+        this.updateCarousel();
+      }
+    }
+
+    prev() {
+      if (this.currentIndex> 0) {
+        this.currentIndex --;
+        this.updateCarousel();
+      }
+    }
+
+    hideArrows() {
+      if (this.prevBtn) 
+        this.prevBtn.style.display = 'none';
+      
+
+
+      if (this.nextBtn) 
+        this.nextBtn.style.display = 'none';
+      
+
+
+    }
+
+    setupResizeHandler() {
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          const newItemsToShow = this.getItemsToShow();
+          if (newItemsToShow !== this.itemsToShow) {
+            this.itemsToShow = newItemsToShow;
+            this.currentIndex = Math.min(this.currentIndex, Math.max(0, this.items.length - this.itemsToShow));
+            this.updateCarousel();
+          }
+        }, 150);
+      });
+    }
+  }
+
+// Initialize on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFeatures);
+  } else {
+    initFeatures();
+  }
+
+  function initFeatures() {
+    const featuresSection = document.querySelector('[data-features-carousel]');
+    if (featuresSection) {
+      new FeaturesCarousel(featuresSection);
+    }
+  }
+{% endjavascript %}
+
+{% schema %}
+  {
+    "name": "t:sections.product_features.name",
+    "class": "product-features-section",
+    "settings": [],
+    "blocks": [
+      {
+        "type": "feature_badge",
+        "name": "t:sections.product_features.blocks.feature_badge.name",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "icon",
+            "label": "t:sections.product_features.blocks.feature_badge.settings.icon.label"
+          }, {
+            "type": "text",
+            "id": "icon_alt",
+            "label": "t:sections.product_features.blocks.feature_badge.settings.icon_alt.label",
+            "info": "t:sections.product_features.blocks.feature_badge.settings.icon_alt.info",
+            "default": "Feature icon"
+          }, {
+            "type": "textarea",
+            "id": "text",
+            "label": "t:sections.product_features.blocks.feature_badge.settings.text.label",
+            "info": "t:sections.product_features.blocks.feature_badge.settings.text.info",
+            "default": "Feature\nText"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:sections.product_features.name",
+        "blocks": [
+          {
+            "type": "feature_badge",
+            "settings": {
+              "text": "Aluminum\nFree"
+            }
+          },
+          {
+            "type": "feature_badge",
+            "settings": {
+              "text": "Paraben\nFree"
+            }
+          },
+          {
+            "type": "feature_badge",
+            "settings": {
+              "text": "Sulfate\nFree"
+            }
+          },
+          {
+            "type": "feature_badge",
+            "settings": {
+              "text": "Cruelty\nFree"
+            }
+          }, {
+            "type": "feature_badge",
+            "settings": {
+              "text": "Phthalate\nFree"
+            }
+          }, {
+            "type": "feature_badge",
+            "settings": {
+              "text": "Plant-Based\nIngredients"
+            }
+          }, {
+            "type": "feature_badge",
+            "settings": {
+              "text": "Vegan"
+            }
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

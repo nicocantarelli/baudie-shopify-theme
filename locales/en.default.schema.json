@@ -189,7 +189,28 @@
       "yotpo_header": "Yotpo Integration",
       "yotpo_app_key_info": "Find this in your Yotpo dashboard under Settings > API",
       "product_info": "Leave empty to show site-wide reviews"
+    },
+    "product_features": {
+  "name": "Product features",
+  "blocks": {
+    "feature_badge": {
+      "name": "Feature badge",
+      "settings": {
+        "icon": {
+          "label": "Icon"
+        },
+        "icon_alt": {
+          "label": "Icon description",
+          "info": "Describe the icon for accessibility"
+        },
+        "text": {
+          "label": "Text",
+          "info": "Use line breaks to create two-line text (e.g., 'Aluminum\\nFree')"
+        }
+      }
     }
+  }
+}
   },
   "blocks": {
     "tooltip_marker": {
