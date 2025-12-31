@@ -606,6 +606,7 @@
     }
   }
 
+
   /*
    ========================================
    TABLET STYLES (768px - 1024px) ========================================
@@ -620,13 +621,16 @@
       padding: 0 24px;
       min-height: auto;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     /* Background image - larger for tablet, with text overlay */
     .explore-sets__background {
       position: relative;
-      left: auto;
-      transform: none;
+      left: 50%;
+      transform: translateX(-50%);
       bottom: auto;
       width: 100%;
       /* max-width: 900px; */
@@ -699,13 +703,16 @@
     /* Cards - two columns with better spacing */
     .explore-sets__cards {
       position: relative;
-      left: auto;
+      left: 50%;
+      transform: translateX(-50%);
       top: auto;
       width: 100%;
+      max-width: fit-content;
       display: flex;
       gap: 20px;
       justify-content: center;
       margin-top: 0;
+      padding: 0;
     }
 
     .explore-sets__card {
@@ -826,6 +833,21 @@
 @media (max-width: 768px) {
   .explore-sets__wrapper {
     padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .explore-sets__background {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .explore-sets__cards {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: fit-content;
+    padding: 0;
   }
 }
 
@@ -849,13 +871,13 @@
   /* Background image - mobile optimized */
   .explore-sets__background {
     position: relative;
-    left: auto;
+    left: 0;
+    right: 0;
     transform: none;
     bottom: auto;
     width: 100%;
-    max-width: 500px;
     height: 380px;
-    margin: 0 auto 24px;
+    margin: 0 0 24px;
     overflow: hidden;
   }
 
@@ -934,19 +956,21 @@
   /* Cards - two columns on mobile */
   .explore-sets__cards {
     position: relative;
-    left: auto;
+    left: 50%;
+    transform: translateX(-50%);
     top: auto;
     width: 100%;
     display: flex;
     gap: 12px;
     justify-content: space-between;
     margin-top: 0;
+    padding: 0
   }
 
   .explore-sets__card {
     position: relative !important;
     left: auto !important;
-    width: calc(50% - 6px);
+    width: calc(56%);
     max-width: none;
     gap: 14px;
   }
@@ -1015,6 +1039,7 @@
   .explore-sets__card-header {
     align-items: flex-start;
     gap: 8px;
+    flex-direction: column;
   }
 
   .explore-sets__card-title {
@@ -1026,14 +1051,15 @@
   .explore-sets__card-price {
     font-size: 13px;
     letter-spacing: -0.13px;
-    gap: 4px;
-    flex-direction: column;
-    align-items: flex-end;
+    gap: 8px;
+    flex-direction: row;
+    align-items: center;
   }
 
   .explore-sets__card-description {
     font-size: 12px;
     line-height: 1.45;
+    min-height: 80px;
   }
 
   /* Buttons stacked on mobile */
@@ -1124,8 +1150,7 @@
       {
         "type": "header",
         "content": "t:sections.explore_sets.content_header"
-      },
-      {
+      }, {
         "type": "text",
         "id": "heading",
         "label": "t:labels.heading",
