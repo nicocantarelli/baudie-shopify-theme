@@ -1,0 +1,996 @@
+{% comment %}
+  What Makes Baudie Different section
+  Features a central product image surrounded by 6 key differentiators with decorative connecting lines
+{% endcomment %}
+
+<section class="what-makes-different full-width" style="
+    --section-bg: {{ section.settings.background_color }};
+    --text-color: {{ section.settings.text_color }};
+    --badge-bg: {{ section.settings.badge_color }};
+    --badge-text: {{ section.settings.badge_text_color }};
+  ">
+  <div class="what-makes-different__container">
+    {%- comment -%} Header Area {%- endcomment -%}
+    <div class="what-makes-different__header">
+      <h2 class="what-makes-different__title">{{ section.settings.heading }}</h2>
+      <div class="what-makes-different__intro">
+        <p>{{ section.settings.description }}</p>
+      </div>
+    </div>
+
+    {%- comment -%} Main Content with Image and Features {%- endcomment -%}
+    <div class="what-makes-different__content">
+      {%- comment -%} Center Image {%- endcomment -%}
+      <div class="what-makes-different__image-wrapper">
+        {% if section.settings.center_image %}
+          {{ section.settings.center_image | image_url: width: 800 | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
+        {% else %}
+          <div class="what-makes-different__image-placeholder"></div>
+        {% endif %}
+      </div>
+
+      {%- comment -%} Left Column Features (1, 3, 5) {%- endcomment -%}
+      <div class="what-makes-different__column what-makes-different__column--left">
+        {% for block in section.blocks %}
+          {% if block.type == 'feature' %}
+            {% assign block_index = forloop.index %}
+            {% if block_index == 1 or block_index == 3 or block_index == 5 %}
+              <div class="what-makes-different__feature what-makes-different__feature--left what-makes-different__feature--{{ block_index }}" {{ block.shopify_attributes }}>
+                <div class="what-makes-different__badge">
+                  <span>{{ block.settings.number }}</span>
+                </div>
+                <div class="what-makes-different__feature-content">
+                  <h3 class="what-makes-different__feature-title">{{ block.settings.title }}</h3>
+                  <p class="what-makes-different__feature-description">{{ block.settings.description }}</p>
+                </div>
+
+                {%- comment -%} SVG Line with dot - positioned absolutely {%- endcomment -%}
+                <div class="what-makes-different__line what-makes-different__line--{{ block_index }}">
+                  {% if block_index == 1 %}
+                    <svg
+                      width="449"
+                      height="137"
+                      viewBox="0 0 449 137"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"><rect
+                        width="20"
+                        height="20"
+                        rx="10"
+                        transform="matrix(-1 0 0 1 449 116.25)"
+                        fill="#3E2027" /><circle
+                        cx="7.5"
+                        cy="7.5"
+                        r="7.5"
+                        transform="matrix(-1 0 0 1 446.5 118.75)"
+                        fill="#F5F0EC" /><path
+                        d="M0 0.25H311.5L432.5 121.25"
+                        stroke="#3E2027"
+                        stroke-width="0.5" /></svg>
+                  {% elsif block_index == 3 %}
+                    <svg
+                      width="431"
+                      height="20"
+                      viewBox="0 0 431 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"><rect
+                        width="20"
+                        height="20"
+                        rx="10"
+                        transform="matrix(-1 0 0 1 431 0)"
+                        fill="#3E2027" /><circle
+                        cx="7.5"
+                        cy="7.5"
+                        r="7.5"
+                        transform="matrix(-1 0 0 1 428.5 2.5)"
+                        fill="#F5F0EC" /><path
+                        d="M0 10L277.114 10L411 10"
+                        stroke="#3E2027"
+                        stroke-width="0.5" /></svg>
+                  {% elsif block_index == 5 %}
+                    <svg
+                      width="406"
+                      height="130"
+                      viewBox="0 0 406 130"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"><path
+                        d="M0.000167847 129.5H263.957L391 16"
+                        stroke="#3E2027"
+                        stroke-width="0.5" /><rect
+                        width="20"
+                        height="20"
+                        rx="10"
+                        transform="matrix(-1 0 0 1 406 0)"
+                        fill="#3E2027" /><circle
+                        cx="7.5"
+                        cy="7.5"
+                        r="7.5"
+                        transform="matrix(-1 0 0 1 403.5 2.5)"
+                        fill="#F5F0EC" /></svg>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      {%- comment -%} Right Column Features (2, 4, 6) {%- endcomment -%}
+      <div class="what-makes-different__column what-makes-different__column--right">
+        {% for block in section.blocks %}
+          {% if block.type == 'feature' %}
+            {% assign block_index = forloop.index %}
+            {% if block_index == 2 or block_index == 4 or block_index == 6 %}
+              <div class="what-makes-different__feature what-makes-different__feature--right what-makes-different__feature--{{ block_index }}" {{ block.shopify_attributes }}>
+                <div class="what-makes-different__badge">
+                  <span>{{ block.settings.number }}</span>
+                </div>
+                <div class="what-makes-different__feature-content">
+                  <h3 class="what-makes-different__feature-title">{{ block.settings.title }}</h3>
+                  <p class="what-makes-different__feature-description">{{ block.settings.description }}</p>
+                </div>
+
+                {%- comment -%} SVG Line with dot - positioned absolutely {%- endcomment -%}
+                <div class="what-makes-different__line what-makes-different__line--{{ block_index }}">
+                  {% if block_index == 2 %}
+                    <svg
+                      width="423"
+                      height="121"
+                      viewBox="0 0 423 121"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"><path
+                        d="M10 109.75L119.5 0.25H423"
+                        stroke="#3E2027"
+                        stroke-width="0.5" /><rect
+                        y="100.25"
+                        width="20"
+                        height="20"
+                        rx="10"
+                        fill="#3E2027" /><circle
+                        cx="10"
+                        cy="110.25"
+                        r="7.5"
+                        fill="#F5F0EC" /></svg>
+                  {% elsif block_index == 4 %}
+                    <svg
+                      width="477"
+                      height="20"
+                      viewBox="0 0 477 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"><rect
+                        width="20"
+                        height="20"
+                        rx="10"
+                        fill="#3E2027" /><circle
+                        cx="10"
+                        cy="10"
+                        r="7.5"
+                        fill="#F5F0EC" /><path
+                        d="M477 10H170.5H20"
+                        stroke="#3E2027"
+                        stroke-width="0.5" /></svg>
+                  {% elsif block_index == 6 %}
+                    <svg
+                      width="426"
+                      height="121"
+                      viewBox="0 0 426 121"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"><path
+                        d="M16 16.5L126.454 120H425.5"
+                        stroke="#3E2027"
+                        stroke-width="0.5" /><rect
+                        width="20"
+                        height="20"
+                        rx="10"
+                        fill="#3E2027" /><circle
+                        cx="10"
+                        cy="10"
+                        r="7.5"
+                        fill="#F5F0EC" /></svg>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .what-makes-different {
+    background-color: var(--section-bg, #FFF7EA);
+    color: var(--text-color, #3E2027);
+    padding: 100px 0 120px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* CHANGED: 1600px wide container + 40px side padding */
+  .what-makes-different__container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* Header Styles */
+  .what-makes-different__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 75px;
+    /* margin-bottom: 80px; */
+  }
+
+  .what-makes-different__title {
+    font-family: 'Alyona'
+    , serif;
+    font-size: 70px;
+    font-weight: 400;
+    line-height: 1;
+    margin: 0;
+    color: var(--text-color, #3E2027);
+    flex-shrink: 0;
+  }
+
+  .what-makes-different__intro {
+    max-width: 534px;
+    /* padding-top: 15px; */
+  }
+
+  .what-makes-different__intro p {
+    font-family: 'Jokker'
+    , sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
+    color: var(--text-color, #3E2027);
+  }
+
+  /* Main Content Layout */
+  .what-makes-different__content {
+    /* position: relative; */
+    min-height: 900px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  /* Center Image */
+  .what-makes-different__image-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 405px;
+    z-index: 1;
+  }
+
+  .what-makes-different__image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .what-makes-different__image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(62, 32, 39, 0.1) 0%, rgba(62, 32, 39, 0.05) 100%);
+    border-radius: 50%;
+  }
+
+  /* Column Layout */
+  .what-makes-different__column {
+    display: flex;
+    flex-direction: column;
+    /* width: 340px; */
+
+    /* CHANGED: make connectors position relative to the whole content area */
+    /* position: static; */
+    /* was relative */
+    z-index: 3;
+    /* keep text above lines/image */
+  }
+
+  .what-makes-different__column--left {
+    align-items: flex-start;
+  }
+
+  .what-makes-different__column--right {
+  ;
+  /* align-items: flex-start; */
+}
+
+/* Feature Item */
+.what-makes-different__feature {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+
+  /* CHANGED: remove positioned ancestor so connectors can anchor to content */
+  position: static;
+  /* was relative */
+}
+
+/* Left column feature positions */
+.what-makes-different__feature--1 {
+  margin-top: 124px;
+  width: max-content;
+  margin-left: 120px;
+}
+
+.what-makes-different__feature--3 {
+  margin-top: 29px;
+  width: max-content;
+  margin-left: 70px;
+}
+
+.what-makes-different__feature--5 {
+  margin-top: 75px;
+  margin-left: 150px;
+  width: max-content;
+}
+
+.what-makes-different__feature--2 {
+  margin-top: 140px;
+  margin-left: -350px;
+}
+
+.what-makes-different__feature--4 {
+  margin-top: 45px;
+  margin-left: -200px;
+}
+
+.what-makes-different__feature--6 {
+  margin-top: 54px;
+  margin-left: -450px;
+  width: 282px;
+}
+
+/* Badge */
+.what-makes-different__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  background-color: var(--badge-bg, #3E2027);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.what-makes-different__badge span {
+  font-family: 'Satoshi'
+  , sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--badge-text, #F5F0EC);
+  line-height: 1;
+}
+
+/* Feature Content (CHANGED: create a channel for the line between title and description) */
+.what-makes-different__feature-content {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  /* channel where the line sits */
+  position: relative;
+  z-index: 4;
+  /* text above connector */
+  background: transparent;
+  /* do NOT mask the whole block */
+  padding: 0;
+  /* reset */
+}
+
+/* Title */
+.what-makes-different__feature-title {
+  font-family: 'Sweet Sans Pro'
+  , sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.16px;
+  text-transform: uppercase;
+  line-height: 1;
+  margin: 0;
+  color: var(--text-color, #3E2027);
+
+  /* CHANGED: mask only behind title */
+  position: relative;
+  z-index: 4;
+  display: inline-block;
+  /* background: var(--section-bg, #FFF7EA); */
+  /* padding: 2px 10px; */
+}
+
+/* Description */
+.what-makes-different__feature-description {
+  font-family: 'Jokker'
+  , sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+  color: var(--text-color, #3E2027);
+  max-width: 311px;
+
+  /* CHANGED: mask only behind description */
+  position: relative;
+  z-index: 4;
+  display: inline-block;
+  /* background: var(--section-bg, #FFF7EA); */
+  /* padding: 2px 10px; */
+}
+
+/* SVG Line with dot - absolutely positioned (relative to .what-makes-different__content) */
+.what-makes-different__line {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  /* above image (z=1), below text (z=3/4) */
+}
+
+.what-makes-different__line svg {
+  display: block;
+}
+
+
+.what-makes-different__line--1 {
+  left: calc(50% - 545px);
+  top: calc(50% - 207.75px);
+}
+
+.what-makes-different__line--2 {
+  left: calc(50% + 103px);
+  top: calc(50% - 190px);
+}
+
+.what-makes-different__line--3 {
+  left: calc(50% - 571px);
+  top: calc(50% - 35.5px);
+}
+
+.what-makes-different__line--4 {
+  left: calc(50% + 123px);
+  top: calc(50% + -3px);
+}
+
+.what-makes-different__line--5 {
+  left: calc(50% - 485px);
+  top: calc(50% + 74px);
+}
+
+.what-makes-different__line--6 {
+  left: calc(50% + 35px);
+  top: calc(50% + 96.5px);
+}
+
+/* Large Tablet Styles */
+@media screen and (max-width: 1400px) {
+  .what-makes-different__container {
+    padding: 0 30px;
+  }
+
+  .what-makes-different__content {
+    min-height: 750px;
+  }
+
+  .what-makes-different__image-wrapper {
+    width: 350px;
+    height: 355px;
+  }
+
+  .what-makes-different__feature--1 {
+    margin-left: 50px;
+    margin-top: 48px
+  }
+
+  .what-makes-different__feature--3 {
+    margin-left: 20px;
+  }
+
+  .what-makes-different__feature--5 {
+    margin-left: 50px;
+  }
+
+  .what-makes-different__feature--2 {
+    margin-left: -200px;
+    margin-top: 69px;
+  }
+
+  .what-makes-different__feature--4 {
+    margin-left: -100px;
+  }
+
+  .what-makes-different__feature--6 {
+    margin-left: -250px;
+  }
+}
+
+/* Medium Tablet Styles */
+@media screen and (max-width: 1300px) {
+  .what-makes-different__container {
+    padding: 0 28px;
+  }
+
+  .what-makes-different__content {
+    min-height: 700px;
+  }
+
+  .what-makes-different__image-wrapper {
+    width: 320px;
+    height: 325px;
+  }
+
+  .what-makes-different__feature--1 {
+    margin-left: 30px;
+    margin-top: 25px;
+  }
+
+  .what-makes-different__feature--3 {
+    margin-left: 10px;
+  }
+
+  .what-makes-different__feature--5 {
+    margin-left: 30px;
+  }
+
+  .what-makes-different__feature--2 {
+    margin-left: -170px;
+    margin-top: 40px;
+  }
+
+  .what-makes-different__feature--4 {
+    margin-left: -80px;
+  }
+
+  .what-makes-different__feature--6 {
+    margin-left: -220px;
+  }
+}
+
+/* Smaller Medium Tablet Styles */
+@media screen and (max-width: 1262px) {
+  .what-makes-different__container {
+    padding: 0 26px;
+  }
+
+  .what-makes-different__content {
+    min-height: 650px;
+    margin-top: 30px;
+  }
+
+  .what-makes-different__image-wrapper {
+    width: 300px;
+    height: 305px;
+  }
+
+  .what-makes-different__feature--1 {
+    margin-left: 55px;
+    margin-top: -18px;
+  }
+
+  .what-makes-different__feature--3 {
+    margin-left: 35px;
+  }
+
+  .what-makes-different__feature--5 {
+    margin-left: 105px;
+  }
+
+  .what-makes-different__feature--2 {
+    margin-left: -130px;
+    margin-top: 0;
+  }
+
+  .what-makes-different__feature--4 {
+    margin-left: -60px;
+  }
+
+  .what-makes-different__feature--6 {
+    margin-left: -180px;
+  }
+}
+
+/* Tablet Styles */
+@media screen and (max-width: 1200px) {
+  .what-makes-different {
+    padding: 80px 0 100px;
+  }
+
+  .what-makes-different__container {
+    padding: 0 24px;
+  }
+
+  .what-makes-different__header {
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 60px;
+  }
+
+  .what-makes-different__title {
+    font-size: 50px;
+  }
+
+  .what-makes-different__intro {
+    max-width: 100%;
+    padding-top: 0;
+  }
+
+  .what-makes-different__content {
+    min-height: 600px;
+  }
+
+  .what-makes-different__image-wrapper {
+    width: 280px;
+    height: 285px;
+  }
+
+  .what-makes-different__column {
+    width: 260px;
+  }
+
+  .what-makes-different__feature--1,
+  .what-makes-different__feature--3,
+  .what-makes-different__feature--5 {
+    margin-left: 0;
+    margin-top: 60px;
+  }
+
+  .what-makes-different__feature--3 {
+    margin-top: 20px;
+  }
+
+  .what-makes-different__feature--5 {
+    margin-top: 50px;
+  }
+
+  .what-makes-different__feature--2 {
+    margin-left: 0;
+    margin-top: 80px;
+  }
+
+  .what-makes-different__feature--4 {
+    margin-left: 0;
+    margin-top: 30px;
+  }
+
+  .what-makes-different__feature--6 {
+    margin-left: 0;
+    margin-top: 40px;
+    width: 100%;
+    max-width: 282px;
+  }
+
+  .what-makes-different__line {
+    display: none;
+  }
+}
+
+/* Small Tablet Styles */
+@media screen and (max-width: 900px) {
+  .what-makes-different {
+    padding: 70px 0 90px;
+  }
+
+  .what-makes-different__title {
+    font-size: 42px;
+  }
+
+  .what-makes-different__content {
+    flex-direction: column;
+    min-height: auto;
+    gap: 0;
+    position: relative;
+  }
+
+  .what-makes-different__image-wrapper {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    max-width: 320px;
+    height: 320px;
+    margin: 0 auto 50px;
+    order: -1;
+  }
+
+  .what-makes-different__column {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .what-makes-different__column--right {
+    margin-top: 0;
+  }
+
+  .what-makes-different__feature--1,
+  .what-makes-different__feature--2,
+  .what-makes-different__feature--3,
+  .what-makes-different__feature--4,
+  .what-makes-different__feature--5,
+  .what-makes-different__feature--6 {
+    margin: 0 0 36px;
+    width: 100%;
+  }
+
+  .what-makes-different__feature {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .what-makes-different__badge {
+    width: 44px;
+    height: 44px;
+  }
+
+  .what-makes-different__feature-content {
+    gap: 12px;
+  }
+
+  .what-makes-different__feature-description {
+    max-width: none;
+  }
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+  .what-makes-different {
+    padding: 60px 0 80px;
+  }
+
+  .what-makes-different__container {
+    padding: 0 20px;
+  }
+
+  .what-makes-different__title {
+    font-size: 36px;
+  }
+
+  .what-makes-different__intro p {
+    font-size: 15px;
+  }
+
+  .what-makes-different__content {
+    gap: 0;
+  }
+
+  .what-makes-different__image-wrapper {
+    max-width: 280px;
+    height: 280px;
+    margin: 0 auto 40px;
+  }
+
+  .what-makes-different__column {
+    max-width: 100%;
+  }
+
+  .what-makes-different__feature--1,
+  .what-makes-different__feature--2,
+  .what-makes-different__feature--3,
+  .what-makes-different__feature--4,
+  .what-makes-different__feature--5,
+  .what-makes-different__feature--6 {
+    margin: 0 0 32px;
+  }
+
+  .what-makes-different__feature {
+    gap: 16px;
+  }
+
+  .what-makes-different__badge {
+    width: 40px;
+    height: 40px;
+  }
+
+  .what-makes-different__badge span {
+    font-size: 13px;
+  }
+
+  .what-makes-different__feature-title {
+    font-size: 15px;
+  }
+
+  .what-makes-different__feature-description {
+    font-size: 15px;
+  }
+}
+
+/* Small Mobile Styles */
+@media screen and (max-width: 480px) {
+  .what-makes-different {
+    padding: 50px 0 60px;
+  }
+
+  .what-makes-different__container {
+    padding: 0 16px;
+  }
+
+  .what-makes-different__title {
+    font-size: 32px;
+  }
+
+  .what-makes-different__intro p {
+    font-size: 14px;
+  }
+
+  .what-makes-different__image-wrapper {
+    max-width: 240px;
+    height: 240px;
+    margin: 0 auto 32px;
+  }
+
+  .what-makes-different__feature--1,
+  .what-makes-different__feature--2,
+  .what-makes-different__feature--3,
+  .what-makes-different__feature--4,
+  .what-makes-different__feature--5,
+  .what-makes-different__feature--6 {
+    margin: 0 0 28px;
+  }
+
+  .what-makes-different__feature {
+    gap: 14px;
+  }
+
+  .what-makes-different__badge {
+    width: 36px;
+    height: 36px;
+  }
+
+  .what-makes-different__badge span {
+    font-size: 12px;
+  }
+
+  .what-makes-different__feature-title {
+    font-size: 14px;
+  }
+
+  .what-makes-different__feature-description {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
+
+{% endstylesheet %}
+
+{% schema %}
+  {
+    "name": "t:sections.what_makes_different.name",
+    "tag": "section",
+    "class": "what-makes-different-section",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:sections.what_makes_different.settings.header_content"
+      },
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "t:labels.heading",
+        "default": "What Makes Baudie Different"
+      },
+      {
+        "type": "textarea",
+        "id": "description",
+        "label": "t:labels.description",
+        "default": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source."
+      },
+      {
+        "type": "header",
+        "content": "t:sections.what_makes_different.settings.header_image"
+      }, {
+        "type": "image_picker",
+        "id": "center_image",
+        "label": "t:sections.what_makes_different.settings.center_image",
+        "info": "t:sections.what_makes_different.settings.center_image_info"
+      }, {
+        "type": "header",
+        "content": "t:sections.what_makes_different.settings.header_colors"
+      }, {
+        "type": "color",
+        "id": "background_color",
+        "label": "t:labels.background_color",
+        "default": "#FFF7EA"
+      }, {
+        "type": "color",
+        "id": "text_color",
+        "label": "t:labels.text_color",
+        "default": "#3E2027"
+      }, {
+        "type": "color",
+        "id": "badge_color",
+        "label": "t:sections.what_makes_different.settings.badge_color",
+        "default": "#3E2027"
+      }, {
+        "type": "color",
+        "id": "badge_text_color",
+        "label": "t:sections.what_makes_different.settings.badge_text_color",
+        "default": "#F5F0EC"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "feature",
+        "name": "t:blocks.feature.name",
+        "limit": 6,
+        "settings": [
+          {
+            "type": "text",
+            "id": "number",
+            "label": "t:blocks.feature.settings.number",
+            "default": "1"
+          }, {
+            "type": "text",
+            "id": "title",
+            "label": "t:labels.title",
+            "default": "Feature Title"
+          }, {
+            "type": "textarea",
+            "id": "description",
+            "label": "t:labels.description",
+            "default": "Feature description goes here."
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:sections.what_makes_different.name",
+        "blocks": [
+          {
+            "type": "feature",
+            "settings": {
+              "number": "1",
+              "title": "Gentle AHAs (Lactic Acid)",
+              "description": "Keeps skin slightly acidic — stopping odor-causing bacteria before they start."
+            }
+          },
+          {
+            "type": "feature",
+            "settings": {
+              "number": "2",
+              "title": "Wipe-Off Formula",
+              "description": "Cleanses and preps skin for deodorant, leaving no residue or scent behind."
+            }
+          },
+          {
+            "type": "feature",
+            "settings": {
+              "number": "3",
+              "title": "Plant-Powered Actives",
+              "description": "Naturally balance your underarm microbiome for long-lasting freshness."
+            }
+          },
+          {
+            "type": "feature",
+            "settings": {
+              "number": "4",
+              "title": "Dermatologist-Tested",
+              "description": "Safe for sensitive skin. Proven effective in bacterial control."
+            }
+          }, {
+            "type": "feature",
+            "settings": {
+              "number": "5",
+              "title": "Vegan & Cruelty-Free",
+              "description": "Never tested on animals — only tested on real, sweaty humans."
+            }
+          }, {
+            "type": "feature",
+            "settings": {
+              "number": "6",
+              "title": "Science-Backed Confidence",
+              "description": "Clinically developed and lab-tested to make your deodorant last longer."
+            }
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

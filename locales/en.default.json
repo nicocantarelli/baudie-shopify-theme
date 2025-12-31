@@ -46,7 +46,8 @@
     "product_details": "Product Details",
     "explore_sets": "Explore Our Sets",
     "newsletter": "Newsletter",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "what_makes_different": "What Makes Different"
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
@@ -107,28 +108,8 @@
       "yotpo_app_key_info": "Find this in your Yotpo dashboard under Settings > API",
       "product_info": "Leave empty to show site-wide reviews"
     },
-     "product_features": {
-      "name": "Product features",
-      "scroll_left": "Previous",
-      "scroll_right": "Next",
-      "blocks": {
-        "feature_badge": {
-          "name": "Feature badge",
-          "settings": {
-            "icon": {
-              "label": "Icon"
-            },
-            "icon_alt": {
-              "label": "Icon description",
-              "info": "Describe the icon for accessibility"
-            },
-            "text": {
-              "label": "Text",
-              "info": "Use line breaks to create two-line text (e.g., 'Aluminum\\nFree')"
-            }
-          }
-        }
-      }
+    "what_makes_different": {
+      "name": "What Makes Different"
     }
   },
   "labels": {
@@ -160,7 +141,10 @@
     "yotpo_app_key": "Yotpo App Key",
     "reviewer_name": "Reviewer name",
     "review_date": "Review date",
-    "review_text": "Review text"
+    "review_text": "Review text",
+    "background_color": "Background color",
+    "text_color": "Text color",
+    "title": "Title"
   },
   "blocks": {
     "tooltip_marker": {
@@ -181,6 +165,9 @@
     },
     "review": {
       "name": "Review"
+    },
+    "feature": {
+      "name": "Feature"
     }
   },
   "footer": {

@@ -47,7 +47,8 @@
     "meet_your_scents": "Meet Your Scents",
     "explore_sets": "Explore Our Sets",
     "newsletter": "Newsletter",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "what_makes_different": "What Makes Different"
   },
   "header": {
     "settings": {
@@ -139,7 +140,9 @@
     "yotpo_app_key": "Yotpo App Key",
     "reviewer_name": "Reviewer name",
     "review_date": "Review date",
-    "review_text": "Review text"
+    "review_text": "Review text",
+    "background_color": "Background color",
+    "text_color": "Text color"
   },
   "options": {
     "alignment": {
@@ -191,26 +194,38 @@
       "product_info": "Leave empty to show site-wide reviews"
     },
     "product_features": {
-  "name": "Product features",
-  "blocks": {
-    "feature_badge": {
-      "name": "Feature badge",
-      "settings": {
-        "icon": {
-          "label": "Icon"
-        },
-        "icon_alt": {
-          "label": "Icon description",
-          "info": "Describe the icon for accessibility"
-        },
-        "text": {
-          "label": "Text",
-          "info": "Use line breaks to create two-line text (e.g., 'Aluminum\\nFree')"
+      "name": "Product features",
+      "blocks": {
+        "feature_badge": {
+          "name": "Feature badge",
+          "settings": {
+            "icon": {
+              "label": "Icon"
+            },
+            "icon_alt": {
+              "label": "Icon description",
+              "info": "Describe the icon for accessibility"
+            },
+            "text": {
+              "label": "Text",
+              "info": "Use line breaks to create two-line text (e.g., 'Aluminum\\nFree')"
+            }
+          }
         }
       }
+    },
+    "what_makes_different": {
+      "name": "What Makes Different",
+      "settings": {
+        "header_content": "Content",
+        "header_image": "Image",
+        "header_colors": "Colors",
+        "center_image": "Center image",
+        "center_image_info": "The main product image displayed in the center of the section. Recommended size: 800x800px",
+        "badge_color": "Badge background color",
+        "badge_text_color": "Badge text color"
+      }
     }
-  }
-}
   },
   "blocks": {
     "tooltip_marker": {
@@ -232,6 +247,12 @@
     },
     "review": {
       "name": "Review"
+    },
+    "feature": {
+      "name": "Feature",
+      "settings": {
+        "number": "Number"
+      }
     }
   }
 }
