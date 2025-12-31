@@ -111,6 +111,7 @@
     align-items: center;
     transition: transform 0.4s ease;
     will-change: transform;
+    touch-action: pan-y pinch-zoom;
   }
 
   /* Feature Item */
@@ -148,7 +149,7 @@
     margin: 0;
   }
 
-  /* Navigation Arrows */
+  /* Navigation Arrows - ALWAYS VISIBLE */
   .product-features__arrow {
     position: absolute;
     top: 50%;
@@ -163,9 +164,10 @@
     , transform 0.2s ease;
     width: 30px;
     height: 40px;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .product-features__arrow:hover {
@@ -193,6 +195,7 @@
     width: 100%;
     height: 100%;
     display: block;
+    pointer-events: none;
   }
 
   /* Gradient Overlays */
@@ -217,27 +220,58 @@
     background: linear-gradient(to left, rgba(62, 32, 39, 0.61), rgba(62, 32, 39, 0));
   }
 
-  /* Mobile Responsive */
-  @media (max-width: 768px) {
+  /* Tablet - 1024px and below */
+  @media (max-width: 1024px) {
     .product-features__wrapper {
-      height: 100px;
-    }
-
-    .product-features__arrow {
-      width: 24px;
-      height: 32px;
-    }
-
-    .product-features__arrow--prev {
-      left: 16px;
-    }
-
-    .product-features__arrow--next {
-      right: 16px;
+      width: 100%;
+      max-width: 1024px;
+      padding: 0 60px;
     }
 
     .product-features__track {
-      padding: 0 40px;
+      padding: 0 10px;
+    }
+
+    .product-features__items {
+      gap: 35px;
+    }
+
+    .product-features__arrow--prev {
+      left: 24px;
+    }
+
+    .product-features__arrow--next {
+      right: 24px;
+    }
+
+    .product-features__gradient {
+      width: 200px;
+    }
+  }
+
+  /* Mobile Large - 768px and below */
+  @media (max-width: 768px) {
+    .product-features__wrapper {
+      height: 100px;
+      padding: 0 50px;
+    }
+
+    .product-features__arrow {
+      width: 28px;
+      height: 36px;
+      padding: 8px;
+    }
+
+    .product-features__arrow--prev {
+      left: 18px;
+    }
+
+    .product-features__arrow--next {
+      right: 18px;
+    }
+
+    .product-features__track {
+      padding: 0 8px;
     }
 
     .product-features__items {
@@ -259,9 +293,29 @@
     }
   }
 
+  /* Mobile - 480px and below */
   @media (max-width: 480px) {
     .product-features__wrapper {
       height: 90px;
+      padding: 0 40px;
+    }
+
+    .product-features__arrow {
+      width: 26px;
+      height: 34px;
+      padding: 6px;
+    }
+
+    .product-features__arrow--prev {
+      left: 14px;
+    }
+
+    .product-features__arrow--next {
+      right: 14px;
+    }
+
+    .product-features__track {
+      padding: 0 6px;
     }
 
     .product-features__items {
@@ -275,6 +329,10 @@
 
     .product-features__text {
       font-size: 12px;
+    }
+
+    .product-features__gradient {
+      width: 100px;
     }
   }
 {% endstylesheet %}
@@ -290,10 +348,15 @@
       this.currentIndex = 0;
       this.itemsToShow = this.getItemsToShow();
 
-      if (this.items.length<= this.itemsToShow) {
-        this.hideArrows();
-        return;
-      }
+// Always initialize if we have items
+      if (this.items.length === 0) return;
+      
+
+
+      console.log('FeaturesCarousel initialized with', this.items.length, 'items');
+      console.log('Showing', this.itemsToShow, 'items at a time');
+      console.log('Prev button:', this.prevBtn);
+      console.log('Next button:', this.nextBtn);
 
       this.init();
       this.setupResizeHandler();
@@ -301,11 +364,36 @@
 
     init() {
       this.updateCarousel();
-      this.prevBtn?.addEventListener('click', () => this.prev()) 
 
-        this.nextBtn ?. addEventListener('click', () => this.next());
-      
+// Click events for arrows
+      if (this.prevBtn) {
+        this.prevBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('Prev button clicked');
+          this.prev();
+        });
+        this.prevBtn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          console.log('Prev button touched');
+          this.prev();
+        });
+      }
 
+      if (this.nextBtn) {
+        this.nextBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('Next button clicked');
+          this.next();
+        });
+        this.nextBtn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          console.log('Next button touched');
+          this.next();
+        });
+      }
+
+// Touch swipe events for mobile
+      this.setupTouchEvents();
 
 // Keyboard navigation
       document.addEventListener('keydown', (e) => {
@@ -313,13 +401,45 @@
           this.prev();
         
 
-
         if (e.key === 'ArrowRight') 
           this.next();
         
 
-
       });
+    }
+
+    setupTouchEvents() {
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      const itemsContainer = this.container.querySelector('[data-features-items]');
+      if (! itemsContainer) return;
+      
+
+
+      itemsContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, {passive: true});
+
+      itemsContainer.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        this.handleSwipe();
+      }, {passive: true});
+
+      this.handleSwipe = () => {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0) { // Swiped left - go next
+            console.log('Swiped left');
+            this.next();
+          } else { // Swiped right - go prev
+            console.log('Swiped right');
+            this.prev();
+          }
+        }
+      };
     }
 
     getItemsToShow() {
@@ -328,16 +448,17 @@
         return1;
       
 
-
       if (width <= 768) 
         return2;
       
 
+      if (width <= 1024) 
+        return3;
+      
 
       if (width <= 1200) 
         return4;
       
-
 
       return 6;
     }
@@ -354,16 +475,26 @@
 
       itemsContainer.style.transform = `translateX(${offset}px)`;
 
+      console.log('Updated carousel: index', this.currentIndex, 'offset', offset);
+
 // Update button states
       if (this.prevBtn) {
         this.prevBtn.disabled = this.currentIndex === 0;
+        this.prevBtn.style.opacity = this.currentIndex === 0
+          ? '0.3'
+          : '';
       }
       if (this.nextBtn) {
-        this.nextBtn.disabled = this.currentIndex >= this.items.length - this.itemsToShow;
+        const isAtEnd = this.currentIndex >= this.items.length - this.itemsToShow;
+        this.nextBtn.disabled = isAtEnd;
+        this.nextBtn.style.opacity = isAtEnd
+          ? '0.3'
+          : '';
       }
     }
 
     next() {
+      console.log('Next called. Current index:', this.currentIndex, 'Max index:', this.items.length - this.itemsToShow);
       if (this.currentIndex<this.items.length - this.itemsToShow) {
         this.currentIndex++;
         this.updateCarousel();
@@ -371,23 +502,11 @@
     }
 
     prev() {
+      console.log('Prev called. Current index:', this.currentIndex);
       if (this.currentIndex> 0) {
         this.currentIndex --;
         this.updateCarousel();
       }
-    }
-
-    hideArrows() {
-      if (this.prevBtn) 
-        this.prevBtn.style.display = 'none';
-      
-
-
-      if (this.nextBtn) 
-        this.nextBtn.style.display = 'none';
-      
-
-
     }
 
     setupResizeHandler() {
