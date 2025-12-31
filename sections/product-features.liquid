@@ -16,7 +16,7 @@
                 <div class="product-features__item" {{ block.shopify_attributes }}>
                   {% if block.settings.icon %}
                     <div class="product-features__icon">
-                      {{ block.settings.icon | image_url: width: 120 | image_tag: alt: block.settings.icon_alt, class: 'product-features__icon-img', loading: 'lazy' }}
+                      {{ block.settings.icon | image_url: width: 80 | image_tag: alt: block.settings.icon_alt, class: 'product-features__icon-img', loading: 'lazy' }}
                     </div>
                   {% endif %}
                   {% if block.settings.text != blank %}
@@ -89,7 +89,8 @@
     background-color: #3E2027;
     height: 130px;
     overflow: hidden;
-    width: 1600px;
+    width: 100%;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 0 80px;
   }
@@ -220,28 +221,22 @@
     background: linear-gradient(to left, rgba(62, 32, 39, 0.61), rgba(62, 32, 39, 0));
   }
 
-  /* Tablet - 1024px and below */
-  @media (max-width: 1024px) {
+  /* Large Tablet - 1200px and below */
+  @media (max-width: 1200px) {
     .product-features__wrapper {
-      width: 100%;
-      max-width: 1024px;
-      padding: 0 60px;
-    }
-
-    .product-features__track {
-      padding: 0 10px;
+      padding: 0 70px;
     }
 
     .product-features__items {
-      gap: 35px;
+      gap: 32px;
     }
 
     .product-features__arrow--prev {
-      left: 24px;
+      left: 25px;
     }
 
     .product-features__arrow--next {
-      right: 24px;
+      right: 25px;
     }
 
     .product-features__gradient {
@@ -249,25 +244,13 @@
     }
   }
 
-  /* Mobile Large - 768px and below */
-  @media (max-width: 768px) {
+  /* Tablet - 1024px and below */
+  @media (max-width: 1024px) {
     .product-features__wrapper {
-      height: 100px;
-      padding: 0 50px;
-    }
-
-    .product-features__arrow {
-      width: 28px;
-      height: 36px;
-      padding: 8px;
-    }
-
-    .product-features__arrow--prev {
-      left: 18px;
-    }
-
-    .product-features__arrow--next {
-      right: 18px;
+      width: 100%;
+      max-width: 1024px;
+      height: 110px;
+      padding: 0 55px;
     }
 
     .product-features__track {
@@ -275,43 +258,43 @@
     }
 
     .product-features__items {
-      gap: 30px;
+      gap: 28px;
     }
 
     .product-features__icon {
-      width: 48px;
-      height: 48px;
+      width: 50px;
+      height: 50px;
     }
 
     .product-features__text {
-      font-size: 14px;
-      letter-spacing: -0.14px;
-    }
-
-    .product-features__gradient {
-      width: 150px;
-    }
-  }
-
-  /* Mobile - 480px and below */
-  @media (max-width: 480px) {
-    .product-features__wrapper {
-      height: 90px;
-      padding: 0 40px;
+      font-size: 16px;
+      letter-spacing: -0.16px;
     }
 
     .product-features__arrow {
-      width: 26px;
-      height: 34px;
-      padding: 6px;
+      width: 28px;
+      height: 38px;
+      padding: 8px;
     }
 
     .product-features__arrow--prev {
-      left: 14px;
+      left: 20px;
     }
 
     .product-features__arrow--next {
-      right: 14px;
+      right: 20px;
+    }
+
+    .product-features__gradient {
+      width: 160px;
+    }
+  }
+
+  /* Mobile Large - 768px and below */
+  @media (max-width: 768px) {
+    .product-features__wrapper {
+      height: 95px;
+      padding: 0 45px;
     }
 
     .product-features__track {
@@ -319,20 +302,79 @@
     }
 
     .product-features__items {
-      gap: 24px;
+      gap: 22px;
     }
 
     .product-features__icon {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
     }
 
     .product-features__text {
-      font-size: 12px;
+      font-size: 13px;
+      letter-spacing: -0.13px;
+    }
+
+    .product-features__arrow {
+      width: 26px;
+      height: 36px;
+      padding: 7px;
+    }
+
+    .product-features__arrow--prev {
+      left: 15px;
+    }
+
+    .product-features__arrow--next {
+      right: 15px;
     }
 
     .product-features__gradient {
-      width: 100px;
+      width: 120px;
+    }
+  }
+
+  /* Mobile - 480px and below */
+  @media (max-width: 480px) {
+    .product-features__wrapper {
+      height: 85px;
+      padding: 0 38px;
+    }
+
+    .product-features__track {
+      padding: 0 4px;
+    }
+
+    .product-features__items {
+      gap: 18px;
+    }
+
+    .product-features__icon {
+      width: 36px;
+      height: 36px;
+    }
+
+    .product-features__text {
+      font-size: 11px;
+      letter-spacing: -0.11px;
+    }
+
+    .product-features__arrow {
+      width: 24px;
+      height: 32px;
+      padding: 6px;
+    }
+
+    .product-features__arrow--prev {
+      left: 12px;
+    }
+
+    .product-features__arrow--next {
+      right: 12px;
+    }
+
+    .product-features__gradient {
+      width: 80px;
     }
   }
 {% endstylesheet %}
@@ -401,9 +443,11 @@
           this.prev();
         
 
+
         if (e.key === 'ArrowRight') 
           this.next();
         
+
 
       });
     }
@@ -444,38 +488,35 @@
 
     getItemsToShow() {
       const width = window.innerWidth;
-      if (width <= 480) 
-        return1;
-      
-
-      if (width <= 768) 
-        return2;
-      
-
-      if (width <= 1024) 
-        return3;
-      
-
-      if (width <= 1200) 
-        return4;
-      
-
+      if (width <= 480) {
+        return 1;
+      }
+      if (width <= 768) {
+        return 2;
+      }
+      if (width <= 1024) {
+        return 3;
+      }
+      if (width <= 1200) {
+        return 4;
+      }
       return 6;
     }
 
     updateCarousel() {
       const itemsContainer = this.container.querySelector('[data-features-items]');
-      if (! itemsContainer) return;
+      if (! itemsContainer || this.items.length === 0) return;
       
 
 
       const itemWidth = this.items[0].offsetWidth;
-      const gap = parseFloat(getComputedStyle(itemsContainer).gap);
+      const gap = parseFloat(getComputedStyle(itemsContainer).gap) || 0;
       const offset = -(this.currentIndex * (itemWidth + gap));
 
       itemsContainer.style.transform = `translateX(${offset}px)`;
 
-      console.log('Updated carousel: index', this.currentIndex, 'offset', offset);
+      console.log('Updated carousel: index', this.currentIndex, 'offset', offset, 'itemWidth', itemWidth, 'gap', gap);
+      console.log('Total items:', this.items.length, 'Items to show:', this.itemsToShow);
 
 // Update button states
       if (this.prevBtn) {
@@ -484,18 +525,21 @@
           ? '0.3'
           : '';
       }
-      if (this.nextBtn) {
-        const isAtEnd = this.currentIndex >= this.items.length - this.itemsToShow;
+      if (this.nextBtn) { // Ensure we can scroll to show all remaining items
+        const maxIndex = Math.max(0, this.items.length - this.itemsToShow);
+        const isAtEnd = this.currentIndex >= maxIndex;
         this.nextBtn.disabled = isAtEnd;
         this.nextBtn.style.opacity = isAtEnd
           ? '0.3'
           : '';
+        console.log('Max index:', maxIndex, 'Is at end:', isAtEnd);
       }
     }
 
     next() {
-      console.log('Next called. Current index:', this.currentIndex, 'Max index:', this.items.length - this.itemsToShow);
-      if (this.currentIndex<this.items.length - this.itemsToShow) {
+      const maxIndex = Math.max(0, this.items.length - this.itemsToShow);
+      console.log('Next called. Current index:', this.currentIndex, 'Max index:', maxIndex);
+      if (this.currentIndex<maxIndex) {
         this.currentIndex++;
         this.updateCarousel();
       }

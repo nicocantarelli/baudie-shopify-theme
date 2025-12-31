@@ -189,13 +189,15 @@
     min-height: 1352px;
   }
 
-  /* Background Image - 1520px to fit within padded area */
+  /* Background Image - responsive to fit within padded area */
   .explore-sets__background {
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 40px;
+    right: 40px;
     bottom: 587px;
-    width: 1520px;
+    width: auto;
+    max-width: 1520px;
+    margin: 0 auto;
     height: 765px;
     pointer-events: none;
     z-index: 1;
@@ -235,13 +237,18 @@
 
   .explore-sets__bg-gradient {
     position: absolute;
-    /* bottom: 607px; */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1520px;
-    height: 765px;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95.154%);
+  }
+
+  .explore-sets__background--desktop .explore-sets__bg-gradient {
     clip-path: url('#explore-sets-mask-{{ section.id }}');
+  }
+
+  .explore-sets__background--mobile .explore-sets__bg-gradient {
+    clip-path: url('#explore-sets-mask-mobile-{{ section.id }}');
   }
 
   /* Content Container */
@@ -289,15 +296,20 @@
   /* Cards Container */
   .explore-sets__cards {
     position: absolute;
-    left: 180px;
+    left: 50%;
+    transform: translateX(-50%);
     top: 630px;
-    width: 1160px;
+    width: 100%;
+    max-width: 1160px;
+    padding: 0 40px;
+    box-sizing: border-box;
   }
 
   /* Individual Card */
   .explore-sets__card {
     position: absolute;
-    width: 555px;
+    width: calc(50% - 30px);
+    max-width: 555px;
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -308,7 +320,7 @@
   }
 
   .explore-sets__card:last-child {
-    left: 605px;
+    right: 0;
   }
 
   /* Card Image Box */
@@ -577,6 +589,25 @@
 
   /*
    ========================================
+   LARGE TABLET STYLES (1024px - 1400px) ========================================
+*/
+  @media (max-width: 1400px) {
+    .explore-sets__wrapper {
+      padding: 0 30px;
+    }
+
+    .explore-sets__cards {
+      padding: 0 30px;
+      max-width: calc(100% - 60px);
+    }
+
+    .explore-sets__card {
+      width: calc(50% - 25px);
+    }
+  }
+
+  /*
+   ========================================
    TABLET STYLES (768px - 1024px) ========================================
 */
   @media (max-width: 1024px) {
@@ -623,13 +654,10 @@
 
     .explore-sets__bg-gradient {
       position: absolute;
-      left: 0;
-      bottom: 0;
-      transform: none;
+      inset: 0;
       width: 100%;
-      height: 550px;
+      height: 100%;
       background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
-      clip-path: url('#explore-sets-mask-{{ section.id }}');
     }
 
     .explore-sets__content {
@@ -861,13 +889,10 @@
 
   .explore-sets__bg-gradient {
     position: absolute;
-    left: 0;
-    bottom: 0;
-    transform: none;
+    inset: 0;
     width: 100%;
-    height: 380px;
+    height: 100%;
     background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
-    clip-path: url('#explore-sets-mask-{{ section.id }}');
   }
 
   .explore-sets__content {
@@ -1038,10 +1063,6 @@
   .explore-sets__background {
     height: 320px;
     margin-bottom: 20px;
-  }
-
-  .explore-sets__bg-gradient {
-    height: 320px;
   }
 
   .explore-sets__heading {
