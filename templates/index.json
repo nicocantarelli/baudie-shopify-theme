@@ -240,7 +240,7 @@
       "settings": {
         "heading": "Reviews",
         "view_all_text": "VIEW ALL",
-        "view_all_url": "",
+        "view_all_url": "shopify://collections",
         "yotpo_app_key": "",
         "product_id": ""
       }
@@ -382,10 +382,10 @@
         "heading": "What Makes Baudie Different",
         "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
         "center_image": "shopify://shop_images/molecule-image.png",
-        "background_color": "#FFF7EA",
-        "text_color": "#3E2027",
-        "badge_color": "#3E2027",
-        "badge_text_color": "#F5F0EC"
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027",
+        "badge_color": "#3e2027",
+        "badge_text_color": "#f5f0ec"
       }
     },
     "product_benefits_P36iK9": {
@@ -394,7 +394,6 @@
         "benefit_EBtYzr": {
           "type": "benefit",
           "settings": {
-            "image": "shopify://shop_images/odor-control-formula.png",
             "heading": "Unique Odor-Control Formula",
             "description": "Clinically backed and powered by odor-eliminating bacterial technology. Targets the bacteria that cause smell — not sweat — for freshness that starts before your deodorant."
           }
@@ -402,7 +401,6 @@
         "benefit_9HPW3d": {
           "type": "benefit",
           "settings": {
-            "image": "shopify://shop_images/no-residue.png",
             "heading": "No Residue. No Scent. No Interference.",
             "description": "The wipe-off formula leaves your skin clean, balanced, and scent-free — ready for deodorant or perfume without overlap or irritation."
           }
@@ -410,7 +408,6 @@
         "benefit_4XEJRL": {
           "type": "benefit",
           "settings": {
-            "image": "shopify://shop_images/for-life-sweat.png",
             "heading": "For Life, Sweat & Everything In Between",
             "description": "From yoga to long workdays, Baudie keeps odor-causing bacteria in check — so you stay fresh, confident, and completely unbothered."
           }

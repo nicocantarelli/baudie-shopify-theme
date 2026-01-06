@@ -14,27 +14,27 @@
     "header": {
       "type": "header",
       "blocks": {
-        "announcement_DGNCU3": {
+        "announcement_BcNDUD": {
           "type": "announcement",
           "settings": {
-            "text": "24/7 Support"
+            "text": "Announcement text"
           }
         },
-        "announcement_yxJFMy": {
+        "announcement_ehMV6T": {
           "type": "announcement",
           "settings": {
-            "text": "Worldwide Shipping"
+            "text": "Announcement text"
           }
         }
       },
       "block_order": [
-        "announcement_DGNCU3",
-        "announcement_yxJFMy"
+        "announcement_BcNDUD",
+        "announcement_ehMV6T"
       ],
       "settings": {
         "sticky_behavior": "hide_on_scroll",
-        "logo": "shopify://shop_images/baudie-logo_daec1455-16f8-4c63-b805-91846285d45b.svg",
-        "menu": "main-menu",
+        "logo": "shopify://shop_images/baudie-logo.svg",
+        "menu": "main-menu-1",
         "header_bg_color": "#fff7ea",
         "header_text_color": "#3e2027",
         "announcement_bg_color": "#3e2027",
