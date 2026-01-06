@@ -1,173 +1,149 @@
 {% comment %}
-  Explore Our Sets section - Showcase bundle products with overlapping images
-  Fixed background positioning and product image display
+  @name Explore Our Sets
+  @desc Showcase bundle products with overlapping images - image zone on top, cream zone below
+  @block bundle_card - Add bundle product card
 {% endcomment %}
 
 <div class="explore-sets full-width">
   <div class="explore-sets__wrapper">
-    {%- comment -%} Background Image with Mask {%- endcomment -%}
-    {% if section.settings.background_image %}
-      <div class="explore-sets__background explore-sets__background--desktop">
-        <svg
-          class="explore-sets__mask-svg"
-          width="0"
-          height="0">
-          <defs>
-            <clipPath id="explore-sets-mask-{{ section.id }}" clipPathUnits="objectBoundingBox">
-              <path d="M0.015,0.077 C0.159,0.058,0.304,0.05,0.45,0.052 C0.596,0.054,0.741,0.067,0.885,0.089 C0.972,0.102,0.969,0.146,0.976,0.233 C0.983,0.321,0.999,0.495,0.999,0.583 C0.998,0.67,0.991,0.758,0.977,0.845 C0.964,0.932,0.945,1.018,0.92,1.103 L0.086,1.062 C0.059,0.977,0.037,0.891,0.022,0.804 C0.006,0.717,-0.006,0.629,-0.013,0.541 C-0.02,0.453,-0.022,0.365,-0.019,0.277 C-0.015,0.19,-0.004,0.103,0.015,0.018" />
-            </clipPath>
-          </defs>
-        </svg>
-        <div class="explore-sets__bg-image">
-          {{ section.settings.background_image | image_url: width: 2400 | image_tag: class: 'explore-sets__bg-img', loading: 'lazy' }}
-        </div>
-        <div class="explore-sets__bg-gradient"></div>
-      </div>
-    {% endif %}
-
-    {%- comment -%} Mobile Background Image with Mask {%- endcomment -%}
-    {% if section.settings.mobile_background_image %}
-      <div class="explore-sets__background explore-sets__background--mobile">
-        <svg
-          class="explore-sets__mask-svg"
-          width="0"
-          height="0">
-          <defs>
-            <clipPath id="explore-sets-mask-mobile-{{ section.id }}" clipPathUnits="objectBoundingBox">
-              <path d="M0.015,0.077 C0.159,0.058,0.304,0.05,0.45,0.052 C0.596,0.054,0.741,0.067,0.885,0.089 C0.972,0.102,0.969,0.146,0.976,0.233 C0.983,0.321,0.999,0.495,0.999,0.583 C0.998,0.67,0.991,0.758,0.977,0.845 C0.964,0.932,0.945,1.018,0.92,1.103 L0.086,1.062 C0.059,0.977,0.037,0.891,0.022,0.804 C0.006,0.717,-0.006,0.629,-0.013,0.541 C-0.02,0.453,-0.022,0.365,-0.019,0.277 C-0.015,0.19,-0.004,0.103,0.015,0.018" />
-            </clipPath>
-          </defs>
-        </svg>
-        <div class="explore-sets__bg-image">
-          {{ section.settings.mobile_background_image | image_url: width: 1200 | image_tag: class: 'explore-sets__bg-img', loading: 'lazy' }}
-        </div>
-        <div class="explore-sets__bg-gradient"></div>
-      </div>
-    {% endif %}
-
-    {%- comment -%} Content Container {%- endcomment -%}
-    <div class="explore-sets__content">
-      {%- comment -%} Heading {%- endcomment -%}
-      {% if section.settings.heading != blank %}
-        <h2 class="explore-sets__heading" style="--heading-color: {{ section.settings.heading_color }}">
-          {{ section.settings.heading }}
-        </h2>
-      {% endif %}
-
-      {%- comment -%} Description {%- endcomment -%}
-      {% if section.settings.description != blank %}
-        <div class="explore-sets__description" style="--description-color: {{ section.settings.description_color }}">
-          {{ section.settings.description }}
+    <div class="explore-sets__container">
+      {%- comment -%} Background Image with Mask - fills the content area {%- endcomment -%}
+      {% if section.settings.background_image %}
+        <div class="explore-sets__background explore-sets__background--desktop">
+          <svg
+            class="explore-sets__mask-svg"
+            width="0"
+            height="0">
+            <defs>
+              <clipPath id="explore-sets-mask-{{ section.id }}" clipPathUnits="objectBoundingBox">
+                <path d="M0.015,0.077 C0.159,0.058,0.304,0.05,0.45,0.052 C0.596,0.054,0.741,0.067,0.885,0.089 C0.972,0.102,0.969,0.146,0.976,0.233 C0.983,0.321,0.999,0.495,0.999,0.583 C0.998,0.67,0.991,0.758,0.977,0.845 C0.964,0.932,0.945,1.018,0.92,1.103 L0.086,1.062 C0.059,0.977,0.037,0.891,0.022,0.804 C0.006,0.717,-0.006,0.629,-0.013,0.541 C-0.02,0.453,-0.022,0.365,-0.019,0.277 C-0.015,0.19,-0.004,0.103,0.015,0.018" />
+              </clipPath>
+            </defs>
+          </svg>
+          <div class="explore-sets__bg-image">
+            {{ section.settings.background_image | image_url: width: 2400 | image_tag: class: 'explore-sets__bg-img', loading: 'lazy' }}
+          </div>
+          <div class="explore-sets__bg-gradient"></div>
         </div>
       {% endif %}
 
-      {%- comment -%} Cards {%- endcomment -%}
-      <div class="explore-sets__cards">
-        {% for block in section.blocks %}
-          {% if block.type == 'bundle_card' and block.settings.product != blank %}
-            {% assign bundle_product = block.settings.product %}
-            {% assign card_index = forloop.index0 %}
+      {%- comment -%} Mobile Background Image {%- endcomment -%}
+      {% if section.settings.mobile_background_image %}
+        <div class="explore-sets__background explore-sets__background--mobile">
+          <svg
+            class="explore-sets__mask-svg"
+            width="0"
+            height="0">
+            <defs>
+              <clipPath id="explore-sets-mask-mobile-{{ section.id }}" clipPathUnits="objectBoundingBox">
+                <path d="M0.015,0.077 C0.159,0.058,0.304,0.05,0.45,0.052 C0.596,0.054,0.741,0.067,0.885,0.089 C0.972,0.102,0.969,0.146,0.976,0.233 C0.983,0.321,0.999,0.495,0.999,0.583 C0.998,0.67,0.991,0.758,0.977,0.845 C0.964,0.932,0.945,1.018,0.92,1.103 L0.086,1.062 C0.059,0.977,0.037,0.891,0.022,0.804 C0.006,0.717,-0.006,0.629,-0.013,0.541 C-0.02,0.453,-0.022,0.365,-0.019,0.277 C-0.015,0.19,-0.004,0.103,0.015,0.018" />
+              </clipPath>
+            </defs>
+          </svg>
+          <div class="explore-sets__bg-image">
+            {{ section.settings.mobile_background_image | image_url: width: 1200 | image_tag: class: 'explore-sets__bg-img', loading: 'lazy' }}
+          </div>
+          <div class="explore-sets__bg-gradient"></div>
+        </div>
+      {% endif %}
 
-              <div class="explore-sets__card" {{ block.shopify_attributes }}>
-              {%- comment -%} Product Images Container {%- endcomment -%}
-              <div class="explore-sets__card-image-box" style="background-color: {{ block.settings.card_bg_color }}">
-                {% if block.settings.display_products.size > 0 %}
-                  <div class="explore-sets__product-images explore-sets__product-images--{{ block.settings.display_products.size }}">
-                    {% for product in block.settings.display_products %}
-                      {% if product.featured_image %}
-                        <div class="explore-sets__product-img">
-                          {{ product.featured_image | image_url: width: 800 | image_tag: alt: product.title, loading: 'lazy' }}
-                        </div>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                {% elsif bundle_product.featured_image %}
-                  <div class="explore-sets__product-images explore-sets__product-images--1">
-                    <div class="explore-sets__product-img">
-                      {{ bundle_product.featured_image | image_url: width: 1200 | image_tag: alt: bundle_product.title, loading: 'lazy' }}
-                    </div>
-                  </div>
-                {% endif %}
-
-                {%- comment -%} Badge {%- endcomment -%}
-                {% if block.settings.show_badge and block.settings.badge_text != blank %}
-                  <div class="explore-sets__badge">
-                    <p class="explore-sets__badge-text">{{ block.settings.badge_text }}</p>
-                  </div>
-                {% endif %}
-              </div>
-
-              {%- comment -%} Card Content {%- endcomment -%}
-              <div class="explore-sets__card-content">
-                {%- comment -%} Title and Price Row {%- endcomment -%}
-                <div class="explore-sets__card-header">
-                  <div class="explore-sets__card-title">
-                    {% if block.settings.custom_title != blank %}
-                      {{ block.settings.custom_title }}
-                    {% else %}
-                      {{ bundle_product.title }}
-                    {% endif %}
-                  </div>
-
-                  <div class="explore-sets__card-price">
-                    {% if bundle_product.compare_at_price > bundle_product.price %}
-                      <span class="explore-sets__price-compare">{{ bundle_product.compare_at_price | money }}</span>
-                      <span class="explore-sets__price-sale">{{ bundle_product.price | money }}</span>
-                    {% else %}
-                      <span class="explore-sets__price-regular">{{ bundle_product.price | money }}</span>
-                    {% endif %}
-                  </div>
-                </div>
-
-                {%- comment -%} Description {%- endcomment -%}
-                {% if block.settings.custom_description != blank %}
-                  <div class="explore-sets__card-description">
-                    {{ block.settings.custom_description }}
-                  </div>
-                {% elsif bundle_product.metafields.custom.short_description %}
-                  <div class="explore-sets__card-description">
-                    {{ bundle_product.metafields.custom.short_description }}
-                  </div>
-                {% endif %}
-
-                {%- comment -%} Action Buttons {%- endcomment -%}
-                <div class="explore-sets__card-actions">
-                  {% form 'product'
-                    , bundle_product %}
-                    <input
-                      type="hidden"
-                      name="id"
-                      value="{{ bundle_product.selected_or_first_available_variant.id }}">
-                    <button
-                      type="submit"
-                      name="add"
-                      class="explore-sets__btn explore-sets__btn--add"
-                      {% unless bundle_product.available %}
-                      disabled{% endunless %}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none">
-                        <path
-                          d="M0.75 7.75H14.75M7.75 0.75V14.75"
-                          stroke="#3E2027"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round" />
-                      </svg>
-                      <span>{{ 'products.add_to_cart' | t }}</span>
-                    </button>
-                  {% endform %}
-                  <a href="{{ bundle_product.url }}" class="explore-sets__btn explore-sets__btn--buy">
-                    {{ 'products.buy_now' | t }}
-                  </a>
-                </div>
-              </div>
+      {%- comment -%} Content Container - 60px internal padding {%- endcomment -%}
+      <div class="explore-sets__content">
+        {%- comment -%} Header Section - positioned left, over image {%- endcomment -%}
+        <div class="explore-sets__header">
+          {% if section.settings.heading != blank %}
+            <h2 class="explore-sets__heading" style="--heading-color: {{ section.settings.heading_color }};">
+              {{ section.settings.heading }}
+            </h2>
+          {% endif %}
+          {% if section.settings.description != blank %}
+            <div class="explore-sets__description" style="--description-color: {{ section.settings.description_color }};">
+              {{ section.settings.description }}
             </div>
           {% endif %}
-        {% endfor %}
+        </div>
+
+        {%- comment -%} Cards {%- endcomment -%}
+        <div class="explore-sets__cards">
+          {% for block in section.blocks %}
+            {% if block.type == 'bundle_card' %}
+              {% assign bundle_product = block.settings.product %}
+              {% assign display_products = block.settings.display_products %}
+              {% assign product_count = display_products.size %}
+              {% if product_count == 0 and bundle_product %}
+                {% assign product_count = 1 %}
+              {% endif %}
+              <div class="explore-sets__card" {{ block.shopify_attributes }}>
+                {%- comment -%} Product Image Box - overlays the background image {%- endcomment -%}
+                <a
+                  href="{{ bundle_product.url }}"
+                  class="explore-sets__card-image-box"
+                  style="background-color: {{ block.settings.card_bg_color }};">
+                  {%- comment -%} Badge {%- endcomment -%}
+                  {% if block.settings.show_badge and block.settings.badge_text != blank %}
+                    <div class="explore-sets__badge">
+                      <span class="explore-sets__badge-text">{{ block.settings.badge_text }}</span>
+                    </div>
+                  {% endif %}
+
+                  {%- comment -%} Product Images {%- endcomment -%}
+                  <div class="explore-sets__product-images explore-sets__product-images--{{ product_count }}">
+                    {% if display_products.size > 0 %}
+                      {% for display_product in display_products %}
+                        {% if display_product.featured_image %}
+                          <div class="explore-sets__product-img">
+                            {{ display_product.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', class: 'explore-sets__product-image' }}
+                          </div>
+                        {% endif %}
+                      {% endfor %}
+                    {% elsif bundle_product and bundle_product.featured_image %}
+                      <div class="explore-sets__product-img">
+                        {{ bundle_product.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', class: 'explore-sets__product-image' }}
+                      </div>
+                    {% endif %}
+                  </div>
+                </a>
+
+                {%- comment -%} Card Content - sits on cream background {%- endcomment -%}
+                <div class="explore-sets__card-content">
+                  <div class="explore-sets__card-header">
+                    <h3 class="explore-sets__card-title">
+                      {% if block.settings.custom_title != blank %}
+                        {{ block.settings.custom_title | newline_to_br }}
+                      {% elsif bundle_product %}
+                        {{ bundle_product.title }}
+                      {% endif %}
+                    </h3>
+                    <div class="explore-sets__card-price">
+                      {% if bundle_product %}
+                        {% if bundle_product.compare_at_price > bundle_product.price %}
+                          <span class="explore-sets__price-compare">{{ bundle_product.compare_at_price | money }}</span>
+                        {% endif %}
+                        <span class="explore-sets__price-current {% if bundle_product.compare_at_price > bundle_product.price %}explore-sets__price-sale{% else %}explore-sets__price-regular{% endif %}">
+                          {{ bundle_product.price | money }}
+                        </span>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  {% if block.settings.custom_description != blank %}
+                    <div class="explore-sets__card-description">
+                      {{ block.settings.custom_description }}
+                    </div>
+                  {% elsif bundle_product.metafields.custom.short_description != blank %}
+                    <div class="explore-sets__card-description">
+                      {{ bundle_product.metafields.custom.short_description }}
+                    </div>
+                  {% elsif bundle_product.description != blank %}
+                    <div class="explore-sets__card-description">
+                      {{ bundle_product.description | strip_html | truncate: 150 }}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
       </div>
     </div>
   </div>
@@ -176,31 +152,37 @@
 {% stylesheet %}
   .explore-sets {
     background-color: #FFF7EA;
-    padding: 80px 0 100px;
+    padding: 0;
     position: relative;
-    min-height: 1352px;
+    overflow: hidden;
   }
 
   .explore-sets__wrapper {
     max-width: 1600px;
     margin: 0 auto;
     padding: 0 40px;
-    position: relative;
-    min-height: 1352px;
   }
 
-  /* Background Image - responsive to fit within padded area */
+  /* Container holds both background and content, fills the content area */
+  .explore-sets__container {
+    position: relative;
+    width: 100%;
+  }
+
+
+  /* 
+   * Background Image - fills the container width (1520px content area)
+   * Only covers TOP portion (670px height)
+   */
   .explore-sets__background {
     position: absolute;
-    left: 40px;
-    right: 40px;
-    bottom: 587px;
-    width: auto;
-    max-width: 1520px;
-    margin: 0 auto;
-    height: 765px;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 670px;
     pointer-events: none;
     z-index: 1;
+    overflow: hidden;
   }
 
   /* Hide mobile background on desktop */
@@ -216,7 +198,10 @@
 
   .explore-sets__bg-image {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
 
   .explore-sets__background--desktop .explore-sets__bg-image {
@@ -231,16 +216,17 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 50% 50%;
+    object-position: center top;
     display: block;
   }
 
   .explore-sets__bg-gradient {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95.154%);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(62, 32, 39, 0.2) 0%, rgba(62, 32, 39, 0) 40%);
   }
 
   .explore-sets__background--desktop .explore-sets__bg-gradient {
@@ -251,172 +237,66 @@
     clip-path: url('#explore-sets-mask-mobile-{{ section.id }}');
   }
 
-  /* Content Container */
+  /* Content Container - 60px internal padding from background edge */
   .explore-sets__content {
     position: relative;
     z-index: 2;
-    min-height: 1352px;
+    padding: 96px 60px 150px;
+  }
+
+  /* Header Section - positioned left, over the image */
+  .explore-sets__header {
+    margin-bottom: 0;
   }
 
   /* Heading */
   .explore-sets__heading {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 432px;
     font-family: var(--font-alyona);
-    font-size: 70px;
+    font-size: 85.62px;
     font-weight: 400;
-    line-height: normal;
-    color: var(--heading-color);
-    text-align: center;
-    white-space: nowrap;
+    line-height: 1;
+    color: var(--heading-color, #FFFAE6);
     margin: 0;
+    max-width: 661px;
   }
 
   /* Description */
   .explore-sets__description {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 512px;
-    width: 466px;
+    max-width: 466px;
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
-    color: var(--description-color);
-    text-align: center;
-    margin: 0;
+    color: var(--description-color, #FFFAE6);
+    margin: 4px 0 0;
   }
 
   .explore-sets__description p {
     margin: 0;
   }
 
-  /* Cards Container */
+  /* Cards Container - positioned to straddle image and cream areas */
   .explore-sets__cards {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 630px;
-    width: 100%;
-    max-width: 1160px;
-    padding: 0 40px;
-    box-sizing: border-box;
+    display: flex;
+    gap: 20px;
+    margin-top: 70px;
   }
 
   /* Individual Card */
   .explore-sets__card {
-    position: absolute;
-    width: calc(50% - 30px);
-    max-width: 555px;
+    width: 325px;
     display: flex;
     flex-direction: column;
     gap: 24px;
   }
 
-  .explore-sets__card:first-child {
-    left: 0;
-  }
-
-  .explore-sets__card:last-child {
-    right: 0;
-  }
-
-  /* Card Image Box */
+  /* Card Image Box - overlays the background image */
   .explore-sets__card-image-box {
     position: relative;
-    width: 100%;
-    height: 530px;
+    width: 325px;
+    height: 420px;
     overflow: hidden;
-  }
-
-  /* Product Images Container */
-  .explore-sets__product-images {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Single product layout (fallback) */
-  .explore-sets__product-images--1 {
-    left: 0;
-    top: 0;
-    transform: none;
-  }
-
-  .explore-sets__product-images--1 .explore-sets__product-img {
-    width: 100%;
-    height: 100%;
-    flex-shrink: 0;
-    margin-right: 0;
-  }
-
-  /* 3 products layout */
-  .explore-sets__product-images--3 {
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .explore-sets__product-images--3 .explore-sets__product-img {
-    width: 195px;
-    height: 293px;
-    margin-right: -87.64px;
-    flex-shrink: 0;
-  }
-
-  .explore-sets__product-images--3 .explore-sets__product-img:last-child {
-    margin-right: 0;
-  }
-
-  .explore-sets__product-images--3 .explore-sets__product-img img {
-    object-fit: cover;
-  }
-
-  /* 6 products layout */
-  .explore-sets__product-images--6 {
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .explore-sets__product-images--6 .explore-sets__product-img {
-    width: 138px;
-    height: 207px;
-    margin-right: -62px;
-    flex-shrink: 0;
-  }
-
-  .explore-sets__product-images--6 .explore-sets__product-img:last-child {
-    margin-right: 0;
-  }
-
-  .explore-sets__product-images--6 .explore-sets__product-img img {
-    object-fit: cover;
-  }
-
-  /* Product Image */
-  .explore-sets__product-img {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-
-  .explore-sets__product-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
     display: block;
+    text-decoration: none;
   }
 
   /* Badge */
@@ -425,40 +305,114 @@
     left: 20px;
     top: 20px;
     background: #FFFFFF;
-    border-radius: 70px;
-    padding: 10px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 3;
+    padding: 8px 12px;
+    z-index: 2;
   }
 
   .explore-sets__badge-text {
     font-family: var(--font-sweet-sans);
     font-weight: 500;
-    font-size: 13px;
-    line-height: normal;
-    letter-spacing: -0.13px;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: -0.14px;
     text-transform: uppercase;
     color: #3E2027;
-    text-align: center;
-    white-space: nowrap;
-    margin: 0;
   }
 
-  /* Card Content */
+  /* Product Images Container */
+  .explore-sets__product-images {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Single product layout */
+  .explore-sets__product-images--1 {
+    inset: 0;
+  }
+
+  .explore-sets__product-images--1 .explore-sets__product-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .explore-sets__product-images--1 .explore-sets__product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 3 products layout - overlapping row */
+  .explore-sets__product-images--3 {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 94px;
+    padding-left: 0;
+    padding-right: 69.24px;
+    justify-content: flex-start;
+    border-radius: 10px;
+  }
+
+  .explore-sets__product-images--3 .explore-sets__product-img {
+    width: 154.15px;
+    height: 231.22px;
+    margin-right: -69.24px;
+    flex-shrink: 0;
+  }
+
+  .explore-sets__product-images--3 .explore-sets__product-img:last-child {
+    margin-right: 0;
+  }
+
+  .explore-sets__product-images--3 .explore-sets__product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 6 products layout - 3x2 grid */
+  .explore-sets__product-images--6 {
+    left: 37.82px;
+    top: 32px;
+    width: 249.37px;
+    height: 356px;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 0;
+    padding-right: 53.12px;
+    border-radius: 10px;
+  }
+
+  .explore-sets__product-images--6 .explore-sets__product-img {
+    width: 118.27px;
+    height: 177.4px;
+    margin-right: -53.12px;
+    flex-shrink: 0;
+  }
+
+  .explore-sets__product-images--6 .explore-sets__product-img:nth-child(3n) {
+    margin-right: -53.12px;
+  }
+
+  .explore-sets__product-images--6 .explore-sets__product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Card Content - sits on the cream background below image zone */
   .explore-sets__card-content {
     display: flex;
     flex-direction: column;
     gap: 24px;
   }
 
-  /* Card Header - Title and Price */
   .explore-sets__card-header {
     display: flex;
+    align-items: flex-start;
     justify-content: space-between;
-    align-items: flex-end;
     width: 100%;
   }
 
@@ -466,32 +420,28 @@
     font-family: var(--font-sweet-sans);
     font-weight: 500;
     font-size: 19px;
-    line-height: normal;
+    line-height: 1.2;
     letter-spacing: -0.19px;
     text-transform: uppercase;
     color: #3E2027;
-    /* white-space: pre-line; */
-    flex-shrink: 1;
+    margin: 0;
   }
 
   .explore-sets__card-price {
-    display: flex;
-    align-items: center;
-    gap: 18px;
     font-family: var(--font-sweet-sans);
     font-weight: 400;
-    font-size: 19px;
-    line-height: normal;
-    letter-spacing: -0.19px;
+    font-size: 18px;
+    letter-spacing: -0.18px;
     text-transform: uppercase;
+    color: #3E2027;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     text-align: right;
     white-space: nowrap;
-    flex-shrink: 0;
   }
 
   .explore-sets__price-compare {
-    color: #3E2027;
-    opacity: 0.5;
     text-decoration: line-through;
     text-decoration-skip-ink: none;
   }
@@ -516,614 +466,228 @@
     margin: 0;
   }
 
-  /* Action Buttons */
-  .explore-sets__card-actions {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
-
-  .explore-sets__card-actions form {
-    /* flex: 1; */
-    margin: 0;
-    display: flex;
-  }
-
-  .explore-sets__btn {
-    height: 40px;
-    padding: 0 20px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 1;
-    letter-spacing: -0.14px;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.2s ease
-    , transform 0.2s ease;
-    white-space: nowrap;
-    /* flex: 1; */
-    box-sizing: border-box;
-  }
-
-  .explore-sets__btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
-
-  .explore-sets__btn:active {
-    opacity: 0.8;
-    transform: translateY(0);
-  }
-
-  .explore-sets__btn--add {
-    background: #FFFFFF;
-    color: #3E2027;
-  }
-
-  .explore-sets__btn--add:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .explore-sets__btn--add svg {
-    display: block;
-    /* width: 24px; */
-    /* height: 24px; */
-    /* flex: 0 0 24px; */
-  }
-
-  .explore-sets__btn--buy {
-    background: #3E2027;
-    color: #FFFFFF;
-    /* padding: 10px 20px; */
-    /* flex: 1; */
-  }
-
-
-  /*
-   ========================================
-   LARGE TABLET STYLES (1024px - 1400px) ========================================
-*/
-  @media (max-width: 1400px) {
-    .explore-sets__wrapper {
-      padding: 0 30px;
-    }
-
-    .explore-sets__cards {
-      padding: 0 30px;
-      max-width: calc(100% - 60px);
-    }
-
-    .explore-sets__card {
-      width: calc(50% - 25px);
-    }
-  }
-
 
   /*
    ========================================
    TABLET STYLES (768px - 1024px) ========================================
 */
   @media (max-width: 1024px) {
-    .explore-sets {
-      padding: 50px 0 60px;
-      min-height: auto;
-    }
-
     .explore-sets__wrapper {
-      padding: 0 24px;
-      min-height: auto;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding: 0 30px;
     }
 
-    /* Background image - larger for tablet, with text overlay */
     .explore-sets__background {
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: auto;
-      width: 100%;
-      /* max-width: 900px; */
       height: 550px;
-      margin: 0 auto 30px;
-      overflow: hidden;
-    }
-
-    /* Show desktop background, hide mobile on tablet */
-    .explore-sets__background--mobile {
-      display: none;
-    }
-
-    .explore-sets__background--desktop {
-      display: block;
-    }
-
-    .explore-sets__bg-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center center;
-      display: block;
-    }
-
-    .explore-sets__bg-gradient {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
     }
 
     .explore-sets__content {
-      position: static;
-      z-index: 2;
-      min-height: auto;
+      padding: 60px 40px 80px;
     }
 
-    /* Heading - positioned over background */
     .explore-sets__heading {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      top: 410px;
-      width: calc(100% - 48px);
-      max-width: 600px;
       font-size: 56px;
-      line-height: 1.1;
-      text-align: center;
-      white-space: normal;
-      margin: 0;
-      z-index: 3;
+      max-width: 500px;
     }
 
     .explore-sets__description {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      top: 470px;
-      width: calc(100% - 48px);
-      max-width: 500px;
-      font-size: 15px;
-      line-height: 1.5;
-      text-align: center;
-      margin: 0;
-      z-index: 3;
+      max-width: 400px;
     }
 
-    /* Cards - two columns with better spacing */
     .explore-sets__cards {
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
-      top: auto;
-      width: 100%;
-      max-width: fit-content;
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      margin-top: 0;
-      padding: 0;
+      margin-top: 60px;
     }
 
     .explore-sets__card {
-      position: relative !important;
-      left: auto !important;
-      width: calc(50% - 10px);
-      max-width: 420px;
+      width: 280px;
+    }
+
+    .explore-sets__card-image-box {
+      width: 100%;
+      height: 360px;
+    }
+
+    .explore-sets__product-images--3 {
+      top: 70px;
+    }
+
+    .explore-sets__product-images--3 .explore-sets__product-img {
+      width: 130px;
+      height: 195px;
+      margin-right: -58px;
+    }
+
+    .explore-sets__product-images--6 {
+      left: 25px;
+      top: 20px;
+      width: 210px;
+      height: 310px;
+    }
+
+    .explore-sets__product-images--6 .explore-sets__product-img {
+      width: 95px;
+      height: 142px;
+      margin-right: -42px;
+    }
+  }
+
+
+  /*
+   ========================================
+   MOBILE STYLES (below 768px) ========================================
+*/
+  @media (max-width: 767px) {
+    .explore-sets__wrapper {
+      padding: 0 20px;
+    }
+
+    .explore-sets__background--desktop {
+      display: none;
+    }
+
+    .explore-sets__background--mobile {
+      display: block;
+      position: relative;
+      height: 350px;
+      width: 100%;
+    }
+
+    .explore-sets__background--mobile .explore-sets__bg-image,
+    .explore-sets__background--mobile .explore-sets__bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .explore-sets__content {
+      padding: 0 20px 60px;
+    }
+
+    .explore-sets__header {
+      position: absolute;
+      top: 40px;
+      left: 20px;
+      right: 20px;
+      z-index: 3;
+    }
+
+    .explore-sets__heading {
+      font-size: 40px;
+      max-width: 100%;
+      margin: 0 0 12px;
+    }
+
+    .explore-sets__description {
+      max-width: 100%;
+      font-size: 14px;
+      margin-top: 0;
+    }
+
+    .explore-sets__cards {
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .explore-sets__card {
+      width: 100%;
+      max-width: 325px;
       gap: 18px;
     }
 
     .explore-sets__card-image-box {
-      height: 380px;
-    }
-
-    /* Product images - scaled for tablet */
-    .explore-sets__product-images {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .explore-sets__product-images--1 {
-      left: 0;
-      top: 0;
-      transform: none;
+      width: 100%;
+      height: 320px;
     }
 
     .explore-sets__product-images--3 {
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: auto;
-      height: auto;
+      top: 60px;
     }
 
     .explore-sets__product-images--3 .explore-sets__product-img {
-      width: 140px;
-      height: 210px;
-      margin-right: -63px;
+      width: 110px;
+      height: 165px;
+      margin-right: -50px;
     }
 
     .explore-sets__product-images--6 {
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: auto;
-      height: auto;
+      left: 20px;
+      top: 20px;
+      width: 200px;
+      height: 280px;
     }
 
     .explore-sets__product-images--6 .explore-sets__product-img {
-      width: 100px;
-      height: 150px;
-      margin-right: -45px;
-    }
-
-    .explore-sets__badge {
-      left: 18px;
-      top: 18px;
-    }
-
-    .explore-sets__badge-text {
-      font-size: 12px;
-      letter-spacing: -0.12px;
+      width: 90px;
+      height: 135px;
+      margin-right: -40px;
     }
 
     .explore-sets__card-content {
-      gap: 18px;
+      gap: 16px;
     }
 
     .explore-sets__card-header {
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .explore-sets__card-title {
-      font-size: 17px;
-      letter-spacing: -0.17px;
-      line-height: 1.2;
-    }
-
-    .explore-sets__card-price {
-      font-size: 17px;
-      letter-spacing: -0.17px;
-      gap: 10px;
-    }
-
-    .explore-sets__card-description {
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .explore-sets__card-actions {
       flex-direction: row;
       gap: 10px;
     }
 
-    .explore-sets__card-actions form {
-    ;
-    /* flex: 1; */
-  }
-
-  .explore-sets__btn {
-    width: 100%;
-    height: 42px;
-    font-size: 13px;
-    padding: 0 18px;
-  }
-
-  .explore-sets__btn--buy {
-    /* flex: 1; */
-    width: 100%;
-  }
-}
-
-
-@media (max-width: 768px) {
-  .explore-sets__wrapper {
-    padding: 0 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .explore-sets__background {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .explore-sets__cards {
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: fit-content;
-    padding: 0;
-  }
-}
-
-
-/*
-   ========================================
-   MOBILE STYLES (below 768px) ========================================
-*/
-@media (max-width: 767px) {
-  .explore-sets {
-    padding: 24px 0 40px;
-    min-height: auto;
-  }
-
-  .explore-sets__wrapper {
-    padding: 0 12px;
-    min-height: auto;
-    position: relative;
-  }
-
-  /* Background image - mobile optimized */
-  .explore-sets__background {
-    position: relative;
-    left: 0;
-    right: 0;
-    transform: none;
-    bottom: auto;
-    width: 100%;
-    height: 380px;
-    margin: 0 0 24px;
-    overflow: hidden;
-  }
-
-  /* Show mobile background if available, otherwise desktop */
-  .explore-sets__background--desktop {
-    display: block;
-  }
-
-  .explore-sets__background--mobile {
-    display: none;
-  }
-
-  /* If mobile background exists, show it instead of desktop */
-  {% if section.settings.mobile_background_image %}
-    .explore-sets__background--desktop {
-      display: none;
+    .explore-sets__card-title {
+      font-size: 16px;
     }
 
-    .explore-sets__background--mobile {
-      display: block;
+    .explore-sets__card-price {
+      font-size: 16px;
     }
-  {% endif %}
 
-  .explore-sets__bg-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center center;
-    display: block;
+    .explore-sets__card-description {
+      font-size: 14px;
+    }
   }
 
-  .explore-sets__bg-gradient {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
-  }
 
-  .explore-sets__content {
-    position: static;
-    z-index: 2;
-    min-height: auto;
-  }
-
-  /* Heading - positioned over background */
-  .explore-sets__heading {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 280px;
-    width: calc(100% - 24px);
-    max-width: 400px;
-    font-size: 42px;
-    line-height: 1.05;
-    text-align: center;
-    white-space: normal;
-    margin: 0;
-    z-index: 3;
-  }
-
-  .explore-sets__description {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 385px;
-    width: calc(100% - 24px);
-    max-width: 360px;
-    font-size: 14px;
-    line-height: 1.4;
-    text-align: center;
-    margin: 0;
-    z-index: 3;
-  }
-
-  /* Cards - two columns on mobile */
-  .explore-sets__cards {
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-    top: auto;
-    width: 100%;
-    display: flex;
-    gap: 12px;
-    justify-content: space-between;
-    margin-top: 0;
-    padding: 0
-  }
-
-  .explore-sets__card {
-    position: relative !important;
-    left: auto !important;
-    width: calc(56%);
-    max-width: none;
-    gap: 14px;
-  }
-
-  .explore-sets__card-image-box {
-    height: 180px;
-  }
-
-  /* Product images - mobile sizing */
-  .explore-sets__product-images {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .explore-sets__product-images--1 {
-    left: 0;
-    top: 0;
-    transform: none;
-  }
-
-  .explore-sets__product-images--3 {
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: auto;
-    height: auto;
-  }
-
-  .explore-sets__product-images--3 .explore-sets__product-img {
-    width: 84px;
-    height: 126px;
-    margin-right: -38px;
-  }
-
-  .explore-sets__product-images--6 {
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: auto;
-    height: auto;
-  }
-
-  .explore-sets__product-images--6 .explore-sets__product-img {
-    width: 60px;
-    height: 90px;
-    margin-right: -27px;
-  }
-
-  .explore-sets__badge {
-    left: 12px;
-    top: 12px;
-  }
-
-  .explore-sets__badge-text {
-    font-size: 10px;
-    letter-spacing: -0.1px;
-  }
-
-  .explore-sets__card-content {
-    gap: 12px;
-  }
-
-  .explore-sets__card-header {
-    align-items: flex-start;
-    gap: 8px;
-    flex-direction: column;
-  }
-
-  .explore-sets__card-title {
-    font-size: 13px;
-    letter-spacing: -0.13px;
-    line-height: 1.2;
-  }
-
-  .explore-sets__card-price {
-    font-size: 13px;
-    letter-spacing: -0.13px;
-    gap: 8px;
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .explore-sets__card-description {
-    font-size: 12px;
-    line-height: 1.45;
-    min-height: 80px;
-  }
-
-  /* Buttons stacked on mobile */
-  .explore-sets__card-actions {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .explore-sets__card-actions form {
-    width: 100%;
-  }
-
-  .explore-sets__btn {
-    width: 100%;
-    height: 40px;
-    font-size: 12px;
-    padding: 0 16px;
-  }
-}
-
-
-/*
+  /*
    ========================================
    SMALL MOBILE (below 480px) ========================================
 */
-@media (max-width: 480px) {
-  .explore-sets__background {
-    height: 320px;
-    margin-bottom: 20px;
+  @media (max-width: 480px) {
+    .explore-sets__header {
+      top: 30px;
+    }
+
+    .explore-sets__heading {
+      font-size: 32px;
+    }
+
+    .explore-sets__card-image-box {
+      height: 280px;
+    }
+
+    .explore-sets__product-images--3 {
+      top: 50px;
+    }
+
+    .explore-sets__product-images--3 .explore-sets__product-img {
+      width: 90px;
+      height: 135px;
+      margin-right: -40px;
+    }
+
+    .explore-sets__product-images--6 {
+      left: 15px;
+      top: 15px;
+      width: 170px;
+      height: 250px;
+    }
+
+    .explore-sets__product-images--6 .explore-sets__product-img {
+      width: 75px;
+      height: 112px;
+      margin-right: -33px;
+    }
   }
-
-  .explore-sets__heading {
-    top: 225px;
-    font-size: 36px;
-  }
-
-  .explore-sets__description {
-    top: 265px;
-    font-size: 13px;
-  }
-
-  .explore-sets__card-image-box {
-    height: 160px;
-  }
-
-  .explore-sets__product-images--3 .explore-sets__product-img {
-    width: 72px;
-    height: 108px;
-    margin-right: -32px;
-  }
-
-  .explore-sets__product-images--6 .explore-sets__product-img {
-    width: 52px;
-    height: 78px;
-    margin-right: -23px;
-  }
-
-  .explore-sets__btn--add,
-  .explore-sets__btn--buy {
-    height: 40px !important;
-  }
-}
-
-
 {% endstylesheet %}
 
 {% schema %}
@@ -1159,7 +723,7 @@
         "type": "color",
         "id": "heading_color",
         "label": "t:labels.heading_color",
-        "default": "#FFFFFF"
+        "default": "#FFFAE6"
       }, {
         "type": "richtext",
         "id": "description",
@@ -1169,7 +733,7 @@
         "type": "color",
         "id": "description_color",
         "label": "t:labels.description_color",
-        "default": "#FFFFFF"
+        "default": "#FFFAE6"
       }
     ],
     "blocks": [

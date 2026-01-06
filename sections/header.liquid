@@ -571,6 +571,20 @@
 {% endstylesheet %}
 
 {% javascript %}
+  // Set header height CSS variable - used by other sections for spacing
+  function updateHeaderHeight() {
+    const header = document.querySelector('.header-wrapper');
+    if (header) {
+      const headerHeight = header.offsetHeight;
+      document.documentElement.style.setProperty('--total-header-height', `${headerHeight}px`);
+      console.log('Header height set to:', headerHeight + 'px');
+    }
+  }
+
+  // Update on load and resize
+  updateHeaderHeight();
+  window.addEventListener('resize', updateHeaderHeight);
+
   class HeaderScrollBehavior {
     constructor() {
       this.header = document.querySelector('.header-wrapper');
