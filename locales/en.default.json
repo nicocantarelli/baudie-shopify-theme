@@ -49,6 +49,9 @@
     "reviews": "Reviews",
     "what_makes_different": "What Makes Different"
   },
+  "newsletter": {
+    "email_placeholder": "Enter your email"
+  },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
     "card": "Gift card",
@@ -87,6 +90,10 @@
       "step_stay_fresh": "Stay Fresh",
       "content_header": "Content",
       "image_header": "Image"
+    },
+    "product_features": {
+      "scroll_left": "Scroll left",
+      "scroll_right": "Scroll right"
     },
     "meet_scents": {
       "content_header": "Content",
