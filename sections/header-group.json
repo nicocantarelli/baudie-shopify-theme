@@ -14,22 +14,22 @@
     "header": {
       "type": "header",
       "blocks": {
-        "announcement_DGNCU3": {
+        "announcement_BcNDUD": {
           "type": "announcement",
           "settings": {
-            "text": "24/7 Support"
+            "text": "Announcement text"
           }
         },
-        "announcement_yxJFMy": {
+        "announcement_ehMV6T": {
           "type": "announcement",
           "settings": {
-            "text": "Worldwide Shipping"
+            "text": "Announcement text"
           }
         }
       },
       "block_order": [
-        "announcement_DGNCU3",
-        "announcement_yxJFMy"
+        "announcement_BcNDUD",
+        "announcement_ehMV6T"
       ],
       "settings": {
         "sticky_behavior": "hide_on_scroll",
