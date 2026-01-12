@@ -1,0 +1,87 @@
+{
+  "sections": {
+    "customer-care": {
+      "type": "customer-care",
+      "blocks": {
+        "delivery": {
+          "type": "category",
+          "settings": {
+            "tab_label": "Delivery",
+            "url_slug": "delivery",
+            "icon": "delivery",
+            "section_heading": "Delivery Information"
+          }
+        },
+        "payment": {
+          "type": "category",
+          "settings": {
+            "tab_label": "Payment",
+            "url_slug": "payment",
+            "icon": "payment",
+            "section_heading": "Payment Methods"
+          }
+        },
+        "returns": {
+          "type": "category",
+          "settings": {
+            "tab_label": "Returns",
+            "url_slug": "returns",
+            "icon": "returns",
+            "section_heading": "Returns & Exchanges"
+          }
+        },
+        "faq": {
+          "type": "category",
+          "settings": {
+            "tab_label": "FAQ",
+            "url_slug": "faq",
+            "icon": "faq",
+            "section_heading": "Frequently Asked Questions"
+          }
+        },
+        "terms": {
+          "type": "category",
+          "settings": {
+            "tab_label": "Terms & Conditions",
+            "url_slug": "terms",
+            "icon": "terms",
+            "section_heading": "Terms & Conditions"
+          }
+        },
+        "privacy": {
+          "type": "category",
+          "settings": {
+            "tab_label": "Privacy Policy",
+            "url_slug": "privacy",
+            "icon": "privacy",
+            "section_heading": "Privacy Policy"
+          }
+        },
+        "contact": {
+          "type": "category",
+          "settings": {
+            "tab_label": "Contact Us",
+            "url_slug": "contact",
+            "icon": "contact",
+            "section_heading": "Contact Us"
+          }
+        }
+      },
+      "block_order": [
+        "delivery",
+        "payment",
+        "returns",
+        "faq",
+        "terms",
+        "privacy",
+        "contact"
+      ],
+      "settings": {
+        "heading": "Customer Care"
+      }
+    }
+  },
+  "order": [
+    "customer-care"
+  ]
+}

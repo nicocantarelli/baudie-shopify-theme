@@ -1,0 +1,1066 @@
+{%- liquid
+  assign section_id = section.id
+  assign active_category = blank
+
+  if section.blocks.size > 0
+    assign first_block = section.blocks | first
+    assign active_category = first_block.settings.url_slug | default: first_block.id
+  endif
+
+  assign bg_color = section.settings.background_color | default: '#FFF7EA'
+  assign text_color = section.settings.text_color | default: '#3E2027'
+-%}
+
+<section
+  class="customer-care"
+  id="customer-care-{{ section_id }}"
+  data-customer-care
+  data-active-category="{{ active_category }}"
+  style="--cc-bg: {{ bg_color }}; --cc-text: {{ text_color }};">
+
+  <div class="customer-care__container">
+    <h1 class="customer-care__title">{{ section.settings.heading }}</h1>
+
+    <div class="customer-care__layout">
+      <nav class="customer-care__sidebar" role="tablist" aria-label="{{ 'sections.customer_care.navigation_label' | t }}">
+        {%- for block in section.blocks -%}
+          {%- assign tab_slug = block.settings.url_slug | default: block.id -%}
+          {%- assign is_first = false -%}
+          {%- if forloop.first -%}
+            {%- assign is_first = true -%}
+          {%- endif -%}
+          <button
+            type="button"
+            class="customer-care__tab{% if is_first %} customer-care__tab--active{% endif %}"
+            role="tab"
+            id="tab-{{ tab_slug }}"
+            aria-selected="{% if is_first %}true{% else %}false{% endif %}"
+            aria-controls="panel-{{ tab_slug }}"
+            data-tab="{{ tab_slug }}"
+            {{ block.shopify_attributes }}>
+            <span class="customer-care__tab-icon">
+              {%- case block.settings.icon -%}
+                {%- when 'delivery' -%}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 3H1v13h15V3Z"/><path d="M16 8h4l3 3v5h-7V8Z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                  </svg>
+                {%- when 'payment' -%}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+                  </svg>
+                {%- when 'returns' -%}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                  </svg>
+                {%- when 'faq' -%}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                {%- when 'terms' -%}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                {%- when 'privacy' -%}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                {%- when 'contact' -%}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                {%- else -%}
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+              {%- endcase -%}
+            </span>
+            <span class="customer-care__tab-label">{{ block.settings.tab_label }}</span>
+          </button>
+        {%- endfor -%}
+      </nav>
+
+      <div class="customer-care__mobile-nav">
+        <button
+          type="button"
+          class="customer-care__dropdown-trigger"
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-controls="customer-care-dropdown-{{ section_id }}"
+          aria-label="{{ 'sections.customer_care.select_category' | t }}"
+          data-dropdown-trigger>
+          <span class="customer-care__dropdown-label" data-dropdown-label>
+            {%- if section.blocks.size > 0 -%}{{ section.blocks[0].settings.tab_label }}{%- endif -%}
+          </span>
+          <span class="customer-care__dropdown-icon">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="2 4 6 8 10 4"/>
+            </svg>
+          </span>
+        </button>
+        <div
+          class="customer-care__dropdown"
+          id="customer-care-dropdown-{{ section_id }}"
+          role="menu"
+          aria-hidden="true"
+          data-dropdown-list>
+          {%- for block in section.blocks -%}
+            {%- assign tab_slug = block.settings.url_slug | default: block.id -%}
+            {%- assign is_first = false -%}
+            {%- if forloop.first -%}
+              {%- assign is_first = true -%}
+            {%- endif -%}
+            <button
+              type="button"
+              class="customer-care__dropdown-item{% if is_first %} customer-care__dropdown-item--active{% endif %}"
+              role="menuitem"
+              data-dropdown-item="{{ tab_slug }}">
+              {{ block.settings.tab_label }}
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div class="customer-care__content">
+        {%- for block in section.blocks -%}
+          {%- assign tab_slug = block.settings.url_slug | default: block.id -%}
+          {%- assign is_first = false -%}
+          {%- if forloop.first -%}
+            {%- assign is_first = true -%}
+          {%- endif -%}
+          <div
+            class="customer-care__panel{% if is_first %} customer-care__panel--active{% endif %}"
+            role="tabpanel"
+            id="panel-{{ tab_slug }}"
+            aria-labelledby="tab-{{ tab_slug }}"
+            {% unless is_first %}hidden{% endunless %}
+            data-panel="{{ tab_slug }}">
+
+            <h2 class="customer-care__panel-title">{{ block.settings.section_heading }}</h2>
+
+            {%- if block.settings.section_description != blank -%}
+              <div class="customer-care__panel-description">
+                {{ block.settings.section_description }}
+              </div>
+            {%- endif -%}
+
+            <div class="customer-care__accordion" data-accordion>
+              {%- for i in (1..15) -%}
+                {%- assign question_key = 'question_' | append: i -%}
+                {%- assign answer_key = 'answer_' | append: i -%}
+                {%- assign question = block.settings[question_key] -%}
+                {%- assign answer = block.settings[answer_key] -%}
+
+                {%- if question != blank and answer != blank -%}
+                  <div class="customer-care__accordion-item" data-accordion-item>
+                    <button
+                      type="button"
+                      class="customer-care__accordion-trigger"
+                      aria-expanded="false"
+                      aria-controls="accordion-{{ block.id }}-{{ i }}"
+                      data-accordion-trigger>
+                      <span class="customer-care__accordion-question">{{ question }}</span>
+                      <span class="customer-care__accordion-icon" aria-hidden="true">
+                        <span class="customer-care__accordion-icon--plus">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                            <line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/>
+                          </svg>
+                        </span>
+                        <span class="customer-care__accordion-icon--minus">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                            <line x1="3" y1="8" x2="13" y2="8"/>
+                          </svg>
+                        </span>
+                      </span>
+                    </button>
+                    <div
+                      class="customer-care__accordion-content"
+                      id="accordion-{{ block.id }}-{{ i }}"
+                      aria-hidden="true"
+                      data-accordion-content>
+                      <div class="customer-care__accordion-answer">
+                        {{ answer }}
+                      </div>
+                    </div>
+                    <div class="customer-care__accordion-separator"></div>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+.customer-care {
+  --cc-cream: #FFFAE6;
+  --cc-border: rgba(62, 32, 39, 0.1);
+  background-color: var(--cc-bg);
+  padding: 80px 0 120px;
+}
+
+.customer-care__container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.customer-care__title {
+  font-family: var(--font-alyona);
+  font-size: 70px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--cc-text);
+  margin: 0 0 60px;
+}
+
+.customer-care__layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 172px;
+  align-items: start;
+}
+
+.customer-care__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.customer-care__tab {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 300px;
+  height: 50px;
+  padding: 0 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.customer-care__tab:hover {
+  background-color: rgba(62, 32, 39, 0.05);
+}
+
+.customer-care__tab--active {
+  background-color: var(--cc-cream);
+}
+
+.customer-care__tab-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cc-text);
+}
+
+.customer-care__tab-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.customer-care__tab-label {
+  font-family: var(--font-jokker);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--cc-text);
+}
+
+.customer-care__mobile-nav {
+  display: none;
+  position: relative;
+}
+
+.customer-care__content {
+  max-width: 754px;
+}
+
+.customer-care__panel {
+  display: none;
+}
+
+.customer-care__panel--active {
+  display: block;
+}
+
+.customer-care__panel-title {
+  font-family: var(--font-alyona);
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--cc-text);
+  margin: 0 0 30px;
+}
+
+.customer-care__panel-description {
+  font-family: var(--font-jokker);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--cc-text);
+  margin: 0 0 40px;
+}
+
+.customer-care__panel-description p {
+  margin: 0;
+}
+
+.customer-care__accordion {
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-care__accordion-item {
+  position: relative;
+}
+
+.customer-care__accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.customer-care__accordion-trigger:hover .customer-care__accordion-question {
+  opacity: 0.8;
+}
+
+.customer-care__accordion-trigger:focus-visible {
+  outline: 2px solid var(--cc-text);
+  outline-offset: 4px;
+}
+
+.customer-care__accordion-question {
+  font-family: var(--font-jokker);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--cc-text);
+  padding-right: 40px;
+  text-transform: uppercase;
+  transition: opacity 0.2s ease;
+}
+
+.customer-care__accordion-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  position: relative;
+  color: var(--cc-text);
+}
+
+.customer-care__accordion-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.customer-care__accordion-icon--plus {
+  display: block;
+}
+
+.customer-care__accordion-icon--minus {
+  display: none;
+}
+
+.customer-care__accordion-item--open .customer-care__accordion-icon--plus {
+  display: none;
+}
+
+.customer-care__accordion-item--open .customer-care__accordion-icon--minus {
+  display: block;
+}
+
+.customer-care__accordion-content {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
+
+.customer-care__accordion-answer {
+  font-family: var(--font-jokker);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--cc-text);
+  padding-bottom: 20px;
+}
+
+.customer-care__accordion-answer p {
+  margin: 0 0 16px;
+}
+
+.customer-care__accordion-answer p:last-child {
+  margin-bottom: 0;
+}
+
+.customer-care__accordion-separator {
+  height: 1px;
+  background-color: var(--cc-border);
+}
+
+.customer-care__dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 15px 20px;
+  background: var(--cc-cream);
+  border: 1px solid var(--cc-border);
+  cursor: pointer;
+}
+
+.customer-care__dropdown-label {
+  font-family: var(--font-jokker);
+  font-size: 16px;
+  color: var(--cc-text);
+}
+
+.customer-care__dropdown-icon {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.2s ease;
+  color: var(--cc-text);
+}
+
+.customer-care__dropdown-trigger[aria-expanded="true"] .customer-care__dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.customer-care__dropdown {
+  display: none;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  background: white;
+  border: 1px solid var(--cc-border);
+  border-top: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.customer-care__dropdown--open {
+  display: flex;
+}
+
+.customer-care__dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 15px 20px;
+  font-family: var(--font-jokker);
+  font-size: 16px;
+  color: var(--cc-text);
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.customer-care__dropdown-item:hover,
+.customer-care__dropdown-item:focus,
+.customer-care__dropdown-item--active {
+  background-color: var(--cc-cream);
+}
+
+.customer-care__dropdown-item:focus-visible {
+  outline: 2px solid var(--cc-text);
+  outline-offset: -2px;
+}
+
+@media (max-width: 1024px) {
+  .customer-care__container {
+    padding: 0 24px;
+  }
+
+  .customer-care__title {
+    font-size: 50px;
+    margin-bottom: 50px;
+  }
+
+  .customer-care__layout {
+    grid-template-columns: 250px 1fr;
+    gap: 60px;
+  }
+
+  .customer-care__tab {
+    width: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .customer-care {
+    padding: 60px 0 80px;
+  }
+
+  .customer-care__container {
+    padding: 0 16px;
+  }
+
+  .customer-care__title {
+    font-size: 40px;
+    margin-bottom: 30px;
+  }
+
+  .customer-care__layout {
+    display: block;
+  }
+
+  .customer-care__sidebar {
+    display: none;
+  }
+
+  .customer-care__mobile-nav {
+    display: block;
+    margin-bottom: 30px;
+  }
+
+  .customer-care__content {
+    max-width: 100%;
+  }
+
+  .customer-care__panel-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  .customer-care__accordion-question {
+    font-size: 16px;
+  }
+
+  .customer-care__accordion-answer {
+    font-size: 14px;
+  }
+}
+{% endstylesheet %}
+
+{% javascript %}
+class CustomerCare {
+  constructor() {
+    this.section = document.querySelector('[data-customer-care]');
+    if (!this.section) return;
+
+    this.tabs = this.section.querySelectorAll('[data-tab]');
+    this.panels = this.section.querySelectorAll('[data-panel]');
+    this.dropdownTrigger = this.section.querySelector('[data-dropdown-trigger]');
+    this.dropdownList = this.section.querySelector('[data-dropdown-list]');
+    this.dropdownLabel = this.section.querySelector('[data-dropdown-label]');
+    this.dropdownItems = this.section.querySelectorAll('[data-dropdown-item]');
+    this.accordionTriggers = this.section.querySelectorAll('[data-accordion-trigger]');
+
+    this.bindEvents();
+    this.initFromUrl();
+  }
+
+  bindEvents() {
+    this.tabs.forEach(tab => {
+      tab.addEventListener('click', () => this.switchTab(tab.dataset.tab));
+    });
+
+    if (this.dropdownTrigger) {
+      this.dropdownTrigger.addEventListener('click', () => this.toggleDropdown());
+    }
+
+    this.dropdownItems.forEach(item => {
+      item.addEventListener('click', () => {
+        this.switchTab(item.dataset.dropdownItem);
+        this.closeDropdown();
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      const isDropdownOpen = this.dropdownTrigger?.getAttribute('aria-expanded') === 'true';
+      if (isDropdownOpen && !this.section.contains(e.target)) {
+        this.closeDropdown();
+      }
+    });
+
+    this.accordionTriggers.forEach(trigger => {
+      trigger.addEventListener('click', () => this.toggleAccordion(trigger));
+    });
+
+    window.addEventListener('hashchange', () => this.initFromUrl());
+    this.section.addEventListener('keydown', (e) => this.handleKeydown(e));
+  }
+
+  initFromUrl() {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const matchingTab = this.section.querySelector(`[data-tab="${hash}"]`);
+      if (matchingTab) {
+        this.switchTab(hash, false);
+      }
+    }
+  }
+
+  switchTab(tabId, updateUrl = true) {
+    this.tabs.forEach(tab => {
+      const isActive = tab.dataset.tab === tabId;
+      tab.classList.toggle('customer-care__tab--active', isActive);
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    this.panels.forEach(panel => {
+      const isActive = panel.dataset.panel === tabId;
+      panel.classList.toggle('customer-care__panel--active', isActive);
+      panel.hidden = !isActive;
+    });
+
+    this.dropdownItems.forEach(item => {
+      const isActive = item.dataset.dropdownItem === tabId;
+      item.classList.toggle('customer-care__dropdown-item--active', isActive);
+      if (isActive && this.dropdownLabel) {
+        this.dropdownLabel.textContent = item.textContent.trim();
+      }
+    });
+
+    if (updateUrl) {
+      history.pushState(null, '', `#${tabId}`);
+    }
+  }
+
+  toggleDropdown() {
+    const isOpen = this.dropdownTrigger.getAttribute('aria-expanded') === 'true';
+    this.dropdownTrigger.setAttribute('aria-expanded', !isOpen);
+    this.dropdownList.setAttribute('aria-hidden', isOpen);
+    this.dropdownList.classList.toggle('customer-care__dropdown--open', !isOpen);
+  }
+
+  closeDropdown() {
+    if (this.dropdownTrigger) {
+      this.dropdownTrigger.setAttribute('aria-expanded', 'false');
+    }
+    if (this.dropdownList) {
+      this.dropdownList.setAttribute('aria-hidden', 'true');
+      this.dropdownList.classList.remove('customer-care__dropdown--open');
+    }
+  }
+
+  toggleAccordion(trigger) {
+    const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+    const panel = trigger.closest('[data-panel]');
+
+    if (panel) {
+      panel.querySelectorAll('[data-accordion-trigger]').forEach(otherTrigger => {
+        if (otherTrigger !== trigger && otherTrigger.getAttribute('aria-expanded') === 'true') {
+          this.closeAccordion(otherTrigger);
+        }
+      });
+    }
+
+    if (isExpanded) {
+      this.closeAccordion(trigger);
+    } else {
+      this.openAccordion(trigger);
+    }
+  }
+
+  openAccordion(trigger) {
+    const contentId = trigger.getAttribute('aria-controls');
+    const content = document.getElementById(contentId);
+    const item = trigger.closest('[data-accordion-item]');
+
+    trigger.setAttribute('aria-expanded', 'true');
+    content.setAttribute('aria-hidden', 'false');
+    item.classList.add('customer-care__accordion-item--open');
+    content.style.height = content.scrollHeight + 'px';
+
+    content.addEventListener('transitionend', function handler() {
+      if (trigger.getAttribute('aria-expanded') === 'true') {
+        content.style.height = 'auto';
+      }
+      content.removeEventListener('transitionend', handler);
+    }, { once: true });
+  }
+
+  closeAccordion(trigger) {
+    const contentId = trigger.getAttribute('aria-controls');
+    const content = document.getElementById(contentId);
+    const item = trigger.closest('[data-accordion-item]');
+
+    content.style.height = content.scrollHeight + 'px';
+    content.offsetHeight;
+    trigger.setAttribute('aria-expanded', 'false');
+    content.setAttribute('aria-hidden', 'true');
+    item.classList.remove('customer-care__accordion-item--open');
+    content.style.height = '0';
+  }
+
+  handleKeydown(e) {
+    if (e.target.matches('[data-tab]')) {
+      const tabs = Array.from(this.tabs);
+      const currentIndex = tabs.indexOf(e.target);
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        const nextIndex = (currentIndex + 1) % tabs.length;
+        tabs[nextIndex].focus();
+        this.switchTab(tabs[nextIndex].dataset.tab);
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+        tabs[prevIndex].focus();
+        this.switchTab(tabs[prevIndex].dataset.tab);
+      }
+    }
+
+    if (e.target.matches('[data-accordion-trigger]') && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      this.toggleAccordion(e.target);
+    }
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => new CustomerCare());
+} else {
+  new CustomerCare();
+}
+
+if (Shopify.designMode) {
+  document.addEventListener('shopify:section:load', (e) => {
+    if (e.target.querySelector('[data-customer-care]')) {
+      new CustomerCare();
+    }
+  });
+
+  document.addEventListener('shopify:block:select', (e) => {
+    const section = e.target.closest('[data-customer-care]');
+    if (section) {
+      const slug = e.target.querySelector('[data-tab]')?.dataset.tab ||
+                   e.target.closest('[data-panel]')?.dataset.panel;
+      if (slug) {
+        const tab = section.querySelector(`[data-tab="${slug}"]`);
+        if (tab) tab.click();
+      }
+    }
+  });
+}
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_care.name",
+  "tag": "section",
+  "class": "customer-care-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.customer_care.settings.content_header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Customer Care"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.customer_care.settings.colors_header"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFF7EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "t:sections.customer_care.blocks.category.name",
+      "settings": [
+        {
+          "type": "header",
+          "content": "t:sections.customer_care.blocks.category.tab_header"
+        },
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "t:sections.customer_care.blocks.category.tab_label",
+          "default": "FAQ"
+        },
+        {
+          "type": "text",
+          "id": "url_slug",
+          "label": "t:sections.customer_care.blocks.category.url_slug",
+          "info": "t:sections.customer_care.blocks.category.url_slug_info",
+          "default": "faq"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.customer_care.blocks.category.icon",
+          "options": [
+            { "value": "delivery", "label": "t:sections.customer_care.icons.delivery" },
+            { "value": "payment", "label": "t:sections.customer_care.icons.payment" },
+            { "value": "returns", "label": "t:sections.customer_care.icons.returns" },
+            { "value": "faq", "label": "t:sections.customer_care.icons.faq" },
+            { "value": "terms", "label": "t:sections.customer_care.icons.terms" },
+            { "value": "privacy", "label": "t:sections.customer_care.icons.privacy" },
+            { "value": "contact", "label": "t:sections.customer_care.icons.contact" }
+          ],
+          "default": "faq"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.customer_care.blocks.category.content_header"
+        },
+        {
+          "type": "text",
+          "id": "section_heading",
+          "label": "t:sections.customer_care.blocks.category.section_heading",
+          "default": "Frequently Asked Questions"
+        },
+        {
+          "type": "richtext",
+          "id": "section_description",
+          "label": "t:sections.customer_care.blocks.category.section_description"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.customer_care.blocks.category.qa_header"
+        },
+        {
+          "type": "text",
+          "id": "question_1",
+          "label": "t:sections.customer_care.blocks.category.question_1"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_1",
+          "label": "t:sections.customer_care.blocks.category.answer_1"
+        },
+        {
+          "type": "text",
+          "id": "question_2",
+          "label": "t:sections.customer_care.blocks.category.question_2"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_2",
+          "label": "t:sections.customer_care.blocks.category.answer_2"
+        },
+        {
+          "type": "text",
+          "id": "question_3",
+          "label": "t:sections.customer_care.blocks.category.question_3"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_3",
+          "label": "t:sections.customer_care.blocks.category.answer_3"
+        },
+        {
+          "type": "text",
+          "id": "question_4",
+          "label": "t:sections.customer_care.blocks.category.question_4"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_4",
+          "label": "t:sections.customer_care.blocks.category.answer_4"
+        },
+        {
+          "type": "text",
+          "id": "question_5",
+          "label": "t:sections.customer_care.blocks.category.question_5"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_5",
+          "label": "t:sections.customer_care.blocks.category.answer_5"
+        },
+        {
+          "type": "text",
+          "id": "question_6",
+          "label": "t:sections.customer_care.blocks.category.question_6"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_6",
+          "label": "t:sections.customer_care.blocks.category.answer_6"
+        },
+        {
+          "type": "text",
+          "id": "question_7",
+          "label": "t:sections.customer_care.blocks.category.question_7"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_7",
+          "label": "t:sections.customer_care.blocks.category.answer_7"
+        },
+        {
+          "type": "text",
+          "id": "question_8",
+          "label": "t:sections.customer_care.blocks.category.question_8"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_8",
+          "label": "t:sections.customer_care.blocks.category.answer_8"
+        },
+        {
+          "type": "text",
+          "id": "question_9",
+          "label": "t:sections.customer_care.blocks.category.question_9"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_9",
+          "label": "t:sections.customer_care.blocks.category.answer_9"
+        },
+        {
+          "type": "text",
+          "id": "question_10",
+          "label": "t:sections.customer_care.blocks.category.question_10"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_10",
+          "label": "t:sections.customer_care.blocks.category.answer_10"
+        },
+        {
+          "type": "text",
+          "id": "question_11",
+          "label": "t:sections.customer_care.blocks.category.question_11"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_11",
+          "label": "t:sections.customer_care.blocks.category.answer_11"
+        },
+        {
+          "type": "text",
+          "id": "question_12",
+          "label": "t:sections.customer_care.blocks.category.question_12"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_12",
+          "label": "t:sections.customer_care.blocks.category.answer_12"
+        },
+        {
+          "type": "text",
+          "id": "question_13",
+          "label": "t:sections.customer_care.blocks.category.question_13"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_13",
+          "label": "t:sections.customer_care.blocks.category.answer_13"
+        },
+        {
+          "type": "text",
+          "id": "question_14",
+          "label": "t:sections.customer_care.blocks.category.question_14"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_14",
+          "label": "t:sections.customer_care.blocks.category.answer_14"
+        },
+        {
+          "type": "text",
+          "id": "question_15",
+          "label": "t:sections.customer_care.blocks.category.question_15"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_15",
+          "label": "t:sections.customer_care.blocks.category.answer_15"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.customer_care.name",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "tab_label": "Delivery",
+            "url_slug": "delivery",
+            "icon": "delivery",
+            "section_heading": "Delivery Information"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "tab_label": "Payment",
+            "url_slug": "payment",
+            "icon": "payment",
+            "section_heading": "Payment Methods"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "tab_label": "Returns",
+            "url_slug": "returns",
+            "icon": "returns",
+            "section_heading": "Returns & Exchanges"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "tab_label": "FAQ",
+            "url_slug": "faq",
+            "icon": "faq",
+            "section_heading": "Frequently Asked Questions"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "tab_label": "Terms & Conditions",
+            "url_slug": "terms",
+            "icon": "terms",
+            "section_heading": "Terms & Conditions"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "tab_label": "Privacy Policy",
+            "url_slug": "privacy",
+            "icon": "privacy",
+            "section_heading": "Privacy Policy"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "tab_label": "Contact Us",
+            "url_slug": "contact",
+            "icon": "contact",
+            "section_heading": "Contact Us"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
