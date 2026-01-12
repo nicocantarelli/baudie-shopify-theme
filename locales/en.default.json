@@ -25,9 +25,17 @@
   },
   "cart": {
     "checkout": "Checkout",
-    "title": "Cart",
+    "title": "Your Cart",
     "update": "Update",
-    "remove": "Remove"
+    "remove": "Remove",
+    "column_product": "Product",
+    "column_quantity": "Quantity",
+    "column_total": "Total",
+    "promocode_label": "Promocode",
+    "promocode_placeholder": "Enter promocode",
+    "promocode_apply": "Apply",
+    "shipping_label": "Shipping",
+    "returns_label": "Return Policy"
   },
   "customers": {
     "login": {

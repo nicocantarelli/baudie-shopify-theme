@@ -264,6 +264,19 @@
         "seo_text": "SEO text",
         "seo_text_info": "Rich text content for search engine optimization"
       }
+    },
+    "main_cart": {
+      "checkout_button_text": {
+        "label": "Checkout button text"
+      },
+      "shipping_header": "Shipping information",
+      "shipping_content": {
+        "label": "Shipping content"
+      },
+      "returns_header": "Return policy",
+      "returns_content": {
+        "label": "Return policy content"
+      }
     }
   },
   "blocks": {

@@ -216,12 +216,11 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    font-family: var(--font-manrope);
-    font-size: 12px;
+    font-family: var(--font-jokker);
+    font-size: 10px;
     color: var(--sidecart-text);
-    opacity: 0.5;
-    text-decoration: underline;
-    transition: opacity 0.15s ease;
+    text-decoration: none;
+    transition: text-decoration 0.15s ease;
   }
 
   .sidecart-item:first-child .sidecart-item__remove {
@@ -229,7 +228,7 @@
   }
 
   .sidecart-item__remove:hover {
-    opacity: 1;
+    text-decoration: underline;
   }
 
   .sidecart-item__image-link {
