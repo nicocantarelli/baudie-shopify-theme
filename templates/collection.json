@@ -11,10 +11,85 @@
   "sections": {
     "main": {
       "type": "collection-grid",
-      "settings": {
-        "heading": "Meet Your Scents"
+      "blocks": {
+        "product_card_Rbntaj": {
+          "type": "product_card",
+          "settings": {
+            "product": "capri-seaside",
+            "card_width": "2",
+            "show_badge": true,
+            "badge_text": "Limited Edition"
+          }
+        },
+        "product_card_9eHGPj": {
+          "type": "product_card",
+          "settings": {
+            "product": "capri-seaside",
+            "card_width": "1",
+            "show_badge": false,
+            "badge_text": ""
+          }
+        },
+        "product_card_GcwzJA": {
+          "type": "product_card",
+          "settings": {
+            "product": "deep-ritual",
+            "card_width": "1",
+            "show_badge": false,
+            "badge_text": ""
+          }
+        },
+        "product_card_YAhtB6": {
+          "type": "product_card",
+          "settings": {
+            "product": "capri-seaside",
+            "card_width": "2",
+            "show_badge": false,
+            "badge_text": ""
+          }
+        },
+        "product_card_AdP3Ty": {
+          "type": "product_card",
+          "settings": {
+            "product": "",
+            "card_width": "1",
+            "show_badge": false,
+            "badge_text": ""
+          }
+        },
+        "product_card_dJmhWz": {
+          "type": "product_card",
+          "settings": {
+            "product": "",
+            "card_width": "1",
+            "show_badge": false,
+            "badge_text": ""
+          }
+        },
+        "product_card_EJmJpx": {
+          "type": "product_card",
+          "settings": {
+            "product": "",
+            "card_width": "1",
+            "show_badge": false,
+            "badge_text": ""
+          }
+        }
       },
-      "blocks": {}
+      "block_order": [
+        "product_card_Rbntaj",
+        "product_card_9eHGPj",
+        "product_card_GcwzJA",
+        "product_card_YAhtB6",
+        "product_card_AdP3Ty",
+        "product_card_dJmhWz",
+        "product_card_EJmJpx"
+      ],
+      "settings": {
+        "heading": "Meet Your Scents",
+        "seo_heading": "",
+        "seo_text": ""
+      }
     }
   },
   "order": [
