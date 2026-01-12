@@ -2,6 +2,10 @@
   Footer section with large logo, menu columns, newsletter signup, and social links
 {% endcomment %}
 
+{%- unless template == 'index' -%}
+  {% render 'breadcrumbs' %}
+{%- endunless -%}
+
 <footer class="footer full-width">
   <div class="footer__container">
     {%- comment -%} Top Horizontal Line {%- endcomment -%}

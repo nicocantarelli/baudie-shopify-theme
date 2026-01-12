@@ -1,0 +1,266 @@
+{% doc %}
+  Renders breadcrumb navigation for the current page.
+
+  @param {string} [class] - Additional CSS classes to add to the wrapper
+{% enddoc %}
+
+{%- liquid
+  assign breadcrumb_class = 'breadcrumbs'
+  if class != blank
+    assign breadcrumb_class = breadcrumb_class | append: ' ' | append: class
+  endif
+
+  assign crumbs = ''
+  assign is_customer_care = false
+
+  if template.name == 'collection'
+    assign crumbs = crumbs | append: 'collection'
+  elsif template.name == 'product'
+    assign crumbs = crumbs | append: 'collection,product'
+  elsif template.name == 'cart'
+    assign crumbs = crumbs | append: 'cart'
+  elsif template.name == 'page'
+    if template.suffix == 'customer-care'
+      assign is_customer_care = true
+      assign crumbs = crumbs | append: 'customer-care'
+    else
+      assign crumbs = crumbs | append: 'page'
+    endif
+  elsif template.name == 'blog'
+    assign crumbs = crumbs | append: 'blog'
+  elsif template.name == 'article'
+    assign crumbs = crumbs | append: 'blog,article'
+  elsif template.name == 'search'
+    assign crumbs = crumbs | append: 'search'
+  elsif template.name == 'customers/account'
+    assign crumbs = crumbs | append: 'account'
+  elsif template.name == 'customers/order'
+    assign crumbs = crumbs | append: 'account,order'
+  elsif template.name == 'customers/addresses'
+    assign crumbs = crumbs | append: 'account,addresses'
+  endif
+-%}
+
+{%- capture breadcrumb_dot -%}
+  <svg width="4" height="4" viewBox="0 0 4 4" fill="none" aria-hidden="true"><circle cx="2" cy="2" r="2" fill="#3E2027"/></svg>
+{%- endcapture -%}
+
+<nav class="{{ breadcrumb_class }}" aria-label="{{ 'breadcrumbs.navigation' | t }}">
+  <ol class="breadcrumbs__list" itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a href="{{ routes.root_url }}" class="breadcrumbs__link" itemprop="item">
+        <span itemprop="name">{{ 'breadcrumbs.home' | t }}</span>
+      </a>
+      <meta itemprop="position" content="1">
+    </li>
+
+    {%- if crumbs contains 'collection' -%}
+      {%- if collection -%}
+        <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+          {%- if template.name == 'collection' -%}
+            <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+              <span itemprop="name">{{ collection.title }}</span>
+            </span>
+          {%- else -%}
+            <a href="{{ collection.url }}" class="breadcrumbs__link" itemprop="item">
+              <span itemprop="name">{{ collection.title }}</span>
+            </a>
+          {%- endif -%}
+          <meta itemprop="position" content="2">
+        </li>
+      {%- elsif template.name == 'collection' -%}
+        <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+          <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+            <span itemprop="name">{{ 'breadcrumbs.shop' | t }}</span>
+          </span>
+          <meta itemprop="position" content="2">
+        </li>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if crumbs contains 'product' and product -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+          <span itemprop="name">{{ product.title }}</span>
+        </span>
+        <meta itemprop="position" content="3">
+      </li>
+    {%- endif -%}
+
+    {%- if template.name == 'cart' -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+          <span itemprop="name">{{ 'breadcrumbs.cart' | t }}</span>
+        </span>
+        <meta itemprop="position" content="2">
+      </li>
+    {%- endif -%}
+
+    {%- if template.name == 'page' and page and is_customer_care == false -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+          <span itemprop="name">{{ page.title }}</span>
+        </span>
+        <meta itemprop="position" content="2">
+      </li>
+    {%- endif -%}
+
+    {%- if crumbs contains 'customer-care' -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        <a href="{{ page.url }}" class="breadcrumbs__link" itemprop="item" data-breadcrumb-parent>
+          <span itemprop="name">{{ 'breadcrumbs.customer_care' | t }}</span>
+        </a>
+        <meta itemprop="position" content="2">
+      </li>
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        <span class="breadcrumbs__current" itemprop="item" aria-current="page" data-breadcrumb-current>
+          <span itemprop="name" data-breadcrumb-current-text>{{ 'breadcrumbs.delivery' | t }}</span>
+        </span>
+        <link itemprop="url" href="{{ page.url }}">
+        <meta itemprop="position" content="3">
+      </li>
+    {%- endif -%}
+
+    {%- if crumbs contains 'blog' -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        {%- if template.name == 'blog' -%}
+          <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+            <span itemprop="name">{{ blog.title }}</span>
+          </span>
+        {%- else -%}
+          <a href="{{ blog.url }}" class="breadcrumbs__link" itemprop="item">
+            <span itemprop="name">{{ blog.title }}</span>
+          </a>
+        {%- endif -%}
+        <meta itemprop="position" content="2">
+      </li>
+    {%- endif -%}
+
+    {%- if crumbs contains 'article' and article -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+          <span itemprop="name">{{ article.title }}</span>
+        </span>
+        <meta itemprop="position" content="3">
+      </li>
+    {%- endif -%}
+
+    {%- if template.name == 'search' -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+          <span itemprop="name">{{ 'breadcrumbs.search' | t }}</span>
+        </span>
+        <meta itemprop="position" content="2">
+      </li>
+    {%- endif -%}
+
+    {%- if crumbs contains 'account' -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        {%- if template.name == 'customers/account' -%}
+          <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+            <span itemprop="name">{{ 'breadcrumbs.account' | t }}</span>
+          </span>
+        {%- else -%}
+          <a href="{{ routes.account_url }}" class="breadcrumbs__link" itemprop="item">
+            <span itemprop="name">{{ 'breadcrumbs.account' | t }}</span>
+          </a>
+        {%- endif -%}
+        <meta itemprop="position" content="2">
+      </li>
+    {%- endif -%}
+
+    {%- if crumbs contains 'order' -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+          <span itemprop="name">{{ 'breadcrumbs.order' | t }}</span>
+        </span>
+        <meta itemprop="position" content="3">
+      </li>
+    {%- endif -%}
+
+    {%- if crumbs contains 'addresses' -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        <span class="breadcrumbs__current" itemprop="item" aria-current="page">
+          <span itemprop="name">{{ 'breadcrumbs.addresses' | t }}</span>
+        </span>
+        <meta itemprop="position" content="3">
+      </li>
+    {%- endif -%}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    display: block;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 60px 40px 0;
+  }
+
+  .breadcrumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .breadcrumbs__item {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumbs__separator {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+  }
+
+  .breadcrumbs__link {
+    color: #3E2027;
+    font-family: var(--font-jokker);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 130%;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .breadcrumbs__link:hover {
+    opacity: 0.7;
+  }
+
+  .breadcrumbs__link:focus-visible {
+    outline: 2px solid #3E2027;
+    outline-offset: 2px;
+  }
+
+  .breadcrumbs__current {
+    color: #3E2027;
+    font-family: var(--font-jokker);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 130%;
+  }
+
+  @media (max-width: 768px) {
+    .breadcrumbs {
+      display: none;
+    }
+  }
+</style>

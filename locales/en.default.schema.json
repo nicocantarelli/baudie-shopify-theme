@@ -277,6 +277,68 @@
       "returns_content": {
         "label": "Return policy content"
       }
+    },
+    "customer_care": {
+      "name": "Customer Care",
+      "navigation_label": "Customer care categories",
+      "select_category": "Select customer care category",
+      "settings": {
+        "content_header": "Content",
+        "colors_header": "Colors"
+      },
+      "blocks": {
+        "category": {
+          "name": "Category",
+          "tab_header": "Tab settings",
+          "tab_label": "Tab label",
+          "url_slug": "URL slug",
+          "url_slug_info": "Used for deep linking (e.g., 'faq' creates #faq link)",
+          "icon": "Icon",
+          "content_header": "Content",
+          "section_heading": "Section heading",
+          "section_description": "Section description",
+          "qa_header": "Questions & Answers",
+          "question_1": "Question 1",
+          "answer_1": "Answer 1",
+          "question_2": "Question 2",
+          "answer_2": "Answer 2",
+          "question_3": "Question 3",
+          "answer_3": "Answer 3",
+          "question_4": "Question 4",
+          "answer_4": "Answer 4",
+          "question_5": "Question 5",
+          "answer_5": "Answer 5",
+          "question_6": "Question 6",
+          "answer_6": "Answer 6",
+          "question_7": "Question 7",
+          "answer_7": "Answer 7",
+          "question_8": "Question 8",
+          "answer_8": "Answer 8",
+          "question_9": "Question 9",
+          "answer_9": "Answer 9",
+          "question_10": "Question 10",
+          "answer_10": "Answer 10",
+          "question_11": "Question 11",
+          "answer_11": "Answer 11",
+          "question_12": "Question 12",
+          "answer_12": "Answer 12",
+          "question_13": "Question 13",
+          "answer_13": "Answer 13",
+          "question_14": "Question 14",
+          "answer_14": "Answer 14",
+          "question_15": "Question 15",
+          "answer_15": "Answer 15"
+        }
+      },
+      "icons": {
+        "delivery": "Delivery",
+        "payment": "Payment",
+        "returns": "Returns",
+        "faq": "FAQ",
+        "terms": "Terms",
+        "privacy": "Privacy",
+        "contact": "Contact"
+      }
     }
   },
   "blocks": {

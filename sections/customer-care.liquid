@@ -11,11 +11,16 @@
   assign text_color = section.settings.text_color | default: '#3E2027'
 -%}
 
+{%- capture breadcrumb_labels_json -%}
+{"delivery":"{{ 'breadcrumbs.delivery' | t | escape }}","payment":"{{ 'breadcrumbs.payment' | t | escape }}","returns":"{{ 'breadcrumbs.returns' | t | escape }}","faq":"{{ 'breadcrumbs.faq' | t | escape }}","terms":"{{ 'breadcrumbs.terms' | t | escape }}","privacy":"{{ 'breadcrumbs.privacy' | t | escape }}","contact":"{{ 'breadcrumbs.contact' | t | escape }}"}
+{%- endcapture -%}
+
 <section
   class="customer-care"
   id="customer-care-{{ section_id }}"
   data-customer-care
   data-active-category="{{ active_category }}"
+  data-breadcrumb-labels="{{ breadcrumb_labels_json | escape }}"
   style="--cc-bg: {{ bg_color }}; --cc-text: {{ text_color }};">
 
   <div class="customer-care__container">
@@ -41,36 +46,36 @@
             <span class="customer-care__tab-icon">
               {%- case block.settings.icon -%}
                 {%- when 'delivery' -%}
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 3H1v13h15V3Z"/><path d="M16 8h4l3 3v5h-7V8Z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M7.6731 19.7884C7.6731 20.2474 7.49075 20.6877 7.16617 21.0123C6.84159 21.3368 6.40136 21.5192 5.94233 21.5192C5.4833 21.5192 5.04307 21.3368 4.71849 21.0123C4.39391 20.6877 4.21156 20.2474 4.21156 19.7884M7.6731 19.7884C7.6731 19.3294 7.49075 18.8892 7.16617 18.5646C6.84159 18.24 6.40136 18.0576 5.94233 18.0576C5.4833 18.0576 5.04307 18.24 4.71849 18.5646C4.39391 18.8892 4.21156 19.3294 4.21156 19.7884M7.6731 19.7884H14.5962M4.21156 19.7884H2.0481C1.70383 19.7884 1.37366 19.6517 1.13022 19.4082C0.886783 19.1648 0.750022 18.8346 0.750022 18.4903V14.5961M14.5962 19.7884H17.1923M14.5962 19.7884V14.5961M0.750022 14.5961V5.78649C0.748188 5.47053 0.863631 5.16513 1.07401 4.92939C1.28439 4.69364 1.57474 4.54433 1.88887 4.51034C5.73469 4.11114 9.61151 4.11114 13.4573 4.51034C14.1093 4.57726 14.5962 5.13111 14.5962 5.78649V6.89188M0.750022 14.5961H14.5962M20.6539 19.7884C20.6539 20.2474 20.4715 20.6877 20.1469 21.0123C19.8224 21.3368 19.3821 21.5192 18.9231 21.5192C18.4641 21.5192 18.0238 21.3368 17.6993 21.0123C17.3747 20.6877 17.1923 20.2474 17.1923 19.7884M20.6539 19.7884C20.6539 19.3294 20.4715 18.8892 20.1469 18.5646C19.8224 18.24 19.3821 18.0576 18.9231 18.0576C18.4641 18.0576 18.0238 18.24 17.6993 18.5646C17.3747 18.8892 17.1923 19.3294 17.1923 19.7884M20.6539 19.7884H21.9519C22.6685 19.7884 23.2546 19.2069 23.2096 18.4915C22.9778 14.6811 21.6945 11.0094 19.5023 7.88418C19.2935 7.59143 19.0209 7.34997 18.7051 7.17806C18.3892 7.00615 18.0385 6.90829 17.6793 6.89188H14.5962M14.5962 6.89188V14.5961" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 {%- when 'payment' -%}
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M1 8H23M1 8.8H23M4.38462 14.4H11.1538M4.38462 16.8H7.76923M3.53846 20H20.4615C21.1348 20 21.7804 19.7471 22.2565 19.2971C22.7326 18.847 23 18.2365 23 17.6V6.4C23 5.76348 22.7326 5.15303 22.2565 4.70294C21.7804 4.25286 21.1348 4 20.4615 4H3.53846C2.86522 4 2.21955 4.25286 1.7435 4.70294C1.26744 5.15303 1 5.76348 1 6.4V17.6C1 18.2365 1.26744 18.847 1.7435 19.2971C2.21955 19.7471 2.86522 20 3.53846 20Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 {%- when 'returns' -%}
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M19.8571 12C19.8571 10.5216 19.809 9.05635 19.7126 7.60555C19.6384 6.45612 19.2063 5.37545 18.4948 4.56047C17.7833 3.74548 16.8398 3.25044 15.8364 3.16553C13.2824 2.94482 10.7176 2.94482 8.16362 3.16553C7.16015 3.25044 6.21672 3.74548 5.50523 4.56047C4.79374 5.37545 4.36155 6.45612 4.28743 7.60555C4.26962 7.86955 4.2539 8.13475 4.23924 8.39995M19.8571 12L23 8.39995M19.8571 12L16.7143 8.39995M4.14286 12C4.14286 13.4784 4.19105 14.9436 4.28743 16.3944C4.36155 17.5438 4.79374 18.6245 5.50523 19.4395C6.21672 20.2544 7.16015 20.7495 8.16362 20.8344C10.7176 21.0552 13.2824 21.0552 15.8364 20.8344C16.8398 20.7495 17.7833 20.2544 18.4948 19.4395C19.2063 18.6245 19.6384 17.5438 19.7126 16.3944C19.7304 16.1304 19.7461 15.8652 19.7608 15.6M4.14286 12L7.28571 15.6M4.14286 12L1 15.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 {%- when 'faq' -%}
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M9.64333 7.02111C10.9444 5.88222 13.0556 5.88222 14.3567 7.02111C15.6589 8.16 15.6589 10.0067 14.3567 11.1456C14.1311 11.3444 13.8789 11.5078 13.6122 11.6367C12.7844 12.0378 12.0011 12.7467 12.0011 13.6667V14.5M22 12C22 13.3132 21.7413 14.6136 21.2388 15.8268C20.7363 17.0401 19.9997 18.1425 19.0711 19.0711C18.1425 19.9997 17.0401 20.7363 15.8268 21.2388C14.6136 21.7413 13.3132 22 12 22C10.6868 22 9.38642 21.7413 8.17317 21.2388C6.95991 20.7363 5.85752 19.9997 4.92893 19.0711C4.00035 18.1425 3.26375 17.0401 2.7612 15.8268C2.25866 14.6136 2 13.3132 2 12C2 9.34784 3.05357 6.8043 4.92893 4.92893C6.8043 3.05357 9.34784 2 12 2C14.6522 2 17.1957 3.05357 19.0711 4.92893C20.9464 6.8043 22 9.34784 22 12ZM12 17.8333H12.0089V17.8422H12V17.8333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 {%- when 'terms' -%}
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 14.5385V11.5769C20 10.5671 19.6207 9.59856 18.9456 8.88448C18.2705 8.1704 17.3548 7.76923 16.4 7.76923H14.8C14.4817 7.76923 14.1765 7.63551 13.9515 7.39748C13.7264 7.15945 13.6 6.83662 13.6 6.5V4.80769C13.6 3.79783 13.2207 2.82933 12.5456 2.11525C11.8705 1.40117 10.9548 1 10 1H8M8 15.3846H16M8 18.7692H12M10.4 1H5.2C4.5376 1 4 1.56862 4 2.26923V21.7308C4 22.4314 4.5376 23 5.2 23H18.8C19.4624 23 20 22.4314 20 21.7308V11.1538C20 8.46088 18.9886 5.87821 17.1882 3.97399C15.3879 2.06978 12.9461 1 10.4 1Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 {%- when 'privacy' -%}
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 14.5385V11.5769C20 10.5671 19.6207 9.59856 18.9456 8.88448C18.2705 8.1704 17.3548 7.76923 16.4 7.76923H14.8C14.4817 7.76923 14.1765 7.63551 13.9515 7.39748C13.7264 7.15945 13.6 6.83662 13.6 6.5V4.80769C13.6 3.79783 13.2207 2.82933 12.5456 2.11525C11.8705 1.40117 10.9548 1 10 1H8M8 15.3846H16M8 18.7692H12M10.4 1H5.2C4.5376 1 4 1.56862 4 2.26923V21.7308C4 22.4314 4.5376 23 5.2 23H18.8C19.4624 23 20 22.4314 20 21.7308V11.1538C20 8.46088 18.9886 5.87821 17.1882 3.97399C15.3879 2.06978 12.9461 1 10.4 1Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 {%- when 'contact' -%}
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M2 13.3022C2 14.9911 3.15179 16.4626 4.77641 16.7085C5.89128 16.8774 7.01744 17.0072 8.15385 17.098V22L12.3344 17.6976C12.6179 17.4076 12.9984 17.2403 13.3979 17.2299C15.3481 17.1744 17.2934 17.0003 19.2236 16.7085C20.8482 16.4626 22 14.9922 22 13.3012V6.94884C22 5.25784 20.8482 3.78745 19.2236 3.5415C16.8318 3.1802 14.4175 2.99922 12 3C9.54667 3 7.13436 3.18472 4.77641 3.5415C3.15179 3.78745 2 5.25889 2 6.94884V13.3012V13.3022Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 {%- else -%}
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M9.64333 7.02111C10.9444 5.88222 13.0556 5.88222 14.3567 7.02111C15.6589 8.16 15.6589 10.0067 14.3567 11.1456C14.1311 11.3444 13.8789 11.5078 13.6122 11.6367C12.7844 12.0378 12.0011 12.7467 12.0011 13.6667V14.5M22 12C22 13.3132 21.7413 14.6136 21.2388 15.8268C20.7363 17.0401 19.9997 18.1425 19.0711 19.0711C18.1425 19.9997 17.0401 20.7363 15.8268 21.2388C14.6136 21.7413 13.3132 22 12 22C10.6868 22 9.38642 21.7413 8.17317 21.2388C6.95991 20.7363 5.85752 19.9997 4.92893 19.0711C4.00035 18.1425 3.26375 17.0401 2.7612 15.8268C2.25866 14.6136 2 13.3132 2 12C2 9.34784 3.05357 6.8043 4.92893 4.92893C6.8043 3.05357 9.34784 2 12 2C14.6522 2 17.1957 3.05357 19.0711 4.92893C20.9464 6.8043 22 9.34784 22 12ZM12 17.8333H12.0089V17.8422H12V17.8333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
               {%- endcase -%}
             </span>
@@ -152,29 +157,34 @@
 
                 {%- if question != blank and answer != blank -%}
                   <div class="customer-care__accordion-item" data-accordion-item>
-                    <button
-                      type="button"
-                      class="customer-care__accordion-trigger"
-                      aria-expanded="false"
-                      aria-controls="accordion-{{ block.id }}-{{ i }}"
-                      data-accordion-trigger>
-                      <span class="customer-care__accordion-question">{{ question }}</span>
-                      <span class="customer-care__accordion-icon" aria-hidden="true">
-                        <span class="customer-care__accordion-icon--plus">
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                            <line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/>
-                          </svg>
+                    <h3 class="customer-care__accordion-heading">
+                      <button
+                        type="button"
+                        class="customer-care__accordion-trigger"
+                        id="accordion-trigger-{{ block.id }}-{{ i }}"
+                        aria-expanded="false"
+                        aria-controls="accordion-{{ block.id }}-{{ i }}"
+                        data-accordion-trigger>
+                        <span class="customer-care__accordion-question">{{ question }}</span>
+                        <span class="customer-care__accordion-icon" aria-hidden="true">
+                          <span class="customer-care__accordion-icon--plus">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                              <line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/>
+                            </svg>
+                          </span>
+                          <span class="customer-care__accordion-icon--minus">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                              <line x1="3" y1="8" x2="13" y2="8"/>
+                            </svg>
+                          </span>
                         </span>
-                        <span class="customer-care__accordion-icon--minus">
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                            <line x1="3" y1="8" x2="13" y2="8"/>
-                          </svg>
-                        </span>
-                      </span>
-                    </button>
+                      </button>
+                    </h3>
                     <div
                       class="customer-care__accordion-content"
                       id="accordion-{{ block.id }}-{{ i }}"
+                      role="region"
+                      aria-labelledby="accordion-trigger-{{ block.id }}-{{ i }}"
                       aria-hidden="true"
                       data-accordion-content>
                       <div class="customer-care__accordion-answer">
@@ -191,6 +201,40 @@
       </div>
     </div>
   </div>
+
+  {%- capture faq_schema -%}
+    {%- assign first_question = true -%}
+    {%- for block in section.blocks -%}
+      {%- for i in (1..15) -%}
+        {%- assign question_key = 'question_' | append: i -%}
+        {%- assign answer_key = 'answer_' | append: i -%}
+        {%- assign question = block.settings[question_key] -%}
+        {%- assign answer = block.settings[answer_key] | strip_html -%}
+        {%- if question != blank and answer != blank -%}
+          {%- unless first_question -%},{%- endunless -%}
+          {%- assign first_question = false -%}
+          {
+            "@type": "Question",
+            "name": {{ question | json }},
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": {{ answer | json }}
+            }
+          }
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  {%- if faq_schema != blank -%}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [{{ faq_schema }}]
+      }
+    </script>
+  {%- endif -%}
 </section>
 
 {% stylesheet %}
@@ -198,7 +242,7 @@
   --cc-cream: #FFFAE6;
   --cc-border: rgba(62, 32, 39, 0.1);
   background-color: var(--cc-bg);
-  padding: 80px 0 120px;
+  padding: calc(var(--total-header-height, 110px) + 60px) 0 120px;
 }
 
 .customer-care__container {
@@ -251,6 +295,11 @@
   background-color: var(--cc-cream);
 }
 
+.customer-care__tab:focus-visible {
+  outline: 2px solid var(--cc-text);
+  outline-offset: -2px;
+}
+
 .customer-care__tab-icon {
   width: 24px;
   height: 24px;
@@ -297,6 +346,7 @@
   line-height: 1;
   color: var(--cc-text);
   margin: 0 0 30px;
+  text-align: center;
 }
 
 .customer-care__panel-description {
@@ -318,6 +368,12 @@
 
 .customer-care__accordion-item {
   position: relative;
+}
+
+.customer-care__accordion-heading {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
 }
 
 .customer-care__accordion-trigger {
@@ -502,7 +558,7 @@
 
 @media (max-width: 768px) {
   .customer-care {
-    padding: 60px 0 80px;
+    padding: calc(var(--total-header-height, 100px) + 40px) 0 80px;
   }
 
   .customer-care__container {
@@ -601,7 +657,12 @@ class CustomerCare {
       const matchingTab = this.section.querySelector(`[data-tab="${hash}"]`);
       if (matchingTab) {
         this.switchTab(hash, false);
+        return;
       }
+    }
+    const firstTab = this.section.querySelector('[data-tab]');
+    if (firstTab) {
+      this.updateBreadcrumb(firstTab.dataset.tab);
     }
   }
 
@@ -626,9 +687,27 @@ class CustomerCare {
       }
     });
 
+    this.updateBreadcrumb(tabId);
+
     if (updateUrl) {
       history.pushState(null, '', `#${tabId}`);
     }
+  }
+
+  updateBreadcrumb(tabId) {
+    const breadcrumbText = document.querySelector('[data-breadcrumb-current-text]');
+    if (!breadcrumbText) return;
+
+    const labelsAttr = this.section.dataset.breadcrumbLabels;
+    if (!labelsAttr) return;
+
+    try {
+      const breadcrumbLabels = JSON.parse(labelsAttr);
+      const label = breadcrumbLabels[tabId];
+      if (label) {
+        breadcrumbText.textContent = label;
+      }
+    } catch (e) {}
   }
 
   toggleDropdown() {

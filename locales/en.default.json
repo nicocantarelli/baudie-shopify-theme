@@ -289,5 +289,23 @@
     "increase_quantity": "Increase quantity",
     "remove_item": "Remove",
     "quantity": "Quantity"
+  },
+  "breadcrumbs": {
+    "navigation": "Breadcrumb navigation",
+    "home": "Home",
+    "shop": "Shop",
+    "cart": "Cart",
+    "search": "Search",
+    "account": "Account",
+    "order": "Order",
+    "addresses": "Addresses",
+    "customer_care": "Customer Care",
+    "delivery": "Delivery",
+    "payment": "Payment",
+    "returns": "Returns",
+    "faq": "Frequently Asked Questions",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us"
   }
 }
