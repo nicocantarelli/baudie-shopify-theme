@@ -463,11 +463,16 @@
       font-size: 60px;
     }
 
-    /* Single column on mobile */
+    /* 2 columns for menus, newsletter spans full width */
     .footer__content {
-      grid-template-columns: 1fr;
-      gap: 35px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px 20px;
       padding: 40px 0 35px;
+    }
+
+    /* Newsletter spans full width below the menus */
+    .footer__column--newsletter {
+      grid-column: span 2;
     }
 
     .footer__heading {

@@ -137,7 +137,7 @@
   .reviews-section__container {
     max-width: 1600px;
     margin: 0 auto;
-    padding: 70px 40px 100px;
+    padding: 0 40px 100px;
     position: relative;
     z-index: 1;
   }
@@ -150,6 +150,7 @@
     line-height: 1;
     color: #3E2027;
     margin: 0 0 90px;
+    padding-top: 70px;
     position: relative;
   }
 
@@ -157,7 +158,7 @@
   .reviews-section__view-all {
     position: absolute;
     right: 40px;
-    top: 98px;
+    top: 168px;
     display: flex;
     align-items: center;
     gap: 15px;
@@ -209,6 +210,7 @@
     gap: 35px;
     transition: transform 0.4s ease;
     will-change: transform;
+    padding-right: 40px;
   }
 
   /* Individual Review Card */
@@ -338,7 +340,7 @@
 
     .reviews-section__view-all {
       right: 24px;
-      top: 73px;
+      top: 143px;
     }
 
     .reviews-section__carousel {
@@ -352,6 +354,7 @@
 
     .reviews-section__cards {
       gap: 25px;
+      padding-right: 35px;
     }
   }
 
@@ -361,12 +364,13 @@
     }
 
     .reviews-section__container {
-      padding: 50px 16px 60px;
+      padding: 0 16px 60px;
     }
 
     .reviews-section__heading {
       font-size: 50px;
       margin-bottom: 40px;
+      padding-top: 50px;
     }
 
     .reviews-section__view-all {
@@ -401,6 +405,7 @@
 
     .reviews-section__cards {
       gap: 20px;
+      padding-right: 30px;
     }
   }
 
@@ -425,6 +430,10 @@
 
     .reviews-section__card-text {
       font-size: 13px;
+    }
+
+    .reviews-section__cards {
+      padding-right: 25px;
     }
   }
 {% endstylesheet %}
@@ -495,21 +504,9 @@
 
   getCardsToShow() {
     const width = window.innerWidth;
-    if (width <= 480) 
-      return1;
-    
-
-
-    if (width <= 768) 
-      return2;
-    
-
-
-    if (width <= 1200) 
-      return2;
-    
-
-
+    if (width <= 480) return 1;
+    if (width <= 768) return 2;
+    if (width <= 1200) return 2;
     return 3;
   }
 

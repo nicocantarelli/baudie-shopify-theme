@@ -261,82 +261,13 @@
 
   /*
    ========================================
-   MOBILE STYLES (below 768px) ========================================
+   MOBILE STYLES (below 768px)
+   Hidden on mobile - no design available yet
+   ========================================
 */
   @media (max-width: 767px) {
-    .explore-sets__wrapper {
-      padding: 0 20px;
-    }
-
-    .explore-sets__background--desktop {
+    .explore-sets {
       display: none;
-    }
-
-    .explore-sets__background--mobile {
-      display: block;
-      position: relative;
-      height: 350px;
-      width: 100%;
-    }
-
-    .explore-sets__background--mobile .explore-sets__bg-image,
-    .explore-sets__background--mobile .explore-sets__bg-gradient {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-
-    .explore-sets__content {
-      padding: 0 20px 60px;
-    }
-
-    .explore-sets__header {
-      position: absolute;
-      top: 40px;
-      left: 20px;
-      right: 20px;
-      z-index: 3;
-    }
-
-    .explore-sets__heading {
-      font-size: 40px;
-      max-width: 100%;
-      margin: 0 0 12px;
-    }
-
-    .explore-sets__description {
-      max-width: 100%;
-      font-size: 14px;
-      margin-top: 0;
-    }
-
-    .explore-sets__cards {
-      flex-direction: column;
-      align-items: center;
-      gap: 30px;
-      margin-top: 30px;
-    }
-
-    .explore-sets__card {
-      width: 100%;
-      max-width: 325px;
-    }
-  }
-
-
-  /*
-   ========================================
-   SMALL MOBILE (below 480px) ========================================
-*/
-  @media (max-width: 480px) {
-    .explore-sets__header {
-      top: 30px;
-    }
-
-    .explore-sets__heading {
-      font-size: 32px;
     }
   }
 {% endstylesheet %}
