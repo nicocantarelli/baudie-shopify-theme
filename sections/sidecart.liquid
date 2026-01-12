@@ -4,7 +4,6 @@
   if item_count > 0
     assign has_items = true
   endif
-
   assign enable_quick_cart = settings.enable_quick_cart
   assign show_dynamic_checkout = settings.show_dynamic_checkout
 -%}
@@ -44,21 +43,18 @@
       </div>
 
       <div class="sidecart__content" data-sidecart-content>
-        {% if has_items %}
-          <ul class="sidecart__items" role="list" data-sidecart-items>
-            {% for item in cart.items %}
-              {% render 'sidecart-item', item: item %}
-            {% endfor %}
-          </ul>
-        {% else %}
-          <div class="sidecart__empty" data-sidecart-empty>
-            <h3 class="sidecart__empty-title">{{ section.settings.empty_title }}</h3>
-            <p class="sidecart__empty-message">{{ section.settings.empty_message }}</p>
-            <a href="{{ routes.all_products_collection_url }}" class="sidecart__continue-btn">
-              {{ section.settings.continue_button_text }}
-            </a>
-          </div>
-        {% endif %}
+        <ul class="sidecart__items{% unless has_items %} sidecart__items--hidden{% endunless %}" role="list" data-sidecart-items>
+          {% for item in cart.items %}
+            {% render 'sidecart-item', item: item %}
+          {% endfor %}
+        </ul>
+        <div class="sidecart__empty{% if has_items %} sidecart__empty--hidden{% endif %}" data-sidecart-empty>
+          <h3 class="sidecart__empty-title">{{ section.settings.empty_title }}</h3>
+          <p class="sidecart__empty-message">{{ section.settings.empty_message }}</p>
+          <a href="{{ routes.all_products_collection_url }}" class="sidecart__continue-btn">
+            {{ section.settings.continue_button_text }}
+          </a>
+        </div>
       </div>
 
       <div class="sidecart__footer{% unless has_items %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
@@ -195,6 +191,10 @@
     list-style: none;
     margin: 0;
     padding: 0;
+  }
+
+  .sidecart__items--hidden {
+    display: none;
   }
 
   .sidecart-item {
@@ -417,6 +417,41 @@
     height: 100%;
   }
 
+  .sidecart__empty--hidden {
+    display: none;
+  }
+
+  .sidecart.is-loading .sidecart__items {
+    pointer-events: none;
+  }
+
+  .sidecart.is-loading .sidecart__empty {
+    display: none;
+  }
+
+  .sidecart.is-loading .sidecart__content {
+    position: relative;
+    min-height: 200px;
+  }
+
+  .sidecart.is-loading .sidecart__content::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    border: 2px solid var(--sidecart-border);
+    border-top-color: var(--sidecart-text);
+    border-radius: 50%;
+    animation: sidecart-spin 0.8s linear infinite;
+  }
+
+  @keyframes sidecart-spin {
+    to { transform: rotate(360deg); }
+  }
+
   .sidecart__empty-title {
     font-family: var(--font-jokker);
     font-size: 24px;
@@ -633,6 +668,16 @@
       this.initCartListeners();
     }
 
+    refreshElementRefs() {
+      this.content = this.sidecart?.querySelector('[data-sidecart-content]');
+      this.itemsContainer = this.sidecart?.querySelector('[data-sidecart-items]');
+      this.footer = this.sidecart?.querySelector('[data-sidecart-footer]');
+      this.countElement = this.sidecart?.querySelector('[data-sidecart-count]');
+      this.itemsLabelElement = this.sidecart?.querySelector('[data-sidecart-items-label]');
+      this.subtotalElement = this.sidecart?.querySelector('[data-sidecart-subtotal]');
+      this.emptyElement = this.sidecart?.querySelector('[data-sidecart-empty]');
+    }
+
     bindEvents() {
       this.closeButton?.addEventListener('click', () => this.close());
       this.overlay?.addEventListener('click', () => this.close());
@@ -745,10 +790,22 @@
       }
 
       if (newCount === 0) {
-        if (this.itemsContainer) this.itemsContainer.style.display = 'none';
-        if (this.emptyElement) this.emptyElement.style.display = 'flex';
-        if (this.footer) this.footer.classList.add('sidecart__footer--hidden');
+        this.showEmptyState();
       }
+    }
+
+    showEmptyState() {
+      this.refreshElementRefs();
+      if (this.itemsContainer) this.itemsContainer.classList.add('sidecart__items--hidden');
+      if (this.emptyElement) this.emptyElement.classList.remove('sidecart__empty--hidden');
+      if (this.footer) this.footer.classList.add('sidecart__footer--hidden');
+    }
+
+    hideEmptyState() {
+      this.refreshElementRefs();
+      if (this.itemsContainer) this.itemsContainer.classList.remove('sidecart__items--hidden');
+      if (this.emptyElement) this.emptyElement.classList.add('sidecart__empty--hidden');
+      if (this.footer) this.footer.classList.remove('sidecart__footer--hidden');
     }
 
     updateItemsLabel(count) {
@@ -765,6 +822,7 @@
     initCartListeners() {
       document.addEventListener('cart:open', () => this.open());
       document.addEventListener('cart:updated', (e) => this.refresh(e.detail));
+      document.addEventListener('cart:dom-updated', () => this.refreshElementRefs());
     }
 
     open(trigger = null) {
@@ -842,9 +900,7 @@
           }
 
           if (cart.item_count === 0) {
-            if (this.itemsContainer) this.itemsContainer.style.display = 'none';
-            if (this.emptyElement) this.emptyElement.style.display = 'flex';
-            if (this.footer) this.footer.classList.add('sidecart__footer--hidden');
+            this.showEmptyState();
           }
         }
       } catch (error) {
@@ -862,11 +918,14 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         const newContent = doc.querySelector('[data-sidecart-content]');
+        const newFooter = doc.querySelector('[data-sidecart-footer]');
         if (newContent && this.content) {
           this.content.innerHTML = newContent.innerHTML;
-          this.itemsContainer = this.content.querySelector('[data-sidecart-items]');
-          this.emptyElement = this.content.querySelector('[data-sidecart-empty]');
         }
+        if (newFooter && this.footer) {
+          this.footer.innerHTML = newFooter.innerHTML;
+        }
+        this.refreshElementRefs();
       } catch (e) {
         console.error('Failed to refresh sidecart:', e);
       }
@@ -888,12 +947,9 @@
       }
 
       if (cartData.item_count === 0) {
-        if (this.itemsContainer) this.itemsContainer.style.display = 'none';
-        if (this.emptyElement) this.emptyElement.style.display = 'flex';
-        if (this.footer) this.footer.classList.add('sidecart__footer--hidden');
+        this.showEmptyState();
       } else {
-        if (this.emptyElement) this.emptyElement.style.display = 'none';
-        if (this.footer) this.footer.classList.remove('sidecart__footer--hidden');
+        this.hideEmptyState();
         await this.refreshFromServer();
       }
     }
@@ -948,6 +1004,10 @@
         submitBtn.classList.add('is-loading');
       }
 
+      const sidecart = document.getElementById('sidecart');
+      sidecart?.classList.add('is-loading');
+      document.dispatchEvent(new CustomEvent('cart:open'));
+
       try {
         const variantId = form.querySelector('input[name="id"]')?.value;
         const quantityInput = form.querySelector('input[name="quantity"]');
@@ -980,19 +1040,40 @@
           throw new Error(errorMsg || 'Failed to add to cart');
         }
 
-        const cartResponse = await fetch('/cart.js');
+        const [cartResponse, sectionResponse] = await Promise.all([
+          fetch('/cart.js'),
+          fetch('/?section_id=sidecart')
+        ]);
+
         const cart = await cartResponse.json();
+        const sectionHtml = await sectionResponse.text();
 
         document.querySelectorAll('[data-cart-count]').forEach(el => {
           el.textContent = cart.item_count;
           el.style.display = cart.item_count > 0 ? '' : 'none';
         });
 
-        document.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
-        document.dispatchEvent(new CustomEvent('cart:open'));
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(sectionHtml, 'text/html');
+        const newContent = doc.querySelector('[data-sidecart-content]');
+        const newFooter = doc.querySelector('[data-sidecart-footer]');
+        const content = sidecart?.querySelector('[data-sidecart-content]');
+        const footer = sidecart?.querySelector('[data-sidecart-footer]');
+
+        if (newContent && content) content.innerHTML = newContent.innerHTML;
+        if (newFooter && footer) footer.innerHTML = newFooter.innerHTML;
+        if (footer) footer.classList.remove('sidecart__footer--hidden');
+
+        document.dispatchEvent(new CustomEvent('cart:dom-updated'));
+
+        const countEl = sidecart?.querySelector('[data-sidecart-count]');
+        const labelEl = sidecart?.querySelector('[data-sidecart-items-label]');
+        if (countEl) countEl.textContent = cart.item_count;
+        if (labelEl) labelEl.textContent = cart.item_count === 1 ? (sidecart?.dataset.itemSingular || 'item') : (sidecart?.dataset.itemPlural || 'items');
       } catch (error) {
         alert(error.message || 'Could not add item to cart. Please try again.');
       } finally {
+        sidecart?.classList.remove('is-loading');
         if (submitBtn) {
           submitBtn.disabled = originalDisabled || false;
           submitBtn.classList.remove('is-loading');
