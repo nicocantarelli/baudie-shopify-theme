@@ -1,6 +1,9 @@
-{% comment %}
-  Header section with announcement bar and main navigation
-{% endcomment %}
+{%- liquid
+  assign has_announcements = false
+  if section.blocks.size > 0
+    assign has_announcements = true
+  endif
+-%}
 
 <div
   class="header-wrapper full-width"
@@ -11,38 +14,34 @@
     --announcement-bg: {{ section.settings.announcement_bg_color }};
     --announcement-text: {{ section.settings.announcement_text_color }};
   ">
-  {% comment %} Announcement Bar {% endcomment %}
-  {% if section.blocks.size > 0 %}
+
+  {% if has_announcements %}
     <div
       class="announcement-bar"
       role="region"
       aria-label="Announcements">
       {% for block in section.blocks %}
-        {% if block.type == 'announcement' %}
-          <div class="announcement-bar__item announcement-bar__item--{{ forloop.index }}" {{ block.shopify_attributes }}>
-            {% if block.settings.url != blank %}
-              <a href="{{ block.settings.url }}" class="announcement-bar__link">
-                <span class="announcement-bar__text">{{ block.settings.text }}</span>
-                {% if block.settings.link_text != blank %}
-                  <span class="announcement-bar__link-text">{{ block.settings.link_text }}</span>
-                {% endif %}
-              </a>
-            {% else %}
+        <div class="announcement-bar__item announcement-bar__item--{{ forloop.index }}" {{ block.shopify_attributes }}>
+          {% if block.settings.url != blank %}
+            <a href="{{ block.settings.url }}" class="announcement-bar__link">
               <span class="announcement-bar__text">{{ block.settings.text }}</span>
               {% if block.settings.link_text != blank %}
                 <span class="announcement-bar__link-text">{{ block.settings.link_text }}</span>
               {% endif %}
+            </a>
+          {% else %}
+            <span class="announcement-bar__text">{{ block.settings.text }}</span>
+            {% if block.settings.link_text != blank %}
+              <span class="announcement-bar__link-text">{{ block.settings.link_text }}</span>
             {% endif %}
-          </div>
-        {% endif %}
+          {% endif %}
+        </div>
       {% endfor %}
     </div>
   {% endif %}
 
-  {% comment %} Main Header {% endcomment %}
   <header class="header">
     <div class="header__inner">
-      {% comment %} Logo {% endcomment %}
       <div class="header__logo">
         {% if section.settings.logo %}
           <a href="{{ routes.root_url }}">
@@ -55,7 +54,6 @@
         {% endif %}
       </div>
 
-      {% comment %} Navigation Menu {% endcomment %}
       <nav class="header__menu">
         {% for link in section.settings.menu.links %}
           <a href="{{ link.url }}" class="header__menu-link">
@@ -64,7 +62,6 @@
         {% endfor %}
       </nav>
 
-      {% comment %} Icons {% endcomment %}
       <div class="header__icons">
         {% if shop.customer_accounts_enabled %}
           <a
@@ -72,6 +69,8 @@
             class="header__icon"
             aria-label="{{ 'header.account' | t }}">
             <svg
+              aria-hidden="true"
+              focusable="false"
               xmlns="http://www.w3.org/2000/svg"
               width="28"
               height="28"
@@ -90,6 +89,8 @@
             <span class="header__cart-count">{{ cart.item_count }}</span>
           {% endif %}
           <svg
+            aria-hidden="true"
+            focusable="false"
             xmlns="http://www.w3.org/2000/svg"
             width="28"
             height="28"
@@ -112,8 +113,12 @@
           type="button"
           class="header__icon header__menu-toggle"
           aria-label="{{ 'header.menu' | t }}"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
           id="mobile-menu-toggle">
           <svg
+            aria-hidden="true"
+            focusable="false"
             xmlns="http://www.w3.org/2000/svg"
             width="28"
             height="28"
@@ -130,18 +135,25 @@
     </div>
   </header>
 
-  {% comment %} Mobile Menu Drawer {% endcomment %}
-  <div class="mobile-menu" id="mobile-menu">
+  <div
+    class="mobile-menu"
+    id="mobile-menu"
+    aria-hidden="true">
     <div class="mobile-menu__overlay" id="mobile-menu-overlay"></div>
-    <div class="mobile-menu__drawer">
+    <div
+      class="mobile-menu__drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="{{ 'header.menu' | t }}">
       <div class="mobile-menu__header">
-        {% comment %} <span class="mobile-menu__title">{{ 'header.menu' | t }}</span> {% endcomment %}
         <button
           type="button"
           class="mobile-menu__close"
           aria-label="{{ 'header.close_menu' | t }}"
           id="mobile-menu-close">
           <svg
+            aria-hidden="true"
+            focusable="false"
             width="24"
             height="24"
             viewBox="0 0 24 24"
@@ -167,6 +179,7 @@
 </div>
 
 {% stylesheet %}
+  /* Header Wrapper */
   .header-wrapper {
     position: fixed;
     top: 0;
@@ -198,15 +211,11 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
   }
 
-  .announcement-bar__item--1 {
-    left: 25%;
-  }
-
-  .announcement-bar__item--2 {
-    left: 75%;
-  }
+  .announcement-bar__item--1 { left: 25%; }
+  .announcement-bar__item--2 { left: 75%; }
 
   .announcement-bar__text,
   .announcement-bar__link-text {
@@ -236,11 +245,10 @@
     text-underline-offset: 2px;
   }
 
-  /* Main Header */
+  /* Header */
   .header {
     background-color: var(--header-bg);
     height: 70px;
-    /* padding: 0 20px; */
   }
 
   .header__inner {
@@ -248,7 +256,6 @@
     align-items: center;
     justify-content: space-between;
     height: 100%;
-    /* max-width: 1440px; */
     margin: 0 auto;
     position: relative;
     padding: 0 40px;
@@ -257,9 +264,8 @@
   /* Logo */
   .header__logo {
     flex-shrink: 0;
-    margin-top: 17px;
+    margin: 17px 0;
     height: 35px;
-    margin-bottom: 17px;
     width: 103px;
   }
 
@@ -267,8 +273,7 @@
     display: inline-flex;
     align-items: center;
     text-decoration: none;
-    transition: opacity 0.2s ease
-    , transform 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
   .header__logo a:hover {
@@ -293,15 +298,13 @@
   }
 
   .header__logo-text {
-    font-family: 'Jokker'
-    , Georgia
-    , serif;
+    font-family: 'Jokker', Georgia, serif;
     font-size: 24px;
     color: var(--header-text);
     text-decoration: none;
   }
 
-  /* Menu */
+  /* Navigation Menu */
   .header__menu {
     display: flex;
     gap: 30px;
@@ -312,19 +315,14 @@
   }
 
   .header__menu-link {
-    font-family: 'Sweet Sans Pro'
-    , -apple-system
-    , BlinkMacSystemFont
-    , 'Segoe UI'
-    , sans-serif;
+    font-family: 'Sweet Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-weight: 500;
     font-size: 14px;
     letter-spacing: -0.14px;
     text-transform: uppercase;
     color: var(--header-text);
     text-decoration: none;
-    transition: opacity 0.2s ease
-    , transform 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
   .header__menu-link:hover {
@@ -343,7 +341,7 @@
     border-radius: 6px;
   }
 
-  /* Icons */
+  /* Header Icons */
   .header__icons {
     display: flex;
     gap: 14px;
@@ -361,8 +359,7 @@
     border: none;
     cursor: pointer;
     padding: 0;
-    transition: opacity 0.2s ease
-    , transform 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
   .header__icon:hover {
@@ -401,12 +398,11 @@
     text-align: center;
   }
 
-  /* Mobile menu toggle - hidden on desktop */
   .header__menu-toggle {
     display: none;
   }
 
-  /* Mobile Menu Drawer */
+  /* Mobile Menu */
   .mobile-menu {
     position: fixed;
     top: 0;
@@ -425,10 +421,7 @@
 
   .mobile-menu__overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background-color: rgba(0, 0, 0, 0.5);
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -461,18 +454,9 @@
   .mobile-menu__header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 20px;
     border-bottom: 1px solid rgba(62, 32, 39, 0.1);
-  }
-
-  .mobile-menu__title {
-    font-family: 'Jokker'
-    , Georgia
-    , serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--header-text);
   }
 
   .mobile-menu__close {
@@ -491,6 +475,12 @@
     opacity: 0.7;
   }
 
+  .mobile-menu__close:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+    border-radius: 6px;
+  }
+
   .mobile-menu__nav {
     display: flex;
     flex-direction: column;
@@ -498,11 +488,7 @@
   }
 
   .mobile-menu__link {
-    font-family: 'Sweet Sans Pro'
-    , -apple-system
-    , BlinkMacSystemFont
-    , 'Segoe UI'
-    , sans-serif;
+    font-family: 'Sweet Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-weight: 500;
     font-size: 16px;
     letter-spacing: -0.16px;
@@ -517,27 +503,41 @@
     background-color: rgba(62, 32, 39, 0.05);
   }
 
+  .mobile-menu__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+
+  /* Tablet */
   @media (max-width: 1024px) {
     .header__inner {
       padding: 0 24px;
     }
   }
 
-  /* Responsive */
+  /* Mobile */
   @media (max-width: 768px) {
     .announcement-bar {
-      height: 35px;
-      display: none;
+      height: auto;
+      flex-direction: column;
+      padding: 10px 12px;
+      gap: 4px;
     }
 
     .announcement-bar__item {
       position: static;
       transform: none;
+      justify-content: center;
     }
 
     .announcement-bar__text,
     .announcement-bar__link-text {
-      font-size: 10px;
+      font-size: 9px;
+      letter-spacing: 0;
+    }
+
+    .announcement-bar__link {
+      justify-content: center;
     }
 
     .header {
@@ -550,9 +550,7 @@
     }
 
     .header__logo {
-      margin-right: auto;
-      margin-top: 13.5px;
-      margin-bottom: 13.5px;
+      margin: 13.5px auto 13.5px 0;
       height: 33px;
       width: auto;
     }
@@ -572,78 +570,62 @@
 {% endstylesheet %}
 
 {% javascript %}
-  // Set header height CSS variable - used by other sections for spacing
   function updateHeaderHeight() {
     const header = document.querySelector('.header-wrapper');
-    if (header) {
-      const headerHeight = header.offsetHeight;
-      document.documentElement.style.setProperty('--total-header-height', `${headerHeight}px`);
-      console.log('Header height set to:', headerHeight + 'px');
-    }
+    if (!header) return;
+
+    document.documentElement.style.setProperty('--total-header-height', `${header.offsetHeight}px`);
   }
 
-  // Update on load and resize
   updateHeaderHeight();
   window.addEventListener('resize', updateHeaderHeight);
 
   class HeaderScrollBehavior {
     constructor() {
       this.header = document.querySelector('.header-wrapper');
-      if (!this.header) {
-        console.log('Header not found');
-        return;
-      }
+      if (!this.header) return;
 
       this.lastScrollY = window.scrollY;
       this.ticking = false;
       this.scrollThreshold = 10;
-
-// Get header height and add buffer (30px extra)
       this.headerHeight = this.header.offsetHeight + 30;
-      console.log('Header height + buffer:', this.headerHeight + 'px');
 
-      const stickyBehavior = this.header.getAttribute('data-sticky-behavior');
-      console.log('Sticky behavior setting:', stickyBehavior);
-
-      if (stickyBehavior === 'hide_on_scroll') {
+      if (this.header.dataset.stickyBehavior === 'hide_on_scroll') {
         this.init();
-        console.log('Header scroll behavior initialized');
-      } else {
-        console.log('Header set to always visible');
       }
     }
 
     init() {
       window.addEventListener('scroll', () => {
-        if (!this.ticking) {
-          window.requestAnimationFrame(() => {
-            this.handleScroll();
-            this.ticking = false;
-          });
-          this.ticking = true;
-        }
+        if (this.ticking) return;
+
+        this.ticking = true;
+        requestAnimationFrame(() => {
+          this.handleScroll();
+          this.ticking = false;
+        });
       });
     }
 
     handleScroll() {
       const currentScrollY = window.scrollY;
 
-// Always show header when at the top
       if (currentScrollY <= 0) {
         this.header.classList.remove('header--hidden');
         this.lastScrollY = currentScrollY;
         return;
       }
 
-// Ignore small scroll movements
       if (Math.abs(currentScrollY - this.lastScrollY) < this.scrollThreshold) {
         return;
       }
 
-// Only hide header if we've scrolled past the header height + buffer
-      if (currentScrollY > this.lastScrollY && currentScrollY > this.headerHeight) {
+      const isScrollingDown = currentScrollY > this.lastScrollY;
+      const isPastHeader = currentScrollY > this.headerHeight;
+
+      if (isScrollingDown && isPastHeader) {
         this.header.classList.add('header--hidden');
-      } else if (currentScrollY < this.lastScrollY) { // Always show when scrolling up
+      } else if (!isScrollingDown) {
         this.header.classList.remove('header--hidden');
       }
 
@@ -652,61 +634,67 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      new HeaderScrollBehavior();
-    });
+    document.addEventListener('DOMContentLoaded', () => new HeaderScrollBehavior());
   } else {
     new HeaderScrollBehavior();
   }
 
-/* Mobile Menu Toggle */
-  (function() {
+  (function initMobileMenu() {
     const menu = document.getElementById('mobile-menu');
     const toggleButton = document.getElementById('mobile-menu-toggle');
     const closeButton = document.getElementById('mobile-menu-close');
     const overlay = document.getElementById('mobile-menu-overlay');
+    const drawer = menu?.querySelector('.mobile-menu__drawer');
 
-    if (! menu || ! toggleButton) {
-      console.log('Mobile menu elements not found');
-      return;
+    if (!menu || !toggleButton) return;
+
+    function getFocusableElements() {
+      return drawer.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
     }
 
     function openMenu() {
       menu.classList.add('is-open');
+      menu.setAttribute('aria-hidden', 'false');
+      toggleButton.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
+      setTimeout(() => closeButton?.focus(), 100);
     }
 
     function closeMenu() {
       menu.classList.remove('is-open');
+      menu.setAttribute('aria-hidden', 'true');
+      toggleButton.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
+      toggleButton.focus();
     }
 
-    toggleButton.addEventListener('click', function(e) {
-      e.preventDefault();
-      openMenu();
-    });
+    function handleKeydown(e) {
+      if (!menu.classList.contains('is-open')) return;
 
-    if (closeButton) {
-      closeButton.addEventListener('click', function(e) {
-        e.preventDefault();
+      if (e.key === 'Escape') {
         closeMenu();
-      });
-    }
-
-    if (overlay) {
-      overlay.addEventListener('click', function(e) {
-        e.preventDefault();
-        closeMenu();
-      });
-    }
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && menu.classList.contains('is-open')) {
-        closeMenu();
+        return;
       }
-    });
 
-    console.log('Mobile menu initialized');
+      if (e.key !== 'Tab') return;
+
+      const focusableElements = getFocusableElements();
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus();
+      } else if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus();
+      }
+    }
+
+    toggleButton.addEventListener('click', openMenu);
+    closeButton?.addEventListener('click', closeMenu);
+    overlay?.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', handleKeydown);
   })();
 {% endjavascript %}
 
@@ -787,14 +775,12 @@
             "id": "text",
             "label": "t:header.blocks.announcement.settings.text",
             "default": "Announcement text"
-          },
-          {
+          }, {
             "type": "text",
             "id": "link_text",
             "label": "t:header.blocks.announcement.settings.link_text",
             "info": "t:header.blocks.announcement.settings.link_text_info"
-          },
-          {
+          }, {
             "type": "url",
             "id": "url",
             "label": "t:header.blocks.announcement.settings.url"
