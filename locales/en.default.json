@@ -74,7 +74,9 @@
     "add_to_cart": "Add to cart",
     "view_product": "View product",
     "buy_now": "Buy now",
-    "sold_out": "Sold out"
+    "sold_out": "Sold out",
+    "regular_price": "Regular price",
+    "sale_price": "Sale price"
   },
   "search": {
     "title": "Search",
@@ -125,6 +127,10 @@
       "product_carousel": "Product carousel",
       "slide_of": "Slide {{ current }} of {{ total }}",
       "rating_label": "{{ rating }} out of 5 stars, {{ count }} reviews"
+    },
+    "collection_grid": {
+      "aria_label": "Product collection",
+      "product_count": "{{ count }} products"
     }
   },
   "labels": {
@@ -183,6 +189,9 @@
     },
     "feature": {
       "name": "Feature"
+    },
+    "product_card": {
+      "name": "Product card"
     }
   },
   "footer": {

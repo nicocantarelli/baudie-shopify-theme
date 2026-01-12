@@ -10,8 +10,11 @@
 {
   "sections": {
     "main": {
-      "type": "collection",
-      "settings": {}
+      "type": "collection-grid",
+      "settings": {
+        "heading": "Meet Your Scents"
+      },
+      "blocks": {}
     }
   },
   "order": [

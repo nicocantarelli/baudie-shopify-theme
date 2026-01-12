@@ -252,6 +252,16 @@
         "mobile_button_text": "Mobile button text",
         "mobile_button_url": "Mobile button URL"
       }
+    },
+    "collection_grid": {
+      "name": "Collection grid",
+      "settings": {
+        "seo_header": "SEO content",
+        "seo_heading": "SEO heading",
+        "seo_heading_info": "Heading for the SEO text section below the grid",
+        "seo_text": "SEO text",
+        "seo_text_info": "Rich text content for search engine optimization"
+      }
     }
   },
   "blocks": {
@@ -279,6 +289,14 @@
       "name": "Feature",
       "settings": {
         "number": "Number"
+      }
+    },
+    "product_card": {
+      "name": "Product card",
+      "settings": {
+        "card_width": "Card width",
+        "width_single": "Single (1 column)",
+        "width_double": "Double (2 columns)"
       }
     }
   }
