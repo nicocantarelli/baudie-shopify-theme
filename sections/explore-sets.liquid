@@ -68,79 +68,15 @@
           {% for block in section.blocks %}
             {% if block.type == 'bundle_card' %}
               {% assign bundle_product = block.settings.product %}
-              {% assign display_products = block.settings.display_products %}
-              {% assign product_count = display_products.size %}
-              {% if product_count == 0 and bundle_product %}
-                {% assign product_count = 1 %}
-              {% endif %}
-              <div class="explore-sets__card" {{ block.shopify_attributes }}>
-                {%- comment -%} Product Image Box - overlays the background image {%- endcomment -%}
-                <a
-                  href="{{ bundle_product.url }}"
-                  class="explore-sets__card-image-box"
-                  style="background-color: {{ block.settings.card_bg_color }};">
-                  {%- comment -%} Badge {%- endcomment -%}
-                  {% if block.settings.show_badge and block.settings.badge_text != blank %}
-                    <div class="explore-sets__badge">
-                      <span class="explore-sets__badge-text">{{ block.settings.badge_text }}</span>
-                    </div>
-                  {% endif %}
-
-                  {%- comment -%} Product Images {%- endcomment -%}
-                  <div class="explore-sets__product-images explore-sets__product-images--{{ product_count }}">
-                    {% if display_products.size > 0 %}
-                      {% for display_product in display_products %}
-                        {% if display_product.featured_image %}
-                          <div class="explore-sets__product-img">
-                            {{ display_product.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', class: 'explore-sets__product-image' }}
-                          </div>
-                        {% endif %}
-                      {% endfor %}
-                    {% elsif bundle_product and bundle_product.featured_image %}
-                      <div class="explore-sets__product-img">
-                        {{ bundle_product.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', class: 'explore-sets__product-image' }}
-                      </div>
-                    {% endif %}
-                  </div>
-                </a>
-
-                {%- comment -%} Card Content - sits on cream background {%- endcomment -%}
-                <div class="explore-sets__card-content">
-                  <div class="explore-sets__card-header">
-                    <h3 class="explore-sets__card-title">
-                      {% if block.settings.custom_title != blank %}
-                        {{ block.settings.custom_title | newline_to_br }}
-                      {% elsif bundle_product %}
-                        {{ bundle_product.title }}
-                      {% endif %}
-                    </h3>
-                    <div class="explore-sets__card-price">
-                      {% if bundle_product %}
-                        {% if bundle_product.compare_at_price > bundle_product.price %}
-                          <span class="explore-sets__price-compare">{{ bundle_product.compare_at_price | money }}</span>
-                        {% endif %}
-                        <span class="explore-sets__price-current {% if bundle_product.compare_at_price > bundle_product.price %}explore-sets__price-sale{% else %}explore-sets__price-regular{% endif %}">
-                          {{ bundle_product.price | money }}
-                        </span>
-                      {% endif %}
-                    </div>
-                  </div>
-
-                  {% if block.settings.custom_description != blank %}
-                    <div class="explore-sets__card-description">
-                      {{ block.settings.custom_description }}
-                    </div>
-                  {% elsif bundle_product.metafields.custom.short_description != blank %}
-                    <div class="explore-sets__card-description">
-                      {{ bundle_product.metafields.custom.short_description }}
-                    </div>
-                  {% elsif bundle_product.description != blank %}
-                    <div class="explore-sets__card-description">
-                      {{ bundle_product.description | strip_html | truncate: 150 }}
-                    </div>
-                  {% endif %}
+              {% if bundle_product %}
+                <div class="explore-sets__card" {{ block.shopify_attributes }}>
+                  {% render 'product-card',
+                    product: bundle_product,
+                    show_badge: block.settings.show_badge,
+                    badge_text: block.settings.badge_text
+                  %}
                 </div>
-              </div>
+              {% endif %}
             {% endif %}
           {% endfor %}
         </div>
@@ -281,193 +217,9 @@
     margin-top: 70px;
   }
 
-  /* Individual Card */
+  /* Individual Card Wrapper */
   .explore-sets__card {
     width: 325px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  /* Card Image Box - overlays the background image */
-  .explore-sets__card-image-box {
-    position: relative;
-    width: 325px;
-    height: 420px;
-    overflow: hidden;
-    display: block;
-    text-decoration: none;
-  }
-
-  /* Badge - matches product-card badge style */
-  .explore-sets__badge {
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    background: #FFFFFF;
-    border-radius: 70px;
-    padding: 10px 16px 8px;
-    z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .explore-sets__badge-text {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 13px;
-    line-height: 1;
-    letter-spacing: -0.13px;
-    text-transform: uppercase;
-    color: #3E2027;
-  }
-
-  /* Product Images Container */
-  .explore-sets__product-images {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Single product layout */
-  .explore-sets__product-images--1 {
-    inset: 0;
-  }
-
-  .explore-sets__product-images--1 .explore-sets__product-img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .explore-sets__product-images--1 .explore-sets__product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* 3 products layout - overlapping row */
-  .explore-sets__product-images--3 {
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 94px;
-    padding-left: 0;
-    padding-right: 69.24px;
-    justify-content: flex-start;
-    border-radius: 10px;
-  }
-
-  .explore-sets__product-images--3 .explore-sets__product-img {
-    width: 154.15px;
-    height: 231.22px;
-    margin-right: -69.24px;
-    flex-shrink: 0;
-  }
-
-  .explore-sets__product-images--3 .explore-sets__product-img:last-child {
-    margin-right: 0;
-  }
-
-  .explore-sets__product-images--3 .explore-sets__product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* 6 products layout - 3x2 grid */
-  .explore-sets__product-images--6 {
-    left: 37.82px;
-    top: 32px;
-    width: 249.37px;
-    height: 356px;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 0;
-    padding-right: 53.12px;
-    border-radius: 10px;
-  }
-
-  .explore-sets__product-images--6 .explore-sets__product-img {
-    width: 118.27px;
-    height: 177.4px;
-    margin-right: -53.12px;
-    flex-shrink: 0;
-  }
-
-  .explore-sets__product-images--6 .explore-sets__product-img:nth-child(3n) {
-    margin-right: -53.12px;
-  }
-
-  .explore-sets__product-images--6 .explore-sets__product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* Card Content - sits on the cream background below image zone */
-  .explore-sets__card-content {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .explore-sets__card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .explore-sets__card-title {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 19px;
-    line-height: 1.2;
-    letter-spacing: -0.19px;
-    text-transform: uppercase;
-    color: #3E2027;
-    margin: 0;
-  }
-
-  .explore-sets__card-price {
-    font-family: var(--font-sweet-sans);
-    font-weight: 400;
-    font-size: 18px;
-    letter-spacing: -0.18px;
-    text-transform: uppercase;
-    color: #3E2027;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  .explore-sets__price-compare {
-    text-decoration: line-through;
-    text-decoration-skip-ink: none;
-  }
-
-  .explore-sets__price-sale {
-    color: #E26046;
-  }
-
-  .explore-sets__price-regular {
-    color: #3E2027;
-  }
-
-  /* Card Description */
-  .explore-sets__card-description {
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
-    color: #3E2027;
-  }
-
-  .explore-sets__card-description p {
-    margin: 0;
   }
 
 
@@ -503,34 +255,6 @@
 
     .explore-sets__card {
       width: 280px;
-    }
-
-    .explore-sets__card-image-box {
-      width: 100%;
-      height: 360px;
-    }
-
-    .explore-sets__product-images--3 {
-      top: 70px;
-    }
-
-    .explore-sets__product-images--3 .explore-sets__product-img {
-      width: 130px;
-      height: 195px;
-      margin-right: -58px;
-    }
-
-    .explore-sets__product-images--6 {
-      left: 25px;
-      top: 20px;
-      width: 210px;
-      height: 310px;
-    }
-
-    .explore-sets__product-images--6 .explore-sets__product-img {
-      width: 95px;
-      height: 142px;
-      margin-right: -42px;
     }
   }
 
@@ -598,56 +322,6 @@
     .explore-sets__card {
       width: 100%;
       max-width: 325px;
-      gap: 18px;
-    }
-
-    .explore-sets__card-image-box {
-      width: 100%;
-      height: 320px;
-    }
-
-    .explore-sets__product-images--3 {
-      top: 60px;
-    }
-
-    .explore-sets__product-images--3 .explore-sets__product-img {
-      width: 110px;
-      height: 165px;
-      margin-right: -50px;
-    }
-
-    .explore-sets__product-images--6 {
-      left: 20px;
-      top: 20px;
-      width: 200px;
-      height: 280px;
-    }
-
-    .explore-sets__product-images--6 .explore-sets__product-img {
-      width: 90px;
-      height: 135px;
-      margin-right: -40px;
-    }
-
-    .explore-sets__card-content {
-      gap: 16px;
-    }
-
-    .explore-sets__card-header {
-      flex-direction: row;
-      gap: 10px;
-    }
-
-    .explore-sets__card-title {
-      font-size: 16px;
-    }
-
-    .explore-sets__card-price {
-      font-size: 16px;
-    }
-
-    .explore-sets__card-description {
-      font-size: 14px;
     }
   }
 
@@ -663,33 +337,6 @@
 
     .explore-sets__heading {
       font-size: 32px;
-    }
-
-    .explore-sets__card-image-box {
-      height: 280px;
-    }
-
-    .explore-sets__product-images--3 {
-      top: 50px;
-    }
-
-    .explore-sets__product-images--3 .explore-sets__product-img {
-      width: 90px;
-      height: 135px;
-      margin-right: -40px;
-    }
-
-    .explore-sets__product-images--6 {
-      left: 15px;
-      top: 15px;
-      width: 170px;
-      height: 250px;
-    }
-
-    .explore-sets__product-images--6 .explore-sets__product-img {
-      width: 75px;
-      height: 112px;
-      margin-right: -33px;
     }
   }
 {% endstylesheet %}

@@ -15,9 +15,11 @@
     id="sidecart"
     aria-hidden="true"
     data-sidecart
-    data-money-format="{{ shop.money_format | escape }}">
+    data-money-format="{{ shop.money_format | escape }}"
+    data-item-singular="{{ 'sidecart.item' | t | escape }}"
+    data-item-plural="{{ 'sidecart.items' | t | escape }}">
 
-    <div class="sidecart__overlay" id="sidecart-overlay" aria-hidden="true"></div>
+    <div class="sidecart__overlay" id="sidecart-overlay"></div>
 
     <div
       class="sidecart__drawer"
@@ -28,7 +30,7 @@
       <div class="sidecart__header">
         <h2 class="sidecart__title">
           <span class="sidecart__count" data-sidecart-count aria-live="polite">{{ item_count }}</span>
-          {{ 'sidecart.items' | t }}
+          <span data-sidecart-items-label>{% if item_count == 1 %}{{ 'sidecart.item' | t }}{% else %}{{ 'sidecart.items' | t }}{% endif %}</span>
         </h2>
         <button
           type="button"
@@ -373,7 +375,8 @@
   }
 
   .sidecart-item__qty-input:focus {
-    outline: none;
+    outline: 2px solid var(--sidecart-text);
+    outline-offset: 2px;
   }
 
   .sidecart-item__price {
@@ -589,6 +592,18 @@
       flex-direction: column;
     }
   }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
 {% endstylesheet %}
 
 {% javascript %}
@@ -602,8 +617,11 @@
       this.itemsContainer = this.sidecart?.querySelector('[data-sidecart-items]');
       this.footer = this.sidecart?.querySelector('[data-sidecart-footer]');
       this.countElement = this.sidecart?.querySelector('[data-sidecart-count]');
+      this.itemsLabelElement = this.sidecart?.querySelector('[data-sidecart-items-label]');
       this.subtotalElement = this.sidecart?.querySelector('[data-sidecart-subtotal]');
       this.emptyElement = this.sidecart?.querySelector('[data-sidecart-empty]');
+      this.itemSingular = this.sidecart?.dataset.itemSingular || 'item';
+      this.itemPlural = this.sidecart?.dataset.itemPlural || 'items';
 
       this.triggerElement = null;
       this.pendingUpdates = new Map();
@@ -715,6 +733,7 @@
       const newCount = currentCount + diff;
 
       if (this.countElement) this.countElement.textContent = newCount;
+      this.updateItemsLabel(newCount);
 
       document.querySelectorAll('[data-cart-count]').forEach(el => {
         el.textContent = newCount;
@@ -733,6 +752,12 @@
       }
     }
 
+    updateItemsLabel(count) {
+      if (this.itemsLabelElement) {
+        this.itemsLabelElement.textContent = count === 1 ? this.itemSingular : this.itemPlural;
+      }
+    }
+
     parseMoneyToNumber(moneyString) {
       const cleaned = moneyString.replace(/[^0-9.,]/g, '').replace(',', '.');
       return Math.round(parseFloat(cleaned) * 100) || 0;
@@ -747,6 +772,7 @@
       this.triggerElement = trigger || document.activeElement;
       this.sidecart.classList.add('is-open');
       this.sidecart.setAttribute('aria-hidden', 'false');
+      document.getElementById('cart-toggle')?.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
       setTimeout(() => this.closeButton?.focus(), 100);
     }
@@ -754,6 +780,7 @@
     close() {
       this.sidecart.classList.remove('is-open');
       this.sidecart.setAttribute('aria-hidden', 'true');
+      document.getElementById('cart-toggle')?.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
       this.triggerElement?.focus();
     }
@@ -806,6 +833,7 @@
 
         if (this.pendingUpdates.size === 0 && this.inFlightRequests === 0) {
           if (this.countElement) this.countElement.textContent = cart.item_count;
+          this.updateItemsLabel(cart.item_count);
           document.querySelectorAll('[data-cart-count]').forEach(el => {
             el.textContent = cart.item_count;
             el.style.display = cart.item_count > 0 ? '' : 'none';
@@ -840,13 +868,16 @@
           this.itemsContainer = this.content.querySelector('[data-sidecart-items]');
           this.emptyElement = this.content.querySelector('[data-sidecart-empty]');
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error('Failed to refresh sidecart:', e);
+      }
     }
 
     async refresh(cartData) {
       if (this.countElement) {
         this.countElement.textContent = cartData.item_count;
       }
+      this.updateItemsLabel(cartData.item_count);
 
       document.querySelectorAll('[data-cart-count]').forEach(el => {
         el.textContent = cartData.item_count;
@@ -933,7 +964,7 @@
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'application/json'
           },
-          body: `id=${variantId}&quantity=${quantity}`
+          body: new URLSearchParams({ id: variantId, quantity: quantity })
         });
 
         const responseData = await addResponse.json().catch(() => ({}));
@@ -966,7 +997,9 @@
         if (submitBtn) {
           submitBtn.disabled = originalDisabled || false;
           submitBtn.classList.remove('is-loading');
-          if (originalText) submitBtn.innerHTML = originalText;
+        }
+        if (submitBtn && originalText) {
+          submitBtn.innerHTML = originalText;
         }
       }
     });

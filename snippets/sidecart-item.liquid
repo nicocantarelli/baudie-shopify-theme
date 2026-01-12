@@ -108,7 +108,8 @@
       type="button"
       class="sidecart-item__remove"
       data-action="remove"
-      data-key="{{ item_key }}">
+      data-key="{{ item_key }}"
+      aria-label="{{ 'sidecart.remove_item' | t }}: {{ item_title }}">
       {{ 'sidecart.remove_item' | t }}
     </button>
   </div>
