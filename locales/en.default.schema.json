@@ -73,7 +73,10 @@
       "announcement": {
         "name": "Announcement",
         "settings": {
-          "text": "Announcement text"
+          "text": "Announcement text",
+          "link_text": "Link text (underlined)",
+          "link_text_info": "Optional text that appears underlined after the main text",
+          "url": "Link URL"
         }
       }
     }

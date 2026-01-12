@@ -17,20 +17,25 @@
       class="announcement-bar"
       role="region"
       aria-label="Announcements">
-      <div class="announcement-bar__viewport">
-        <div class="announcement-bar__track" data-announcement-marquee>
-          <div class="announcement-bar__group">
-            {% for block in section.blocks %}
-              {% if block.type == 'announcement' %}
-                <div class="announcement-bar__item" {{ block.shopify_attributes }}>
-                  <span class="announcement-bar__text">{{ block.settings.text }}</span>
-                  <span class="announcement-bar__separator">✦</span>
-                </div>
+      {% for block in section.blocks %}
+        {% if block.type == 'announcement' %}
+          <div class="announcement-bar__item announcement-bar__item--{{ forloop.index }}" {{ block.shopify_attributes }}>
+            {% if block.settings.url != blank %}
+              <a href="{{ block.settings.url }}" class="announcement-bar__link">
+                <span class="announcement-bar__text">{{ block.settings.text }}</span>
+                {% if block.settings.link_text != blank %}
+                  <span class="announcement-bar__link-text">{{ block.settings.link_text }}</span>
+                {% endif %}
+              </a>
+            {% else %}
+              <span class="announcement-bar__text">{{ block.settings.text }}</span>
+              {% if block.settings.link_text != blank %}
+                <span class="announcement-bar__link-text">{{ block.settings.link_text }}</span>
               {% endif %}
-            {% endfor %}
+            {% endif %}
           </div>
-        </div>
-      </div>
+        {% endif %}
+      {% endfor %}
     </div>
   {% endif %}
 
@@ -179,70 +184,56 @@
   .announcement-bar {
     background-color: var(--announcement-bg);
     color: var(--announcement-text);
-    font-family: 'Jokker'
-    , Georgia
-    , serif;
-    font-size: 12px;
-    line-height: 1.3;
     height: 40px;
     position: relative;
-  }
-
-  .announcement-bar__viewport {
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .announcement-bar__track {
     display: flex;
     align-items: center;
-    height: 100%;
-    width: max-content;
-    white-space: nowrap;
-    will-change: transform;
-    transform: translateX(0);
-  }
-
-  .announcement-bar__track.is-ready {
-    animation: announcement-marquee var(--marquee-duration, 30s) linear infinite;
-  }
-
-  .announcement-bar__group {
-    display: flex;
-    align-items: center;
-    gap: 50px;
-    padding-right: 50px;
+    justify-content: space-around;
   }
 
   .announcement-bar__item {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
-    gap: 50px;
+    gap: 4px;
+  }
+
+  .announcement-bar__item--1 {
+    left: 25%;
+  }
+
+  .announcement-bar__item--2 {
+    left: 75%;
   }
 
   .announcement-bar__text,
-  .announcement-bar__separator {
-    flex-shrink: 0;
+  .announcement-bar__link-text {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+    color: var(--announcement-text);
   }
 
-  .announcement-bar__separator {
-    font-size: 16px;
+  .announcement-bar__link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
   }
 
-  @keyframes announcement-marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(calc(-1 * var(--marquee-distance)));
-    }
+  .announcement-bar__link:hover {
+    opacity: 0.85;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .announcement-bar__track.is-ready {
-      animation: none;
-      transform: translateX(0);
-    }
+  .announcement-bar__link-text {
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   /* Main Header */
@@ -536,7 +527,17 @@
   @media (max-width: 768px) {
     .announcement-bar {
       height: 35px;
-      font-size: 11px;
+      display: none;
+    }
+
+    .announcement-bar__item {
+      position: static;
+      transform: none;
+    }
+
+    .announcement-bar__text,
+    .announcement-bar__link-text {
+      font-size: 10px;
     }
 
     .header {
@@ -707,71 +708,6 @@
 
     console.log('Mobile menu initialized');
   })();
-
-/* Announcement marquee */
-  (function() {
-    let resizeTimer;
-
-    function buildMarquee() {
-      const bar = document.querySelector('.announcement-bar');
-      if (! bar) return;
-      
-
-
-      const viewport = bar.querySelector('.announcement-bar__viewport');
-      const track = bar.querySelector('[data-announcement-marquee]');
-      const group = track && track.querySelector('.announcement-bar__group');
-      if (! viewport || ! track || ! group) return;
-      
-
-
-      track.querySelectorAll('.announcement-bar__group[aria-hidden="true"]').forEach((n) => n.remove());
-      track.classList.remove('is-ready');
-
-      const groupWidth = group.scrollWidth;
-      const viewportWidth = viewport.clientWidth;
-      if (! groupWidth || ! viewportWidth) return;
-      
-
-
-      let totalWidth = groupWidth;
-      const targetWidth = viewportWidth * 3;
-
-      while (totalWidth < targetWidth) {
-        const clone = group.cloneNode(true);
-        clone.setAttribute('aria-hidden', 'true');
-        track.appendChild(clone);
-        totalWidth += groupWidth;
-      }
-
-      track.style.setProperty('--marquee-distance', `${groupWidth}px`);
-
-      const speed = 70;
-      const duration = Math.max(12, groupWidth / speed);
-      track.style.setProperty('--marquee-duration', `${duration}s`);
-
-      track.classList.add('is-ready');
-    }
-
-    function init() {
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => requestAnimationFrame(buildMarquee));
-      } else {
-        requestAnimationFrame(buildMarquee);
-      }
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
-
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(buildMarquee, 150);
-    });
-  })();
 {% endjavascript %}
 
 {% schema %}
@@ -844,17 +780,28 @@
       {
         "type": "announcement",
         "name": "t:header.blocks.announcement.name",
-        "limit": 5,
+        "limit": 2,
         "settings": [
           {
             "type": "text",
             "id": "text",
             "label": "t:header.blocks.announcement.settings.text",
             "default": "Announcement text"
+          },
+          {
+            "type": "text",
+            "id": "link_text",
+            "label": "t:header.blocks.announcement.settings.link_text",
+            "info": "t:header.blocks.announcement.settings.link_text_info"
+          },
+          {
+            "type": "url",
+            "id": "url",
+            "label": "t:header.blocks.announcement.settings.url"
           }
         ]
       }
     ],
-    "max_blocks": 5
+    "max_blocks": 2
   }
 {% endschema %}
