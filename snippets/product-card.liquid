@@ -99,13 +99,14 @@
 
     <div class="product-card__actions">
       {%- form 'product', product, class: 'product-card__form' -%}
-        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        {%- assign selected_variant = product.selected_or_first_available_variant -%}
+        <input type="hidden" name="id" value="{{ selected_variant.id }}">
         <button
           type="submit"
           name="add"
           class="product-card__action-btn product-card__action-btn--add"
           aria-label="{{ 'products.add_to_cart' | t }}: {{ product.title }}"
-          {% unless product.available %}disabled aria-disabled="true" aria-label="{{ product.title }} - {{ 'products.sold_out' | t }}"{% endunless %}>
+          {% unless selected_variant.available %}disabled aria-disabled="true" aria-label="{{ product.title }} - {{ 'products.sold_out' | t }}"{% endunless %}>
           <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>

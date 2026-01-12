@@ -202,5 +202,22 @@
     "facebook": "Facebook",
     "instagram": "Instagram",
     "copyright": "© {{ shop_name }} {{ year }}. All rights reserved."
+  },
+  "sidecart": {
+    "title": "Shopping cart",
+    "items": "items",
+    "item": "item",
+    "close": "Close cart",
+    "empty_title": "Your cart is empty",
+    "empty_message": "Looks like you haven't added anything yet.",
+    "continue_shopping": "Continue shopping",
+    "subtotal": "Subtotal",
+    "shipping_note": "Shipping & taxes calculated at checkout",
+    "view_cart": "Go to Shopping Cart",
+    "checkout": "Checkout",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity",
+    "remove_item": "Remove",
+    "quantity": "Quantity"
   }
 }

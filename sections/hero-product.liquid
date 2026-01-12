@@ -188,15 +188,16 @@
           <div class="hero-product__actions">
             {% form 'product'
               , product %}
+              {%- assign selected_variant = product.selected_or_first_available_variant -%}
               <input
                 type="hidden"
                 name="id"
-                value="{{ product.selected_or_first_available_variant.id }}">
+                value="{{ selected_variant.id }}">
               <button
                 type="submit"
                 name="add"
                 class="hero-product__button hero-product__button--add"
-                {% unless product.available %}
+                {% unless selected_variant.available %}
                   disabled
                   aria-disabled="true"
                   aria-label="{{ 'products.add_to_cart' | t }} - {{ 'products.sold_out' | t }}"

@@ -103,15 +103,16 @@
                     <div class="meet-scents__tooltip-actions">
                       {% form 'product'
                         , tooltip_product %}
+                        {%- assign selected_variant = tooltip_product.selected_or_first_available_variant -%}
                         <input
                           type="hidden"
                           name="id"
-                          value="{{ tooltip_product.selected_or_first_available_variant.id }}">
+                          value="{{ selected_variant.id }}">
                         <button
                           type="submit"
                           name="add"
                           class="meet-scents__tooltip-btn meet-scents__tooltip-btn--add"
-                          {% unless tooltip_product.available %}
+                          {% unless selected_variant.available %}
                           disabled{% endunless %}>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

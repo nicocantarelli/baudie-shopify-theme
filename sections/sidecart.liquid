@@ -1,0 +1,1022 @@
+{%- liquid
+  assign item_count = cart.item_count
+  assign has_items = false
+  if item_count > 0
+    assign has_items = true
+  endif
+
+  assign enable_quick_cart = settings.enable_quick_cart
+  assign show_dynamic_checkout = settings.show_dynamic_checkout
+-%}
+
+{% if enable_quick_cart %}
+  <div
+    class="sidecart"
+    id="sidecart"
+    aria-hidden="true"
+    data-sidecart
+    data-money-format="{{ shop.money_format | escape }}">
+
+    <div class="sidecart__overlay" id="sidecart-overlay" aria-hidden="true"></div>
+
+    <div
+      class="sidecart__drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="{{ 'sidecart.title' | t }}">
+
+      <div class="sidecart__header">
+        <h2 class="sidecart__title">
+          <span class="sidecart__count" data-sidecart-count aria-live="polite">{{ item_count }}</span>
+          {{ 'sidecart.items' | t }}
+        </h2>
+        <button
+          type="button"
+          class="sidecart__close"
+          aria-label="{{ 'sidecart.close' | t }}"
+          id="sidecart-close">
+          <svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="sidecart__content" data-sidecart-content>
+        {% if has_items %}
+          <ul class="sidecart__items" role="list" data-sidecart-items>
+            {% for item in cart.items %}
+              {% render 'sidecart-item', item: item %}
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="sidecart__empty" data-sidecart-empty>
+            <h3 class="sidecart__empty-title">{{ section.settings.empty_title }}</h3>
+            <p class="sidecart__empty-message">{{ section.settings.empty_message }}</p>
+            <a href="{{ routes.all_products_collection_url }}" class="sidecart__continue-btn">
+              {{ section.settings.continue_button_text }}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="sidecart__footer{% unless has_items %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
+        <div class="sidecart__subtotal-row">
+          <span class="sidecart__subtotal-label">{{ 'sidecart.subtotal' | t }}</span>
+          <div class="sidecart__subtotal-value-wrapper">
+            <span class="sidecart__subtotal-value" data-sidecart-subtotal aria-live="polite">{{ cart.total_price | money }}</span>
+            <span class="sidecart__shipping-note">{{ 'sidecart.shipping_note' | t }}</span>
+          </div>
+        </div>
+
+        <div class="sidecart__actions">
+          <a href="{{ routes.cart_url }}" class="sidecart__btn sidecart__btn--secondary">
+            {{ 'sidecart.view_cart' | t }}
+          </a>
+          <a href="{{ routes.checkout_url }}" class="sidecart__btn sidecart__btn--primary">
+            {{ 'sidecart.checkout' | t }}
+          </a>
+        </div>
+
+        {% if show_dynamic_checkout %}
+          <div class="sidecart__dynamic-checkout" data-sidecart-dynamic-checkout>
+            {{ content_for_additional_checkout_buttons }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .sidecart {
+    --sidecart-width: 615px;
+    --sidecart-bg: #FFF7EA;
+    --sidecart-text: #3E2027;
+    --sidecart-border: rgba(62, 32, 39, 0.1);
+
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    visibility: hidden;
+    pointer-events: none;
+    transition: visibility 0s 0.3s;
+  }
+
+  .sidecart.is-open {
+    visibility: visible;
+    pointer-events: auto;
+    transition: visibility 0s 0s;
+  }
+
+  .sidecart__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+  }
+
+  .sidecart.is-open .sidecart__overlay {
+    opacity: 1;
+  }
+
+  .sidecart__drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: var(--sidecart-width);
+    max-width: 100%;
+    height: 100%;
+    background-color: var(--sidecart-bg);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidecart.is-open .sidecart__drawer {
+    transform: translateX(0);
+  }
+
+  .sidecart__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid var(--sidecart-border);
+    flex-shrink: 0;
+  }
+
+  .sidecart__title {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: -0.16px;
+    text-transform: uppercase;
+    color: var(--sidecart-text);
+    margin: 0;
+  }
+
+  .sidecart__count {
+    margin-right: 4px;
+  }
+
+  .sidecart__close {
+    color: var(--sidecart-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+  }
+
+  .sidecart__close:hover {
+    opacity: 0.7;
+  }
+
+  .sidecart__close:focus-visible {
+    outline: 2px solid var(--sidecart-text);
+    outline-offset: 4px;
+  }
+
+  .sidecart__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px 20px;
+  }
+
+  .sidecart__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .sidecart-item {
+    position: relative;
+    display: flex;
+    gap: 20px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--sidecart-border);
+  }
+
+  .sidecart-item:first-child {
+    padding-top: 0;
+  }
+
+  .sidecart-item__remove {
+    position: absolute;
+    top: 15px;
+    right: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-manrope);
+    font-size: 12px;
+    color: var(--sidecart-text);
+    opacity: 0.5;
+    text-decoration: underline;
+    transition: opacity 0.15s ease;
+  }
+
+  .sidecart-item:first-child .sidecart-item__remove {
+    top: 0;
+  }
+
+  .sidecart-item__remove:hover {
+    opacity: 1;
+  }
+
+  .sidecart-item__image-link {
+    flex-shrink: 0;
+    display: block;
+    width: 150px;
+    height: 194px;
+    overflow: hidden;
+    background-color: var(--sidecart-bg);
+  }
+
+  .sidecart-item__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .sidecart-item__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--sidecart-bg);
+  }
+
+  .sidecart-item__placeholder-svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .sidecart-item__details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    padding: 10px 0;
+  }
+
+  .sidecart-item__info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sidecart-item__title {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: var(--sidecart-text);
+    margin: 0;
+  }
+
+  .sidecart-item__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .sidecart-item__title a:hover {
+    text-decoration: underline;
+  }
+
+  .sidecart-item__variant {
+    font-family: var(--font-manrope);
+    font-size: 12px;
+    color: var(--sidecart-text);
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  .sidecart-item__description {
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 130%;
+    color: var(--sidecart-text);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .sidecart-item__controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: auto;
+  }
+
+  .sidecart-item__quantity {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--sidecart-border);
+  }
+
+  .sidecart-item__qty-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--sidecart-text);
+    transition: background-color 0.15s ease;
+  }
+
+  .sidecart-item__qty-btn:hover {
+    background-color: #EBE3D7;
+  }
+
+  .sidecart-item__qty-btn:active {
+    opacity: 0.8;
+  }
+
+  .sidecart-item__qty-btn:focus-visible {
+    outline: 2px solid var(--sidecart-text);
+    outline-offset: -2px;
+  }
+
+  .sidecart-item__qty-input {
+    font-family: var(--font-manrope);
+    font-size: 14px;
+    color: var(--sidecart-text);
+    width: 40px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    padding: 0;
+    -moz-appearance: textfield;
+  }
+
+  .sidecart-item__qty-input::-webkit-outer-spin-button,
+  .sidecart-item__qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .sidecart-item__qty-input:focus {
+    outline: none;
+  }
+
+  .sidecart-item__price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .sidecart-item__compare-price {
+    font-family: var(--font-sweet-sans);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    text-decoration: line-through;
+    color: var(--sidecart-text);
+  }
+
+  .sidecart-item__current-price {
+    font-family: var(--font-sweet-sans);
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: -0.18px;
+    text-transform: uppercase;
+    color: var(--sidecart-text);
+  }
+
+  .sidecart-item__current-price--sale {
+    color: #E26046;
+  }
+
+  .sidecart__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px;
+    height: 100%;
+  }
+
+  .sidecart__empty-title {
+    font-family: var(--font-jokker);
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--sidecart-text);
+    margin: 0 0 8px;
+  }
+
+  .sidecart__empty-message {
+    font-family: var(--font-manrope);
+    font-size: 14px;
+    color: var(--sidecart-text);
+    opacity: 0.7;
+    margin: 0 0 24px;
+  }
+
+  .sidecart__continue-btn {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+    color: var(--sidecart-bg);
+    background-color: var(--sidecart-text);
+    border: none;
+    padding: 14px 28px;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .sidecart__continue-btn:hover {
+    opacity: 0.85;
+  }
+
+  .sidecart__footer {
+    padding: 20px;
+    border-top: 1px solid var(--sidecart-border);
+    flex-shrink: 0;
+  }
+
+  .sidecart__footer--hidden {
+    display: none;
+  }
+
+  .sidecart__subtotal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+
+  .sidecart__subtotal-label {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: -0.16px;
+    text-transform: uppercase;
+    color: var(--sidecart-text);
+  }
+
+  .sidecart__subtotal-value-wrapper {
+    text-align: right;
+  }
+
+  .sidecart__subtotal-value {
+    font-family: var(--font-sweet-sans);
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: -0.18px;
+    text-transform: uppercase;
+    color: var(--sidecart-text);
+    display: block;
+  }
+
+  .sidecart__shipping-note {
+    font-family: var(--font-jokker);
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--sidecart-text);
+    display: block;
+    margin-top: 4px;
+  }
+
+  .sidecart__actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .sidecart__btn {
+    flex: 1;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+    padding: 14px 20px;
+    transition: opacity 0.2s ease, background-color 0.15s ease;
+    cursor: pointer;
+  }
+
+  .sidecart__btn:hover {
+    opacity: 0.85;
+  }
+
+  .sidecart__btn--primary {
+    background-color: var(--sidecart-text);
+    color: #FFFFFF;
+    border: none;
+  }
+
+  .sidecart__btn--secondary {
+    background-color: transparent;
+    color: var(--sidecart-text);
+    border: 1px solid var(--sidecart-text);
+  }
+
+  .sidecart__btn--secondary:hover {
+    background-color: #EBE3D7;
+    opacity: 1;
+  }
+
+  .sidecart__dynamic-checkout {
+    margin-top: 14px;
+  }
+
+  .sidecart__dynamic-checkout .shopify-payment-button {
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .sidecart__drawer {
+      top: auto;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 85vh;
+      max-height: 85vh;
+      transform: translateY(100%);
+    }
+
+    .sidecart.is-open .sidecart__drawer {
+      transform: translateY(0);
+    }
+
+    .sidecart-item {
+      gap: 15px;
+    }
+
+    .sidecart-item__image-link {
+      width: 100px;
+      height: 130px;
+    }
+
+    .sidecart-item__title {
+      font-size: 13px;
+    }
+
+    .sidecart-item__description {
+      font-size: 12px;
+      -webkit-line-clamp: 2;
+    }
+
+    .sidecart-item__qty-btn {
+      width: 32px;
+      height: 32px;
+    }
+
+    .sidecart__actions {
+      flex-direction: column;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class Sidecart {
+    constructor() {
+      this.sidecart = document.getElementById('sidecart');
+      this.overlay = document.getElementById('sidecart-overlay');
+      this.closeButton = document.getElementById('sidecart-close');
+      this.drawer = this.sidecart?.querySelector('.sidecart__drawer');
+      this.content = this.sidecart?.querySelector('[data-sidecart-content]');
+      this.itemsContainer = this.sidecart?.querySelector('[data-sidecart-items]');
+      this.footer = this.sidecart?.querySelector('[data-sidecart-footer]');
+      this.countElement = this.sidecart?.querySelector('[data-sidecart-count]');
+      this.subtotalElement = this.sidecart?.querySelector('[data-sidecart-subtotal]');
+      this.emptyElement = this.sidecart?.querySelector('[data-sidecart-empty]');
+
+      this.triggerElement = null;
+      this.pendingUpdates = new Map();
+      this.updateTimeouts = new Map();
+      this.inFlightRequests = 0;
+
+      if (!this.sidecart) return;
+
+      this.bindEvents();
+      this.initCartListeners();
+    }
+
+    bindEvents() {
+      this.closeButton?.addEventListener('click', () => this.close());
+      this.overlay?.addEventListener('click', () => this.close());
+      document.addEventListener('keydown', (e) => this.handleKeydown(e));
+
+      this.sidecart.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+
+        const action = btn.dataset.action;
+        const key = btn.dataset.key;
+        const item = btn.closest('[data-sidecart-item]');
+        const qtyEl = item?.querySelector('[data-quantity]');
+        const priceEl = item?.querySelector('[data-price]');
+        const comparePriceEl = item?.querySelector('[data-compare-price]');
+        const currentQty = parseInt(qtyEl?.value || '1', 10);
+        const unitPrice = item?.dataset.unitPrice ? parseInt(item.dataset.unitPrice, 10) : 0;
+        const compareUnitPrice = item?.dataset.compareUnitPrice ? parseInt(item.dataset.compareUnitPrice, 10) : 0;
+
+        let newQty = currentQty;
+
+        if (action === 'increase') {
+          newQty = currentQty + 1;
+        } else if (action === 'decrease') {
+          newQty = currentQty > 1 ? currentQty - 1 : 0;
+        } else if (action === 'remove') {
+          newQty = 0;
+        }
+
+        if (newQty === 0) {
+          item?.remove();
+        } else {
+          if (qtyEl) {
+            qtyEl.value = newQty;
+            qtyEl.defaultValue = newQty;
+          }
+          if (priceEl && unitPrice) priceEl.textContent = this.formatMoney(unitPrice * newQty);
+          if (comparePriceEl && compareUnitPrice) comparePriceEl.textContent = this.formatMoney(compareUnitPrice * newQty);
+        }
+
+        this.updateCountsOptimistic(currentQty, newQty, unitPrice);
+        this.queueUpdate(key, newQty);
+      });
+
+      this.sidecart.addEventListener('change', (e) => {
+        const input = e.target.closest('[data-quantity]');
+        if (!input) return;
+
+        const key = input.dataset.key;
+        const item = input.closest('[data-sidecart-item]');
+        const priceEl = item?.querySelector('[data-price]');
+        const comparePriceEl = item?.querySelector('[data-compare-price]');
+        const unitPrice = item?.dataset.unitPrice ? parseInt(item.dataset.unitPrice, 10) : 0;
+        const compareUnitPrice = item?.dataset.compareUnitPrice ? parseInt(item.dataset.compareUnitPrice, 10) : 0;
+
+        const oldQty = parseInt(input.defaultValue || '1', 10);
+        let newQty = parseInt(input.value || '0', 10);
+
+        if (newQty < 0) newQty = 0;
+        input.value = newQty;
+
+        if (newQty === 0) {
+          item?.remove();
+        } else {
+          if (priceEl && unitPrice) priceEl.textContent = this.formatMoney(unitPrice * newQty);
+          if (comparePriceEl && compareUnitPrice) comparePriceEl.textContent = this.formatMoney(compareUnitPrice * newQty);
+        }
+
+        this.updateCountsOptimistic(oldQty, newQty, unitPrice);
+        this.queueUpdate(key, newQty);
+        input.defaultValue = newQty;
+      });
+    }
+
+    queueUpdate(key, quantity) {
+      this.pendingUpdates.set(key, quantity);
+
+      if (this.updateTimeouts.has(key)) {
+        clearTimeout(this.updateTimeouts.get(key));
+      }
+
+      const timeout = setTimeout(() => {
+        const finalQty = this.pendingUpdates.get(key);
+        this.pendingUpdates.delete(key);
+        this.updateTimeouts.delete(key);
+        this.updateQuantity(key, finalQty);
+      }, 300);
+
+      this.updateTimeouts.set(key, timeout);
+    }
+
+    updateCountsOptimistic(oldQty, newQty, unitPrice) {
+      const diff = newQty - oldQty;
+      const priceDiff = unitPrice * diff;
+
+      const currentCount = parseInt(this.countElement?.textContent || '0', 10);
+      const newCount = currentCount + diff;
+
+      if (this.countElement) this.countElement.textContent = newCount;
+
+      document.querySelectorAll('[data-cart-count]').forEach(el => {
+        el.textContent = newCount;
+        el.style.display = newCount > 0 ? '' : 'none';
+      });
+
+      if (this.subtotalElement) {
+        const currentSubtotal = this.parseMoneyToNumber(this.subtotalElement.textContent);
+        this.subtotalElement.textContent = this.formatMoney(currentSubtotal + priceDiff);
+      }
+
+      if (newCount === 0) {
+        if (this.itemsContainer) this.itemsContainer.style.display = 'none';
+        if (this.emptyElement) this.emptyElement.style.display = 'flex';
+        if (this.footer) this.footer.classList.add('sidecart__footer--hidden');
+      }
+    }
+
+    parseMoneyToNumber(moneyString) {
+      const cleaned = moneyString.replace(/[^0-9.,]/g, '').replace(',', '.');
+      return Math.round(parseFloat(cleaned) * 100) || 0;
+    }
+
+    initCartListeners() {
+      document.addEventListener('cart:open', () => this.open());
+      document.addEventListener('cart:updated', (e) => this.refresh(e.detail));
+    }
+
+    open(trigger = null) {
+      this.triggerElement = trigger || document.activeElement;
+      this.sidecart.classList.add('is-open');
+      this.sidecart.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => this.closeButton?.focus(), 100);
+    }
+
+    close() {
+      this.sidecart.classList.remove('is-open');
+      this.sidecart.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      this.triggerElement?.focus();
+    }
+
+    handleKeydown(e) {
+      if (!this.sidecart.classList.contains('is-open')) return;
+
+      if (e.key === 'Escape') {
+        this.close();
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        this.handleTabTrap(e);
+      }
+    }
+
+    handleTabTrap(e) {
+      const focusableElements = this.drawer.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+
+      if (focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus();
+      } else if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus();
+      }
+    }
+
+    async updateQuantity(key, quantity) {
+      this.inFlightRequests++;
+      try {
+        const response = await fetch('/cart/change.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: key, quantity })
+        });
+
+        if (!response.ok) throw new Error('Failed to update cart');
+
+        const cart = await response.json();
+        this.inFlightRequests--;
+
+        if (this.pendingUpdates.size === 0 && this.inFlightRequests === 0) {
+          if (this.countElement) this.countElement.textContent = cart.item_count;
+          document.querySelectorAll('[data-cart-count]').forEach(el => {
+            el.textContent = cart.item_count;
+            el.style.display = cart.item_count > 0 ? '' : 'none';
+          });
+          if (this.subtotalElement) {
+            this.subtotalElement.textContent = this.formatMoney(cart.total_price);
+          }
+
+          if (cart.item_count === 0) {
+            if (this.itemsContainer) this.itemsContainer.style.display = 'none';
+            if (this.emptyElement) this.emptyElement.style.display = 'flex';
+            if (this.footer) this.footer.classList.add('sidecart__footer--hidden');
+          }
+        }
+      } catch (error) {
+        this.inFlightRequests--;
+        if (this.pendingUpdates.size === 0 && this.inFlightRequests === 0) {
+          this.refreshFromServer();
+        }
+      }
+    }
+
+    async refreshFromServer() {
+      try {
+        const response = await fetch('/?section_id=sidecart');
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newContent = doc.querySelector('[data-sidecart-content]');
+        if (newContent && this.content) {
+          this.content.innerHTML = newContent.innerHTML;
+          this.itemsContainer = this.content.querySelector('[data-sidecart-items]');
+          this.emptyElement = this.content.querySelector('[data-sidecart-empty]');
+        }
+      } catch (e) {}
+    }
+
+    async refresh(cartData) {
+      if (this.countElement) {
+        this.countElement.textContent = cartData.item_count;
+      }
+
+      document.querySelectorAll('[data-cart-count]').forEach(el => {
+        el.textContent = cartData.item_count;
+        el.style.display = cartData.item_count > 0 ? '' : 'none';
+      });
+
+      if (this.subtotalElement) {
+        this.subtotalElement.textContent = this.formatMoney(cartData.total_price);
+      }
+
+      if (cartData.item_count === 0) {
+        if (this.itemsContainer) this.itemsContainer.style.display = 'none';
+        if (this.emptyElement) this.emptyElement.style.display = 'flex';
+        if (this.footer) this.footer.classList.add('sidecart__footer--hidden');
+      } else {
+        if (this.emptyElement) this.emptyElement.style.display = 'none';
+        if (this.footer) this.footer.classList.remove('sidecart__footer--hidden');
+        await this.refreshFromServer();
+      }
+    }
+
+    formatMoney(cents) {
+      const moneyFormat = this.sidecart?.dataset.moneyFormat || '${{amount}}';
+      const amount = (cents / 100).toFixed(2);
+      const amountNoDecimals = Math.floor(cents / 100).toString();
+      const amountWithCommas = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      const amountNoDecimalsWithCommas = amountNoDecimals.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+      return moneyFormat
+        .replace('{{amount_with_comma_separator}}', amountWithCommas.replace('.', ','))
+        .replace('{{amount_no_decimals_with_comma_separator}}', amountNoDecimalsWithCommas.replace(/,/g, '.'))
+        .replace('{{amount_with_apostrophe_separator}}', amountWithCommas.replace(/,/g, "'"))
+        .replace('{{amount_no_decimals}}', amountNoDecimals)
+        .replace('{{amount}}', amount);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new Sidecart());
+  } else {
+    new Sidecart();
+  }
+
+  (function initAjaxAddToCart() {
+    function isProductForm(form) {
+      if (!form || form.tagName !== 'FORM') return false;
+
+      const action = form.getAttribute('action') || '';
+      if (action.includes('/cart/add')) return true;
+
+      const formTypeInput = form.querySelector('input[name="form_type"][value="product"]');
+      if (formTypeInput) return true;
+
+      return false;
+    }
+
+    document.addEventListener('submit', async (e) => {
+      const form = e.target.tagName === 'FORM' ? e.target : e.target.closest('form');
+      if (!isProductForm(form)) return;
+
+      e.preventDefault();
+
+      const submitBtn = form.querySelector('[type="submit"], button[name="add"]');
+      const originalText = submitBtn?.innerHTML;
+      const originalDisabled = submitBtn?.disabled;
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('is-loading');
+      }
+
+      try {
+        const variantId = form.querySelector('input[name="id"]')?.value;
+        const quantityInput = form.querySelector('input[name="quantity"]');
+        const quantity = quantityInput ? quantityInput.value : '1';
+
+        if (!variantId) {
+          throw new Error('No variant ID found');
+        }
+
+        const addResponse = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json'
+          },
+          body: `id=${variantId}&quantity=${quantity}`
+        });
+
+        const responseData = await addResponse.json().catch(() => ({}));
+
+        if (!addResponse.ok) {
+          const errorMsg = responseData.description || responseData.message || '';
+          if (errorMsg.toLowerCase().includes('sold out')) {
+            console.warn(
+              'Shopify Cart API returned "sold out" error. This is often a store configuration issue.\n' +
+              'Fix: Go to Shopify Admin → Settings → Locations, ensure a location exists,\n' +
+              'then go to Products → [Product] → Inventory and assign stock to that location.'
+            );
+          }
+          throw new Error(errorMsg || 'Failed to add to cart');
+        }
+
+        const cartResponse = await fetch('/cart.js');
+        const cart = await cartResponse.json();
+
+        document.querySelectorAll('[data-cart-count]').forEach(el => {
+          el.textContent = cart.item_count;
+          el.style.display = cart.item_count > 0 ? '' : 'none';
+        });
+
+        document.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+        document.dispatchEvent(new CustomEvent('cart:open'));
+      } catch (error) {
+        alert(error.message || 'Could not add item to cart. Please try again.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = originalDisabled || false;
+          submitBtn.classList.remove('is-loading');
+          if (originalText) submitBtn.innerHTML = originalText;
+        }
+      }
+    });
+  })();
+
+  if (Shopify.designMode) {
+    document.addEventListener('shopify:section:select', (e) => {
+      if (e.target.querySelector('[data-sidecart]')) {
+        const sidecart = document.getElementById('sidecart');
+        if (sidecart) {
+          sidecart.classList.add('is-open');
+          sidecart.setAttribute('aria-hidden', 'false');
+        }
+      }
+    });
+
+    document.addEventListener('shopify:section:deselect', (e) => {
+      if (e.target.querySelector('[data-sidecart]')) {
+        const sidecart = document.getElementById('sidecart');
+        if (sidecart) {
+          sidecart.classList.remove('is-open');
+          sidecart.setAttribute('aria-hidden', 'true');
+        }
+      }
+    });
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.sidecart",
+  "settings": [
+    {
+      "type": "text",
+      "id": "empty_title",
+      "label": "t:sidecart.settings.empty_title.label",
+      "default": "Your cart is empty"
+    },
+    {
+      "type": "text",
+      "id": "empty_message",
+      "label": "t:sidecart.settings.empty_message.label",
+      "default": "Looks like you haven't added anything yet."
+    },
+    {
+      "type": "text",
+      "id": "continue_button_text",
+      "label": "t:sidecart.settings.continue_button_text.label",
+      "default": "Continue shopping"
+    }
+  ]
+}
+{% endschema %}

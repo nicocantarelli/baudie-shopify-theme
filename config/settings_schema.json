@@ -79,5 +79,28 @@
         "default": 4
       }
     ]
+  },
+  {
+    "name": "t:general.cart",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:cart.settings.quick_cart_header"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_quick_cart",
+        "label": "t:cart.settings.enable_quick_cart",
+        "default": true,
+        "info": "t:cart.settings.enable_quick_cart_info"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_dynamic_checkout",
+        "label": "t:cart.settings.show_dynamic_checkout",
+        "default": false,
+        "info": "t:cart.settings.show_dynamic_checkout_info"
+      }
+    ]
   }
 ]

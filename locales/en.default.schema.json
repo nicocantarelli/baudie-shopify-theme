@@ -29,6 +29,7 @@
     "header": "Header",
     "layout": "Layout",
     "main": "Main",
+    "overlay": "Overlay",
     "page": "Page",
     "password": "Password",
     "primary": "Primary",
@@ -39,6 +40,7 @@
     "secondary": "Secondary",
     "section": "Section",
     "settings": "Settings",
+    "sidecart": "Sidecart",
     "sidebar": "Sidebar",
     "text": "Text",
     "theme": "Theme",
@@ -298,6 +300,33 @@
         "width_single": "Single (1 column)",
         "width_double": "Double (2 columns)"
       }
+    }
+  },
+  "cart": {
+    "settings": {
+      "quick_cart_header": "Quick cart",
+      "enable_quick_cart": "Enable quick cart drawer",
+      "enable_quick_cart_info": "Opens a slide-out cart instead of going to the cart page",
+      "show_dynamic_checkout": "Show dynamic checkout buttons",
+      "show_dynamic_checkout_info": "Display accelerated checkout options like Shop Pay, Apple Pay"
+    }
+  },
+  "sidecart": {
+    "name": "Sidecart",
+    "settings": {
+      "content_header": "Content",
+      "empty_title": {
+        "label": "Empty cart title"
+      },
+      "empty_message": {
+        "label": "Empty cart message"
+      },
+      "continue_button_text": {
+        "label": "Continue shopping button text"
+      },
+      "colors_header": "Colors",
+      "background_color": "Background color",
+      "text_color": "Text color"
     }
   }
 }

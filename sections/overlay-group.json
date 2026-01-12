@@ -1,0 +1,15 @@
+{
+  "type": "aside",
+  "name": "t:general.overlay",
+  "sections": {
+    "sidecart": {
+      "type": "sidecart",
+      "settings": {
+        "empty_title": "Your cart is empty",
+        "empty_message": "Looks like you haven't added anything yet.",
+        "continue_button_text": "Continue shopping"
+      }
+    }
+  },
+  "order": ["sidecart"]
+}

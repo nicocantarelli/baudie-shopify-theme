@@ -1,0 +1,115 @@
+{% doc %}
+  Renders a single cart item in the sidecart.
+
+  @param {line_item} item - The cart line item to render
+{% enddoc %}
+
+{%- liquid
+  assign item_url = item.url
+  assign item_image = item.image
+  assign item_title = item.product.title
+  assign item_variant = item.variant.title
+  assign item_price = item.final_line_price
+  assign item_unit_price = item.final_price
+  assign item_quantity = item.quantity
+  assign item_key = item.key
+  assign short_description = item.product.metafields.custom.short_description | default: ''
+
+  assign has_compare_price = false
+  assign compare_price = 0
+  if item.variant.compare_at_price > item.variant.price
+    assign has_compare_price = true
+    assign compare_price = item.variant.compare_at_price | times: item_quantity
+  elsif item.original_line_price > item.final_line_price
+    assign has_compare_price = true
+    assign compare_price = item.original_line_price
+  endif
+-%}
+
+<li class="sidecart-item" data-sidecart-item data-key="{{ item_key }}" data-unit-price="{{ item_unit_price }}" data-compare-unit-price="{{ item.variant.compare_at_price | default: 0 }}">
+  <a href="{{ item_url }}" class="sidecart-item__image-link">
+    {%- if item_image -%}
+      {{ item_image | image_url: width: 150 | image_tag:
+        loading: 'lazy',
+        class: 'sidecart-item__image',
+        alt: item_title,
+        width: 150,
+        height: 194
+      }}
+    {%- else -%}
+      <div class="sidecart-item__placeholder">
+        {{ 'product-1' | placeholder_svg_tag: 'sidecart-item__placeholder-svg' }}
+      </div>
+    {%- endif -%}
+  </a>
+
+  <div class="sidecart-item__details">
+    <div class="sidecart-item__info">
+      <h3 class="sidecart-item__title">
+        <a href="{{ item_url }}">{{ item_title }}</a>
+      </h3>
+      {%- if item_variant != 'Default Title' -%}
+        <p class="sidecart-item__variant">{{ item_variant }}</p>
+      {%- endif -%}
+      {%- if short_description != blank -%}
+        <p class="sidecart-item__description">{{ short_description }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="sidecart-item__controls">
+      <div class="sidecart-item__quantity">
+        <button
+          type="button"
+          class="sidecart-item__qty-btn"
+          aria-label="{{ 'sidecart.decrease_quantity' | t }}"
+          data-action="decrease"
+          data-key="{{ item_key }}">
+          <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <input
+          type="number"
+          class="sidecart-item__qty-input"
+          data-quantity
+          data-key="{{ item_key }}"
+          value="{{ item_quantity }}"
+          min="0"
+          aria-label="{{ 'sidecart.quantity' | t }}">
+        <button
+          type="button"
+          class="sidecart-item__qty-btn"
+          aria-label="{{ 'sidecart.increase_quantity' | t }}"
+          data-action="increase"
+          data-key="{{ item_key }}">
+          <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="sidecart-item__price">
+        {%- if has_compare_price -%}
+          <s class="sidecart-item__compare-price" data-compare-price>
+            <span class="visually-hidden">{{ 'products.regular_price' | t }}:</span>
+            {{ compare_price | money }}
+          </s>
+        {%- endif -%}
+        <span class="sidecart-item__current-price{% if has_compare_price %} sidecart-item__current-price--sale{% endif %}" data-price>
+          {%- if has_compare_price -%}
+            <span class="visually-hidden">{{ 'products.sale_price' | t }}:</span>
+          {%- endif -%}
+          {{ item_price | money }}
+        </span>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="sidecart-item__remove"
+      data-action="remove"
+      data-key="{{ item_key }}">
+      {{ 'sidecart.remove_item' | t }}
+    </button>
+  </div>
+</li>
