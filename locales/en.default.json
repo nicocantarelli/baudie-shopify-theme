@@ -73,7 +73,8 @@
   "products": {
     "add_to_cart": "Add to cart",
     "view_product": "View product",
-    "buy_now": "Buy now"
+    "buy_now": "Buy now",
+    "sold_out": "Sold out"
   },
   "search": {
     "title": "Search",
@@ -117,6 +118,13 @@
     },
     "what_makes_different": {
       "name": "What Makes Different"
+    },
+    "hero_product": {
+      "aria_label": "Featured products",
+      "carousel_controls": "Product carousel controls",
+      "product_carousel": "Product carousel",
+      "slide_of": "Slide {{ current }} of {{ total }}",
+      "rating_label": "{{ rating }} out of 5 stars, {{ count }} reviews"
     }
   },
   "labels": {

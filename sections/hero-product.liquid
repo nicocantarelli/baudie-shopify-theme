@@ -3,7 +3,7 @@
   Products display with their hero images from metafields and allow navigation between items.
 {% endcomment %}
 
-<div class="hero-product full-width">
+<section class="hero-product full-width" aria-label="{{ 'sections.hero_product.aria_label' | t }}">
   <div class="hero-product__inner">
     {%- comment -%} Hero Images Container {%- endcomment -%}
     <div class="hero-product__images" data-hero-images>
@@ -11,7 +11,8 @@
       {% if section.settings.use_static_image and section.settings.static_hero_image %}
         <div class="hero-product__static-hero">
           <div class="hero-product__main-image">
-            {{ section.settings.static_hero_image | image_url: width: 2400 | image_tag: loading: 'eager', class: 'hero-product__image' }}
+            {%- assign static_hero_alt = section.settings.static_hero_image_alt | default: section.settings.static_hero_image.alt | default: section.settings.heading -%}
+            {{ section.settings.static_hero_image | image_url: width: 2400 | image_tag: loading: 'eager', class: 'hero-product__image', alt: static_hero_alt }}
           </div>
           <div class="hero-product__image-gradient"></div>
         </div>
@@ -21,7 +22,7 @@
           <div class="hero-product__image-wrapper hero-product__image-wrapper--static {% if forloop.first %}is-active{% endif %}" data-product-index="{{ forloop.index0 }}">
             {% if product.featured_image %}
               <div class="hero-product__secondary-image">
-                {{ product.featured_image | image_url: width: 1200 | image_tag: class: 'hero-product__secondary-img' }}
+                {{ product.featured_image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__secondary-img', alt: product.featured_image.alt | default: product.title }}
               </div>
             {% endif %}
           </div>
@@ -33,7 +34,7 @@
             {% if product.metafields.custom.hero_image %}
               {%- comment -%} Main Hero Image {%- endcomment -%}
               <div class="hero-product__main-image">
-                {{ product.metafields.custom.hero_image | image_url: width: 2400 | image_tag: loading: 'eager', class: 'hero-product__image' }}
+                {{ product.metafields.custom.hero_image | image_url: width: 2400 | image_tag: loading: 'eager', class: 'hero-product__image', alt: product.metafields.custom.hero_image.alt | default: product.title }}
               </div>
 
               {%- comment -%} Gradient Overlay {%- endcomment -%}
@@ -43,7 +44,7 @@
             {%- comment -%} Secondary Product Image (top right) {%- endcomment -%}
             {% if product.featured_image %}
               <div class="hero-product__secondary-image">
-                {{ product.featured_image | image_url: width: 1200 | image_tag: class: 'hero-product__secondary-img' }}
+                {{ product.featured_image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__secondary-img', alt: product.featured_image.alt | default: product.title }}
               </div>
             {% endif %}
           </div>
@@ -55,7 +56,7 @@
         <div class="hero-product__mobile-wrapper {% if forloop.first %}is-active{% endif %}" data-product-index="{{ forloop.index0 }}">
           {% if product.featured_image %}
             <div class="hero-product__mobile-image">
-              {{ product.featured_image | image_url: width: 1200 | image_tag: class: 'hero-product__mobile-img' }}
+              {{ product.featured_image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__mobile-img', alt: product.featured_image.alt | default: product.title }}
               <div class="hero-product__mobile-gradient"></div>
             </div>
           {% endif %}
@@ -82,13 +83,16 @@
 
     {%- comment -%} Navigation Controls {%- endcomment -%}
     {% if section.settings.hero_products.size > 1 %}
-      <div class="hero-product__controls">
+      <div class="hero-product__controls" role="group" aria-label="{{ 'sections.hero_product.carousel_controls' | t }}">
         <button
           type="button"
           class="hero-product__arrow hero-product__arrow--prev"
           aria-label="{{ 'general.previous' | t }}"
+          aria-controls="hero-product-cards"
           data-hero-prev>
           <svg
+            aria-hidden="true"
+            focusable="false"
             xmlns="http://www.w3.org/2000/svg"
             width="12"
             height="24"
@@ -105,8 +109,11 @@
           type="button"
           class="hero-product__arrow hero-product__arrow--next"
           aria-label="{{ 'general.next' | t }}"
+          aria-controls="hero-product-cards"
           data-hero-next>
           <svg
+            aria-hidden="true"
+            focusable="false"
             xmlns="http://www.w3.org/2000/svg"
             width="12"
             height="24"
@@ -123,25 +130,33 @@
     {% endif %}
 
     {%- comment -%} Product Cards {%- endcomment -%}
-    <div class="hero-product__cards" data-hero-cards>
+    <div
+      class="hero-product__cards"
+      id="hero-product-cards"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="{{ 'sections.hero_product.product_carousel' | t }}"
+      data-hero-cards>
       {% for product in section.settings.hero_products %}
         {% assign card_bg = product.metafields.custom.card_background_color | default: '#FCD8B3' %}
-          <div
+        <div
           class="hero-product__card {% if forloop.first %}is-active{% endif %}"
           data-product-index="{{ forloop.index0 }}"
           data-card-color="{{ card_bg }}"
+          role="group"
+          aria-roledescription="slide"
+          aria-label="{{ 'sections.hero_product.slide_of' | t: current: forloop.index, total: section.settings.hero_products.size }}"
           data-product-card>
           {%- comment -%} Rating {%- endcomment -%}
-          <div class="hero-product__rating">
-            <div class="hero-product__stars">
-              {% if product.metafields.reviews.rating.value %}
-                {% assign rating = product.metafields.reviews.rating.value.rating %}
-                {% assign review_count = product.metafields.reviews.rating.value.count | default: 0 %}
-              {% else %}
-                {% assign rating = 0 %}
-                {% assign review_count = 0 %}
-              {% endif %}
-
+          {% if product.metafields.reviews.rating.value %}
+            {% assign rating = product.metafields.reviews.rating.value.rating %}
+            {% assign review_count = product.metafields.reviews.rating.value.count | default: 0 %}
+          {% else %}
+            {% assign rating = 0 %}
+            {% assign review_count = 0 %}
+          {% endif %}
+          <div class="hero-product__rating" aria-label="{{ 'sections.hero_product.rating_label' | t: rating: rating, count: review_count }}">
+            <div class="hero-product__stars" aria-hidden="true">
               {% for i in (1..5) %}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -182,8 +197,13 @@
                 name="add"
                 class="hero-product__button hero-product__button--add"
                 {% unless product.available %}
-                disabled{% endunless %}>
+                  disabled
+                  aria-disabled="true"
+                  aria-label="{{ 'products.add_to_cart' | t }} - {{ 'products.sold_out' | t }}"
+                {% endunless %}>
                 <svg
+                  aria-hidden="true"
+                  focusable="false"
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
                   height="16"
@@ -205,7 +225,7 @@
       {% endfor %}
     </div>
   </div>
-</div>
+</section>
 
 {% stylesheet %}
   .hero-product {
@@ -371,8 +391,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background-color 0.2s ease
-    , transform 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
     padding: 0;
   }
 
@@ -383,6 +402,11 @@
 
   .hero-product__arrow:active {
     transform: translateY(0);
+  }
+
+  .hero-product__arrow:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
   }
 
   /* Product Cards - positioned on right side */
@@ -410,8 +434,7 @@
     background-color: #FCD8B3;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.6s ease-in-out
-    , background-color 0.6s ease-in-out;
+    transition: opacity 0.6s ease-in-out, background-color 0.6s ease-in-out;
   }
 
   .hero-product__card.is-active {
@@ -446,17 +469,7 @@
     width: 100%;
   }
 
-  .hero-product__name {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 18px;
-    line-height: normal;
-    letter-spacing: -0.18px;
-    text-transform: uppercase;
-    color: #3E2027;
-    margin: 0;
-  }
-
+  .hero-product__name,
   .hero-product__price {
     font-family: var(--font-sweet-sans);
     font-weight: 500;
@@ -506,8 +519,7 @@
     text-decoration: none;
     border: none;
     cursor: pointer;
-    transition: opacity 0.2s ease
-    , transform 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
     white-space: nowrap;
   }
 
@@ -535,6 +547,15 @@
     background-color: #3E2027;
     color: #FFFFFF;
     flex: 1;
+  }
+
+  .hero-product__button:focus-visible {
+    outline: 2px solid #3E2027;
+    outline-offset: 2px;
+  }
+
+  .hero-product__button--buy:focus-visible {
+    outline-color: #FFFFFF;
   }
 
   /* Responsive - Smaller Desktop */
@@ -649,16 +670,6 @@
       height: 100%;
     }
 
-    .hero-product__mobile-image-container {
-      position: absolute;
-      left: 50%;
-      top: 0;
-      transform: translateX(-50%);
-      width: 440px;
-      height: 682px;
-      clip-path: url('#blob-mask');
-    }
-
     .hero-product__mobile-img {
       width: 100%;
       height: 100%;
@@ -687,9 +698,9 @@
       transform: translateX(-50%);
       top: 51px;
       bottom: auto;
-      max-width: 440px;
+      max-width: 100%;
       width: 100%;
-      padding: 0 16px;
+      padding: 0 12px;
     }
 
     .hero-product__heading h1 {
@@ -706,11 +717,11 @@
       gap: 10px;
       position: absolute;
       bottom: 60px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 365px;
+      left: 12px;
+      right: 12px;
+      transform: none;
+      width: auto;
       z-index: 3;
-      /* padding: 0 16px; */
     }
 
     .hero-product__mobile-title {
@@ -751,8 +762,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.2s ease
-      , transform 0.2s ease;
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
 
     .hero-product__mobile-button:hover {
@@ -775,6 +785,33 @@
       display: none;
     }
   }
+
+  /* Extra small screens (320px and below) */
+  @media (max-width: 320px) {
+    .hero-product__heading h1 {
+      font-size: 36px;
+    }
+
+    .hero-product__mobile-content {
+      bottom: 30px;
+      gap: 6px;
+    }
+
+    .hero-product__mobile-title {
+      font-size: 22px;
+    }
+
+    .hero-product__mobile-subtitle {
+      font-size: 11px;
+    }
+
+    .hero-product__mobile-button {
+      margin-top: 10px;
+      width: 110px;
+      height: 34px;
+      font-size: 10px;
+    }
+  }
 {% endstylesheet %}
 
 {% javascript %}
@@ -788,40 +825,34 @@
       this.prevBtn = container.querySelector('[data-hero-prev]');
       this.nextBtn = container.querySelector('[data-hero-next]');
 
-      if (this.cards.length<= 1) return;
+      if (this.cards.length <= 1) return;
 
       this.init();
     }
 
     init() {
-      this.prevBtn?.addEventListener('click', () => this.prev()) 
+      this.prevBtn?.addEventListener('click', () => this.prev());
+      this.nextBtn?.addEventListener('click', () => this.next());
 
-        this.nextBtn ?. addEventListener('click', () => this.next());
-      
-
-
-// Keyboard navigation
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') 
-          this.prev();
-        
-
-
-        if (e.key === 'ArrowRight') 
-          this.next();
-        
-
-
-      });
+      const controls = this.container.querySelector('.hero-product__controls');
+      if (controls) {
+        controls.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            this.prev();
+          }
+          if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            this.next();
+          }
+        });
+      }
     }
 
     goTo(index) {
-
-// Get the color for this product
       const newCard = this.cards[index];
-      const bgColor = newCard ?. getAttribute('data-card-color') || '#FCD8B3';
+      const bgColor = newCard?.getAttribute('data-card-color') || '#FCD8B3';
 
-// Update color on the single color block and all cards
       if (this.colorBlock) {
         this.colorBlock.style.backgroundColor = bgColor;
       }
@@ -830,11 +861,9 @@
         card.style.backgroundColor = bgColor;
       });
 
-// Remove active class from all
       this.cards.forEach(card => card.classList.remove('is-active'));
       this.images.forEach(img => img.classList.remove('is-active'));
 
-// Add active class to all elements with matching product index
       this.cards[index]?.classList.add('is-active');
       this.images.forEach(img => {
         if (img.getAttribute('data-product-index') === String(index)) {
@@ -856,90 +885,100 @@
     }
   }
 
-// Initialize on page load
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
   function init() {
     const heroSection = document.querySelector('.hero-product');
     if (heroSection) {
       new HeroProductCarousel(heroSection);
     }
   }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 {% endjavascript %}
 
 {% schema %}
   {
-    "name": "Hero Section",
+    "name": "t:sections.hero_product.name",
     "class": "hero-product-section",
     "settings": [
       {
         "type": "header",
-        "content": "Desktop Settings"
+        "content": "t:sections.hero_product.settings.desktop_header"
       },
       {
         "type": "text",
         "id": "heading",
-        "label": "Heading",
+        "label": "t:labels.heading",
         "default": "Smelling good shouldn't be a gamble."
       },
       {
         "type": "color",
         "id": "heading_color",
-        "label": "Heading color",
+        "label": "t:labels.heading_color",
         "default": "#FFFFFF"
       },
       {
         "type": "product_list",
         "id": "hero_products",
-        "label": "Products"
+        "label": "t:sections.hero_product.settings.products"
       },
       {
         "type": "header",
-        "content": "Hero Image Mode"
+        "content": "t:sections.hero_product.settings.image_mode_header"
       },
       {
         "type": "checkbox",
         "id": "use_static_image",
-        "label": "Use static image",
-        "info": "When enabled, displays a single uploaded image instead of cycling through product images",
+        "label": "t:sections.hero_product.settings.use_static_image",
+        "info": "t:sections.hero_product.settings.use_static_image_info",
         "default": false
       },
       {
         "type": "image_picker",
         "id": "static_hero_image",
-        "label": "Static hero image",
-        "info": "Only used when 'Use static image' is enabled"
-      }, {
+        "label": "t:sections.hero_product.settings.static_hero_image",
+        "info": "t:sections.hero_product.settings.static_hero_image_info"
+      },
+      {
+        "type": "text",
+        "id": "static_hero_image_alt",
+        "label": "t:sections.hero_product.settings.static_hero_image_alt",
+        "info": "t:sections.hero_product.settings.static_hero_image_alt_info"
+      },
+      {
         "type": "header",
-        "content": "Mobile Settings"
-      }, {
+        "content": "t:sections.hero_product.settings.mobile_header"
+      },
+      {
         "type": "text",
         "id": "mobile_title",
-        "label": "Mobile title",
+        "label": "t:sections.hero_product.settings.mobile_title",
         "default": "Deodorant enhancer."
-      }, {
+      },
+      {
         "type": "textarea",
         "id": "mobile_subtitle",
-        "label": "Mobile subtitle",
+        "label": "t:sections.hero_product.settings.mobile_subtitle",
         "default": "Not a deodorant — the step that makes it work better."
-      }, {
+      },
+      {
         "type": "text",
         "id": "mobile_button_text",
-        "label": "Mobile button text",
+        "label": "t:sections.hero_product.settings.mobile_button_text",
         "default": "BUY NOW"
-      }, {
+      },
+      {
         "type": "url",
         "id": "mobile_button_url",
-        "label": "Mobile button URL"
+        "label": "t:sections.hero_product.settings.mobile_button_url"
       }
     ],
     "presets": [
       {
-        "name": "Hero Section"
+        "name": "t:sections.hero_product.name"
       }
     ]
   }

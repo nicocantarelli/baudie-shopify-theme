@@ -228,6 +228,30 @@
         "badge_color": "Badge background color",
         "badge_text_color": "Badge text color"
       }
+    },
+    "hero_product": {
+      "name": "Hero section",
+      "aria_label": "Featured products",
+      "carousel_controls": "Product carousel controls",
+      "product_carousel": "Product carousel",
+      "slide_of": "Slide {{ current }} of {{ total }}",
+      "rating_label": "{{ rating }} out of 5 stars, {{ count }} reviews",
+      "settings": {
+        "desktop_header": "Desktop settings",
+        "products": "Products",
+        "image_mode_header": "Hero image mode",
+        "use_static_image": "Use static image",
+        "use_static_image_info": "When enabled, displays a single uploaded image instead of cycling through product images",
+        "static_hero_image": "Static hero image",
+        "static_hero_image_info": "Only used when 'Use static image' is enabled",
+        "static_hero_image_alt": "Static hero image alt text",
+        "static_hero_image_alt_info": "Describe the image for accessibility (uses heading as fallback)",
+        "mobile_header": "Mobile settings",
+        "mobile_title": "Mobile title",
+        "mobile_subtitle": "Mobile subtitle",
+        "mobile_button_text": "Mobile button text",
+        "mobile_button_url": "Mobile button URL"
+      }
     }
   },
   "blocks": {
