@@ -179,9 +179,17 @@
       "image_header": "Image"
     },
     "meet_scents": {
-      "content_header": "Content",
-      "video_header": "Video",
-      "placeholder_info": "Shows when no video is uploaded"
+      "name": "Meet Your Scents",
+      "settings": {
+        "content_header": "Content",
+        "images_header": "Images",
+        "side_image": "Side image",
+        "side_image_info": "Lifestyle image shown on the left side",
+        "background_image": "Background image",
+        "background_image_info": "Background image shown behind the product cards",
+        "tab_color": "Tab color",
+        "tab_text_color": "Tab text color"
+      }
     },
     "explore_sets": {
       "background_header": "Background",
@@ -375,6 +383,9 @@
         "width_single": "Single (1 column)",
         "width_double": "Double (2 columns)"
       }
+    },
+    "product": {
+      "name": "Product"
     }
   },
   "cart": {

@@ -1,613 +1,708 @@
-{% comment %}
-  Meet Your Scents section - Interactive video with hoverable tooltip markers
-{% endcomment %}
+{%- liquid
+  assign has_products = false
+  if section.blocks.size > 0
+    assign has_products = true
+  endif
+-%}
 
-<div class="meet-scents full-width">
+<meet-scents-section class="meet-scents full-width">
+  {%- if section.settings.heading != blank -%}
+    <h2 class="meet-scents__mobile-heading">{{ section.settings.heading | escape }}</h2>
+  {%- endif -%}
   <div class="meet-scents__container">
-    {% comment %} Video Container {% endcomment %}
-    <div class="meet-scents__video-wrapper">
-      {% comment %} Heading - Overlaid on video {% endcomment %}
-      {% if section.settings.heading != blank %}
-        <h2 class="meet-scents__heading">{{ section.settings.heading }}</h2>
-      {% endif %}
-
-      {% if section.settings.video %}
-        <div class="meet-scents__video">
-          {{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, class: 'meet-scents__video-element'
+    <div class="meet-scents__left">
+      <div class="meet-scents__image-wrapper">
+        {%- if section.settings.side_image != blank -%}
+          {{ section.settings.side_image | image_url: width: 1400 | image_tag:
+            class: 'meet-scents__side-image',
+            loading: 'lazy',
+            alt: section.settings.heading
           }}
-        </div>
-      {% elsif section.settings.placeholder_image %}
-        <div class="meet-scents__video">
-          {{ section.settings.placeholder_image | image_url: width: 2400 | image_tag: class: 'meet-scents__video-element' }}
-        </div>
-      {% endif %}
+        {%- else -%}
+          <div class="meet-scents__side-placeholder">
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'meet-scents__placeholder-svg' }}
+          </div>
+        {%- endif -%}
+        <div class="meet-scents__overlay"></div>
+        {%- if section.settings.heading != blank -%}
+          <h2 class="meet-scents__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+      </div>
+    </div>
 
-      {% comment %} Tooltip Circles - Positioned using CSS Grid {% endcomment %}
-      {% if section.blocks.size > 0 %}
-        <div class="meet-scents__markers">
-          {% for block in section.blocks %}
-            {% if block.type == 'tooltip_marker' %}
-              <div
-                class="meet-scents__marker"
-                style="
-                  --marker-x: {{ block.settings.position_x }}%;
-                  --marker-y: {{ block.settings.position_y }}%;
-                "
-                {{ block.shopify_attributes }}>
+    <div class="meet-scents__right">
+      {%- if section.settings.background_image != blank -%}
+        {{ section.settings.background_image | image_url: width: 1400 | image_tag:
+          class: 'meet-scents__bg-image',
+          loading: 'lazy',
+          alt: ''
+        }}
+      {%- else -%}
+        <div class="meet-scents__bg-placeholder"></div>
+      {%- endif -%}
 
-                {% comment %} Circle SVG {% endcomment %}
-                <div class="meet-scents__marker-circle">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="36"
-                    height="36"
-                    viewBox="0 0 36 36"
-                    fill="none">
-                    <circle
-                      opacity="0.3"
-                      cx="18"
-                      cy="18"
-                      r="18"
-                      fill="white" />
-                    <circle
-                      cx="18"
-                      cy="18"
-                      r="10"
-                      fill="white" />
-                  </svg>
-                </div>
-
-                {% comment %} Tooltip {% endcomment %}
-                {% if block.settings.product != blank %}
-                  {% assign tooltip_product = block.settings.product %}
-                    <div class="meet-scents__tooltip">
-                    {% comment %} Stars and Review Count {% endcomment %}
-                    <div class="meet-scents__tooltip-rating">
-                      <div class="meet-scents__tooltip-stars">
-                        {% if tooltip_product.metafields.reviews.rating.value %}
-                          {% assign rating = tooltip_product.metafields.reviews.rating.value.rating %}
-                          {% assign review_count = tooltip_product.metafields.reviews.rating.value.count | default: 0 %}
-                        {% else %}
-                          {% assign rating = 5 %}
-                          {% assign review_count = 0 %}
-                        {% endif %}
-
-                        {% for i in (1..5) %}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none">
-                            <path d="M6.66818 0.216469C6.69884 0.151475 6.74623 0.0967878 6.80496 0.0585181C6.86369 0.0202485 6.93148 0 7.00063 0C7.06977 0 7.13756 0.0202485 7.19629 0.0585181C7.25502 0.0967878 7.30241 0.151475 7.33307 0.216469L8.9499 3.6511C9.04568 3.8772 9.19368 4.07277 9.38215 4.22109C9.57062 4.3694 9.79246 4.46601 10.0263 4.50664L13.6822 5.05758C13.7507 5.06798 13.8151 5.09829 13.868 5.14507C13.921 5.19185 13.9604 5.25325 13.9818 5.32228C14.0032 5.39133 14.0059 5.46528 13.9891 5.53577C13.9724 5.60625 13.9369 5.67049 13.888 5.72117L11.2731 8.39167C11.1206 8.56791 11.0116 8.78548 10.957 9.02163C10.9025 9.25778 10.9048 9.50531 10.9638 9.74024L11.5627 13.543C11.5747 13.6151 11.5674 13.6891 11.5415 13.7567C11.5155 13.8242 11.4718 13.8827 11.4154 13.9258C11.3591 13.9688 11.2925 13.994 11.2231 13.999C11.1537 14.004 11.0844 13.9886 11.0231 13.9543L7.69076 12.1621C7.47779 12.0348 7.24083 11.9695 7.00028 11.9695C6.75973 11.9695 6.52276 12.0348 6.30979 12.1621L2.97818 13.9543C2.91682 13.9884 2.84757 14.0038 2.77832 13.9987C2.70906 13.9935 2.64242 13.9681 2.58642 13.925C2.53041 13.8819 2.48671 13.8228 2.46084 13.7553C2.43497 13.6878 2.42783 13.6142 2.43984 13.543L3.03588 9.7417C3.09461 9.50619 3.09696 9.25821 3.04248 9.02193C2.98799 8.78564 2.87883 8.56795 2.72621 8.39167L0.111319 5.72245C0.0632499 5.67186 0.0278529 5.60694 0.00903011 5.53625C-0.00979272 5.46553 -0.0133341 5.39134 0.00806134 5.32198C0.0294568 5.25266 0.0689896 5.19106 0.122242 5.14419C0.175494 5.09732 0.240229 5.06691 0.309031 5.05684L3.96421 4.50664C4.19836 4.4663 4.42046 4.36981 4.60925 4.22148C4.79805 4.07315 4.9464 3.87741 5.04399 3.6511L6.66818 0.216469Z" fill="#3E2027" />
-                          </svg>
-                        {% endfor %}
-                      </div>
-                      <span class="meet-scents__tooltip-review-count">({{ review_count }})</span>
+      {%- if has_products -%}
+        <div class="meet-scents__content">
+          <div class="meet-scents__card-wrapper">
+            <div class="meet-scents__cards" data-cards>
+              {%- for block in section.blocks -%}
+                {%- assign product = block.settings.product -%}
+                {%- if product != blank -%}
+                  {%- assign card_color = product.metafields.custom.card_background_color | default: '#FFCAD2' -%}
+                  {%- assign product_image = product.featured_image -%}
+                  <a
+                    href="{{ product.url }}"
+                    id="meet-scents-card-{{ forloop.index0 }}"
+                    class="meet-scents__card{% if forloop.first %} is-active{% endif %}"
+                    data-card="{{ forloop.index0 }}"
+                    data-color="{{ card_color }}"
+                    role="tabpanel"
+                    aria-labelledby="meet-scents-tab-{{ forloop.index0 }}"
+                    {% unless forloop.first %}aria-hidden="true" tabindex="-1"{% endunless %}
+                    {{ block.shopify_attributes }}>
+                    <div class="meet-scents__card-image">
+                      {%- if product_image != blank -%}
+                        {{ product_image | image_url: width: 800 | image_tag:
+                          class: 'meet-scents__product-image',
+                          loading: 'lazy',
+                          alt: product.title
+                        }}
+                      {%- else -%}
+                        <div class="meet-scents__product-placeholder">
+                          {{ 'product-1' | placeholder_svg_tag: 'meet-scents__product-placeholder-svg' }}
+                        </div>
+                      {%- endif -%}
                     </div>
-
-                    {% comment %} Product Name and Price {% endcomment %}
-                    <div class="meet-scents__tooltip-header">
-                      <h3 class="meet-scents__tooltip-title">{{ tooltip_product.title }}</h3>
-                      <p class="meet-scents__tooltip-price">{{ tooltip_product.price | money }}</p>
+                    <div class="meet-scents__card-info">
+                      <h3 class="meet-scents__product-title">{{ product.title | escape }}</h3>
+                      {%- if product.metafields.custom.short_description != blank -%}
+                        <p class="meet-scents__product-description">{{ product.metafields.custom.short_description | escape }}</p>
+                      {%- elsif product.description != blank -%}
+                        <p class="meet-scents__product-description">{{ product.description | strip_html | truncate: 80 }}</p>
+                      {%- endif -%}
                     </div>
+                  </a>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
 
-                    {% comment %} Description {% endcomment %}
-                    {% if block.settings.tooltip_description != blank %}
-                      <p class="meet-scents__tooltip-description">{{ block.settings.tooltip_description }}</p>
-                    {% elsif tooltip_product.metafields.custom.short_description %}
-                      <p class="meet-scents__tooltip-description">{{ tooltip_product.metafields.custom.short_description }}</p>
-                    {% endif %}
+            <div class="meet-scents__tabs" data-tabs role="tablist" aria-label="{{ 'sections.meet_scents.tabs_label' | t }}">
+              {%- for block in section.blocks -%}
+                {%- assign product = block.settings.product -%}
+                {%- if product != blank -%}
+                  {%- assign tab_color = block.settings.tab_color | default: '#FFCAD2' -%}
+                  {%- assign tab_text_color = block.settings.tab_text_color | default: '#FFFAE6' -%}
+                  {%- assign tab_z_index = forloop.length | minus: forloop.index0 -%}
+                  <button
+                    type="button"
+                    id="meet-scents-tab-{{ forloop.index0 }}"
+                    class="meet-scents__tab{% if forloop.first %} is-active{% endif %}"
+                    data-tab="{{ forloop.index0 }}"
+                    role="tab"
+                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                    aria-controls="meet-scents-card-{{ forloop.index0 }}"
+                    style="--tab-color: {{ tab_color }}; --tab-text-color: {{ tab_text_color }}; --tab-z-index: {{ tab_z_index }};">
+                    <span class="meet-scents__tab-text">{{ product.title | escape }}</span>
+                  </button>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
 
-                    {% comment %} Action Buttons {% endcomment %}
-                    <div class="meet-scents__tooltip-actions">
-                      {% form 'product'
-                        , tooltip_product %}
-                        {%- assign selected_variant = tooltip_product.selected_or_first_available_variant -%}
-                        <input
-                          type="hidden"
-                          name="id"
-                          value="{{ selected_variant.id }}">
-                        <button
-                          type="submit"
-                          name="add"
-                          class="meet-scents__tooltip-btn meet-scents__tooltip-btn--add"
-                          {% unless selected_variant.available %}
-                          disabled{% endunless %}>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            fill="none">
-                            <path
-                              d="M0.75 7.75H14.75M7.75 0.75V14.75"
-                              stroke="#3E2027"
-                              stroke-width="1.5"
-                              stroke-linecap="round"
-                              stroke-linejoin="round" />
-                          </svg>
-                          <span>{{ 'products.add_to_cart' | t }}</span>
-                        </button>
-                      {% endform %}
-                      <a href="{{ tooltip_product.url }}" class="meet-scents__tooltip-btn meet-scents__tooltip-btn--buy">
-                        {{ 'products.buy_now' | t }}
-                      </a>
-                    </div>
-                  </div>
-                {% endif %}
-              </div>
-            {% endif %}
-          {% endfor %}
+          <div class="meet-scents__dots" data-dots role="group" aria-label="{{ 'sections.meet_scents.pagination_label' | t }}">
+            {%- for block in section.blocks -%}
+              {%- assign product = block.settings.product -%}
+              {%- if product != blank -%}
+                <button
+                  type="button"
+                  class="meet-scents__dot{% if forloop.first %} is-active{% endif %}"
+                  data-dot="{{ forloop.index0 }}"
+                  aria-label="{{ 'sections.meet_scents.go_to_product' | t: name: product.title }}"
+                  aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+                </button>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
         </div>
-      {% endif %}
+      {%- endif -%}
     </div>
   </div>
-</div>
+</meet-scents-section>
 
 {% stylesheet %}
   .meet-scents {
     background-color: #FFF7EA;
-    padding: 80px 0 60px;
-    overflow: hidden;
   }
 
   .meet-scents__container {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 0 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1520px;
+    margin: 0 auto 80px;
+    min-height: 751px;
   }
 
-  /* Heading - Overlaid on video top left */
+  .meet-scents__left {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .meet-scents__image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 751px;
+  }
+
+  .meet-scents__side-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .meet-scents__side-placeholder {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(62, 32, 39, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .meet-scents__placeholder-svg {
+    width: 200px;
+    height: 200px;
+    opacity: 0.3;
+  }
+
+  .meet-scents__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 189px;
+    background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
+    pointer-events: none;
+  }
+
   .meet-scents__heading {
-    grid-column: 1;
-    grid-row: 1;
+    position: absolute;
+    bottom: 38px;
+    left: 40px;
+    right: 40px;
     font-family: var(--font-alyona);
     font-size: 70px;
     font-weight: 400;
     line-height: 1;
     color: #FFFFFF;
     margin: 0;
-    padding: 49px 0 0 40px;
-    align-self: start;
-    justify-self: start;
-    z-index: 3;
-    pointer-events: none;
-  }
-
-  /* Video Wrapper - Using Grid for positioning */
-  .meet-scents__video-wrapper {
-    position: relative;
-    width: 100%;
-    /* max-width: 1360px; */
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
-  }
-
-  /* Video Container */
-  .meet-scents__video {
-    grid-column: 1;
-    grid-row: 1;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1360 / 765;
-    overflow: hidden;
-    clip-path: url('#meet-scents-mask');
-  }
-
-  .meet-scents__video-element {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  /* Markers Container - Uses Grid, overlays video */
-  .meet-scents__markers {
-    grid-column: 1;
-    grid-row: 1;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-
-  /* Individual Marker - Positioned using CSS custom properties */
-  .meet-scents__marker {
-    position: absolute;
-    left: var(--marker-x);
-    top: var(--marker-y);
-    transform: translate(-50%, -50%);
-    pointer-events: auto;
     z-index: 2;
   }
 
-  /* Marker Circle */
-  .meet-scents__marker-circle {
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
-
-  .meet-scents__marker:hover .meet-scents__marker-circle {
-    transform: scale(1.1);
-  }
-
-  .meet-scents__marker-circle svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  /* Tooltip - Matches Figma Design */
-  .meet-scents__tooltip {
-    position: absolute;
-    bottom: calc(100% + 12px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #FFFFFF;
-    padding: 15px;
-    width: 320px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease
-    , visibility 0.3s ease;
-    pointer-events: auto;
-    z-index: 10;
-  }
-
-  .meet-scents__marker:hover .meet-scents__tooltip,
-  .meet-scents__tooltip:hover {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  /* Tooltip arrow - centered below tooltip */
-  .meet-scents__tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 12.5px solid transparent;
-    border-right: 12.5px solid transparent;
-    border-top: 14.5px solid #FFFFFF;
-  }
-
-  /* Invisible bridge between marker and tooltip to prevent losing hover */
-  .meet-scents__tooltip::before {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    height: 12px;
-    background: transparent;
-  }
-
-  /* Rating Stars */
-  .meet-scents__tooltip-rating {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .meet-scents__tooltip-stars {
-    display: flex;
-    gap: 4px;
-  }
-
-  .meet-scents__tooltip-stars svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .meet-scents__tooltip-review-count {
-    font-family: var(--font-jokker);
-    font-size: 14px;
-    line-height: 1.5;
-    color: #3E2027;
-  }
-
-  /* Header - Title and Price */
-  .meet-scents__tooltip-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .meet-scents__tooltip-title {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 18px;
-    line-height: normal;
-    letter-spacing: -0.18px;
-    text-transform: uppercase;
-    color: #3E2027;
-    margin: 0;
-  }
-
-  .meet-scents__tooltip-price {
-    font-family: var(--font-sweet-sans);
-    font-weight: 400;
-    font-size: 18px;
-    line-height: normal;
-    letter-spacing: -0.18px;
-    text-transform: uppercase;
-    color: #3E2027;
-    margin: 0;
-  }
-
-  /* Description */
-  .meet-scents__tooltip-description {
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
-    color: #3E2027;
-    margin: 0;
-  }
-
-  /* Action Buttons */
-  .meet-scents__tooltip-actions {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .meet-scents__tooltip-actions form {
-    flex: 1;
-    margin: 0;
-  }
-
-  .meet-scents__tooltip-btn {
-    height: 40px;
-    padding: 10px 20px;
+  .meet-scents__right {
+    position: relative;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    line-height: normal;
-    letter-spacing: -0.14px;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.2s ease
-    , transform 0.2s ease;
-    white-space: nowrap;
-    width: 100%;
-    overflow: visible;
+    padding: 60px 80px 60px 40px;
   }
 
-  .meet-scents__tooltip-btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
-
-  .meet-scents__tooltip-btn:active {
-    opacity: 0.8;
-    transform: translateY(0);
-  }
-
-  .meet-scents__tooltip-btn--add {
-    background: #FFFFFF;
-    color: #3E2027;
-    border: 1px solid #3E2027;
-  }
-
-  .meet-scents__tooltip-btn--add:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .meet-scents__tooltip-btn--add svg {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    display: inline-block;
-    max-width: none;
-  }
-
-  .meet-scents__tooltip-btn--add svg path {
-    stroke: #3E2027;
-  }
-
-  .meet-scents__tooltip-btn--buy {
-    background: #3E2027;
-    color: #FFFAE6;
-    flex: 1;
-  }
-
-  /* SVG Clip Path Definition */
-  .meet-scents__video::before {
-    content: '';
+  .meet-scents__bg-image {
     position: absolute;
-    width: 0;
-    height: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
-  /* Responsive */
-  @media (max-width: 1024px) {
-    .meet-scents__container {
-      padding: 0 24px;
-    }
+  .meet-scents__bg-placeholder {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #E8F4F8 0%, #D4EBF2 100%);
+  }
 
+  .meet-scents__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .meet-scents__card-wrapper {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    min-height: 600px;
+  }
+
+  .meet-scents__cards {
+    position: relative;
+    min-height: 580px;
+  }
+
+  .meet-scents__card {
+    display: none;
+    text-decoration: none;
+    color: inherit;
+    background: #FFFFFF;
+    border-radius: 20px 0 20px 20px;
+    overflow: hidden;
+    width: 365px;
+    height: 600px;
+    padding: 20px 20px 0;
+  }
+
+  .meet-scents__card.is-active {
+    display: block;
+  }
+
+  .meet-scents__card:focus-visible {
+    outline: 2px solid #3E2027;
+    outline-offset: 4px;
+  }
+
+  .meet-scents__card-image {
+    width: 325px;
+    height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 20px;
+  }
+
+  .meet-scents__product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .meet-scents__product-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .meet-scents__product-placeholder-svg {
+    width: 150px;
+    height: 150px;
+    opacity: 0.5;
+  }
+
+  .meet-scents__card-info {
+    padding: 24px 20px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .meet-scents__product-title {
+    font-family: var(--font-sweet-sans);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.2px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  .meet-scents__product-description {
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  .meet-scents__tabs {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0;
+  }
+
+  .meet-scents__tab {
+    position: relative;
+    width: 40px;
+    height: 100px;
+    padding: 12px 10px;
+    margin-top: -8px;
+    border: none;
+    border-radius: 0 10px 10px 0;
+    font-family: var(--font-sweet-sans);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.1px;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: var(--tab-color);
+    color: var(--tab-text-color, #FFFAE6);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    z-index: var(--tab-z-index, 0);
+  }
+
+  .meet-scents__tab:first-child {
+    margin-top: 0;
+  }
+
+  .meet-scents__tab.is-active {
+    background-color: #FFFFFF;
+    color: #3E2027;
+    z-index: 10;
+  }
+
+  .meet-scents__tab:focus-visible {
+    outline: 2px solid #3E2027;
+    outline-offset: 2px;
+    z-index: 1;
+  }
+
+  .meet-scents__tab-text {
+    display: block;
+  }
+
+  .meet-scents__dots {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .meet-scents__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+
+  .meet-scents__dot.is-active {
+    width: 24px;
+    background-color: transparent;
+    border: 1px solid #FFFFFF;
+  }
+
+  .meet-scents__dot:focus-visible {
+    outline: 2px solid #3E2027;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 1200px) {
     .meet-scents__heading {
       font-size: 56px;
-      padding: 40px 0 0 24px;
+    }
+
+    .meet-scents__right {
+      padding: 50px 70px 50px 30px;
+    }
+
+    .meet-scents__card {
+      width: 320px;
+      height: 540px;
+    }
+
+    .meet-scents__card-image {
+      width: 288px;
+      height: 370px;
     }
   }
 
-  /* Hidden on mobile - no design available yet */
+  @media (max-width: 1024px) {
+    .meet-scents__heading {
+      font-size: 48px;
+      left: 24px;
+      right: 24px;
+      bottom: 30px;
+    }
+
+    .meet-scents__right {
+      padding: 40px 60px 40px 24px;
+    }
+
+    .meet-scents__card {
+      width: 280px;
+      height: 480px;
+      border-radius: 16px 0 16px 16px;
+    }
+
+    .meet-scents__card-image {
+      width: 252px;
+      height: 320px;
+      border-radius: 16px;
+    }
+
+    .meet-scents__card-info {
+      padding: 20px 14px 24px;
+    }
+
+    .meet-scents__product-title {
+      font-size: 18px;
+    }
+
+    .meet-scents__product-description {
+      font-size: 14px;
+    }
+
+    .meet-scents__tab {
+      width: 36px;
+      height: 85px;
+      padding: 10px 8px;
+      font-size: 9px;
+    }
+  }
+
+  .meet-scents__mobile-heading {
+    display: none;
+  }
+
   @media (max-width: 768px) {
     .meet-scents {
+      padding: 40px 12px 60px;
+    }
+
+    .meet-scents__mobile-heading {
+      display: block;
+      font-family: var(--font-alyona);
+      font-size: 30px;
+      font-weight: 400;
+      line-height: 1;
+      text-align: center;
+      color: #3E2027;
+      margin: 0 0 24px;
+    }
+
+    .meet-scents__container {
+      display: flex;
+      justify-content: center;
+      min-height: auto;
+      margin: 0;
+    }
+
+    .meet-scents__left {
+      display: none;
+    }
+
+    .meet-scents__right {
+      position: static;
+      padding: 0;
+      background: none;
+      overflow: visible;
+    }
+
+    .meet-scents__bg-image,
+    .meet-scents__bg-placeholder {
+      display: none;
+    }
+
+    .meet-scents__content {
+      gap: 0;
+    }
+
+    .meet-scents__card-wrapper {
+      min-height: auto;
+    }
+
+    .meet-scents__cards {
+      min-height: auto;
+    }
+
+    .meet-scents__card {
+      width: calc(100vw - 24px - 40px);
+      max-width: 336px;
+      height: auto;
+      padding: 20px 20px 30px;
+      border-radius: 20px 0 20px 20px;
+    }
+
+    .meet-scents__card-image {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 336 / 420;
+    }
+
+    .meet-scents__card-info {
+      padding: 30px 0 0;
+    }
+
+    .meet-scents__product-title {
+      font-size: 20px;
+    }
+
+    .meet-scents__product-description {
+      font-size: 16px;
+    }
+
+    .meet-scents__tabs {
+      margin-left: 0;
+    }
+
+    .meet-scents__tab {
+      width: 40px;
+      height: 90px;
+      padding: 10px;
+      font-size: 10px;
+    }
+
+    .meet-scents__dots {
       display: none;
     }
   }
 {% endstylesheet %}
 
 {% javascript %}
-  // Video autoplay fallback
-  document.addEventListener('DOMContentLoaded', function() {
-    const video = document.querySelector('.meet-scents__video-element');
-    if (video && video.tagName === 'VIDEO') { // Ensure video plays on mobile
-      video.play().catch(function(error) {
-        console.log('Video autoplay prevented:', error);
+  class MeetScentsSection extends HTMLElement {
+    constructor() {
+      super();
+      this.currentIndex = 0;
+    }
+
+    connectedCallback() {
+      this.tabs = this.querySelectorAll('[data-tab]');
+      this.cards = this.querySelectorAll('[data-card]');
+      this.dots = this.querySelectorAll('[data-dot]');
+      this.initTabs();
+      this.initDots();
+    }
+
+    initTabs() {
+      this.tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => this.goTo(index));
+        tab.addEventListener('keydown', (e) => this.handleKeydown(e, index));
       });
     }
-  });
+
+    initDots() {
+      this.dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => this.goTo(index));
+      });
+    }
+
+    handleKeydown(e, currentIndex) {
+      let newIndex = currentIndex;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        newIndex = (currentIndex + 1) % this.tabs.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        newIndex = (currentIndex - 1 + this.tabs.length) % this.tabs.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        newIndex = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        newIndex = this.tabs.length - 1;
+      }
+      if (newIndex !== currentIndex) {
+        this.goTo(newIndex);
+        this.tabs[newIndex].focus();
+      }
+    }
+
+    goTo(index) {
+      this.tabs.forEach((tab, i) => {
+        const isActive = i === index;
+        tab.classList.toggle('is-active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      this.cards.forEach((card, i) => {
+        const isActive = i === index;
+        card.classList.toggle('is-active', isActive);
+        card.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+        card.setAttribute('tabindex', isActive ? '0' : '-1');
+      });
+      this.dots.forEach((dot, i) => {
+        const isActive = i === index;
+        dot.classList.toggle('is-active', isActive);
+        dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+      });
+      this.currentIndex = index;
+    }
+
+  }
+
+  if (!customElements.get('meet-scents-section')) {
+    customElements.define('meet-scents-section', MeetScentsSection);
+  }
 {% endjavascript %}
 
 {% schema %}
-  {
-    "name": "t:general.meet_your_scents",
-    "class": "meet-scents-section",
-    "settings": [
-      {
-        "type": "header",
-        "content": "t:sections.meet_scents.content_header"
-      },
-      {
-        "type": "text",
-        "id": "heading",
-        "label": "t:labels.heading",
-        "default": "Meet Your Scents"
-      },
-      {
-        "type": "header",
-        "content": "t:sections.meet_scents.video_header"
-      },
-      {
-        "type": "video",
-        "id": "video",
-        "label": "t:labels.video"
-      }, {
-        "type": "image_picker",
-        "id": "placeholder_image",
-        "label": "t:labels.placeholder_image",
-        "info": "t:sections.meet_scents.placeholder_info"
-      }
-    ],
-    "blocks": [
-      {
-        "type": "tooltip_marker",
-        "name": "t:blocks.tooltip_marker.name",
-        "settings": [
-          {
-            "type": "header",
-            "content": "t:blocks.tooltip_marker.position_header"
-          },
-          {
-            "type": "range",
-            "id": "position_x",
-            "label": "t:labels.horizontal_position",
-            "info": "t:blocks.tooltip_marker.position_x_info",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "default": 50
-          },
-          {
-            "type": "range",
-            "id": "position_y",
-            "label": "t:labels.vertical_position",
-            "info": "t:blocks.tooltip_marker.position_y_info",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "default": 50
-          },
-          {
-            "type": "header",
-            "content": "t:blocks.tooltip_marker.tooltip_header"
-          }, {
-            "type": "product",
-            "id": "product",
-            "label": "t:labels.product"
-          }, {
-            "type": "textarea",
-            "id": "tooltip_description",
-            "label": "t:labels.tooltip_description",
-            "info": "t:blocks.tooltip_marker.description_info"
-          }
-        ]
-      }
-    ],
-    "presets": [
-      {
-        "name": "t:general.meet_your_scents",
-        "blocks": [
-          {
-            "type": "tooltip_marker",
-            "settings": {
-              "position_x": 15,
-              "position_y": 66,
-              "product": "capri-seaside",
-              "tooltip_description": "Fresh citrus and ocean notes"
-            }
-          },
-          {
-            "type": "tooltip_marker",
-            "settings": {
-              "position_x": 29,
-              "position_y": 61,
-              "product": "petal-kiss",
-              "tooltip_description": "Soft floral bouquet"
-            }
-          },
-          {
-            "type": "tooltip_marker",
-            "settings": {
-              "position_x": 49,
-              "position_y": 66,
-              "product": "deep-ritual",
-              "tooltip_description": "Pepper, sandalwood & cedarwood — grounding, clean, and a little mysterious."
-            }
-          },
-          {
-            "type": "tooltip_marker",
-            "settings": {
-              "position_x": 59,
-              "position_y": 37,
-              "product": "sweet-touch",
-              "tooltip_description": "Gentle vanilla and amber"
-            }
-          }, {
-            "type": "tooltip_marker",
-            "settings": {
-              "position_x": 65,
-              "position_y": 60,
-              "product": "it-proper",
-              "tooltip_description": "Bold and sophisticated"
-            }
-          }, {
-            "type": "tooltip_marker",
-            "settings": {
-              "position_x": 79,
-              "position_y": 64,
-              "product": "barely-there",
-              "tooltip_description": "Subtle and clean"
-            }
-          }
-        ]
-      }
-    ]
-  }
+{
+  "name": "t:sections.meet_scents.name",
+  "tag": "section",
+  "class": "meet-scents-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.meet_scents.settings.content_header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Meet Your Scents"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.meet_scents.settings.images_header"
+    },
+    {
+      "type": "image_picker",
+      "id": "side_image",
+      "label": "t:sections.meet_scents.settings.side_image",
+      "info": "t:sections.meet_scents.settings.side_image_info"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:sections.meet_scents.settings.background_image",
+      "info": "t:sections.meet_scents.settings.background_image_info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "t:blocks.product.name",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:labels.product"
+        },
+        {
+          "type": "color",
+          "id": "tab_color",
+          "label": "t:sections.meet_scents.settings.tab_color",
+          "default": "#FFCAD2"
+        },
+        {
+          "type": "color",
+          "id": "tab_text_color",
+          "label": "t:sections.meet_scents.settings.tab_text_color",
+          "default": "#FFFAE6"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "t:sections.meet_scents.name"
+    }
+  ]
+}
 {% endschema %}

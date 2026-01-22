@@ -46,7 +46,13 @@
     }
   },
   "collections": {
-    "title": "Collections"
+    "title": "Collections",
+    "general": {
+      "items_count": {
+        "one": "{{ count }} item",
+        "other": "{{ count }} items"
+      }
+    }
   },
   "general": {
     "previous": "Previous",
@@ -107,9 +113,20 @@
       "scroll_right": "Scroll right"
     },
     "meet_scents": {
-      "content_header": "Content",
-      "video_header": "Video",
-      "placeholder_info": "Shows when no video is uploaded"
+      "name": "Meet Your Scents",
+      "tabs_label": "Select a scent",
+      "pagination_label": "Scent pagination",
+      "go_to_product": "Go to {{ name }}",
+      "settings": {
+        "content_header": "Content",
+        "images_header": "Images",
+        "side_image": "Side image",
+        "side_image_info": "Lifestyle image shown on the left side",
+        "background_image": "Background image",
+        "background_image_info": "Background image shown behind the product cards",
+        "tab_color": "Tab color",
+        "tab_text_color": "Tab text color"
+      }
     },
     "explore_sets": {
       "background_header": "Background",
@@ -139,6 +156,13 @@
     "collection_grid": {
       "aria_label": "Product collection",
       "product_count": "{{ count }} products"
+    },
+    "list_collections": {
+      "name": "Collections list",
+      "settings": {
+        "collection_list": "Collections",
+        "collection_list_info": "Select collections to show. Leave empty to show all collections."
+      }
     },
     "customer_care": {
       "name": "Customer Care",
@@ -262,6 +286,9 @@
     },
     "product_card": {
       "name": "Product card"
+    },
+    "product": {
+      "name": "Product"
     }
   },
   "footer": {

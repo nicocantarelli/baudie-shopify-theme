@@ -63,8 +63,8 @@
           {% endif %}
         </div>
 
-        {%- comment -%} Cards {%- endcomment -%}
-        <div class="explore-sets__cards">
+        {%- comment -%} Desktop Cards - uses product-card snippet {%- endcomment -%}
+        <div class="explore-sets__cards explore-sets__cards--desktop">
           {% for block in section.blocks %}
             {% if block.type == 'bundle_card' %}
               {% assign bundle_product = block.settings.product %}
@@ -80,12 +80,101 @@
             {% endif %}
           {% endfor %}
         </div>
+
+        {%- comment -%} Mobile Cards - custom bundle layout with overlapping images {%- endcomment -%}
+        <div class="explore-sets__cards explore-sets__cards--mobile">
+          {% for block in section.blocks %}
+            {% if block.type == 'bundle_card' %}
+              {% assign bundle_product = block.settings.product %}
+              {% assign custom_title = block.settings.custom_title %}
+              {% assign custom_description = block.settings.custom_description %}
+              {% if bundle_product %}
+                {%- assign has_compare_price = false -%}
+                {%- if bundle_product.compare_at_price > bundle_product.price -%}
+                  {%- assign has_compare_price = true -%}
+                {%- endif -%}
+                {%- assign short_description = bundle_product.metafields.custom.short_description | default: bundle_product.description | strip_html | truncate: 180 -%}
+
+                <article class="bundle-card-mobile" {{ block.shopify_attributes }}>
+                  {%- comment -%} Image area with overlapping products {%- endcomment -%}
+                  <a href="{{ bundle_product.url }}" class="bundle-card-mobile__image-area">
+                    {% if block.settings.show_badge and block.settings.badge_text != blank %}
+                      <span class="bundle-card-mobile__badge">{{ block.settings.badge_text | escape }}</span>
+                    {% endif %}
+                    <div class="bundle-card-mobile__images">
+                      {{ bundle_product.featured_image | image_url: width: 500 | image_tag: loading: 'lazy', alt: bundle_product.title }}
+                    </div>
+                  </a>
+
+                  {%- comment -%} Content {%- endcomment -%}
+                  <div class="bundle-card-mobile__content">
+                    <div class="bundle-card-mobile__header">
+                      <h3 class="bundle-card-mobile__title">
+                        <a href="{{ bundle_product.url }}">
+                          {% if custom_title != blank %}
+                            {{ custom_title }}
+                          {% else %}
+                            {{ bundle_product.title }}
+                          {% endif %}
+                        </a>
+                      </h3>
+                      <div class="bundle-card-mobile__price">
+                        {% if has_compare_price %}
+                          <s class="bundle-card-mobile__compare-price">{{ bundle_product.compare_at_price | money }}</s>
+                        {% endif %}
+                        <span class="bundle-card-mobile__current-price{% if has_compare_price %} bundle-card-mobile__current-price--sale{% endif %}">
+                          {{ bundle_product.price | money }}
+                        </span>
+                      </div>
+                    </div>
+                    <p class="bundle-card-mobile__description">
+                      {% if custom_description != blank %}
+                        {{ custom_description | strip_html }}
+                      {% else %}
+                        {{ short_description }}
+                      {% endif %}
+                    </p>
+                  </div>
+
+                  {%- comment -%} Actions {%- endcomment -%}
+                  <div class="bundle-card-mobile__actions">
+                    {%- form 'product', bundle_product -%}
+                      {%- assign selected_variant = bundle_product.selected_or_first_available_variant -%}
+                      <input type="hidden" name="id" value="{{ selected_variant.id }}">
+                      <button type="submit" name="add" class="bundle-card-mobile__btn bundle-card-mobile__btn--add" {% unless selected_variant.available %}disabled{% endunless %}>
+                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        {{ 'products.add_to_cart' | t }}
+                      </button>
+                    {%- endform -%}
+                    <a href="{{ bundle_product.url }}" class="bundle-card-mobile__btn bundle-card-mobile__btn--buy">
+                      {{ 'products.buy_now' | t }}
+                    </a>
+                  </div>
+                </article>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 {% stylesheet %}
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
   .explore-sets {
     background-color: #FFF7EA;
     padding: 0;
@@ -217,11 +306,206 @@
     margin-top: 70px;
   }
 
+  /* Hide mobile cards on desktop */
+  .explore-sets__cards--mobile {
+    display: none;
+  }
+
   /* Individual Card Wrapper */
   .explore-sets__card {
     width: 325px;
   }
 
+  /* Product Card Styles for Explore Sets */
+  .explore-sets .product-card {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    height: 100%;
+  }
+
+  .explore-sets .product-card__image-wrapper {
+    position: relative;
+    background-color: transparent;
+    height: 420px;
+    overflow: hidden;
+  }
+
+  .explore-sets .product-card__badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 2;
+    background-color: #FFFFFF;
+    border-radius: 70px;
+    padding: 10px 16px 8px;
+    font-family: var(--font-sweet-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.13px;
+    text-transform: uppercase;
+    color: #3E2027;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .explore-sets .product-card__image-link {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .explore-sets .product-card__image-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .explore-sets .product-card__img,
+  .explore-sets .product-card__img--single {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .explore-sets .product-card__actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 5;
+  }
+
+  .explore-sets .product-card__image-wrapper:hover .product-card__actions,
+  .explore-sets .product-card__image-wrapper:focus-within .product-card__actions {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .explore-sets .product-card__form {
+    display: contents;
+  }
+
+  .explore-sets .product-card__action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 40px;
+    padding: 10px 20px;
+    font-family: var(--font-sweet-sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .explore-sets .product-card__action-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .explore-sets .product-card__action-btn--add {
+    background-color: #FFFFFF;
+    color: #3E2027;
+  }
+
+  .explore-sets .product-card__action-btn--add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .explore-sets .product-card__action-btn--buy {
+    background-color: #3E2027;
+    color: #FFFFFF;
+  }
+
+  .explore-sets .product-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .explore-sets .product-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .explore-sets .product-card__title {
+    font-family: var(--font-sweet-sans);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.18px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+    flex: 1;
+  }
+
+  .explore-sets .product-card__title-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .explore-sets .product-card__title-link:hover {
+    text-decoration: underline;
+  }
+
+  .explore-sets .product-card__price {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-family: var(--font-sweet-sans);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.18px;
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  .explore-sets .product-card__compare-price {
+    color: #3E2027;
+    opacity: 0.5;
+    text-decoration: line-through;
+  }
+
+  .explore-sets .product-card__current-price {
+    color: #3E2027;
+  }
+
+  .explore-sets .product-card__current-price--sale {
+    color: #E26046;
+  }
+
+  .explore-sets .product-card__description {
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #3E2027;
+    margin: 0;
+  }
 
   /*
    ========================================
@@ -256,17 +540,225 @@
     .explore-sets__card {
       width: 280px;
     }
+
+    .explore-sets .product-card__image-wrapper {
+      height: 380px;
+    }
   }
 
 
   /*
    ========================================
    MOBILE STYLES (below 768px)
-   Hidden on mobile - no design available yet
    ========================================
 */
   @media (max-width: 767px) {
-    .explore-sets {
+    .explore-sets__wrapper {
+      padding: 0;
+    }
+
+    .explore-sets__background--desktop {
+      display: none;
+    }
+
+    .explore-sets__background--mobile {
+      display: block;
+      height: 440px;
+    }
+
+    .explore-sets__content {
+      padding: 33px 12px 60px;
+    }
+
+    .explore-sets__header {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      margin-bottom: 280px;
+    }
+
+    .explore-sets__heading {
+      font-size: 30px;
+      max-width: 100%;
+      color: #FFFFFF;
+    }
+
+    .explore-sets__description {
+      max-width: 293px;
+      margin: 10px auto 0;
+      font-size: 14px;
+      line-height: 1.2;
+      color: #FFFFFF;
+    }
+
+    /* Hide desktop cards, show mobile cards */
+    .explore-sets__cards--desktop {
+      display: none;
+    }
+
+    .explore-sets__cards--mobile {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 0;
+    }
+  }
+
+  /*
+   ========================================
+   MOBILE BUNDLE CARD STYLES
+   ========================================
+*/
+  .bundle-card-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .bundle-card-mobile__image-area {
+    display: block;
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+
+  .bundle-card-mobile__badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    background-color: #FFFFFF;
+    border-radius: 24px;
+    padding: 5px 10px;
+    font-family: var(--font-sweet-sans);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: -0.1px;
+    text-transform: uppercase;
+    color: #3E2027;
+    line-height: 1;
+  }
+
+  .bundle-card-mobile__images {
+    position: absolute;
+    inset: 0;
+  }
+
+  .bundle-card-mobile__images img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .bundle-card-mobile__content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .bundle-card-mobile__header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .bundle-card-mobile__title {
+    font-family: var(--font-sweet-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  .bundle-card-mobile__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .bundle-card-mobile__title a:hover {
+    text-decoration: underline;
+  }
+
+  .bundle-card-mobile__price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-sweet-sans);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+  }
+
+  .bundle-card-mobile__compare-price {
+    color: #3E2027;
+    opacity: 0.5;
+    text-decoration: line-through;
+  }
+
+  .bundle-card-mobile__current-price {
+    color: #3E2027;
+  }
+
+  .bundle-card-mobile__current-price--sale {
+    color: #E26046;
+  }
+
+  .bundle-card-mobile__description {
+    font-family: var(--font-jokker);
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  .bundle-card-mobile__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: auto;
+  }
+
+  .bundle-card-mobile__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 40px;
+    padding: 10px 20px;
+    font-family: var(--font-sweet-sans);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .bundle-card-mobile__btn--add {
+    background-color: #FFFFFF;
+    color: #3E2027;
+  }
+
+  .bundle-card-mobile__btn--add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .bundle-card-mobile__btn--buy {
+    background-color: #3E2027;
+    color: #FFFFFF;
+  }
+
+  /* Hide mobile bundle cards on desktop/tablet */
+  @media (min-width: 768px) {
+    .bundle-card-mobile {
       display: none;
     }
   }

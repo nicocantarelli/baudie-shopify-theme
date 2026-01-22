@@ -84,72 +84,53 @@
     "meet_scents_AbC456": {
       "type": "meet-your-scents",
       "blocks": {
-        "marker_1": {
-          "type": "tooltip_marker",
+        "product_1": {
+          "type": "product",
           "settings": {
-            "position_x": 15,
-            "position_y": 66,
-            "product": "capri-seaside",
-            "tooltip_description": "Fresh citrus and ocean notes"
+            "product": "petal-kiss"
           }
         },
-        "marker_2": {
-          "type": "tooltip_marker",
+        "product_2": {
+          "type": "product",
           "settings": {
-            "position_x": 29,
-            "position_y": 61,
-            "product": "petal-kiss",
-            "tooltip_description": "Soft floral bouquet"
+            "product": "barely-there"
           }
         },
-        "marker_3": {
-          "type": "tooltip_marker",
+        "product_3": {
+          "type": "product",
           "settings": {
-            "position_x": 49,
-            "position_y": 66,
-            "product": "deep-ritual",
-            "tooltip_description": "Pepper, sandalwood & cedarwood — grounding, clean, and a little mysterious."
+            "product": "capri-seaside"
           }
         },
-        "marker_4": {
-          "type": "tooltip_marker",
+        "product_4": {
+          "type": "product",
           "settings": {
-            "position_x": 59,
-            "position_y": 37,
-            "product": "sweet-touch",
-            "tooltip_description": "Gentle vanilla and amber"
+            "product": "deep-ritual"
           }
         },
-        "marker_5": {
-          "type": "tooltip_marker",
+        "product_5": {
+          "type": "product",
           "settings": {
-            "position_x": 65,
-            "position_y": 60,
-            "product": "it-proper",
-            "tooltip_description": "Bold and sophisticated"
+            "product": "st-tropez"
           }
         },
-        "marker_6": {
-          "type": "tooltip_marker",
+        "product_6": {
+          "type": "product",
           "settings": {
-            "position_x": 79,
-            "position_y": 64,
-            "product": "barely-there",
-            "tooltip_description": "Subtle and clean"
+            "product": "sweet-touch"
           }
         }
       },
       "block_order": [
-        "marker_1",
-        "marker_2",
-        "marker_3",
-        "marker_4",
-        "marker_5",
-        "marker_6"
+        "product_1",
+        "product_2",
+        "product_3",
+        "product_4",
+        "product_5",
+        "product_6"
       ],
       "settings": {
-        "heading": "Meet Your Scents",
-        "video": "shopify://files/videos/meet-the-scents-video.mp4"
+        "heading": "Meet Your Scents"
       }
     },
     "explore_sets_UjtGBG": {
