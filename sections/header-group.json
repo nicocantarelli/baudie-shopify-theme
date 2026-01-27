@@ -17,13 +17,17 @@
         "announcement_BcNDUD": {
           "type": "announcement",
           "settings": {
-            "text": "Announcement text"
+            "text": "Announcement text",
+            "link_text": "",
+            "url": ""
           }
         },
         "announcement_ehMV6T": {
           "type": "announcement",
           "settings": {
-            "text": "Announcement text"
+            "text": "Announcement text",
+            "link_text": "",
+            "url": ""
           }
         }
       },
@@ -33,8 +37,8 @@
       ],
       "settings": {
         "sticky_behavior": "hide_on_scroll",
-        "logo": "shopify://shop_images/baudie-logo.svg",
-        "menu": "main-menu-1",
+        "logo": "shopify://shop_images/baudie-logo_daec1455-16f8-4c63-b805-91846285d45b.svg",
+        "menu": "main-menu",
         "header_bg_color": "#fff7ea",
         "header_text_color": "#3e2027",
         "announcement_bg_color": "#3e2027",
