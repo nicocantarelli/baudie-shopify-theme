@@ -19,6 +19,8 @@
           "capri-seaside",
           "deep-ritual"
         ],
+        "use_static_image": false,
+        "static_hero_image_alt": "",
         "mobile_title": "Deodorant enhancer.",
         "mobile_subtitle": "Not a deodorant — the step that makes it work better.",
         "mobile_button_text": "BUY NOW",
@@ -84,53 +86,31 @@
     "meet_scents_AbC456": {
       "type": "meet-your-scents",
       "blocks": {
-        "product_1": {
+        "product_xkTXWb": {
           "type": "product",
           "settings": {
-            "product": "petal-kiss"
+            "product": "capri-seaside",
+            "tab_color": "#ffcad2",
+            "tab_text_color": "#fffae6"
           }
         },
-        "product_2": {
+        "product_qEfH7c": {
           "type": "product",
           "settings": {
-            "product": "barely-there"
-          }
-        },
-        "product_3": {
-          "type": "product",
-          "settings": {
-            "product": "capri-seaside"
-          }
-        },
-        "product_4": {
-          "type": "product",
-          "settings": {
-            "product": "deep-ritual"
-          }
-        },
-        "product_5": {
-          "type": "product",
-          "settings": {
-            "product": "st-tropez"
-          }
-        },
-        "product_6": {
-          "type": "product",
-          "settings": {
-            "product": "sweet-touch"
+            "product": "deep-ritual",
+            "tab_color": "#0b619b",
+            "tab_text_color": "#fffae6"
           }
         }
       },
       "block_order": [
-        "product_1",
-        "product_2",
-        "product_3",
-        "product_4",
-        "product_5",
-        "product_6"
+        "product_xkTXWb",
+        "product_qEfH7c"
       ],
       "settings": {
-        "heading": "Meet Your Scents"
+        "heading": "Meet Your Scents",
+        "side_image": "shopify://shop_images/meet-your-scents-left.png",
+        "background_image": "shopify://shop_images/meet-your-scents-right.png"
       }
     },
     "explore_sets_UjtGBG": {
@@ -167,7 +147,6 @@
       ],
       "name": "t:general.explore_sets",
       "settings": {
-        "background_image": "shopify://shop_images/explore-our-sets-background_c87f4219-3d95-4e5b-954d-729439f589a5.png",
         "mobile_background_image": "shopify://shop_images/explore-our-sets-background.png",
         "heading": "Explore our sets",
         "heading_color": "#ffffff",
@@ -375,7 +354,6 @@
         "benefit_EBtYzr": {
           "type": "benefit",
           "settings": {
-            "image": "shopify://shop_images/odor-control-formula_8f851c7d-7a34-4902-bee8-1f8e3c457c81.png",
             "heading": "Unique Odor-Control Formula",
             "description": "Clinically backed and powered by odor-eliminating bacterial technology. Targets the bacteria that cause smell — not sweat — for freshness that starts before your deodorant."
           }
@@ -383,7 +361,6 @@
         "benefit_9HPW3d": {
           "type": "benefit",
           "settings": {
-            "image": "shopify://shop_images/no-residue_a2585ba8-0bc0-4716-8e82-e40d39dd841e.png",
             "heading": "No Residue. No Scent. No Interference.",
             "description": "The wipe-off formula leaves your skin clean, balanced, and scent-free — ready for deodorant or perfume without overlap or irritation."
           }
@@ -391,7 +368,6 @@
         "benefit_4XEJRL": {
           "type": "benefit",
           "settings": {
-            "image": "shopify://shop_images/for-life-sweat_7ba50550-9b4c-48a9-b9bb-d20f84499442.png",
             "heading": "For Life, Sweat & Everything In Between",
             "description": "From yoga to long workdays, Baudie keeps odor-causing bacteria in check — so you stay fresh, confident, and completely unbothered."
           }
