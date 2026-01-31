@@ -21,7 +21,8 @@
     "comment_form_email": "Email",
     "comment_form_name": "Name",
     "comment_form_submit": "Post",
-    "comment_form_title": "Add a comment"
+    "comment_form_title": "Add a comment",
+    "no_articles": "No articles found."
   },
   "cart": {
     "checkout": "Checkout",
@@ -99,7 +100,21 @@
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
   },
+  "pagination": {
+    "navigation": "Pagination navigation"
+  },
   "sections": {
+    "blog": {
+      "name": "Blog",
+      "aria_label": "Blog articles",
+      "settings": {
+        "seo_header": "SEO content",
+        "seo_heading": "SEO heading",
+        "seo_heading_info": "Heading for SEO content section at the bottom of the page",
+        "seo_text": "SEO text",
+        "seo_text_info": "Rich text content for SEO purposes"
+      }
+    },
     "product_details": {
       "step_spray": "Spray",
       "step_wipe": "Wipe",

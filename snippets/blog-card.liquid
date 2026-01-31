@@ -1,0 +1,41 @@
+{% doc %}
+  Renders a blog article card with image, title, and excerpt.
+
+  @param {article} article - The article to render (required)
+  @param {boolean} [lazy_load] - Whether to lazy load the image (default: true)
+{% enddoc %}
+
+{%- liquid
+  assign lazy_load = lazy_load | default: true
+-%}
+
+<article class="blog-card" data-blog-card>
+  <a href="{{ article.url }}" class="blog-card__link">
+    <div class="blog-card__image-wrapper">
+      {%- if article.image -%}
+        <img
+          src="{{ article.image | image_url: width: 880 }}"
+          srcset="{{ article.image | image_url: width: 440 }} 440w, {{ article.image | image_url: width: 660 }} 660w, {{ article.image | image_url: width: 880 }} 880w"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 440px"
+          alt="{{ article.image.alt | default: article.title | escape }}"
+          class="blog-card__image"
+          width="{{ article.image.width }}"
+          height="{{ article.image.height }}"
+          {% if lazy_load %}loading="lazy" decoding="async"{% else %}fetchpriority="high"{% endif %}
+        >
+      {%- else -%}
+        <div class="blog-card__placeholder">
+          <svg class="blog-card__placeholder-icon" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+            <rect width="100" height="100" fill="rgba(62, 32, 39, 0.05)"/>
+            <path d="M35 65L45 50L55 60L70 40L75 65H35Z" fill="rgba(62, 32, 39, 0.2)"/>
+            <circle cx="40" cy="38" r="5" fill="rgba(62, 32, 39, 0.2)"/>
+          </svg>
+        </div>
+      {%- endif -%}
+    </div>
+    <div class="blog-card__content">
+      <h3 class="blog-card__title">{{ article.title }}</h3>
+      <p class="blog-card__excerpt">{{ article.excerpt_or_content | strip_html | truncate: 200 }}</p>
+    </div>
+  </a>
+</article>
