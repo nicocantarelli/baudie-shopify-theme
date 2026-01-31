@@ -17,6 +17,7 @@
   "blog": {
     "article_comments": "Comments",
     "article_metadata_html": "{{ date }} by {{ author }}",
+    "back_to_blog": "Back to blog",
     "comment_form_body": "Comment",
     "comment_form_email": "Email",
     "comment_form_name": "Name",
@@ -104,6 +105,9 @@
     "navigation": "Pagination navigation"
   },
   "sections": {
+    "article": {
+      "name": "Article"
+    },
     "blog": {
       "name": "Blog",
       "aria_label": "Blog articles",
