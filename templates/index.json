@@ -90,7 +90,7 @@
           "type": "product",
           "settings": {
             "product": "capri-seaside",
-            "tab_color": "#ff8916",
+            "tab_color": "#ffcad2",
             "tab_text_color": "#fffae6"
           }
         },
@@ -147,6 +147,7 @@
       ],
       "name": "t:general.explore_sets",
       "settings": {
+        "background_image": "shopify://shop_images/explore-our-sets-background_c87f4219-3d95-4e5b-954d-729439f589a5.png",
         "mobile_background_image": "shopify://shop_images/explore-our-sets-background.png",
         "heading": "Explore our sets",
         "heading_color": "#ffffff",
