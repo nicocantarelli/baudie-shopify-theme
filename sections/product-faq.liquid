@@ -1,0 +1,397 @@
+{%- comment -%}
+  Product FAQ section — accordion with expand/collapse questions.
+{%- endcomment -%}
+
+{%- liquid
+  assign faq_blocks = section.blocks | where: 'type', 'faq_item'
+-%}
+
+<section
+  class="product-faq full-width"
+  data-section-id="{{ section.id }}"
+  data-product-faq
+  aria-label="{{ section.settings.title | default: 'FAQ' }}">
+
+  <div class="product-faq__inner">
+    {% if section.settings.title != blank %}
+      <h2 class="product-faq__title">{{ section.settings.title }}</h2>
+    {% endif %}
+
+    <div class="product-faq__body">
+      {% if section.settings.intro != blank %}
+        <div class="product-faq__intro">
+          {{ section.settings.intro }}
+        </div>
+      {% endif %}
+
+      {% if faq_blocks.size > 0 %}
+        <div class="product-faq__list">
+          {% for block in faq_blocks %}
+            <div class="product-faq__item" data-accordion-item {{ block.shopify_attributes }}>
+              <hr class="product-faq__divider">
+              <button
+                class="product-faq__trigger"
+                data-accordion-trigger
+                aria-expanded="false"
+                aria-controls="faq-answer-{{ block.id }}"
+                type="button">
+                <span class="product-faq__question">{{ block.settings.question }}</span>
+                <svg class="product-faq__icon product-faq__icon--plus" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3E2027" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <svg class="product-faq__icon product-faq__icon--minus" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3E2027" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              <div
+                class="product-faq__answer"
+                id="faq-answer-{{ block.id }}"
+                role="region"
+                aria-hidden="true">
+                <div class="product-faq__answer-inner">
+                  {{ block.settings.answer }}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+          <hr class="product-faq__divider">
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{%- comment -%} JSON-LD FAQPage structured data {%- endcomment -%}
+{% if faq_blocks.size > 0 %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- for block in faq_blocks -%}
+          {
+            "@type": "Question",
+            "name": {{ block.settings.question | json }},
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": {{ block.settings.answer | strip_html | json }}
+            }
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{% endif %}
+
+{% stylesheet %}
+  .product-faq {
+    background-color: #FFF7EA;
+  }
+
+  .product-faq__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 80px 12px;
+  }
+
+  /* --- Title --- */
+
+  .product-faq__title {
+    font-family: var(--font-alyona);
+    font-weight: 400;
+    font-size: 34px;
+    line-height: 1;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  /* --- Body (intro + list) --- */
+
+  .product-faq__body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* --- Intro --- */
+
+  .product-faq__intro {
+    font-family: var(--font-jokker);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #3E2027;
+  }
+
+  .product-faq__intro p {
+    margin: 0;
+  }
+
+  /* --- FAQ List --- */
+
+  .product-faq__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* --- Divider --- */
+
+  .product-faq__divider {
+    width: 100%;
+    height: 0;
+    border: none;
+    border-top: 1px solid rgba(62, 32, 39, 0.2);
+    margin: 0;
+  }
+
+  /* --- Item --- */
+
+  .product-faq__item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* --- Trigger --- */
+
+  .product-faq__trigger {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    padding: 20px 0;
+    margin: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .product-faq__question {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: #3E2027;
+  }
+
+  /* --- Icons --- */
+
+  .product-faq__icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+  }
+
+  .product-faq__icon--minus {
+    display: none;
+  }
+
+  .product-faq__item--open .product-faq__icon--plus {
+    display: none;
+  }
+
+  .product-faq__item--open .product-faq__icon--minus {
+    display: block;
+  }
+
+  /* --- Answer --- */
+
+  .product-faq__answer {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease;
+  }
+
+  .product-faq__answer-inner {
+    font-family: var(--font-jokker);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: -0.14px;
+    color: #3E2027;
+    padding-bottom: 20px;
+  }
+
+  .product-faq__answer-inner p {
+    margin: 0;
+  }
+
+  /* ============================================
+     Desktop (1024px+)
+     ============================================ */
+
+  @media (min-width: 1024px) {
+    .product-faq__inner {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 80px;
+      padding: 112px 40px;
+    }
+
+    .product-faq__title {
+      font-size: 70px;
+      width: 428px;
+      flex-shrink: 0;
+    }
+
+    .product-faq__body {
+      flex: 1;
+    }
+
+    .product-faq__intro {
+      font-size: 18px;
+      letter-spacing: -0.18px;
+    }
+
+    .product-faq__question {
+      font-size: 16px;
+      letter-spacing: -0.16px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+class ProductFaq {
+  constructor() {
+    this.section = document.querySelector('[data-product-faq]');
+    if (!this.section) return;
+
+    this.triggers = this.section.querySelectorAll('[data-accordion-trigger]');
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    this.triggers.forEach(trigger => {
+      trigger.addEventListener('click', () => this.toggle(trigger));
+    });
+  }
+
+  toggle(trigger) {
+    const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+
+    this.triggers.forEach(otherTrigger => {
+      if (otherTrigger !== trigger && otherTrigger.getAttribute('aria-expanded') === 'true') {
+        this.close(otherTrigger);
+      }
+    });
+
+    if (isExpanded) {
+      this.close(trigger);
+    } else {
+      this.open(trigger);
+    }
+  }
+
+  open(trigger) {
+    const contentId = trigger.getAttribute('aria-controls');
+    const content = document.getElementById(contentId);
+    const item = trigger.closest('[data-accordion-item]');
+
+    trigger.setAttribute('aria-expanded', 'true');
+    content.setAttribute('aria-hidden', 'false');
+    item.classList.add('product-faq__item--open');
+    content.style.height = content.scrollHeight + 'px';
+
+    content.addEventListener('transitionend', function handler() {
+      if (trigger.getAttribute('aria-expanded') === 'true') {
+        content.style.height = 'auto';
+      }
+      content.removeEventListener('transitionend', handler);
+    }, { once: true });
+  }
+
+  close(trigger) {
+    const contentId = trigger.getAttribute('aria-controls');
+    const content = document.getElementById(contentId);
+    const item = trigger.closest('[data-accordion-item]');
+
+    content.style.height = content.scrollHeight + 'px';
+    content.offsetHeight;
+    trigger.setAttribute('aria-expanded', 'false');
+    content.setAttribute('aria-hidden', 'true');
+    item.classList.remove('product-faq__item--open');
+    content.style.height = '0';
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => new ProductFaq());
+} else {
+  new ProductFaq();
+}
+
+if (Shopify.designMode) {
+  document.addEventListener('shopify:section:load', (e) => {
+    if (e.target.querySelector('[data-product-faq]')) {
+      new ProductFaq();
+    }
+  });
+}
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.product_faq.name",
+  "class": "product-faq-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.product_faq.title",
+      "default": "Frequently Asked Questions"
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "t:sections.product_faq.intro"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "t:sections.product_faq.faq_item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "t:sections.product_faq.question"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "t:sections.product_faq.answer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product FAQ",
+      "blocks": [
+        { "type": "faq_item", "settings": { "question": "Is Baudie a deodorant?" } },
+        { "type": "faq_item", "settings": { "question": "How do I use it?" } },
+        { "type": "faq_item", "settings": { "question": "Why do I need a pre-deodorant?" } },
+        { "type": "faq_item", "settings": { "question": "What does \"odor-eliminating bacterial technology\" mean?" } },
+        { "type": "faq_item", "settings": { "question": "Will the enhancer scent mix with my deodorant or perfume?" } },
+        { "type": "faq_item", "settings": { "question": "Can I use Baudie without deodorant?" } },
+        { "type": "faq_item", "settings": { "question": "Can I use it before workouts?" } },
+        { "type": "faq_item", "settings": { "question": "Is it suitable for sensitive skin?" } },
+        { "type": "faq_item", "settings": { "question": "Can teens use Baudie?" } }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

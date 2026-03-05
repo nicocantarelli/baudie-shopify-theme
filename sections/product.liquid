@@ -1,50 +1,1162 @@
-{% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+{%- comment -%}
+  Main product section with gradient background image, product info,
+  accordions, Tolstoy video embed, and trust badges.
+{%- endcomment -%}
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
-{% endcomment %}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign product_image = product.metafields.custom.product_image
+  assign gradient_1 = product.metafields.custom.gradient_color_1 | default: '#DDEFFF'
+  assign gradient_2 = product.metafields.custom.gradient_color_2 | default: '#D1E3F4'
+  assign gradient_3 = product.metafields.custom.gradient_color_3 | default: '#96C8FA'
+  assign bottle_size = product.metafields.custom.bottle_size
+  assign product_details = product.metafields.custom.product_details
+  assign scent_notes = product.metafields.custom.scent_notes
+  assign key_ingredients = product.metafields.custom.key_ingredients
+  assign full_ingredient_list = product.metafields.custom.full_ingredient_list
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+  if product.metafields.reviews.rating.value
+    assign rating = product.metafields.reviews.rating.value.rating | round: 1
+    assign review_count = product.metafields.reviews.rating.value.count | default: 0
+  else
+    assign rating = 0
+    assign review_count = 0
+  endif
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+  assign collection_products = product.collections.first.products
+-%}
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+<section
+  class="product-main full-width"
+  data-section-id="{{ section.id }}"
+  aria-label="{{ product.title }}"
+  style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --gradient-3: {{ gradient_3 }};">
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
+  {%- comment -%} Mobile Header (visible mobile only, above image) {%- endcomment -%}
+  <div class="product-main__mobile-header">
+    <div class="product-main__mobile-subtitle-row">
+      <p class="product-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
+      {% if bottle_size %}
+        <p class="product-main__size">{{ bottle_size }}</p>
+      {% endif %}
+    </div>
+    <h1 class="product-main__title">{{ 'sections.product.scent_prefix' | t }} {{ product.title }}</h1>
+  </div>
+
+  {%- comment -%} Image Column {%- endcomment -%}
+  <div class="product-main__image-column">
+    {% if product_image %}
+      <div class="product-main__product-image">
+        {{ product_image | image_url: width: 1200 | image_tag:
+          loading: 'eager',
+          class: 'product-main__img',
+          alt: product.title
+        }}
+      </div>
+    {% elsif product.featured_image %}
+      <div class="product-main__product-image">
+        {{ product.featured_image | image_url: width: 1200 | image_tag:
+          loading: 'eager',
+          class: 'product-main__img',
+          alt: product.title
+        }}
+      </div>
+    {% endif %}
+  </div>
+
+  {%- comment -%} Info Column {%- endcomment -%}
+  <div class="product-main__info-column">
+
+    {%- comment -%} Rating {%- endcomment -%}
+    {% if review_count > 0 %}
+      <div class="product-main__rating" aria-label="{{ 'sections.hero_product.rating_label' | t: rating: rating, count: review_count }}">
+        <div class="product-main__stars" aria-hidden="true">
+          {% for i in (1..5) %}
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true" focusable="false">
+              <path d="M4.76297 0.154621C4.78488 0.108197 4.81873 0.0691199 4.86069 0.0417987C4.90265 0.0144775 4.95106 0 5.00045 0C5.04984 0 5.09825 0.0144775 5.14021 0.0417987C5.18217 0.0691199 5.21602 0.108197 5.23793 0.154621L6.39282 2.60795C6.4689 2.76942 6.58121 2.90912 6.72011 3.01506C6.859 3.121 7.02033 3.19001 7.19025 3.21617L9.77302 3.61256C9.82196 3.61999 9.86793 3.64164 9.90575 3.67506C9.94357 3.70847 9.97171 3.75232 9.98701 3.80163C10.0023 3.85095 10.0041 3.90377 9.99229 3.95412C9.98045 4.00447 9.95541 4.05035 9.92001 4.08655L8.05217 5.99405C7.92899 6.11994 7.83683 6.27534 7.78362 6.44688C7.7304 6.61841 7.71773 6.80093 7.7467 6.97874L8.18766 9.67378C8.1963 9.72508 8.19102 9.77789 8.17241 9.82619C8.15381 9.87449 8.12263 9.91634 8.08244 9.94695C8.04225 9.97756 7.99467 9.99571 7.94512 9.99933C7.89556 10.0029 7.84604 9.99188 7.8022 9.9674L5.4934 8.69433C5.34128 8.61056 5.17202 8.56679 5.0002 8.56679C4.82837 8.56679 4.65912 8.61056 4.50699 8.69433L2.1987 9.9674C2.15487 9.99174 2.10541 10.0027 2.05594 9.99899C2.00647 9.99531 1.95898 9.97713 1.91887 9.94654C1.87877 9.91595 1.84765 9.87417 1.82906 9.82595C1.81048 9.77773 1.80517 9.72501 1.81374 9.67378L2.2542 6.97926C2.28329 6.80137 2.27069 6.61873 2.21747 6.44709C2.16425 6.27545 2.07202 6.11997 1.94872 5.99405L0.0808926 4.08707C0.0451927 4.05091 0.0198947 4.00496 0.00788036 3.95446C-0.00413394 3.90395 -0.00238147 3.85093 0.0129381 3.80142C0.0282576 3.7519 0.0565283 3.7079 0.0945297 3.67442C0.132531 3.64094 0.178735 3.61932 0.227879 3.61203L2.81015 3.21617C2.98026 3.19021 3.14181 3.12129 3.2809 3.01534C3.41998 2.90939 3.53243 2.76958 3.60857 2.60795L4.76297 0.154621Z" fill="#3E2027" />
+            </svg>
+          {% endfor %}
+        </div>
+        <span class="product-main__rating-count">({{ review_count }})</span>
+      </div>
+    {% endif %}
+
+    {%- comment -%} Product Header (desktop only — mobile header is above image) {%- endcomment -%}
+    <div class="product-main__header--desktop">
+      <p class="product-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
+      <h1 class="product-main__title">{{ 'sections.product.scent_prefix' | t }} {{ product.title }}</h1>
+      {% if bottle_size %}
+        <p class="product-main__size">{{ bottle_size }}</p>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Price + Actions Row {%- endcomment -%}
+    <div class="product-main__purchase-row">
+      <p class="product-main__price">{{ current_variant.price | money }}</p>
+      <div class="product-main__actions">
+        {% form 'product', product, class: 'product-main__form' %}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+          <button
+            type="submit"
+            name="add"
+            class="product-main__button product-main__button--add"
+            {% unless current_variant.available %}
+              disabled
+            {% endunless %}>
+            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="#3E2027" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>
+              {% if current_variant.available %}
+                {{ 'sections.product.add_to_cart' | t }}
+              {% else %}
+                {{ 'products.sold_out' | t }}
+              {% endif %}
+            </span>
+          </button>
+        {% endform %}
+        <a
+          href="/cart"
+          class="product-main__button product-main__button--buy">
+          {{ 'sections.product.buy_now' | t }}
+        </a>
+      </div>
+    </div>
+
+    {%- comment -%} Explore Other Scents Dropdown {%- endcomment -%}
+    {% if collection_products.size > 1 %}
+      <div class="product-main__scent-dropdown" data-scent-dropdown>
+        <button
+          type="button"
+          class="product-main__scent-trigger"
+          aria-expanded="false"
+          aria-controls="scent-list-{{ section.id }}">
+          <span>{{ 'sections.product.explore_scents' | t }}</span>
+          <svg class="product-main__scent-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none" aria-hidden="true" focusable="false">
+            <path d="M1 0.5L6 5.5L11 0.5" stroke="#3E2027" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <ul
+          class="product-main__scent-list"
+          id="scent-list-{{ section.id }}"
+          aria-label="{{ 'sections.product.explore_scents' | t }}">
+          {% for item in collection_products %}
+            {% if item.id != product.id %}
+              <li>
+                <a href="{{ item.url }}" class="product-main__scent-option">
+                  {{ item.title }}
+                </a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    {%- comment -%} Divider {%- endcomment -%}
+    <hr class="product-main__divider">
+
+    {%- comment -%} Watch It In Action — Tolstoy Embed {%- endcomment -%}
+    <div class="product-main__video-section">
+      <p class="product-main__video-heading">{{ 'sections.product.watch_in_action' | t }}</p>
+      <div class="product-main__video-grid" data-tolstoy-container>
+        <div class="product-main__video-placeholder"></div>
+        <div class="product-main__video-placeholder"></div>
+        <div class="product-main__video-placeholder"></div>
+        <div class="product-main__video-placeholder"></div>
+        <div class="product-main__video-placeholder"></div>
+      </div>
+    </div>
+
+    {%- comment -%} Accordions {%- endcomment -%}
+    <div class="product-main__accordions" data-product-accordions>
+      <hr class="product-main__divider">
+
+      {%- comment -%} Details {%- endcomment -%}
+      {% if product_details %}
+        <div class="product-main__accordion" data-accordion>
+          <button
+            type="button"
+            id="accordion-details-trigger-{{ section.id }}"
+            class="product-main__accordion-trigger"
+            aria-expanded="false"
+            aria-controls="accordion-details-{{ section.id }}">
+            <span>{{ 'sections.product.details' | t }}</span>
+            <svg class="product-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 8H15M8 1V15" stroke="#3E2027" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            class="product-main__accordion-content"
+            id="accordion-details-{{ section.id }}"
+            role="region"
+            aria-labelledby="accordion-details-trigger-{{ section.id }}"
+            aria-hidden="true">
+            <div class="product-main__accordion-body">
+              {{ product_details }}
+            </div>
+          </div>
+          <hr class="product-main__divider">
+        </div>
+      {% endif %}
+
+      {%- comment -%} Scent Notes {%- endcomment -%}
+      {% if scent_notes %}
+        <div class="product-main__accordion" data-accordion>
+          <button
+            type="button"
+            id="accordion-scent-trigger-{{ section.id }}"
+            class="product-main__accordion-trigger"
+            aria-expanded="false"
+            aria-controls="accordion-scent-{{ section.id }}">
+            <span>{{ 'sections.product.scent_notes' | t }}</span>
+            <svg class="product-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 8H15M8 1V15" stroke="#3E2027" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            class="product-main__accordion-content"
+            id="accordion-scent-{{ section.id }}"
+            role="region"
+            aria-labelledby="accordion-scent-trigger-{{ section.id }}"
+            aria-hidden="true">
+            <div class="product-main__accordion-body">
+              {{ scent_notes }}
+            </div>
+          </div>
+          <hr class="product-main__divider">
+        </div>
+      {% endif %}
+
+      {%- comment -%} Key Ingredients {%- endcomment -%}
+      {% if key_ingredients %}
+        <div class="product-main__accordion is-open" data-accordion>
+          <button
+            type="button"
+            id="accordion-ingredients-trigger-{{ section.id }}"
+            class="product-main__accordion-trigger"
+            aria-expanded="true"
+            aria-controls="accordion-ingredients-{{ section.id }}">
+            <span>{{ 'sections.product.key_ingredients' | t }}</span>
+            <svg class="product-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 8H15M8 1V15" stroke="#3E2027" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            class="product-main__accordion-content"
+            id="accordion-ingredients-{{ section.id }}"
+            role="region"
+            aria-labelledby="accordion-ingredients-trigger-{{ section.id }}"
+            aria-hidden="false">
+            <div class="product-main__accordion-body">
+              {{ key_ingredients }}
+              {% if full_ingredient_list %}
+                <button
+                  type="button"
+                  class="product-main__ingredients-link"
+                  data-open-ingredients
+                  aria-haspopup="dialog">
+                  {{ 'sections.product.all_ingredients' | t }}
+                </button>
+              {% endif %}
+            </div>
+          </div>
+          <hr class="product-main__divider">
+        </div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Trust Badges {%- endcomment -%}
+    {% if section.blocks.size > 0 %}
+      <div class="product-main__badges">
+        {% for block in section.blocks %}
+          {% if block.type == 'trust_badge' %}
+            <div class="product-main__badge" {{ block.shopify_attributes }}>
+              {% if block.settings.icon %}
+                <div class="product-main__badge-icon">
+                  {{ block.settings.icon | image_url: width: 60 | image_tag:
+                    loading: 'lazy',
+                    alt: block.settings.label | default: ''
+                  }}
+                </div>
+              {% endif %}
+              {% if block.settings.label %}
+                <p class="product-main__badge-label">{{ block.settings.label }}</p>
+              {% endif %}
+            </div>
           {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
 
-    <input type="text" name="quantity" min="1" value="1">
+  {%- comment -%} Ingredients Popup {%- endcomment -%}
+  {% if full_ingredient_list %}
+    <dialog
+      class="product-main__dialog"
+      id="ingredients-dialog-{{ section.id }}"
+      scroll-lock
+      aria-labelledby="dialog-title-{{ section.id }}">
+      <div class="product-main__dialog-inner">
+        <div class="product-main__dialog-header">
+          <h2 id="dialog-title-{{ section.id }}" class="product-main__dialog-title">{{ 'sections.product.ingredients_popup_title' | t }}</h2>
+          <button
+            type="button"
+            class="product-main__dialog-close"
+            data-close-ingredients
+            aria-label="{{ 'sections.product.close' | t }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+              <path d="M2 2L18 18M18 2L2 18" stroke="#3E2027" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="product-main__dialog-body">
+          {{ full_ingredient_list }}
+        </div>
+      </div>
+    </dialog>
+  {% endif %}
+</section>
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+{% stylesheet %}
+  /* ============================================
+     Product Main Section
+     ============================================ */
+
+  .product-main {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(
+      to bottom,
+      var(--gradient-1) 21%,
+      var(--gradient-2) 56%,
+      var(--gradient-3) 100%
+    );
+    margin-top: var(--total-header-height, 110px);
+  }
+
+  /* --- Mobile Header (above image on mobile) --- */
+
+  .product-main__mobile-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 50px 12px 0;
+  }
+
+  .product-main__mobile-subtitle-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  /* --- Desktop: hide mobile header, show info-column header --- */
+
+  @media (min-width: 1024px) {
+    .product-main__mobile-header {
+      display: none;
+    }
+  }
+
+  /* --- Desktop-only header (hidden on mobile to avoid duplication) --- */
+
+  .product-main__header--desktop {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  @media (min-width: 1024px) {
+    .product-main__header--desktop {
+      display: flex;
+    }
+  }
+
+  /* --- Image Column --- */
+
+  .product-main__image-column {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1.2;
+  }
+
+  .product-main__product-image {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-main__img {
+    width: auto;
+    height: 90%;
+    max-width: 85%;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  /* --- Info Column --- */
+
+  .product-main__info-column {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 24px 12px 40px;
+    position: relative;
+  }
+
+  /* --- Rating --- */
+
+  .product-main__rating {
+    position: absolute;
+    top: -44px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+  }
+
+  .product-main__stars {
+    display: flex;
+    gap: 4px;
+  }
+
+  .product-main__stars svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .product-main__rating-count {
+    font-family: var(--font-jokker);
+    font-size: 10px;
+    line-height: 1.5;
+    color: #3E2027;
+  }
+
+  /* --- Header Typography --- */
+
+  .product-main__subtitle {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: normal;
+    letter-spacing: -0.16px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  .product-main__title {
+    font-family: var(--font-alyona);
+    font-weight: 400;
+    font-size: 34px;
+    line-height: 1;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  .product-main__size {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: normal;
+    letter-spacing: -0.16px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  .product-main__scent-dropdown {
+    position: relative;
+    width: 100%;
+  }
+
+  .product-main__scent-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 40px;
+    padding: 10px 20px;
+    background: #FFFFFF;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.14px;
+    color: #3E2027;
+  }
+
+  .product-main__scent-trigger:focus-visible {
+    outline: 2px solid #3E2027;
+    outline-offset: 2px;
+  }
+
+  .product-main__scent-chevron {
+    transition: transform 0.2s ease;
+  }
+
+  .product-main__scent-trigger[aria-expanded="true"] .product-main__scent-chevron {
+    transform: rotate(180deg);
+  }
+
+  .product-main__scent-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: #FFFFFF;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(62, 32, 39, 0.1);
+  }
+
+  .product-main__scent-trigger[aria-expanded="true"] + .product-main__scent-list {
+    display: block;
+  }
+
+  .product-main__scent-option {
+    display: block;
+    padding: 10px 20px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    color: #3E2027;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+  }
+
+  .product-main__scent-option:hover {
+    background-color: rgba(62, 32, 39, 0.05);
+  }
+
+  /* --- Divider --- */
+
+  .product-main__divider {
+    width: 100%;
+    height: 0;
+    border: none;
+    border-top: 1px solid #3E2027;
+    margin: 0;
+  }
+
+  /* --- Purchase Row --- */
+
+  .product-main__purchase-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .product-main__price {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 20px;
+    line-height: normal;
+    letter-spacing: -0.2px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .product-main__actions {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .product-main__form {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .product-main__button {
+    width: 100%;
+    height: 40px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .product-main__button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .product-main__button:active {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+
+  .product-main__button:focus-visible {
+    outline: 2px solid #3E2027;
+    outline-offset: 2px;
+  }
+
+  .product-main__button--add {
+    background-color: #FFFFFF;
+    color: #3E2027;
+  }
+
+  .product-main__button--add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .product-main__button--add:disabled:hover {
+    transform: none;
+  }
+
+  .product-main__button--add svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+
+  .product-main__button--buy {
+    background-color: #3E2027;
+    color: #FFFFFF;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .product-main__button--buy:focus-visible {
+    outline-color: #3E2027;
+  }
+
+  /* --- Video Section --- */
+
+  .product-main__video-section {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  .product-main__video-heading {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  .product-main__video-grid {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .product-main__video-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-main__video-placeholder {
+    width: 90px;
+    height: 125px;
+    background-color: #D9D9D9;
+    flex-shrink: 0;
+  }
+
+  /* --- Accordions --- */
+
+  .product-main__accordions {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-main__accordion-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: #3E2027;
+  }
+
+  .product-main__accordion-trigger:focus-visible {
+    outline: 2px solid #3E2027;
+    outline-offset: 2px;
+  }
+
+  .product-main__accordion-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  .product-main__accordion.is-open .product-main__accordion-icon {
+    transform: rotate(45deg);
+  }
+
+  .product-main__accordion-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+  }
+
+  .product-main__accordion.is-open .product-main__accordion-content {
+    grid-template-rows: 1fr;
+  }
+
+  .product-main__accordion-body {
+    overflow: hidden;
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.5;
+    color: #3E2027;
+    padding-bottom: 0;
+    transition: padding-bottom 0.3s ease;
+  }
+
+  .product-main__accordion.is-open .product-main__accordion-body {
+    padding-bottom: 15px;
+  }
+
+  .product-main__ingredients-link {
+    display: inline;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.5;
+    color: #3E2027;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .product-main__ingredients-link:hover {
+    opacity: 0.7;
+  }
+
+  .product-main__ingredients-link:focus-visible {
+    outline: 2px solid #3E2027;
+    outline-offset: 2px;
+  }
+
+  /* --- Trust Badges --- */
+
+  .product-main__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  @media (min-width: 1024px) {
+    .product-main__badges {
+      justify-content: flex-start;
+    }
+  }
+
+  .product-main__badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 130px;
+  }
+
+  .product-main__badge-icon {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .product-main__badge-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .product-main__badge-label {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  /* --- Dialog --- */
+
+  .product-main__dialog {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    z-index: 999;
+  }
+
+  .product-main__dialog::backdrop {
+    background: rgba(62, 32, 39, 0.5);
+  }
+
+  .product-main__dialog-inner {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 80vh;
+    background: #FFF7EA;
+    padding: 30px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .product-main__dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .product-main__dialog-title {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: -0.18px;
+    text-transform: uppercase;
+    color: #3E2027;
+    margin: 0;
+  }
+
+  .product-main__dialog-close {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .product-main__dialog-close:focus-visible {
+    outline: 2px solid #3E2027;
+    outline-offset: 2px;
+  }
+
+  .product-main__dialog-body {
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.6;
+    color: #3E2027;
+  }
+
+  /* ============================================
+     Desktop (1024px+)
+     ============================================ */
+
+  @media (min-width: 1024px) {
+    .product-main {
+      flex-direction: row;
+      min-height: calc(100vh - var(--total-header-height, 110px));
+    }
+
+    .product-main__image-column {
+      width: 55%;
+      aspect-ratio: auto;
+      position: sticky;
+      top: var(--total-header-height, 110px);
+      height: calc(100vh - var(--total-header-height, 110px));
+      flex-shrink: 0;
+    }
+
+    .product-main__info-column {
+      width: 45%;
+      padding: 120px 60px 60px;
+    }
+
+    /* Rating positioned at top-right of info column */
+    .product-main__rating {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      gap: 8px;
+    }
+
+    .product-main__stars svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .product-main__stars {
+      gap: 8px;
+    }
+
+    .product-main__rating-count {
+      font-size: 14px;
+    }
+
+    /* Header */
+    .product-main__subtitle {
+      font-size: 20px;
+      letter-spacing: -0.2px;
+    }
+
+    .product-main__size {
+      font-size: 20px;
+      letter-spacing: -0.2px;
+    }
+
+    .product-main__header--desktop {
+      gap: 16px;
+    }
+
+    .product-main__title {
+      font-size: 74px;
+    }
+
+    /* Scent dropdown */
+    .product-main__scent-dropdown {
+      width: 255px;
+    }
+
+    /* Price */
+    .product-main__price {
+      font-size: 26px;
+      letter-spacing: -0.26px;
+    }
+
+    /* Buttons */
+    .product-main__button {
+      padding: 10px 20px;
+      gap: 10px;
+      font-size: 14px;
+      letter-spacing: -0.14px;
+    }
+
+    .product-main__button--add svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .product-main__purchase-row {
+      gap: 20px;
+    }
+
+    .product-main__actions {
+      gap: 10px;
+    }
+
+    /* Dialog */
+    .product-main__dialog-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      right: auto;
+      bottom: auto;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 560px;
+      max-height: 70vh;
+      padding: 40px;
+    }
+  }
+
+  /* ============================================
+     Large Desktop (1400px+)
+     ============================================ */
+
+  @media (min-width: 1400px) {
+    .product-main__info-column {
+      padding: 120px 60px 60px;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function() {
+    class ProductSection {
+      constructor(section) {
+        this.section = section;
+        this.initAccordions();
+        this.initScentDropdown();
+        this.initIngredientsDialog();
+      }
+
+      initAccordions() {
+        const accordions = this.section.querySelectorAll('[data-accordion]');
+        accordions.forEach(accordion => {
+          const trigger = accordion.querySelector('.product-main__accordion-trigger');
+          const content = accordion.querySelector('.product-main__accordion-content');
+          if (!trigger || !content) return;
+
+          trigger.addEventListener('click', () => {
+            const isOpen = accordion.classList.contains('is-open');
+            accordion.classList.toggle('is-open');
+            trigger.setAttribute('aria-expanded', String(!isOpen));
+            content.setAttribute('aria-hidden', String(isOpen));
+          });
+        });
+      }
+
+      initScentDropdown() {
+        const dropdown = this.section.querySelector('[data-scent-dropdown]');
+        if (!dropdown) return;
+
+        const trigger = dropdown.querySelector('.product-main__scent-trigger');
+
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+          trigger.setAttribute('aria-expanded', String(!isOpen));
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!dropdown.contains(e.target)) {
+            trigger.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && trigger.getAttribute('aria-expanded') === 'true') {
+            trigger.setAttribute('aria-expanded', 'false');
+            trigger.focus();
+          }
+        });
+      }
+
+      initIngredientsDialog() {
+        const dialog = this.section.querySelector('.product-main__dialog');
+        if (!dialog) return;
+
+        const openBtn = this.section.querySelector('[data-open-ingredients]');
+        const closeBtn = dialog.querySelector('[data-close-ingredients]');
+
+        if (openBtn) {
+          openBtn.addEventListener('click', () => {
+            dialog.showModal();
+          });
+        }
+
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            dialog.close();
+            openBtn?.focus();
+          });
+        }
+
+        dialog.addEventListener('click', (e) => {
+          if (e.target === dialog) {
+            dialog.close();
+            openBtn?.focus();
+          }
+        });
+      }
+    }
+
+    function init() {
+      const section = document.querySelector('.product-main');
+      if (section) new ProductSection(section);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    if (typeof Shopify !== 'undefined' && Shopify.designMode) {
+      document.addEventListener('shopify:section:load', (e) => {
+        const section = e.target.querySelector('.product-main');
+        if (section) new ProductSection(section);
+      });
+    }
+  })();
+</script>
 
 {% schema %}
 {
-  "name": "t:general.product",
+  "name": "t:sections.product.name",
+  "class": "product-main-section",
   "settings": [],
+  "blocks": [
+    {
+      "type": "trust_badge",
+      "name": "t:sections.product.trust_badge",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.product.trust_badge_icon"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.product.trust_badge_label",
+          "default": "Free"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.product.name",
+      "blocks": [
+        { "type": "trust_badge", "settings": { "label": "Aluminum\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Paraben\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Sulfate\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Cruelty\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Plant-Based\nIngredients" } },
+        { "type": "trust_badge", "settings": { "label": "Phthalate\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Vegan" } },
+        { "type": "trust_badge", "settings": { "label": "U.S. Patent\n11,857,668" } }
+      ]
+    }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
   }

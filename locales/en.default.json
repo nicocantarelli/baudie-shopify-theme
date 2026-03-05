@@ -183,6 +183,23 @@
         "collection_list_info": "Select collections to show. Leave empty to show all collections."
       }
     },
+    "product": {
+      "name": "Product",
+      "explore_scents": "Explore other scents",
+      "scent_prefix": "Scent:",
+      "add_to_cart": "Add to cart",
+      "buy_now": "Buy now",
+      "watch_in_action": "Watch it in action",
+      "details": "Details",
+      "scent_notes": "Scent notes",
+      "key_ingredients": "Key ingredients",
+      "all_ingredients": "All ingredients",
+      "ingredients_popup_title": "Full ingredient list",
+      "close": "Close",
+      "trust_badge": "Trust badge",
+      "trust_badge_icon": "Badge icon",
+      "trust_badge_label": "Badge label"
+    },
     "customer_care": {
       "name": "Customer Care",
       "navigation_label": "Customer care categories",

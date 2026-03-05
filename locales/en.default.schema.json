@@ -286,6 +286,35 @@
         "label": "Return policy content"
       }
     },
+    "product": {
+      "name": "Product",
+      "trust_badge": "Trust badge",
+      "trust_badge_icon": "Badge icon",
+      "trust_badge_label": "Badge label"
+    },
+    "how_to_use": {
+      "name": "How to use",
+      "title": "Title",
+      "description": "Description",
+      "sprays_title": "Sprays title",
+      "media_image": "Image",
+      "media_video": "Video URL",
+      "step": "Step",
+      "step_icon": "Icon",
+      "step_label": "Label",
+      "dosage": "Dosage level",
+      "dosage_label": "Label",
+      "dosage_drops": "Number of drops",
+      "dosage_amount": "Amount text"
+    },
+    "product_faq": {
+      "name": "Product FAQ",
+      "title": "Title",
+      "intro": "Introduction text",
+      "faq_item": "FAQ item",
+      "question": "Question",
+      "answer": "Answer"
+    },
     "customer_care": {
       "name": "Customer Care",
       "navigation_label": "Customer care categories",
