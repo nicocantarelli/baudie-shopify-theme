@@ -12,7 +12,8 @@
 
 <section
   class="collection-grid full-width"
-  aria-label="{{ 'sections.collection_grid.aria_label' | t }}">
+  aria-label="{{ 'sections.collection_grid.aria_label' | t }}"
+  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }};">
   <div class="collection-grid__wrapper">
     {%- if section.settings.heading != blank -%}
       <h2 class="collection-grid__heading">{{ section.settings.heading | escape }}</h2>
@@ -78,7 +79,7 @@
   }
 
   .collection-grid {
-    background-color: #FFF7EA;
+    background-color: var(--section-bg, #FFF7EA);
     padding: 60px 0 80px;
     padding-top: calc(var(--total-header-height, 110px) + 60px);
   }
@@ -102,7 +103,7 @@
     font-weight: 400;
     line-height: 1;
     text-align: center;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin: 0 0 60px;
   }
 
@@ -124,7 +125,7 @@
     text-align: center;
     font-family: var(--font-jokker);
     font-size: 16px;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     padding: 40px;
   }
 
@@ -132,7 +133,7 @@
   .collection-grid__seo {
     margin-top: 80px;
     padding-top: 60px;
-    border-top: 1px solid rgba(62, 32, 39, 0.2);
+    border-top: 1px solid color-mix(in srgb, var(--text-color, #3E2027) 20%, transparent);
   }
 
   .collection-grid__seo-inner {
@@ -146,7 +147,7 @@
     font-size: 40px;
     font-weight: 400;
     line-height: 1;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin: 0;
     width: 600px;
   }
@@ -156,7 +157,7 @@
     font-size: 18px;
     font-weight: 400;
     line-height: 1.5;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
   }
 
   .collection-grid__seo-text p {
@@ -204,7 +205,7 @@
     font-weight: 500;
     letter-spacing: -0.13px;
     text-transform: uppercase;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -240,7 +241,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(62, 32, 39, 0.05);
+    background-color: color-mix(in srgb, var(--text-color, #3E2027) 5%, transparent);
   }
 
   .product-card__placeholder-svg {
@@ -345,13 +346,13 @@
   }
 
   .product-card__action-btn:focus-visible {
-    outline: 2px solid #3E2027;
+    outline: 2px solid var(--text-color, #3E2027);
     outline-offset: 2px;
   }
 
   .product-card__action-btn--add {
     background-color: #FFFFFF;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
   }
 
   .product-card__action-btn--add:disabled {
@@ -360,7 +361,7 @@
   }
 
   .product-card__action-btn--buy {
-    background-color: #3E2027;
+    background-color: var(--text-color, #3E2027);
     color: #FFFFFF;
   }
 
@@ -395,7 +396,7 @@
     line-height: normal;
     letter-spacing: -0.18px;
     text-transform: uppercase;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin: 0;
     flex: 1;
   }
@@ -410,7 +411,7 @@
   }
 
   .product-card__title-link:focus-visible {
-    outline: 2px solid #3E2027;
+    outline: 2px solid var(--text-color, #3E2027);
     outline-offset: 2px;
   }
 
@@ -433,13 +434,13 @@
   }
 
   .product-card__compare-price {
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     opacity: 0.5;
     text-decoration: line-through;
   }
 
   .product-card__current-price {
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
   }
 
   .product-card__current-price--sale {
@@ -451,7 +452,7 @@
     font-size: 16px;
     font-weight: 400;
     line-height: 1.5;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin: 0;
   }
 
@@ -727,6 +728,22 @@
       "id": "seo_text",
       "label": "t:sections.collection_grid.settings.seo_text",
       "info": "t:sections.collection_grid.settings.seo_text_info"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFF7EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
     }
   ],
   "blocks": [

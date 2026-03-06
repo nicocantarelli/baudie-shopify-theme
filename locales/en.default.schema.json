@@ -147,7 +147,13 @@
     "review_date": "Review date",
     "review_text": "Review text",
     "background_color": "Background color",
-    "text_color": "Text color"
+    "text_color": "Text color",
+    "button_background_color": "Button background color",
+    "button_text_color": "Button text color",
+    "arrow_color": "Arrow color",
+    "divider_color": "Divider color",
+    "summary_background_color": "Summary background color",
+    "colors": "Colors"
   },
   "options": {
     "alignment": {
@@ -263,6 +269,16 @@
         "mobile_button_url": "Mobile button URL"
       }
     },
+    "blog": {
+      "name": "Blog",
+      "settings": {
+        "seo_header": "SEO content",
+        "seo_heading": "SEO heading",
+        "seo_heading_info": "Heading for the SEO text section below the articles",
+        "seo_text": "SEO text",
+        "seo_text_info": "Rich text content for search engine optimization"
+      }
+    },
     "collection_grid": {
       "name": "Collection grid",
       "settings": {
@@ -271,6 +287,13 @@
         "seo_heading_info": "Heading for the SEO text section below the grid",
         "seo_text": "SEO text",
         "seo_text_info": "Rich text content for search engine optimization"
+      }
+    },
+    "list_collections": {
+      "name": "Collections list",
+      "settings": {
+        "collection_list": "Collections",
+        "collection_list_info": "Select collections to display. Leave empty to show all collections."
       }
     },
     "main_cart": {

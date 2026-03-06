@@ -8,6 +8,7 @@
 <main
   class="main-cart"
   data-main-cart
+  style="--cart-bg: {{ section.settings.background_color }}; --cart-text: {{ section.settings.text_color }}; --cart-summary-bg: {{ section.settings.summary_background_color }};"
   data-money-format="{{ shop.money_format | escape }}"
   data-item-singular="{{ 'sidecart.item' | t | escape }}"
   data-item-plural="{{ 'sidecart.items' | t | escape }}">
@@ -99,11 +100,8 @@
 
 {% stylesheet %}
   .main-cart {
-    --cart-bg: #FFF7EA;
-    --cart-text: #3E2027;
-    --cart-border: rgba(62, 32, 39, 0.1);
+    --cart-border: color-mix(in srgb, var(--cart-text, #3E2027) 10%, transparent);
     --cart-sale: #E26046;
-    --cart-summary-bg: #FCF0D2;
 
     background-color: var(--cart-bg);
     color: var(--cart-text);
@@ -238,8 +236,8 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--cart-text);
-    background-color: #FFF7EA;
-    border: 1px solid rgba(62, 32, 39, 0.1);
+    background-color: var(--cart-bg, #FFF7EA);
+    border: 1px solid var(--cart-border);
     padding: 10px 20px;
   }
 
@@ -265,7 +263,7 @@
     letter-spacing: -0.14px;
     text-transform: uppercase;
     color: #FFFFFF;
-    background-color: #3E2027;
+    background-color: var(--cart-text, #3E2027);
     border: none;
     cursor: pointer;
     transition: opacity 0.15s ease;
@@ -367,7 +365,7 @@
   }
 
   .main-cart__btn--secondary:hover {
-    background-color: #F1E4C2;
+    background-color: color-mix(in srgb, var(--cart-summary-bg, #FCF0D2) 80%, var(--cart-bg, #FFF7EA));
     opacity: 1;
   }
 
@@ -441,7 +439,7 @@
     width: 150px;
     height: 194px;
     overflow: hidden;
-    background-color: #FFF7EA;
+    background-color: var(--cart-bg, #FFF7EA);
   }
 
   .cart-item__image {
@@ -456,7 +454,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #FFF7EA;
+    background-color: var(--cart-bg, #FFF7EA);
   }
 
   .cart-item__placeholder-svg {
@@ -535,7 +533,7 @@
   }
 
   .cart-item__qty-btn:hover {
-    background-color: rgba(62, 32, 39, 0.05);
+    background-color: color-mix(in srgb, var(--cart-text, #3E2027) 5%, transparent);
   }
 
   .cart-item__qty-btn:active {
@@ -1096,6 +1094,28 @@
       "id": "returns_content",
       "label": "t:sections.main_cart.returns_content.label",
       "default": "<p>You have 14 days from the date you receive your order to return it to us. All earrings are non-returnable due to hygiene reasons. All other items can be returned if returned unopened in their original packaging.</p><p>To begin your return, please send us an email:</p>"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFF7EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "summary_background_color",
+      "label": "t:labels.summary_background_color",
+      "default": "#FCF0D2"
     }
   ]
 }

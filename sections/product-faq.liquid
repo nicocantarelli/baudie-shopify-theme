@@ -10,7 +10,8 @@
   class="product-faq full-width"
   data-section-id="{{ section.id }}"
   data-product-faq
-  aria-label="{{ section.settings.title | default: 'FAQ' }}">
+  aria-label="{{ section.settings.title | default: 'FAQ' }}"
+  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }};">
 
   <div class="product-faq__inner">
     {% if section.settings.title != blank %}
@@ -36,11 +37,11 @@
                 aria-controls="faq-answer-{{ block.id }}"
                 type="button">
                 <span class="product-faq__question">{{ block.settings.question }}</span>
-                <svg class="product-faq__icon product-faq__icon--plus" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3E2027" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="product-faq__icon product-faq__icon--plus" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
-                <svg class="product-faq__icon product-faq__icon--minus" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3E2027" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="product-faq__icon product-faq__icon--minus" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
               </button>
@@ -86,7 +87,7 @@
 
 {% stylesheet %}
   .product-faq {
-    background-color: #FFF7EA;
+    background-color: var(--section-bg, #FFF7EA);
   }
 
   .product-faq__inner {
@@ -105,7 +106,7 @@
     font-weight: 400;
     font-size: 34px;
     line-height: 1;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin: 0;
   }
 
@@ -124,7 +125,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 1.5;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
   }
 
   .product-faq__intro p {
@@ -144,7 +145,7 @@
     width: 100%;
     height: 0;
     border: none;
-    border-top: 1px solid rgba(62, 32, 39, 0.2);
+    border-top: 1px solid color-mix(in srgb, var(--text-color, #3E2027) 20%, transparent);
     margin: 0;
   }
 
@@ -180,7 +181,7 @@
     line-height: normal;
     letter-spacing: -0.14px;
     text-transform: uppercase;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
   }
 
   /* --- Icons --- */
@@ -218,7 +219,7 @@
     font-size: 14px;
     line-height: 1.5;
     letter-spacing: -0.14px;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     padding-bottom: 20px;
   }
 
@@ -354,6 +355,22 @@ if (Shopify.designMode) {
       "type": "richtext",
       "id": "intro",
       "label": "t:sections.product_faq.intro"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFF7EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
     }
   ],
   "blocks": [

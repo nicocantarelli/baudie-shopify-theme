@@ -2,7 +2,7 @@
   Reviews section - Displays Yotpo reviews in a carousel layout
 {% endcomment %}
 
-<div class="reviews-section full-width" id="reviews-section-{{ section.id }}">
+<div class="reviews-section full-width" id="reviews-section-{{ section.id }}" style="--section-bg: {{ section.settings.background_color }}; --card-bg: {{ section.settings.card_background_color }}; --text-color: {{ section.settings.text_color }};">
   {%- comment -%} Background Color Block - Outside container for full width {%- endcomment -%}
   <div class="reviews-section__bg-block"></div>
 
@@ -24,7 +24,7 @@
           fill="none">
           <path
             d="M0.707031 0.707031L10.707 10.707L0.707031 20.707"
-            stroke="#3E2027"
+            stroke="currentColor"
             stroke-width="2" />
         </svg>
       </a>
@@ -64,7 +64,7 @@
                         height="13"
                         viewBox="0 0 14 13"
                         fill="none">
-                        <path d="M6.3512 0.196596C6.38042 0.13757 6.42555 0.087884 6.4815 0.0531459C6.53746 0.0184078 6.60201 0 6.66787 0C6.73373 0 6.79828 0.0184078 6.85423 0.0531459C6.91019 0.087884 6.95532 0.13757 6.98453 0.196596L8.52453 3.31593C8.62599 3.52124 8.77574 3.69887 8.96095 3.83356C9.14616 3.96826 9.36129 4.056 9.58787 4.08926L13.0319 4.59326C13.0971 4.60272 13.1584 4.63024 13.2089 4.67273C13.2593 4.71521 13.2968 4.77096 13.3172 4.83367C13.3376 4.89637 13.34 4.96353 13.3243 5.02755C13.3085 5.09157 13.2751 5.1499 13.2279 5.19593L10.7372 7.62126C10.5729 7.78133 10.45 7.97892 10.3791 8.19701C10.3081 8.41511 10.2912 8.64719 10.3299 8.87326L10.9179 12.2999C10.9294 12.3652 10.9223 12.4323 10.8975 12.4937C10.8727 12.5551 10.8312 12.6083 10.7776 12.6473C10.724 12.6862 10.6605 12.7093 10.5944 12.7139C10.5284 12.7185 10.4623 12.7044 10.4039 12.6733L7.3252 11.0546C7.12235 10.9481 6.89665 10.8924 6.66753 10.8924C6.43841 10.8924 6.21272 10.9481 6.00987 11.0546L2.93187 12.6733C2.87342 12.7042 2.80747 12.7181 2.7415 12.7134C2.67554 12.7087 2.61221 12.6856 2.55873 12.6467C2.50525 12.6078 2.46376 12.5547 2.43897 12.4934C2.41419 12.4321 2.40711 12.3651 2.41853 12.2999L3.00587 8.87393C3.04466 8.64775 3.02786 8.41553 2.95689 8.19729C2.88593 7.97906 2.76294 7.78136 2.59853 7.62126L0.107866 5.1966C0.0602624 5.15062 0.0265286 5.09219 0.0105081 5.02798C-0.00551242 4.96376 -0.00317558 4.89634 0.0172523 4.83339C0.0376802 4.77044 0.0753778 4.71449 0.126051 4.67192C0.176724 4.62935 0.238335 4.60186 0.303866 4.5926L3.7472 4.08926C3.97404 4.05626 4.18946 3.96863 4.37492 3.83392C4.56039 3.69921 4.71034 3.52144 4.81187 3.31593L6.3512 0.196596Z" fill="#3E2027" />
+                        <path d="M6.3512 0.196596C6.38042 0.13757 6.42555 0.087884 6.4815 0.0531459C6.53746 0.0184078 6.60201 0 6.66787 0C6.73373 0 6.79828 0.0184078 6.85423 0.0531459C6.91019 0.087884 6.95532 0.13757 6.98453 0.196596L8.52453 3.31593C8.62599 3.52124 8.77574 3.69887 8.96095 3.83356C9.14616 3.96826 9.36129 4.056 9.58787 4.08926L13.0319 4.59326C13.0971 4.60272 13.1584 4.63024 13.2089 4.67273C13.2593 4.71521 13.2968 4.77096 13.3172 4.83367C13.3376 4.89637 13.34 4.96353 13.3243 5.02755C13.3085 5.09157 13.2751 5.1499 13.2279 5.19593L10.7372 7.62126C10.5729 7.78133 10.45 7.97892 10.3791 8.19701C10.3081 8.41511 10.2912 8.64719 10.3299 8.87326L10.9179 12.2999C10.9294 12.3652 10.9223 12.4323 10.8975 12.4937C10.8727 12.5551 10.8312 12.6083 10.7776 12.6473C10.724 12.6862 10.6605 12.7093 10.5944 12.7139C10.5284 12.7185 10.4623 12.7044 10.4039 12.6733L7.3252 11.0546C7.12235 10.9481 6.89665 10.8924 6.66753 10.8924C6.43841 10.8924 6.21272 10.9481 6.00987 11.0546L2.93187 12.6733C2.87342 12.7042 2.80747 12.7181 2.7415 12.7134C2.67554 12.7087 2.61221 12.6856 2.55873 12.6467C2.50525 12.6078 2.46376 12.5547 2.43897 12.4934C2.41419 12.4321 2.40711 12.3651 2.41853 12.2999L3.00587 8.87393C3.04466 8.64775 3.02786 8.41553 2.95689 8.19729C2.88593 7.97906 2.76294 7.78136 2.59853 7.62126L0.107866 5.1966C0.0602624 5.15062 0.0265286 5.09219 0.0105081 5.02798C-0.00551242 4.96376 -0.00317558 4.89634 0.0172523 4.83339C0.0376802 4.77044 0.0753778 4.71449 0.126051 4.67192C0.176724 4.62935 0.238335 4.60186 0.303866 4.5926L3.7472 4.08926C3.97404 4.05626 4.18946 3.96863 4.37492 3.83392C4.56039 3.69921 4.71034 3.52144 4.81187 3.31593L6.3512 0.196596Z" fill="currentColor" />
                       </svg>
                     {% endfor %}
                   </div>
@@ -89,7 +89,7 @@
           fill="none">
           <path
             d="M11.4142 0.707031L1.41418 10.707L11.4142 20.707"
-            stroke="#3E2027"
+            stroke="currentColor"
             stroke-width="2" />
         </svg>
       </button>
@@ -107,7 +107,7 @@
           fill="none">
           <path
             d="M0.707031 0.707031L10.707 10.707L0.707031 20.707"
-            stroke="#3E2027"
+            stroke="currentColor"
             stroke-width="2" />
         </svg>
       </button>
@@ -117,7 +117,7 @@
 
 {% stylesheet %}
   .reviews-section {
-    background-color: #FFF7EA;
+    background-color: var(--section-bg, #FFF7EA);
     padding: 0;
     position: relative;
     overflow: hidden;
@@ -130,7 +130,7 @@
     top: 0;
     width: 100%;
     height: 600px;
-    background-color: #FCF0D2;
+    background-color: var(--card-bg, #FCF0D2);
     z-index: 0;
   }
 
@@ -148,7 +148,7 @@
     font-size: 70px;
     font-weight: 400;
     line-height: 1;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin: 0 0 90px;
     padding-top: 70px;
     position: relative;
@@ -168,7 +168,7 @@
     line-height: normal;
     letter-spacing: -0.18px;
     text-transform: uppercase;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     text-decoration: none;
     z-index: 2;
     transition: opacity 0.2s ease
@@ -218,7 +218,7 @@
     flex: 0 0 367px;
     width: 367px;
     min-height: 150px;
-    border-left: 1px solid #3E2027;
+    border-left: 1px solid var(--text-color, #3E2027);
     padding: 10px 0 15px 30px;
     display: flex;
     flex-direction: column;
@@ -241,7 +241,7 @@
     line-height: normal;
     letter-spacing: -0.18px;
     text-transform: uppercase;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin: 0;
     white-space: nowrap;
   }
@@ -250,7 +250,7 @@
     font-family: var(--font-jokker);
     font-size: 14px;
     line-height: 1.5;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     opacity: 0.4;
     margin: 0;
     white-space: nowrap;
@@ -261,7 +261,7 @@
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin: 0;
     flex: 1;
     overflow: hidden;
@@ -656,6 +656,28 @@ function initReviews () {
         "id": "product_id",
         "label": "t:labels.product",
         "info": "t:sections.reviews.product_info"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.colors"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "t:labels.background_color",
+        "default": "#FFF7EA"
+      },
+      {
+        "type": "color",
+        "id": "card_background_color",
+        "label": "t:labels.card_background_color",
+        "default": "#FCF0D2"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "t:labels.text_color",
+        "default": "#3E2027"
       }
     ],
     "blocks": [

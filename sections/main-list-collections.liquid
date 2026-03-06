@@ -5,7 +5,7 @@
   endif
 -%}
 
-<section class="list-collections full-width" {% if section.settings.heading != blank %}aria-labelledby="list-collections-heading"{% else %}aria-label="{{ 'collections.title' | t }}"{% endif %}>
+<section class="list-collections full-width" {% if section.settings.heading != blank %}aria-labelledby="list-collections-heading"{% else %}aria-label="{{ 'collections.title' | t }}"{% endif %} style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }};">
   <div class="list-collections__wrapper">
     {%- if section.settings.heading != blank -%}
       <h1 id="list-collections-heading" class="list-collections__heading">
@@ -51,7 +51,7 @@
 
 {% stylesheet %}
   .list-collections {
-    background-color: #FFF7EA;
+    background-color: var(--section-bg, #FFF7EA);
     padding: 60px 0 80px;
     padding-top: calc(var(--total-header-height, 110px) + 60px);
   }
@@ -74,7 +74,7 @@
     font-weight: 400;
     line-height: 1;
     text-align: center;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin: 0 0 60px;
   }
 
@@ -96,7 +96,7 @@
     position: relative;
     aspect-ratio: 4 / 5;
     overflow: hidden;
-    background-color: rgba(62, 32, 39, 0.05);
+    background-color: color-mix(in srgb, var(--text-color, #3E2027) 5%, transparent);
   }
 
   .collection-card__image {
@@ -136,7 +136,7 @@
     font-weight: 500;
     letter-spacing: -0.18px;
     text-transform: uppercase;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin: 0;
   }
 
@@ -148,7 +148,7 @@
     font-family: var(--font-jokker);
     font-size: 14px;
     font-weight: 400;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     opacity: 0.6;
   }
 
@@ -223,6 +223,22 @@
       "id": "collection_list",
       "label": "t:sections.list_collections.settings.collection_list",
       "info": "t:sections.list_collections.settings.collection_list_info"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFF7EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
     }
   ],
   "presets": [

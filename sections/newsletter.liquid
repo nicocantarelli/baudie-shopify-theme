@@ -3,7 +3,7 @@
   Matches Figma design: https://www.figma.com/design/HU0mvwy2CH0bCWJAHTWRhT/Baudie?node-id=399-3440
 {% endcomment %}
 
-<div class="newsletter-section full-width">
+<div class="newsletter-section full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --button-bg: {{ section.settings.button_background_color }}; --button-text: {{ section.settings.button_text_color }};">
   <div class="newsletter-section__container">
     <h2 class="newsletter-section__heading">
       {{ section.settings.heading }}
@@ -34,7 +34,7 @@
 
 {% stylesheet %}
   .newsletter-section {
-    background-color: #FFF7EA;
+    background-color: var(--section-bg, #FFF7EA);
     padding: 80px 0;
   }
 
@@ -53,7 +53,7 @@
     font-size: 70px;
     font-weight: 400;
     line-height: 1;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     text-align: center;
     margin: 0;
     width: 100%;
@@ -63,7 +63,7 @@
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     text-align: center;
     margin: 0;
     width: 100%;
@@ -84,19 +84,19 @@
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     background-color: transparent;
-    border: 1px solid #3E2027;
+    border: 1px solid var(--text-color, #3E2027);
     outline: none;
   }
 
   .newsletter-section__input::placeholder {
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     opacity: 1;
   }
 
   .newsletter-section__input:focus {
-    border-color: #3E2027;
+    border-color: var(--text-color, #3E2027);
     outline: 2px solid rgba(62, 32, 39, 0.1);
     outline-offset: 0;
   }
@@ -110,8 +110,8 @@
     line-height: normal;
     letter-spacing: -0.14px;
     text-transform: uppercase;
-    color: #FFFAE6;
-    background-color: #3E2027;
+    color: var(--button-text, #FFFAE6);
+    background-color: var(--button-bg, #3E2027);
     border: none;
     cursor: pointer;
     transition: opacity 0.2s ease
@@ -133,7 +133,7 @@
     font-family: var(--font-jokker);
     font-size: 10px;
     line-height: 1.5;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     opacity: 0.7;
     text-align: center;
     margin: 0;
@@ -141,7 +141,7 @@
   }
 
   .newsletter-section__fine-print a {
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     text-decoration: underline;
     text-decoration-skip-ink: none;
     text-underline-position: from-font;
@@ -240,6 +240,34 @@
         "id": "fine_print",
         "label": "t:labels.fine_print",
         "default": "<p>We'll only text when it's worth it — new scents, early access, or something good for your pits.<br>Standard rates apply. Reply STOP anytime. See our <a href=\"/pages/privacy-policy\">Privacy Policy</a> and <a href=\"/pages/terms\">Terms</a>.</p>"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.colors"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "t:labels.background_color",
+        "default": "#FFF7EA"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "t:labels.text_color",
+        "default": "#3E2027"
+      },
+      {
+        "type": "color",
+        "id": "button_background_color",
+        "label": "t:labels.button_background_color",
+        "default": "#3E2027"
+      },
+      {
+        "type": "color",
+        "id": "button_text_color",
+        "label": "t:labels.button_text_color",
+        "default": "#FFFAE6"
       }
     ],
     "presets": [

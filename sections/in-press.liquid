@@ -2,7 +2,7 @@
   In Press section - marquee scrolling logos with horizontal line
 {% endcomment %}
 
-<div class="in-press full-width">
+<div class="in-press full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --divider-color: {{ section.settings.divider_color }};">
   <div class="in-press__container">
     {% if section.settings.title != blank %}
       <p class="in-press__title">{{ section.settings.title }}</p>
@@ -30,7 +30,7 @@
 
 {% stylesheet %}
   .in-press {
-    background-color: #FFF7EA;
+    background-color: var(--section-bg, #FFF7EA);
     padding: 50px 0 60px;
   }
 
@@ -48,7 +48,7 @@
     letter-spacing: -0.16px;
     text-transform: uppercase;
     text-align: center;
-    color: #3E2027;
+    color: var(--text-color, #3E2027);
     margin-bottom: 30px;
   }
 
@@ -99,7 +99,7 @@
     width: calc(100% - 80px);
     margin: 20px auto 0;
     height: 1px;
-    background-color: #3E2027;
+    background-color: var(--divider-color, #3E2027);
     opacity: 0.1;
   }
 
@@ -257,6 +257,28 @@
         "id": "title",
         "label": "t:labels.title",
         "default": "IN PRESS"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.colors"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "t:labels.background_color",
+        "default": "#FFF7EA"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "t:labels.text_color",
+        "default": "#3E2027"
+      },
+      {
+        "type": "color",
+        "id": "divider_color",
+        "label": "t:labels.divider_color",
+        "default": "#3E2027"
       }
     ],
     "blocks": [

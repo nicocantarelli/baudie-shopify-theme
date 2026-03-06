@@ -3,7 +3,7 @@
   Displays three benefit columns with full images and text overlays.
 {% endcomment %}
 
-<section class="product-benefits" data-section-id="{{ section.id }}">
+<section class="product-benefits" data-section-id="{{ section.id }}" style="--text-color: {{ section.settings.text_color }};">
   <div class="product-benefits__container">
     {% for block in section.blocks %}
       <div
@@ -89,7 +89,7 @@
     right: 26px;
     bottom: 0;
     top: 0;
-    color: #FFFFFF;
+    color: var(--text-color, #FFFFFF);
     z-index: 10;
     pointer-events: none;
   }
@@ -210,7 +210,18 @@
     "tag": "section",
     "class": "section",
     "max_blocks": 3,
-    "settings": [],
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:labels.colors"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "t:labels.text_color",
+        "default": "#FFFFFF"
+      }
+    ],
     "blocks": [
       {
         "type": "benefit",

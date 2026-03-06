@@ -16,7 +16,8 @@
     data-sidecart
     data-money-format="{{ shop.money_format | escape }}"
     data-item-singular="{{ 'sidecart.item' | t | escape }}"
-    data-item-plural="{{ 'sidecart.items' | t | escape }}">
+    data-item-plural="{{ 'sidecart.items' | t | escape }}"
+    style="--sidecart-bg: {{ section.settings.background_color }}; --sidecart-text: {{ section.settings.text_color }};">
 
     <div class="sidecart__overlay" id="sidecart-overlay"></div>
 
@@ -88,8 +89,7 @@
 {% stylesheet %}
   .sidecart {
     --sidecart-width: 615px;
-    --sidecart-bg: #FFF7EA;
-    --sidecart-text: #3E2027;
+    /* --sidecart-bg and --sidecart-text set via inline style from section settings */
     --sidecart-border: rgba(62, 32, 39, 0.1);
 
     position: fixed;
@@ -1129,6 +1129,22 @@
       "id": "continue_button_text",
       "label": "t:sidecart.settings.continue_button_text.label",
       "default": "Continue shopping"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFF7EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
     }
   ]
 }
