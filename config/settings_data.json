@@ -8,5 +8,14 @@
  * ------------------------------------------------------------
  */
 {
-  "current": {}
+  "current": {
+    "content_for_index": [],
+    "blocks": {
+      "14652898158514659544": {
+        "type": "shopify://apps/fly-bundles-quantity-breaks/blocks/app-embed/26807bdc-c2ed-4a25-afb2-06e6b1ebf843",
+        "disabled": false,
+        "settings": {}
+      }
+    }
+  }
 }
