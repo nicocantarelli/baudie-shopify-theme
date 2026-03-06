@@ -148,9 +148,13 @@
                         {{ 'products.add_to_cart' | t }}
                       </button>
                     {%- endform -%}
-                    <a href="{{ bundle_product.url }}" class="bundle-card-mobile__btn bundle-card-mobile__btn--buy">
-                      {{ 'products.buy_now' | t }}
-                    </a>
+                    {%- form 'product', bundle_product -%}
+                      <input type="hidden" name="id" value="{{ selected_variant.id }}">
+                      <input type="hidden" name="return_to" value="/cart">
+                      <button type="submit" class="bundle-card-mobile__btn bundle-card-mobile__btn--buy" {% unless selected_variant.available %}disabled{% endunless %}>
+                        {{ 'products.buy_now' | t }}
+                      </button>
+                    {%- endform -%}
                   </div>
                 </article>
               {% endif %}

@@ -95,6 +95,7 @@
         </div>
       {% endif %}
     </div>
+
   </div>
 </main>
 
@@ -435,17 +436,18 @@
   }
 
   .cart-item__image-link {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 150px;
     height: 194px;
     overflow: hidden;
-    background-color: var(--cart-bg, #FFF7EA);
   }
 
   .cart-item__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: auto;
+    height: 80%;
+    object-fit: contain;
   }
 
   .cart-item__placeholder {
@@ -799,6 +801,7 @@
     white-space: nowrap !important;
     border: 0 !important;
   }
+
 {% endstylesheet %}
 
 {% javascript %}

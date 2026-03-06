@@ -176,6 +176,10 @@
       "aria_label": "Product collection",
       "product_count": "{{ count }} products"
     },
+    "related_products": {
+      "aria_label": "Related products",
+      "pagination_label": "Go to product"
+    },
     "list_collections": {
       "name": "Collections list",
       "settings": {

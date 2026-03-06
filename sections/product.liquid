@@ -115,11 +115,16 @@
             </span>
           </button>
         {% endform %}
-        <a
-          href="/cart"
-          class="product-main__button product-main__button--buy">
-          {{ 'sections.product.buy_now' | t }}
-        </a>
+        {% form 'product', product, class: 'product-main__form' %}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+          <input type="hidden" name="return_to" value="/cart">
+          <button
+            type="submit"
+            class="product-main__button product-main__button--buy"
+            {% unless current_variant.available %}disabled{% endunless %}>
+            {{ 'sections.product.buy_now' | t }}
+          </button>
+        {% endform %}
       </div>
     </div>
 

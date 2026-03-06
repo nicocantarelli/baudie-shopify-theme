@@ -993,6 +993,8 @@
       const form = e.target.tagName === 'FORM' ? e.target : e.target.closest('form');
       if (!isProductForm(form)) return;
 
+      if (form.querySelector('input[name="return_to"]')) return;
+
       e.preventDefault();
 
       const submitBtn = form.querySelector('[type="submit"], button[name="add"]');

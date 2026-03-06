@@ -28,6 +28,9 @@
 
   assign short_description = product.metafields.custom.short_description | default: product.description | strip_html | truncate: 120
 
+  assign card_image = product.metafields.custom.card_image | default: product.featured_image
+  assign card_bg = product.metafields.custom.product_card_background | default: '#FCF0D2'
+
   comment
     Video metafield - expects a video file reference
     Set up in Shopify Admin: Settings > Custom data > Products > Add definition
@@ -41,7 +44,7 @@
 -%}
 
 <article class="product-card{% if is_wide %} product-card--wide{% endif %}{% if has_video %} product-card--has-video{% endif %}" data-product-card>
-  <div class="product-card__image-wrapper">
+  <div class="product-card__image-wrapper" style="background-color: {{ card_bg }};">
     {%- if show_badge and badge_text != blank -%}
       <span class="product-card__badge" aria-hidden="true">{{ badge_text | escape }}</span>
     {%- endif -%}
@@ -64,11 +67,11 @@
             {%- endfor -%}
           </div>
         {%- else -%}
-          {%- if product.featured_image -%}
-            {{ product.featured_image | image_url: width: 500 | image_tag:
+          {%- if card_image -%}
+            {{ card_image | image_url: width: 500 | image_tag:
               loading: loading_attr,
               class: 'product-card__img product-card__img--single',
-              alt: product.featured_image.alt | default: product.title,
+              alt: card_image.alt | default: product.title,
               width: 247,
               height: 370,
               style: 'aspect-ratio: 247/370'
@@ -113,9 +116,17 @@
           <span>{{ 'products.add_to_cart' | t }}</span>
         </button>
       {%- endform -%}
-      <a href="{{ product.url }}" class="product-card__action-btn product-card__action-btn--buy" aria-label="{{ 'products.buy_now' | t }}: {{ product.title }}">
-        {{ 'products.buy_now' | t }}
-      </a>
+      {%- form 'product', product, class: 'product-card__form' -%}
+        <input type="hidden" name="id" value="{{ selected_variant.id }}">
+        <input type="hidden" name="return_to" value="/cart">
+        <button
+          type="submit"
+          class="product-card__action-btn product-card__action-btn--buy"
+          aria-label="{{ 'products.buy_now' | t }}: {{ product.title }}"
+          {% unless selected_variant.available %}disabled{% endunless %}>
+          {{ 'products.buy_now' | t }}
+        </button>
+      {%- endform -%}
     </div>
   </div>
 

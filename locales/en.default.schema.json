@@ -338,6 +338,12 @@
       "question": "Question",
       "answer": "Answer"
     },
+    "related_products": {
+      "name": "Related products",
+      "settings": {
+        "max_products": "Maximum products"
+      }
+    },
     "customer_care": {
       "name": "Customer Care",
       "navigation_label": "Customer care categories",

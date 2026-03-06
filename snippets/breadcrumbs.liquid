@@ -55,29 +55,19 @@
     </li>
 
     {%- if crumbs contains 'collection' -%}
-      {%- if collection -%}
-        <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
-          {%- if template.name == 'collection' -%}
-            <span class="breadcrumbs__current" itemprop="item" aria-current="page">
-              <span itemprop="name">{{ collection.title }}</span>
-            </span>
-          {%- else -%}
-            <a href="{{ collection.url }}" class="breadcrumbs__link" itemprop="item">
-              <span itemprop="name">{{ collection.title }}</span>
-            </a>
-          {%- endif -%}
-          <meta itemprop="position" content="2">
-        </li>
-      {%- elsif template.name == 'collection' -%}
-        <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator">{{ breadcrumb_dot }}</span>
+        {%- if template.name == 'collection' -%}
           <span class="breadcrumbs__current" itemprop="item" aria-current="page">
             <span itemprop="name">{{ 'breadcrumbs.shop' | t }}</span>
           </span>
-          <meta itemprop="position" content="2">
-        </li>
-      {%- endif -%}
+        {%- else -%}
+          <a href="{{ routes.collections_url }}/all" class="breadcrumbs__link" itemprop="item">
+            <span itemprop="name">{{ 'breadcrumbs.shop' | t }}</span>
+          </a>
+        {%- endif -%}
+        <meta itemprop="position" content="2">
+      </li>
     {%- endif -%}
 
     {%- if crumbs contains 'product' and product -%}
