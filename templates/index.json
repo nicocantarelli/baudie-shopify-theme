@@ -17,8 +17,12 @@
         "heading_color": "#ffffff",
         "hero_products": [
           "capri-seaside",
-          "deep-ritual"
+          "deep-ritual",
+          "petal-kiss"
         ],
+        "use_default_colors": false,
+        "default_card_text_color": "#3e2027",
+        "default_card_button_color": "#3e2027",
         "use_static_image": false,
         "static_hero_image_alt": "",
         "mobile_title": "Deodorant enhancer.",
@@ -71,7 +75,10 @@
       ],
       "name": "t:general.in_press",
       "settings": {
-        "title": "IN PRESS"
+        "title": "IN PRESS",
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027",
+        "divider_color": "#3e2027"
       }
     },
     "product_details_XyZ123": {
@@ -80,7 +87,9 @@
         "heading": "Not a deodorant.",
         "second_heading": "The step your deodorant's been missing.",
         "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
-        "product_image": "shopify://shop_images/product-details-image.png"
+        "product_image": "shopify://shop_images/product-details-image.png",
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027"
       }
     },
     "meet_scents_AbC456": {
@@ -152,7 +161,9 @@
         "heading": "Explore our sets",
         "heading_color": "#ffffff",
         "description": "<p>Meet six Baudie scents and them all.<br/>Spray, wipe, and let your deodorant do its best work.</p>",
-        "description_color": "#ffffff"
+        "description_color": "#ffffff",
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027"
       }
     },
     "reviews_wFhWb3": {
@@ -203,7 +214,10 @@
         "view_all_text": "VIEW ALL",
         "view_all_url": "shopify://collections",
         "yotpo_app_key": "",
-        "product_id": ""
+        "product_id": "",
+        "background_color": "#fff7ea",
+        "card_background_color": "#fcf0d2",
+        "text_color": "#3e2027"
       }
     },
     "product_features_aNgxYb": {
@@ -276,7 +290,12 @@
         "feature_badge_PcNFYW"
       ],
       "name": "t:sections.product_features.name",
-      "settings": {}
+      "settings": {
+        "background_color": "#3e2027",
+        "text_color": "#ffffff",
+        "icon_color": "#ffffff",
+        "arrow_color": "#fffae6"
+      }
     },
     "what_makes_different_tVrMDA": {
       "type": "what-makes-different",
@@ -380,7 +399,9 @@
         "benefit_4XEJRL"
       ],
       "name": "Product benefits",
-      "settings": {}
+      "settings": {
+        "text_color": "#ffffff"
+      }
     },
     "newsletter_LECjXh": {
       "type": "newsletter",
@@ -390,7 +411,11 @@
         "description": "Be the first to know when new scents drop, bundles launch, and good pit news happens. No spam — just good vibes and better deodorant days.",
         "placeholder": "Enter your email",
         "button_text": "SUBSCRIBE",
-        "fine_print": "<p>We'll only text when it's worth it — new scents, early access, or something good for your pits.<br/>Standard rates apply. Reply STOP anytime. See our <a href=\"/pages/privacy-policy\">Privacy Policy</a> and <a href=\"/pages/terms\">Terms</a>.</p>"
+        "fine_print": "<p>We'll only text when it's worth it — new scents, early access, or something good for your pits.<br/>Standard rates apply. Reply STOP anytime. See our <a href=\"/pages/privacy-policy\">Privacy Policy</a> and <a href=\"/pages/terms\">Terms</a>.</p>",
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027",
+        "button_background_color": "#3e2027",
+        "button_text_color": "#fffae6"
       }
     }
   },
