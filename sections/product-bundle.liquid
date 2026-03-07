@@ -5,7 +5,7 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign current_variant = product.selected_or_first_available_variant
+  assign current_variant = product.selected_or_first_available_variant | default: product.variants.first
   assign product_text_color = product.metafields.custom.product_text_color | default: '#3E2027'
   assign popup_text_color = section.settings.popup_text_color | default: '#3E2027'
   assign gradient_1 = section.settings.gradient_color_1 | default: '#F4D2A4'
@@ -1098,7 +1098,6 @@
         const selected = this.getSelectedProducts();
         if (selected.length < this.bundleSize) return;
         if (!this.parentVariantId) {
-          this.setStatus('This bundle is unavailable right now.');
           console.error('Bundle: no parent variant ID');
           return;
         }
