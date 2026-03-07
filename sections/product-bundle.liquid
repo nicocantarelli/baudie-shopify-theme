@@ -22,6 +22,7 @@
 <section
   class="bundle-main full-width"
   data-section-id="{{ section.id }}"
+  data-product-handle="{{ product.handle }}"
   data-bundle-size="{{ bundle_size }}"
   data-parent-variant-id="{{ current_variant.id }}"
   data-parent-variant-available="{% if current_variant.available %}true{% else %}false{% endif %}"
@@ -301,6 +302,14 @@
       {
         "parentVariantId": {{ current_variant.id | json }},
         "parentVariantAvailable": {{ current_variant.available | json }},
+        "parentVariants": [
+          {% for variant in product.variants %}
+            {
+              "id": {{ variant.id | json }},
+              "available": {{ variant.available | json }}
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ],
         "scents": {
           {% for scent_product in scent_collection.products %}
             "{{ scent_product.handle }}": {
@@ -958,6 +967,7 @@
       }
 
       parseProductData() {
+        this.productHandle = this.section.getAttribute('data-product-handle') || '';
         const parentVariantId = this.section.getAttribute('data-parent-variant-id');
         const parentVariantAvailable = this.section.getAttribute('data-parent-variant-available');
         if (parentVariantId) this.parentVariantId = parseInt(parentVariantId, 10) || parentVariantId;
@@ -969,11 +979,115 @@
             const data = JSON.parse(jsonEl.textContent);
             this.parentVariantId = data.parentVariantId;
             this.parentVariantAvailable = data.parentVariantAvailable === true;
+            this.parentVariants = Array.isArray(data.parentVariants) ? data.parentVariants : [];
             this.productData = data.scents || {};
           } catch (e) {
             console.error('Bundle: failed to parse product data', e);
           }
         }
+      }
+
+      parseCartError(response, fallbackMessage) {
+        return response
+          .json()
+          .then(errorData => {
+            if (errorData && errorData.description) return errorData.description;
+            if (errorData && errorData.message) return errorData.message;
+            return fallbackMessage;
+          })
+          .catch(() => fallbackMessage);
+      }
+
+      isSoldOutErrorMessage(message) {
+        if (!message) return false;
+        const normalized = String(message).toLowerCase();
+        return normalized.includes('sold out') || normalized.includes('out of stock');
+      }
+
+      async fetchLiveAvailableParentVariantIds() {
+        if (!this.productHandle) return [];
+
+        try {
+          const response = await fetch('/products/' + this.productHandle + '.js', { method: 'GET' });
+          if (!response.ok) return [];
+
+          const productData = await response.json();
+          if (!productData || !Array.isArray(productData.variants)) return [];
+
+          return productData.variants
+            .filter(variant => variant && variant.available && variant.id)
+            .map(variant => variant.id);
+        } catch (_e) {
+          return [];
+        }
+      }
+
+      async getCandidateParentVariantIds() {
+        const preferredId = this.parentVariantId ? Number(this.parentVariantId) : null;
+        const availableFromLiquid = Array.isArray(this.parentVariants)
+          ? this.parentVariants.filter(variant => variant && variant.available && variant.id).map(variant => Number(variant.id))
+          : [];
+        const allFromLiquid = Array.isArray(this.parentVariants)
+          ? this.parentVariants.filter(variant => variant && variant.id).map(variant => Number(variant.id))
+          : [];
+        const availableFromLive = (await this.fetchLiveAvailableParentVariantIds()).map(id => Number(id));
+
+        const candidates = [];
+        if (preferredId) candidates.push(preferredId);
+        candidates.push(...availableFromLive);
+        candidates.push(...availableFromLiquid);
+        candidates.push(...allFromLiquid);
+
+        const unique = [];
+        candidates.forEach(id => {
+          if (!id) return;
+          if (!Number.isFinite(id)) return;
+          if (!unique.includes(id)) unique.push(id);
+        });
+
+        return unique;
+      }
+
+      async tryAddBundleLine(parentVariantId, properties) {
+        return fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: [{
+              id: parentVariantId,
+              quantity: 1,
+              properties: properties
+            }]
+          })
+        });
+      }
+
+      async addBundleWithFallback(properties) {
+        const candidateIds = await this.getCandidateParentVariantIds();
+        if (!candidateIds.length) {
+          throw new Error('No sellable bundle variant found.');
+        }
+
+        let soldOutMessage = '';
+        for (const candidateId of candidateIds) {
+          const response = await this.tryAddBundleLine(candidateId, properties);
+          if (response.ok) {
+            this.parentVariantId = candidateId;
+            return response;
+          }
+
+          const message = await this.parseCartError(response, 'Failed to add to cart');
+          console.error('Bundle: add attempt failed for parent variant', candidateId, message);
+
+          if (response.status === 422 && this.isSoldOutErrorMessage(message)) {
+            soldOutMessage = message;
+            continue;
+          }
+
+          throw new Error(message);
+        }
+
+        throw new Error(soldOutMessage || 'No sellable bundle variant available.');
       }
 
       hydrateProductDataFromOptions() {
@@ -1170,32 +1284,7 @@
             properties['Scent ' + p.index] = p.title;
           });
 
-          const response = await fetch('/cart/add.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              items: [{
-                id: this.parentVariantId,
-                quantity: 1,
-                properties: properties
-              }]
-            })
-          });
-
-          if (!response.ok) {
-            let errorMessage = 'Failed to add to cart';
-            try {
-              const errorData = await response.json();
-              if (errorData && errorData.description) {
-                errorMessage = errorData.description;
-              } else if (errorData && errorData.message) {
-                errorMessage = errorData.message;
-              }
-            } catch (_e) {
-              // Ignore parse errors and fallback to default message.
-            }
-            throw new Error(errorMessage);
-          }
+          await this.addBundleWithFallback(properties);
 
           if (goToCart) {
             window.location.href = '/cart';
