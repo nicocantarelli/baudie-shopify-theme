@@ -15,6 +15,16 @@
   assign item_key = item.key
   assign short_description = item.product.metafields.custom.short_description | default: ''
 
+  if item.properties['_bundle'] == 'true'
+    if item.properties['_bundle_title'] != blank
+      assign item_title = item.properties['_bundle_title']
+    endif
+    if item.properties['_bundle_price'] != blank
+      assign item_price = item.properties['_bundle_price'] | times: 100 | round
+      assign item_unit_price = item_price
+    endif
+  endif
+
   assign has_compare_price = false
   assign compare_price = 0
   if item.variant.compare_at_price > item.variant.price

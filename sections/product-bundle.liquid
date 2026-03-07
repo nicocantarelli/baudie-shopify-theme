@@ -1143,7 +1143,9 @@
           if (goToCart) {
             window.location.href = '/cart';
           } else {
-            document.dispatchEvent(new CustomEvent('cart:updated'));
+            const cartResponse = await fetch('/cart.js');
+            const cartData = await cartResponse.json();
+            document.dispatchEvent(new CustomEvent('cart:updated', { detail: cartData }));
             document.dispatchEvent(new CustomEvent('cart:open'));
             if (addBtn) addBtn.disabled = false;
             if (buyBtn) buyBtn.disabled = false;
