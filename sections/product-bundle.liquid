@@ -23,6 +23,8 @@
   class="bundle-main full-width"
   data-section-id="{{ section.id }}"
   data-bundle-size="{{ bundle_size }}"
+  data-parent-variant-id="{{ current_variant.id }}"
+  data-parent-variant-available="{% if current_variant.available %}true{% else %}false{% endif %}"
   aria-label="{{ product.title }}"
   style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }};">
 
@@ -96,7 +98,9 @@
                   class="bundle-main__selector-option"
                   data-product-handle="{{ scent_product.handle }}"
                   data-product-title="{{ scent_product.title | escape }}"
-                  data-variant-id="{{ scent_product.selected_or_first_available_variant.id }}">
+                  data-variant-id="{{ scent_product.selected_or_first_available_variant.id }}"
+                  data-variant-gid="{{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' }}"
+                  data-card-image="{{ scent_product.metafields.custom.card_image | default: scent_product.featured_image | image_url: width: 800 }}">
                   {{ scent_product.title }}
                 </li>
               {% endfor %}
@@ -303,7 +307,7 @@
               "title": {{ scent_product.title | json }},
               "variantId": {{ scent_product.selected_or_first_available_variant.id | json }},
               "variantGid": {{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' | json }},
-              "cardImage": {{ scent_product.metafields.custom.card_image | image_url: width: 800 | json }},
+              "cardImage": {{ scent_product.metafields.custom.card_image | default: scent_product.featured_image | image_url: width: 800 | json }},
               "price": {{ scent_product.price | json }},
               "available": {{ scent_product.available | json }},
               "variantAvailable": {{ scent_product.selected_or_first_available_variant.available | json }}
@@ -946,6 +950,7 @@
         this.productData = {};
 
         this.parseProductData();
+        this.hydrateProductDataFromOptions();
         this.initSelectors();
         this.initAccordions();
         this.initIngredientsDialog();
@@ -953,6 +958,11 @@
       }
 
       parseProductData() {
+        const parentVariantId = this.section.getAttribute('data-parent-variant-id');
+        const parentVariantAvailable = this.section.getAttribute('data-parent-variant-available');
+        if (parentVariantId) this.parentVariantId = parseInt(parentVariantId, 10) || parentVariantId;
+        if (parentVariantAvailable) this.parentVariantAvailable = parentVariantAvailable === 'true';
+
         const jsonEl = this.section.querySelector('[data-bundle-products]');
         if (jsonEl) {
           try {
@@ -964,6 +974,26 @@
             console.error('Bundle: failed to parse product data', e);
           }
         }
+      }
+
+      hydrateProductDataFromOptions() {
+        const options = this.section.querySelectorAll('.bundle-main__selector-option');
+        options.forEach(option => {
+          const handle = option.getAttribute('data-product-handle');
+          const variantId = option.getAttribute('data-variant-id');
+          if (!handle || !variantId) return;
+
+          if (!this.productData[handle]) {
+            this.productData[handle] = {
+              title: option.getAttribute('data-product-title') || option.textContent.trim(),
+              variantId: variantId,
+              variantGid: option.getAttribute('data-variant-gid') || ('gid://shopify/ProductVariant/' + variantId),
+              cardImage: option.getAttribute('data-card-image') || '',
+              available: true,
+              variantAvailable: true,
+            };
+          }
+        });
       }
 
       initSelectors() {
@@ -1018,8 +1048,8 @@
           product = {
             title: option.getAttribute('data-product-title') || option.textContent.trim(),
             variantId: variantId,
-            variantGid: 'gid://shopify/ProductVariant/' + variantId,
-            cardImage: '',
+            variantGid: option.getAttribute('data-variant-gid') || ('gid://shopify/ProductVariant/' + variantId),
+            cardImage: option.getAttribute('data-card-image') || '',
           };
           this.productData[handle] = product;
         }
