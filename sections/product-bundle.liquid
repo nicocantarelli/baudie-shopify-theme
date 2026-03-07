@@ -1,10 +1,11 @@
 {%- comment -%}
-  Bundle product section — wraps the Mix & Match app widget with
-  the theme's gradient background, title, accordions, and trust badges.
-  The app's Full-page widget handles scent selection, images, and cart.
+  Bundle product page — fully custom build-your-own-bundle.
+  Customers pick scents from a collection, images update dynamically,
+  and selected items are added to cart individually with a bundle note.
 {%- endcomment -%}
 
 {%- liquid
+  assign current_variant = product.selected_or_first_available_variant
   assign product_text_color = product.metafields.custom.product_text_color | default: '#3E2027'
   assign popup_text_color = section.settings.popup_text_color | default: '#3E2027'
   assign gradient_1 = section.settings.gradient_color_1 | default: '#F4D2A4'
@@ -14,12 +15,14 @@
   assign scent_notes = product.metafields.custom.scent_notes
   assign key_ingredients = product.metafields.custom.key_ingredients
   assign full_ingredient_list = product.metafields.custom.full_ingredient_list
+  assign scent_collection = section.settings.scent_collection
   assign bundle_size = section.settings.bundle_size | default: 3
 -%}
 
 <section
   class="bundle-main full-width"
   data-section-id="{{ section.id }}"
+  data-bundle-size="{{ bundle_size }}"
   aria-label="{{ product.title }}"
   style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }};">
 
@@ -31,25 +34,104 @@
         <p class="bundle-main__size">{{ bottle_size }}</p>
       {% endif %}
     </div>
-    <h1 class="bundle-main__title">{{ product.title }}</h1>
+    <h1 class="bundle-main__title" data-bundle-title>{{ product.title }}</h1>
   </div>
 
-  {%- comment -%} Desktop Header {%- endcomment -%}
-  <div class="bundle-main__desktop-header">
-    <p class="bundle-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
-    <h1 class="bundle-main__title">{{ product.title }}</h1>
-    {% if bottle_size %}
-      <p class="bundle-main__size-line">{{ bundle_size }} x {{ bottle_size }}</p>
-    {% endif %}
+  {%- comment -%} Image Column — bottle slots {%- endcomment -%}
+  <div class="bundle-main__image-column">
+    <div class="bundle-main__bottles" data-bundle-bottles>
+      {% for i in (1..bundle_size) %}
+        <div class="bundle-main__bottle-slot" data-bottle-slot="{{ i }}">
+          <img
+            class="bundle-main__bottle-img"
+            src=""
+            alt=""
+            loading="{% if i == 1 %}eager{% else %}lazy{% endif %}"
+            style="display: none;">
+          <div class="bundle-main__bottle-placeholder">
+            <span class="bundle-main__bottle-number">{{ i }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 
-  {%- comment -%}
-    The Mix & Match app widget renders here via the theme editor.
-    Add the "MW Mix & Match (Full-page)" widget block in the template customizer.
-  {%- endcomment -%}
+  {%- comment -%} Info Column {%- endcomment -%}
+  <div class="bundle-main__info-column">
 
-  {%- comment -%} Content below the app widget {%- endcomment -%}
-  <div class="bundle-main__content">
+    {%- comment -%} Desktop Header {%- endcomment -%}
+    <div class="bundle-main__desktop-header">
+      <p class="bundle-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
+      <h1 class="bundle-main__title">{{ product.title }}</h1>
+      {% if bottle_size %}
+        <p class="bundle-main__size-line">{{ bundle_size }} x {{ bottle_size }}</p>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Scent Selectors {%- endcomment -%}
+    <div class="bundle-main__selectors" data-bundle-selectors>
+      {% for i in (1..bundle_size) %}
+        <div class="bundle-main__selector" data-scent-selector="{{ i }}">
+          <button
+            type="button"
+            class="bundle-main__selector-trigger"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-controls="scent-list-{{ i }}-{{ section.id }}">
+            <span class="bundle-main__selector-label" data-selector-label>{{ i }}. {{ 'sections.product_bundle.choose_scent' | t }}</span>
+            <svg class="bundle-main__selector-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <ul
+            class="bundle-main__selector-list"
+            id="scent-list-{{ i }}-{{ section.id }}"
+            role="listbox"
+            aria-label="{{ i }}. {{ 'sections.product_bundle.choose_scent' | t }}">
+            {% if scent_collection %}
+              {% for scent_product in scent_collection.products %}
+                <li
+                  role="option"
+                  aria-selected="false"
+                  class="bundle-main__selector-option"
+                  data-product-handle="{{ scent_product.handle }}"
+                  data-variant-id="{{ scent_product.selected_or_first_available_variant.id }}">
+                  {{ scent_product.title }}
+                </li>
+              {% endfor %}
+            {% endif %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+
+    {%- comment -%} Divider {%- endcomment -%}
+    <hr class="bundle-main__divider">
+
+    {%- comment -%} Price + Actions {%- endcomment -%}
+    <div class="bundle-main__purchase-row">
+      <p class="bundle-main__price" data-bundle-price>{{ current_variant.price | money }}</p>
+      <div class="bundle-main__actions">
+        <button
+          type="button"
+          class="bundle-main__button bundle-main__button--add"
+          disabled
+          data-bundle-add>
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>{{ 'sections.product_bundle.add_to_cart' | t }}</span>
+        </button>
+        <button
+          type="button"
+          class="bundle-main__button bundle-main__button--buy"
+          disabled
+          data-bundle-buy>
+          {{ 'sections.product_bundle.buy_now' | t }}
+        </button>
+      </div>
+    </div>
+
     {%- comment -%} Watch It In Action {%- endcomment -%}
     <div class="bundle-main__video-section">
       <p class="bundle-main__video-heading">{{ 'sections.product_bundle.watch_in_action' | t }}</p>
@@ -207,12 +289,29 @@
       </div>
     </dialog>
   {% endif %}
+
+  {%- comment -%} Product data JSON for JS {%- endcomment -%}
+  {% if scent_collection %}
+    <script type="application/json" data-bundle-products>
+      {
+        {% for scent_product in scent_collection.products %}
+          "{{ scent_product.handle }}": {
+            "title": {{ scent_product.title | json }},
+            "variantId": {{ scent_product.selected_or_first_available_variant.id | json }},
+            "cardImage": {{ scent_product.metafields.custom.card_image | image_url: width: 800 | json }},
+            "price": {{ scent_product.price | json }},
+            "available": {{ scent_product.available | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      }
+    </script>
+  {% endif %}
 </section>
 
 {% stylesheet %}
   .bundle-main {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 55% 45%;
     background: linear-gradient(to bottom, var(--gradient-1) 1.4%, var(--gradient-2) 55%);
     margin-top: var(--total-header-height, 110px);
     min-height: calc(100vh - var(--total-header-height, 110px));
@@ -223,16 +322,74 @@
     display: none;
   }
 
-  /* --- Desktop Header --- */
+  /* --- Image Column --- */
+
+  .bundle-main__image-column {
+    position: sticky;
+    top: var(--total-header-height, 110px);
+    height: calc(100vh - var(--total-header-height, 110px));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .bundle-main__bottles {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .bundle-main__bottle-slot {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bundle-main__bottle-img {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: contain;
+    transition: opacity 0.4s ease;
+  }
+
+  .bundle-main__bottle-placeholder {
+    width: 80%;
+    aspect-ratio: 3 / 5;
+    border: 2px dashed var(--product-text, #3E2027);
+    border-radius: 40% 40% 10% 10%;
+    opacity: 0.15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bundle-main__bottle-number {
+    font-family: var(--font-alyona);
+    font-size: 48px;
+    opacity: 0.5;
+  }
+
+  /* --- Info Column --- */
+
+  .bundle-main__info-column {
+    padding: 120px 40px 60px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-width: 555px;
+  }
 
   .bundle-main__desktop-header {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 120px 40px 0;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
   }
 
   .bundle-main__subtitle {
@@ -267,17 +424,94 @@
     margin: 0;
   }
 
-  /* --- Content below app widget --- */
+  /* --- Scent Selectors --- */
 
-  .bundle-main__content {
+  .bundle-main__selectors {
     display: flex;
     flex-direction: column;
-    gap: 30px;
-    max-width: 555px;
-    padding: 30px 40px 60px;
-    margin-left: auto;
-    margin-right: auto;
+    gap: 10px;
+  }
+
+  .bundle-main__selector {
+    position: relative;
+    width: 255px;
+  }
+
+  .bundle-main__selector-trigger {
     width: 100%;
+    height: 40px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    color: var(--product-text, #3E2027);
+    background: transparent;
+    border: 1px solid var(--product-text, #3E2027);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .bundle-main__selector.is-selected .bundle-main__selector-trigger {
+    background-color: #FFFFFF;
+    border-color: transparent;
+  }
+
+  .bundle-main__selector-chevron {
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .bundle-main__selector-trigger[aria-expanded="true"] .bundle-main__selector-chevron {
+    transform: rotate(180deg);
+  }
+
+  .bundle-main__selector-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid var(--product-text, #3E2027);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .bundle-main__selector-trigger[aria-expanded="true"] + .bundle-main__selector-list {
+    display: block;
+  }
+
+  .bundle-main__selector-option {
+    padding: 10px 20px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    color: var(--product-text, #3E2027);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .bundle-main__selector-option:hover {
+    background-color: var(--gradient-1);
+  }
+
+  .bundle-main__selector-option[aria-disabled="true"] {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .bundle-main__selector-option[aria-selected="true"] {
+    font-weight: 700;
   }
 
   /* --- Divider --- */
@@ -287,6 +521,82 @@
     border-top: 1px solid var(--product-text, #3E2027);
     opacity: 0.2;
     margin: 0;
+  }
+
+  /* --- Purchase Row --- */
+
+  .bundle-main__purchase-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .bundle-main__price {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 26px;
+    letter-spacing: -0.26px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .bundle-main__actions {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .bundle-main__button {
+    flex: 1;
+    height: 40px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .bundle-main__button:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .bundle-main__button:active:not(:disabled) {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+
+  .bundle-main__button--add {
+    background-color: #FFFFFF;
+    color: var(--product-text, #3E2027);
+  }
+
+  .bundle-main__button--buy {
+    background-color: var(--product-text, #3E2027);
+    color: #FFFFFF;
+  }
+
+  .bundle-main__button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .bundle-main__button:focus-visible {
+    outline: 2px solid var(--product-text, #3E2027);
+    outline-offset: 2px;
   }
 
   /* --- Watch It In Action --- */
@@ -505,16 +815,16 @@
      ============================================ */
 
   @media (max-width: 1200px) {
-    .bundle-main__desktop-header {
-      padding: 80px 24px 0;
+    .bundle-main__info-column {
+      padding: 80px 24px 40px 0;
     }
 
     .bundle-main__title {
       font-size: 56px;
     }
 
-    .bundle-main__content {
-      padding: 30px 24px 40px;
+    .bundle-main__selector {
+      width: 100%;
     }
   }
 
@@ -523,6 +833,10 @@
      ============================================ */
 
   @media (max-width: 900px) {
+    .bundle-main {
+      grid-template-columns: 1fr;
+    }
+
     .bundle-main__mobile-header {
       display: flex;
       flex-direction: column;
@@ -555,9 +869,46 @@
       display: none;
     }
 
-    .bundle-main__content {
+    .bundle-main__image-column {
+      position: relative;
+      top: auto;
+      height: auto;
+      padding: 20px 12px 30px;
+    }
+
+    .bundle-main__bottles {
+      max-width: 416px;
+    }
+
+    .bundle-main__bottle-img {
+      max-height: 340px;
+    }
+
+    .bundle-main__bottle-placeholder {
+      aspect-ratio: 3 / 4;
+    }
+
+    .bundle-main__bottle-number {
+      font-size: 32px;
+    }
+
+    .bundle-main__info-column {
       padding: 0 12px 40px;
       max-width: 100%;
+    }
+
+    .bundle-main__selector {
+      width: 100%;
+    }
+
+    .bundle-main__price {
+      font-size: 20px;
+      letter-spacing: -0.2px;
+    }
+
+    .bundle-main__button {
+      font-size: 12px;
+      letter-spacing: -0.12px;
     }
 
     .bundle-main__dialog-inner {
@@ -572,8 +923,185 @@
     class BundleSection {
       constructor(section) {
         this.section = section;
+        this.bundleSize = parseInt(section.getAttribute('data-bundle-size')) || 3;
+        this.selections = {};
+        this.productData = {};
+
+        this.parseProductData();
+        this.initSelectors();
         this.initAccordions();
         this.initIngredientsDialog();
+        this.initCartButtons();
+      }
+
+      parseProductData() {
+        const jsonEl = this.section.querySelector('[data-bundle-products]');
+        if (jsonEl) {
+          try {
+            this.productData = JSON.parse(jsonEl.textContent);
+          } catch (e) {
+            console.error('Bundle: failed to parse product data', e);
+          }
+        }
+      }
+
+      initSelectors() {
+        this.selectors = this.section.querySelectorAll('[data-scent-selector]');
+        this.selectors.forEach(selector => {
+          const trigger = selector.querySelector('.bundle-main__selector-trigger');
+          const options = selector.querySelectorAll('.bundle-main__selector-option');
+          const selectorIndex = selector.getAttribute('data-scent-selector');
+
+          trigger.addEventListener('click', () => this.toggleDropdown(selector));
+
+          options.forEach(option => {
+            option.addEventListener('click', () => {
+              if (option.getAttribute('aria-disabled') === 'true') return;
+              this.selectScent(selector, selectorIndex, option);
+            });
+          });
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('[data-scent-selector]')) {
+            this.closeAllDropdowns();
+          }
+        });
+      }
+
+      toggleDropdown(selector) {
+        const trigger = selector.querySelector('.bundle-main__selector-trigger');
+        const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+        this.closeAllDropdowns();
+
+        if (!isOpen) {
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+      }
+
+      closeAllDropdowns() {
+        this.selectors.forEach(s => {
+          s.querySelector('.bundle-main__selector-trigger').setAttribute('aria-expanded', 'false');
+        });
+      }
+
+      selectScent(selector, selectorIndex, option) {
+        const handle = option.getAttribute('data-product-handle');
+        const product = this.productData[handle];
+        if (!product) return;
+
+        this.selections[selectorIndex] = handle;
+
+        const label = selector.querySelector('[data-selector-label]');
+        label.textContent = selectorIndex + '. ' + product.title;
+        selector.classList.add('is-selected');
+
+        option.setAttribute('aria-selected', 'true');
+        selector.querySelectorAll('.bundle-main__selector-option').forEach(opt => {
+          if (opt !== option) opt.setAttribute('aria-selected', 'false');
+        });
+
+        this.closeAllDropdowns();
+        this.syncDisabledStates();
+        this.updateBottleImage(selectorIndex, product);
+        this.updateButtons();
+      }
+
+      syncDisabledStates() {
+        const selectedHandles = Object.values(this.selections);
+
+        this.selectors.forEach(selector => {
+          const selectorIndex = selector.getAttribute('data-scent-selector');
+          const currentSelection = this.selections[selectorIndex];
+
+          selector.querySelectorAll('.bundle-main__selector-option').forEach(option => {
+            const handle = option.getAttribute('data-product-handle');
+            const isSelectedElsewhere = selectedHandles.includes(handle) && handle !== currentSelection;
+            option.setAttribute('aria-disabled', isSelectedElsewhere ? 'true' : 'false');
+          });
+        });
+      }
+
+      updateBottleImage(selectorIndex, product) {
+        const slot = this.section.querySelector('[data-bottle-slot="' + selectorIndex + '"]');
+        if (!slot) return;
+
+        const img = slot.querySelector('.bundle-main__bottle-img');
+        const placeholder = slot.querySelector('.bundle-main__bottle-placeholder');
+
+        if (product.cardImage) {
+          img.src = product.cardImage;
+          img.alt = product.title;
+          img.style.display = 'block';
+          if (placeholder) placeholder.style.display = 'none';
+        }
+      }
+
+      updateButtons() {
+        const allSelected = Object.keys(this.selections).length >= this.bundleSize;
+        const addBtn = this.section.querySelector('[data-bundle-add]');
+        const buyBtn = this.section.querySelector('[data-bundle-buy]');
+
+        if (addBtn) addBtn.disabled = !allSelected;
+        if (buyBtn) buyBtn.disabled = !allSelected;
+      }
+
+      getSelectedVariantIds() {
+        return Object.values(this.selections).map(handle => {
+          const product = this.productData[handle];
+          return product ? product.variantId : null;
+        }).filter(Boolean);
+      }
+
+      initCartButtons() {
+        const addBtn = this.section.querySelector('[data-bundle-add]');
+        const buyBtn = this.section.querySelector('[data-bundle-buy]');
+
+        if (addBtn) {
+          addBtn.addEventListener('click', () => this.addToCart(false));
+        }
+        if (buyBtn) {
+          buyBtn.addEventListener('click', () => this.addToCart(true));
+        }
+      }
+
+      async addToCart(goToCart) {
+        const variantIds = this.getSelectedVariantIds();
+        if (variantIds.length < this.bundleSize) return;
+
+        const addBtn = this.section.querySelector('[data-bundle-add]');
+        const buyBtn = this.section.querySelector('[data-bundle-buy]');
+        if (addBtn) addBtn.disabled = true;
+        if (buyBtn) buyBtn.disabled = true;
+
+        try {
+          const items = variantIds.map(id => ({
+            id: id,
+            quantity: 1,
+            properties: { '_bundle': 'true' }
+          }));
+
+          const response = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: items })
+          });
+
+          if (!response.ok) throw new Error('Failed to add to cart');
+
+          if (goToCart) {
+            window.location.href = '/cart';
+          } else {
+            document.dispatchEvent(new CustomEvent('cart:updated'));
+            if (addBtn) addBtn.disabled = false;
+            if (buyBtn) buyBtn.disabled = false;
+          }
+        } catch (error) {
+          console.error('Bundle: add to cart failed', error);
+          if (addBtn) addBtn.disabled = false;
+          if (buyBtn) buyBtn.disabled = false;
+        }
       }
 
       initAccordions() {
@@ -597,7 +1125,7 @@
 
       initIngredientsDialog() {
         const sectionId = this.section.getAttribute('data-section-id');
-        const dialog = this.section.querySelector(`#ingredients-dialog-${sectionId}`);
+        const dialog = this.section.querySelector('#ingredients-dialog-' + sectionId);
         if (!dialog) return;
 
         const openBtn = this.section.querySelector('[data-open-ingredients]');
@@ -639,6 +1167,11 @@
   "name": "t:sections.product_bundle.name",
   "class": "bundle-main-section",
   "settings": [
+    {
+      "type": "collection",
+      "id": "scent_collection",
+      "label": "t:sections.product_bundle.settings.scent_collection"
+    },
     {
       "type": "range",
       "id": "bundle_size",

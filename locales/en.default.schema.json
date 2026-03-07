@@ -280,6 +280,9 @@
     },
     "product_bundle": {
       "name": "Product bundle",
+      "choose_scent": "Choose your scent",
+      "add_to_cart": "Add to cart",
+      "buy_now": "Buy now",
       "watch_in_action": "Watch it in action",
       "details": "Details",
       "scent_notes": "Scent notes",
@@ -288,6 +291,7 @@
       "ingredients_popup_title": "Full ingredient list",
       "close": "Close",
       "settings": {
+        "scent_collection": "Scent collection",
         "bundle_size": "Bundle size",
         "colors_header": "Colors",
         "gradient_color_1": "Gradient color 1",
