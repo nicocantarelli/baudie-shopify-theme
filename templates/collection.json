@@ -51,7 +51,7 @@
         "product_card_AdP3Ty": {
           "type": "product_card",
           "settings": {
-            "product": "",
+            "product": "petal-kiss",
             "card_width": "1",
             "show_badge": false,
             "badge_text": ""
@@ -88,7 +88,9 @@
       "settings": {
         "heading": "Meet Your Scents",
         "seo_heading": "",
-        "seo_text": ""
+        "seo_text": "",
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027"
       }
     }
   },
