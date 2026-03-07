@@ -93,10 +93,8 @@
                 <li
                   role="option"
                   aria-selected="false"
-                  aria-disabled="{% if scent_product.selected_or_first_available_variant.available %}false{% else %}true{% endif %}"
                   class="bundle-main__selector-option"
                   data-product-handle="{{ scent_product.handle }}"
-                  data-product-available="{% if scent_product.selected_or_first_available_variant.available %}true{% else %}false{% endif %}"
                   data-variant-id="{{ scent_product.selected_or_first_available_variant.id }}">
                   {{ scent_product.title }}
                 </li>
@@ -1041,10 +1039,8 @@
 
           selector.querySelectorAll('.bundle-main__selector-option').forEach(option => {
             const handle = option.getAttribute('data-product-handle');
-            const product = this.productData[handle];
-            const isUnavailable = !product || !product.available || product.variantAvailable === false;
             const isSelectedElsewhere = selectedHandles.includes(handle) && handle !== currentSelection;
-            option.setAttribute('aria-disabled', (isUnavailable || isSelectedElsewhere) ? 'true' : 'false');
+            option.setAttribute('aria-disabled', isSelectedElsewhere ? 'true' : 'false');
           });
         });
       }
@@ -1066,7 +1062,7 @@
 
       updateButtons() {
         const allSelected = Object.keys(this.selections).length >= this.bundleSize;
-        const canAdd = allSelected && this.parentVariantId && this.parentVariantAvailable;
+        const canAdd = allSelected && this.parentVariantId;
         const addBtn = this.section.querySelector('[data-bundle-add]');
         const buyBtn = this.section.querySelector('[data-bundle-buy]');
 
@@ -1107,10 +1103,6 @@
         const addBtn = this.section.querySelector('[data-bundle-add]');
         const buyBtn = this.section.querySelector('[data-bundle-buy]');
 
-        if (this.parentVariantId && !this.parentVariantAvailable) {
-          this.setStatus('This bundle is currently out of stock.');
-        }
-
         if (addBtn) {
           addBtn.addEventListener('click', () => this.addToCart(false));
         }
@@ -1127,17 +1119,6 @@
           console.error('Bundle: no parent variant ID');
           return;
         }
-        if (!this.parentVariantAvailable) {
-          this.setStatus('This bundle is currently out of stock.');
-          console.error('Bundle: parent variant unavailable');
-          return;
-        }
-        if (selected.some(p => !p.available || p.variantAvailable === false)) {
-          this.setStatus('One selected scent is out of stock. Please choose another.');
-          console.error('Bundle: selected unavailable component');
-          return;
-        }
-
         const addBtn = this.section.querySelector('[data-bundle-add]');
         const buyBtn = this.section.querySelector('[data-bundle-buy]');
         if (addBtn) addBtn.disabled = true;
