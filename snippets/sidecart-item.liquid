@@ -27,13 +27,15 @@
 
   assign has_compare_price = false
   assign compare_price = 0
-  if item.variant.compare_at_price > item.variant.price
-    assign has_compare_price = true
-    assign compare_price = item.variant.compare_at_price | times: item_quantity
-  elsif item.original_line_price > item.final_line_price
-    assign has_compare_price = true
-    assign compare_price = item.original_line_price
-  endif
+  unless item.properties['_bundle'] == 'true'
+    if item.variant.compare_at_price > item.variant.price
+      assign has_compare_price = true
+      assign compare_price = item.variant.compare_at_price | times: item_quantity
+    elsif item.original_line_price > item.final_line_price
+      assign has_compare_price = true
+      assign compare_price = item.original_line_price
+    endif
+  endunless
 -%}
 
 <li class="sidecart-item" data-sidecart-item data-key="{{ item_key }}" data-unit-price="{{ item_unit_price }}" data-compare-unit-price="{{ item.variant.compare_at_price | default: 0 }}">

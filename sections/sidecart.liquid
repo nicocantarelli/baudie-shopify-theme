@@ -6,6 +6,17 @@
   endif
   assign enable_quick_cart = settings.enable_quick_cart
   assign show_dynamic_checkout = settings.show_dynamic_checkout
+
+  assign display_subtotal = 0
+  for item in cart.items
+    if item.properties['_bundle'] == 'true' and item.properties['_bundle_price'] != blank
+      assign bundle_cents = item.properties['_bundle_price'] | times: 100 | round
+      assign bundle_line_total = bundle_cents | times: item.quantity
+      assign display_subtotal = display_subtotal | plus: bundle_line_total
+    else
+      assign display_subtotal = display_subtotal | plus: item.final_line_price
+    endif
+  endfor
 -%}
 
 {% if enable_quick_cart %}
@@ -62,7 +73,7 @@
         <div class="sidecart__subtotal-row">
           <span class="sidecart__subtotal-label">{{ 'sidecart.subtotal' | t }}</span>
           <div class="sidecart__subtotal-value-wrapper">
-            <span class="sidecart__subtotal-value" data-sidecart-subtotal aria-live="polite">{{ cart.total_price | money }}</span>
+            <span class="sidecart__subtotal-value" data-sidecart-subtotal aria-live="polite">{{ display_subtotal | money }}</span>
             <span class="sidecart__shipping-note">{{ 'sidecart.shipping_note' | t }}</span>
           </div>
         </div>
@@ -912,7 +923,7 @@
             el.style.display = cart.item_count > 0 ? '' : 'none';
           });
           if (this.subtotalElement) {
-            this.subtotalElement.textContent = this.formatMoney(cart.total_price);
+            this.subtotalElement.textContent = this.formatMoney(this.calculateSubtotalFromDOM());
           }
 
           if (cart.item_count === 0) {
@@ -958,16 +969,22 @@
         el.style.display = cartData.item_count > 0 ? '' : 'none';
       });
 
-      if (this.subtotalElement) {
-        this.subtotalElement.textContent = this.formatMoney(cartData.total_price);
-      }
-
       if (cartData.item_count === 0) {
         this.showEmptyState();
       } else {
         this.hideEmptyState();
         await this.refreshFromServer();
       }
+    }
+
+    calculateSubtotalFromDOM() {
+      let total = 0;
+      this.sidecart.querySelectorAll('[data-sidecart-item]').forEach(item => {
+        const unitPrice = parseInt(item.dataset.unitPrice || '0', 10);
+        const qty = parseInt(item.querySelector('[data-quantity]')?.value || '0', 10);
+        total += unitPrice * qty;
+      });
+      return total;
     }
 
     formatMoney(cents) {
