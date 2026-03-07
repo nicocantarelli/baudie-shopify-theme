@@ -95,6 +95,7 @@
                   aria-selected="false"
                   class="bundle-main__selector-option"
                   data-product-handle="{{ scent_product.handle }}"
+                  data-product-title="{{ scent_product.title | escape }}"
                   data-variant-id="{{ scent_product.selected_or_first_available_variant.id }}">
                   {{ scent_product.title }}
                 </li>
@@ -1010,7 +1011,18 @@
 
       selectScent(selector, selectorIndex, option) {
         const handle = option.getAttribute('data-product-handle');
-        const product = this.productData[handle];
+        let product = this.productData[handle];
+        if (!product) {
+          const variantId = option.getAttribute('data-variant-id');
+          if (!variantId) return;
+          product = {
+            title: option.getAttribute('data-product-title') || option.textContent.trim(),
+            variantId: variantId,
+            variantGid: 'gid://shopify/ProductVariant/' + variantId,
+            cardImage: '',
+          };
+          this.productData[handle] = product;
+        }
         if (!product) return;
 
         this.selections[selectorIndex] = handle;
@@ -1031,16 +1043,9 @@
       }
 
       syncDisabledStates() {
-        const selectedHandles = Object.values(this.selections);
-
         this.selectors.forEach(selector => {
-          const selectorIndex = selector.getAttribute('data-scent-selector');
-          const currentSelection = this.selections[selectorIndex];
-
           selector.querySelectorAll('.bundle-main__selector-option').forEach(option => {
-            const handle = option.getAttribute('data-product-handle');
-            const isSelectedElsewhere = selectedHandles.includes(handle) && handle !== currentSelection;
-            option.setAttribute('aria-disabled', isSelectedElsewhere ? 'true' : 'false');
+            option.setAttribute('aria-disabled', 'false');
           });
         });
       }
