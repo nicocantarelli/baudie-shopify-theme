@@ -13,21 +13,13 @@
       "type": "product",
       "settings": {}
     },
-    "1772843462a5334ed3": {
-      "type": "apps",
-      "blocks": {
-        "mw_bundle_builder_pdp_offer_app_block_YDmehc": {
-          "type": "shopify://apps/mw-bundle-builder/blocks/pdp-offer-app-block/5bcb1a6d-53b5-4d9c-b4f9-19f6620da62b",
-          "settings": {}
-        }
-      },
-      "block_order": [
-        "mw_bundle_builder_pdp_offer_app_block_YDmehc"
-      ],
-      "settings": {}
-    },
     "how-to-use": {
       "type": "how-to-use",
+      "settings": {
+        "title": "How to use",
+        "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
+        "sprays_title": "How many sprays do i need?"
+      },
       "blocks": {
         "step-1": {
           "type": "step",
@@ -86,17 +78,14 @@
         "dosage-1",
         "dosage-2",
         "dosage-3"
-      ],
-      "settings": {
-        "title": "How to use",
-        "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
-        "sprays_title": "How many sprays do i need?",
-        "background_color": "#fff7ea",
-        "text_color": "#3e2027"
-      }
+      ]
     },
     "product-faq": {
       "type": "product-faq",
+      "settings": {
+        "title": "Frequently Asked Questions",
+        "intro": "<p>Baudie is a pre-deodorant enhancer — a step you use before deodorant. It removes odor-causing bacteria using odor-eliminating bacterial technology, gentle AHAs, and plant-powered actives. By cleaning and prepping your skin, it helps your deodorant stay effective longer.</p>"
+      },
       "blocks": {
         "faq-1": {
           "type": "faq_item",
@@ -172,27 +161,17 @@
         "faq-7",
         "faq-8",
         "faq-9"
-      ],
-      "settings": {
-        "title": "Frequently Asked Questions",
-        "intro": "<p>Baudie is a pre-deodorant enhancer — a step you use before deodorant. It removes odor-causing bacteria using odor-eliminating bacterial technology, gentle AHAs, and plant-powered actives. By cleaning and prepping your skin, it helps your deodorant stay effective longer.</p>",
-        "background_color": "#fff7ea",
-        "text_color": "#3e2027"
-      }
+      ]
     },
     "related-products": {
       "type": "related-products",
       "settings": {
-        "heading": "You may also like",
-        "max_products": 4,
-        "background_color": "#fff7ea",
-        "text_color": "#3e2027"
+        "heading": "You may also like"
       }
     }
   },
   "order": [
     "main",
-    "1772843462a5334ed3",
     "how-to-use",
     "product-faq",
     "related-products"
