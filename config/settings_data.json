@@ -11,10 +11,36 @@
   "current": {
     "content_for_index": [],
     "blocks": {
-      "14652898158514659544": {
-        "type": "shopify://apps/fly-bundles-quantity-breaks/blocks/app-embed/26807bdc-c2ed-4a25-afb2-06e6b1ebf843",
+      "15909290956780699707": {
+        "type": "shopify://apps/mw-bundle-builder/blocks/app-embed-block/5bcb1a6d-53b5-4d9c-b4f9-19f6620da62b",
         "disabled": false,
-        "settings": {}
+        "settings": {
+          "theme_text_primary_color": "#1A1C1D",
+          "theme_text_secondary_color": "#7C8488",
+          "theme_primary_button_background_color": "#1A1C1D",
+          "theme_primary_button_text_color": "#FFFFFF",
+          "theme_input_control_text_color": "#1A1C1D",
+          "theme_input_control_background_color": "#FFFFFF",
+          "theme_stars_background_color": "#FFD749",
+          "theme_positive_text_color": "#00AB2D",
+          "theme_negative_text_color": "#E51C00",
+          "theme_divider_background_color": "#EBEBEB",
+          "theme_plus_icon_color": "#1A1C1D",
+          "theme_volume_title_color": "#7c8488",
+          "theme_volume_discount_bage_text_color": "#420000",
+          "theme_volume_discount_bage_background_color": "#fdd8d8",
+          "theme_volume_selected_state_color": "#1773b0",
+          "theme_volume_selected_state_background_color": "#f4f8fb",
+          "theme_volume_free_gifts_background_color": "#f6f6f6",
+          "theme_bogo_discount_bage_background_color": "#fdd8d8",
+          "theme_bogo_discount_bage_text_color": "#420000",
+          "volume_layout_style": "vertical",
+          "theme_font_family": "inter_n4",
+          "theme_heading_font_size": 20,
+          "theme_body_font_size": 16,
+          "disable_upsell_crossell_popup": false,
+          "custom_liquid": ""
+        }
       }
     }
   }
