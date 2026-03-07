@@ -139,10 +139,20 @@
       data-hero-cards>
       {% for product in section.settings.hero_products %}
         {% assign card_bg = product.metafields.custom.card_background_color | default: '#FCD8B3' %}
+        {%- if section.settings.use_default_colors -%}
+          {%- assign card_text = section.settings.default_card_text_color | default: '#3E2027' -%}
+          {%- assign card_button_color = section.settings.default_card_button_color | default: '#3E2027' -%}
+        {%- else -%}
+          {%- assign card_text = product.metafields.custom.product_text_color | default: '#3E2027' -%}
+          {%- assign card_button_color = product.metafields.custom.product_text_color | default: '#3E2027' -%}
+        {%- endif -%}
         <div
           class="hero-product__card {% if forloop.first %}is-active{% endif %}"
+          style="--card-text: {{ card_text }}; --card-button: {{ card_button_color }};"
           data-product-index="{{ forloop.index0 }}"
           data-card-color="{{ card_bg }}"
+          data-card-text="{{ card_text }}"
+          data-card-button="{{ card_button_color }}"
           role="group"
           aria-roledescription="slide"
           aria-label="{{ 'sections.hero_product.slide_of' | t: current: forloop.index, total: section.settings.hero_products.size }}"
@@ -164,7 +174,7 @@
                   height="10"
                   viewBox="0 0 10 10"
                   fill="none">
-                  <path d="M4.76297 0.154621C4.78488 0.108197 4.81873 0.0691199 4.86069 0.0417987C4.90265 0.0144775 4.95106 0 5.00045 0C5.04984 0 5.09825 0.0144775 5.14021 0.0417987C5.18217 0.0691199 5.21602 0.108197 5.23793 0.154621L6.39282 2.60795C6.4689 2.76942 6.58121 2.90912 6.72011 3.01506C6.859 3.121 7.02033 3.19001 7.19025 3.21617L9.77302 3.61256C9.82196 3.61999 9.86793 3.64164 9.90575 3.67506C9.94357 3.70847 9.97171 3.75232 9.98701 3.80163C10.0023 3.85095 10.0041 3.90377 9.99229 3.95412C9.98045 4.00447 9.95541 4.05035 9.92001 4.08655L8.05217 5.99405C7.92899 6.11994 7.83683 6.27534 7.78362 6.44688C7.7304 6.61841 7.71773 6.80093 7.7467 6.97874L8.18766 9.67378C8.1963 9.72508 8.19102 9.77789 8.17241 9.82619C8.15381 9.87449 8.12263 9.91634 8.08244 9.94695C8.04225 9.97756 7.99467 9.99571 7.94512 9.99933C7.89556 10.0029 7.84604 9.99188 7.8022 9.9674L5.4934 8.69433C5.34128 8.61056 5.17202 8.56679 5.0002 8.56679C4.82837 8.56679 4.65912 8.61056 4.50699 8.69433L2.1987 9.9674C2.15487 9.99174 2.10541 10.0027 2.05594 9.99899C2.00647 9.99531 1.95898 9.97713 1.91887 9.94654C1.87877 9.91595 1.84765 9.87417 1.82906 9.82595C1.81048 9.77773 1.80517 9.72501 1.81374 9.67378L2.2542 6.97926C2.28329 6.80137 2.27069 6.61873 2.21747 6.44709C2.16425 6.27545 2.07202 6.11997 1.94872 5.99405L0.0808926 4.08707C0.0451927 4.05091 0.0198947 4.00496 0.00788036 3.95446C-0.00413394 3.90395 -0.00238147 3.85093 0.0129381 3.80142C0.0282576 3.7519 0.0565283 3.7079 0.0945297 3.67442C0.132531 3.64094 0.178735 3.61932 0.227879 3.61203L2.81015 3.21617C2.98026 3.19021 3.14181 3.12129 3.2809 3.01534C3.41998 2.90939 3.53243 2.76958 3.60857 2.60795L4.76297 0.154621Z" fill="#3E2027" />
+                  <path d="M4.76297 0.154621C4.78488 0.108197 4.81873 0.0691199 4.86069 0.0417987C4.90265 0.0144775 4.95106 0 5.00045 0C5.04984 0 5.09825 0.0144775 5.14021 0.0417987C5.18217 0.0691199 5.21602 0.108197 5.23793 0.154621L6.39282 2.60795C6.4689 2.76942 6.58121 2.90912 6.72011 3.01506C6.859 3.121 7.02033 3.19001 7.19025 3.21617L9.77302 3.61256C9.82196 3.61999 9.86793 3.64164 9.90575 3.67506C9.94357 3.70847 9.97171 3.75232 9.98701 3.80163C10.0023 3.85095 10.0041 3.90377 9.99229 3.95412C9.98045 4.00447 9.95541 4.05035 9.92001 4.08655L8.05217 5.99405C7.92899 6.11994 7.83683 6.27534 7.78362 6.44688C7.7304 6.61841 7.71773 6.80093 7.7467 6.97874L8.18766 9.67378C8.1963 9.72508 8.19102 9.77789 8.17241 9.82619C8.15381 9.87449 8.12263 9.91634 8.08244 9.94695C8.04225 9.97756 7.99467 9.99571 7.94512 9.99933C7.89556 10.0029 7.84604 9.99188 7.8022 9.9674L5.4934 8.69433C5.34128 8.61056 5.17202 8.56679 5.0002 8.56679C4.82837 8.56679 4.65912 8.61056 4.50699 8.69433L2.1987 9.9674C2.15487 9.99174 2.10541 10.0027 2.05594 9.99899C2.00647 9.99531 1.95898 9.97713 1.91887 9.94654C1.87877 9.91595 1.84765 9.87417 1.82906 9.82595C1.81048 9.77773 1.80517 9.72501 1.81374 9.67378L2.2542 6.97926C2.28329 6.80137 2.27069 6.61873 2.21747 6.44709C2.16425 6.27545 2.07202 6.11997 1.94872 5.99405L0.0808926 4.08707C0.0451927 4.05091 0.0198947 4.00496 0.00788036 3.95446C-0.00413394 3.90395 -0.00238147 3.85093 0.0129381 3.80142C0.0282576 3.7519 0.0565283 3.7079 0.0945297 3.67442C0.132531 3.64094 0.178735 3.61932 0.227879 3.61203L2.81015 3.21617C2.98026 3.19021 3.14181 3.12129 3.2809 3.01534C3.41998 2.90939 3.53243 2.76958 3.60857 2.60795L4.76297 0.154621Z" fill="currentColor" />
                 </svg>
               {% endfor %}
             </div>
@@ -212,7 +222,7 @@
                   fill="none">
                   <path
                     d="M0.75 7.75H14.75M7.75 0.75V14.75"
-                    stroke="#3E2027"
+                    stroke="currentColor"
                     stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round" />
@@ -453,13 +463,14 @@
   .hero-product__stars {
     display: flex;
     gap: 4px;
+    color: var(--card-text, #3E2027);
   }
 
   .hero-product__rating-count {
     font-family: var(--font-jokker);
     font-size: 14px;
     line-height: 1.5;
-    color: #3E2027;
+    color: var(--card-text, #3E2027);
   }
 
   /* Product Info */
@@ -478,7 +489,7 @@
     line-height: normal;
     letter-spacing: -0.18px;
     text-transform: uppercase;
-    color: #3E2027;
+    color: var(--card-text, #3E2027);
     margin: 0;
   }
 
@@ -487,7 +498,7 @@
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
-    color: #3E2027;
+    color: var(--card-text, #3E2027);
     margin: 0;
   }
 
@@ -536,7 +547,7 @@
 
   .hero-product__button--add {
     background-color: #FFFFFF;
-    color: #3E2027;
+    color: var(--card-text, #3E2027);
   }
 
   .hero-product__button--add:disabled {
@@ -545,13 +556,13 @@
   }
 
   .hero-product__button--buy {
-    background-color: #3E2027;
+    background-color: var(--card-button, var(--card-text, #3E2027));
     color: #FFFFFF;
     flex: 1;
   }
 
   .hero-product__button:focus-visible {
-    outline: 2px solid #3E2027;
+    outline: 2px solid var(--card-text, #3E2027);
     outline-offset: 2px;
   }
 
@@ -853,6 +864,8 @@
     goTo(index) {
       const newCard = this.cards[index];
       const bgColor = newCard?.getAttribute('data-card-color') || '#FCD8B3';
+      const textColor = newCard?.getAttribute('data-card-text') || '#3E2027';
+      const buttonColor = newCard?.getAttribute('data-card-button') || textColor;
 
       if (this.colorBlock) {
         this.colorBlock.style.backgroundColor = bgColor;
@@ -860,6 +873,8 @@
 
       this.cards.forEach(card => {
         card.style.backgroundColor = bgColor;
+        card.style.setProperty('--card-text', textColor);
+        card.style.setProperty('--card-button', buttonColor);
       });
 
       this.cards.forEach(card => card.classList.remove('is-active'));
@@ -925,6 +940,29 @@
         "type": "product_list",
         "id": "hero_products",
         "label": "t:sections.hero_product.settings.products"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.hero_product.settings.card_colors_header"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_default_colors",
+        "label": "t:sections.hero_product.settings.use_default_colors",
+        "info": "t:sections.hero_product.settings.use_default_colors_info",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "default_card_text_color",
+        "label": "t:sections.hero_product.settings.default_card_text_color",
+        "default": "#3E2027"
+      },
+      {
+        "type": "color",
+        "id": "default_card_button_color",
+        "label": "t:sections.hero_product.settings.default_card_button_color",
+        "default": "#3E2027"
       },
       {
         "type": "header",

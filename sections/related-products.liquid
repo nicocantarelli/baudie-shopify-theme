@@ -68,6 +68,7 @@
           {%- if should_show and card_index < max_products -%}
             {%- assign card_bg = item.metafields.custom.product_card_background | default: '#FCF0D2' -%}
             {%- assign card_image = item.metafields.custom.card_image | default: item.featured_image -%}
+            {%- assign card_hover_image = item.metafields.custom.card_hover_image -%}
             {%- assign short_description = item.metafields.custom.short_description | default: item.description | strip_html | truncate: 120 -%}
             {%- assign selected_variant = item.selected_or_first_available_variant -%}
             <div class="related-products__card" data-card>
@@ -87,6 +88,15 @@
                     </div>
                   {%- endif -%}
                 </a>
+                {%- if card_hover_image -%}
+                  <div class="related-products__hover-image">
+                    {{ card_hover_image | image_url: width: 600 | image_tag:
+                      loading: 'lazy',
+                      class: 'related-products__hover-img',
+                      alt: card_hover_image.alt | default: item.title
+                    }}
+                  </div>
+                {%- endif -%}
                 <div class="related-products__actions">
                   {%- form 'product', item, class: 'related-products__form' -%}
                     <input type="hidden" name="id" value="{{ selected_variant.id }}">
@@ -216,6 +226,26 @@
     align-items: center;
     justify-content: center;
     opacity: 0.3;
+  }
+
+  /* Hover Image */
+  .related-products__hover-image {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .related-products__hover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .related-products__image:hover .related-products__hover-image {
+    opacity: 1;
   }
 
   /* Hover Actions */

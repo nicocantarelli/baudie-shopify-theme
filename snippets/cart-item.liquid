@@ -33,7 +33,7 @@
       {{ item_image | image_url: width: 300 | image_tag:
         loading: 'lazy',
         class: 'cart-item__image',
-        alt: item_title,
+        alt: item_image.alt | default: item_title,
         width: 150,
         height: 194
       }}

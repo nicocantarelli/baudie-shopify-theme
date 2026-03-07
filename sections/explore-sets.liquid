@@ -95,6 +95,7 @@
                 {%- endif -%}
                 {%- assign short_description = bundle_product.metafields.custom.short_description | default: bundle_product.description | strip_html | truncate: 180 -%}
 
+                {%- assign bundle_hover_image = bundle_product.metafields.custom.card_hover_image -%}
                 <article class="bundle-card-mobile" {{ block.shopify_attributes }}>
                   {%- comment -%} Image area with overlapping products {%- endcomment -%}
                   <a href="{{ bundle_product.url }}" class="bundle-card-mobile__image-area">
@@ -102,8 +103,17 @@
                       <span class="bundle-card-mobile__badge">{{ block.settings.badge_text | escape }}</span>
                     {% endif %}
                     <div class="bundle-card-mobile__images">
-                      {{ bundle_product.featured_image | image_url: width: 500 | image_tag: loading: 'lazy', alt: bundle_product.title }}
+                      {{ bundle_product.featured_image | image_url: width: 500 | image_tag: loading: 'lazy', alt: bundle_product.featured_image.alt | default: bundle_product.title }}
                     </div>
+                    {%- if bundle_hover_image -%}
+                      <div class="bundle-card-mobile__hover-image">
+                        {{ bundle_hover_image | image_url: width: 600 | image_tag:
+                          loading: 'lazy',
+                          class: 'bundle-card-mobile__hover-img',
+                          alt: bundle_hover_image.alt | default: bundle_product.title
+                        }}
+                      </div>
+                    {%- endif -%}
                   </a>
 
                   {%- comment -%} Content {%- endcomment -%}
@@ -375,6 +385,25 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .explore-sets .product-card__hover-image {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .explore-sets .product-card__hover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .explore-sets .product-card__image-wrapper:hover .product-card__hover-image {
+    opacity: 1;
   }
 
   .explore-sets .product-card__actions {
@@ -652,6 +681,25 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .bundle-card-mobile__hover-image {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .bundle-card-mobile__hover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .bundle-card-mobile__image-area:hover .bundle-card-mobile__hover-image {
+    opacity: 1;
   }
 
   .bundle-card-mobile__content {

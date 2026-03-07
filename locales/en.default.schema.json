@@ -68,6 +68,7 @@
       "colors_header": "Colors",
       "header_bg_color": "Header background color",
       "header_text_color": "Header text color",
+      "header_icon_color": "Header icon color",
       "announcement_bg_color": "Announcement bar background color",
       "announcement_text_color": "Announcement bar text color"
     },
@@ -214,6 +215,9 @@
     },
     "product_features": {
       "name": "Product features",
+      "settings": {
+        "icon_color": "Icon color"
+      },
       "blocks": {
         "feature_badge": {
           "name": "Feature badge",
@@ -265,8 +269,30 @@
         "mobile_header": "Mobile settings",
         "mobile_title": "Mobile title",
         "mobile_subtitle": "Mobile subtitle",
+        "card_colors_header": "Card colors",
+        "use_default_colors": "Use default colors",
+        "use_default_colors_info": "When enabled, uses the colors below instead of product metafield colors",
+        "default_card_text_color": "Default card text color",
+        "default_card_button_color": "Default card button color",
         "mobile_button_text": "Mobile button text",
         "mobile_button_url": "Mobile button URL"
+      }
+    },
+    "product_bundle": {
+      "name": "Product bundle",
+      "watch_in_action": "Watch it in action",
+      "details": "Details",
+      "scent_notes": "Scent notes",
+      "key_ingredients": "Key ingredients",
+      "all_ingredients": "All ingredients",
+      "ingredients_popup_title": "Full ingredient list",
+      "close": "Close",
+      "settings": {
+        "bundle_size": "Bundle size",
+        "colors_header": "Colors",
+        "gradient_color_1": "Gradient color 1",
+        "gradient_color_2": "Gradient color 2",
+        "popup_text_color": "Popup text color"
       }
     },
     "blog": {
@@ -311,6 +337,7 @@
     },
     "product": {
       "name": "Product",
+      "popup_text_color": "Popup text color",
       "trust_badge": "Trust badge",
       "trust_badge_icon": "Badge icon",
       "trust_badge_label": "Badge label"

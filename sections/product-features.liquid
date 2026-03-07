@@ -4,7 +4,7 @@
   Themes/Sections/product-features.liquid
 {% endcomment %}
 
-<div class="product-features full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --arrow-color: {{ section.settings.arrow_color }};">
+<div class="product-features full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --icon-color: {{ section.settings.icon_color | default: section.settings.text_color }}; --arrow-color: {{ section.settings.arrow_color }};">
   <div class="product-features__container">
     {% if section.blocks.size > 0 %}
       <div class="product-features__wrapper" data-features-carousel>
@@ -15,9 +15,12 @@
               {% if block.type == 'feature_badge' %}
                 <div class="product-features__item" {{ block.shopify_attributes }}>
                   {% if block.settings.icon %}
-                    <div class="product-features__icon">
-                      {{ block.settings.icon | image_url: width: 80 | image_tag: alt: block.settings.icon_alt, class: 'product-features__icon-img', loading: 'lazy' }}
-                    </div>
+                    <span
+                      class="product-features__icon"
+                      role="img"
+                      aria-label="{{ block.settings.icon_alt | default: block.settings.text | strip_newlines }}"
+                      style="-webkit-mask-image: url('{{ block.settings.icon | image_url: width: 80 }}'); mask-image: url('{{ block.settings.icon | image_url: width: 80 }}');">
+                    </span>
                   {% endif %}
                   {% if block.settings.text != blank %}
                     <p class="product-features__text">{{ block.settings.text }}</p>
@@ -42,7 +45,7 @@
             fill="none">
             <path
               d="M11.4142 0.707031L1.41418 10.707L11.4142 20.707"
-              stroke="white"
+              stroke="currentColor"
               stroke-width="2" />
           </svg>
         </button>
@@ -60,7 +63,7 @@
             fill="none">
             <path
               d="M0.707031 0.707031L10.707 10.707L0.707031 20.707"
-              stroke="white"
+              stroke="currentColor"
               stroke-width="2" />
           </svg>
         </button>
@@ -127,15 +130,14 @@
     width: 60px;
     height: 60px;
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .product-features__icon-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    display: inline-block;
+    background-color: var(--icon-color, var(--text-color, #FFFFFF));
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
   }
 
   .product-features__text {
@@ -603,6 +605,12 @@
         "type": "color",
         "id": "text_color",
         "label": "t:labels.text_color",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "icon_color",
+        "label": "t:sections.product_features.settings.icon_color",
         "default": "#FFFFFF"
       },
       {

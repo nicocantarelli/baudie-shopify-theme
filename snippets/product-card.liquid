@@ -29,6 +29,7 @@
   assign short_description = product.metafields.custom.short_description | default: product.description | strip_html | truncate: 120
 
   assign card_image = product.metafields.custom.card_image | default: product.featured_image
+  assign card_hover_image = product.metafields.custom.card_hover_image
   assign card_bg = product.metafields.custom.product_card_background | default: '#FCF0D2'
 
   comment
@@ -83,6 +84,16 @@
           {%- endif -%}
         {%- endif -%}
       </div>
+
+      {%- if card_hover_image -%}
+        <div class="product-card__hover-image">
+          {{ card_hover_image | image_url: width: 600 | image_tag:
+            loading: 'lazy',
+            class: 'product-card__hover-img',
+            alt: card_hover_image.alt | default: product.title
+          }}
+        </div>
+      {%- endif -%}
 
       {%- if has_video -%}
         <div class="product-card__video-container">

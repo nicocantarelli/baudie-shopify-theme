@@ -1,0 +1,712 @@
+{%- comment -%}
+  Bundle product section — wraps the Mix & Match app widget with
+  the theme's gradient background, title, accordions, and trust badges.
+  The app's Full-page widget handles scent selection, images, and cart.
+{%- endcomment -%}
+
+{%- liquid
+  assign product_text_color = product.metafields.custom.product_text_color | default: '#3E2027'
+  assign popup_text_color = section.settings.popup_text_color | default: '#3E2027'
+  assign gradient_1 = section.settings.gradient_color_1 | default: '#F4D2A4'
+  assign gradient_2 = section.settings.gradient_color_2 | default: '#FCF5DE'
+  assign bottle_size = product.metafields.custom.bottle_size
+  assign product_details = product.metafields.custom.product_details
+  assign scent_notes = product.metafields.custom.scent_notes
+  assign key_ingredients = product.metafields.custom.key_ingredients
+  assign full_ingredient_list = product.metafields.custom.full_ingredient_list
+  assign bundle_size = section.settings.bundle_size | default: 3
+-%}
+
+<section
+  class="bundle-main full-width"
+  data-section-id="{{ section.id }}"
+  aria-label="{{ product.title }}"
+  style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }};">
+
+  {%- comment -%} Mobile Header {%- endcomment -%}
+  <div class="bundle-main__mobile-header">
+    <div class="bundle-main__mobile-subtitle-row">
+      <p class="bundle-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
+      {% if bottle_size %}
+        <p class="bundle-main__size">{{ bottle_size }}</p>
+      {% endif %}
+    </div>
+    <h1 class="bundle-main__title">{{ product.title }}</h1>
+  </div>
+
+  {%- comment -%} Desktop Header {%- endcomment -%}
+  <div class="bundle-main__desktop-header">
+    <p class="bundle-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
+    <h1 class="bundle-main__title">{{ product.title }}</h1>
+    {% if bottle_size %}
+      <p class="bundle-main__size-line">{{ bundle_size }} x {{ bottle_size }}</p>
+    {% endif %}
+  </div>
+
+  {%- comment -%}
+    The Mix & Match app widget renders here via the theme editor.
+    Add the "MW Mix & Match (Full-page)" widget block in the template customizer.
+  {%- endcomment -%}
+
+  {%- comment -%} Content below the app widget {%- endcomment -%}
+  <div class="bundle-main__content">
+    {%- comment -%} Watch It In Action {%- endcomment -%}
+    <div class="bundle-main__video-section">
+      <p class="bundle-main__video-heading">{{ 'sections.product_bundle.watch_in_action' | t }}</p>
+      <div class="bundle-main__video-grid" data-tolstoy-container>
+        <div class="bundle-main__video-placeholder"></div>
+        <div class="bundle-main__video-placeholder"></div>
+        <div class="bundle-main__video-placeholder"></div>
+        <div class="bundle-main__video-placeholder"></div>
+        <div class="bundle-main__video-placeholder"></div>
+      </div>
+    </div>
+
+    {%- comment -%} Accordions {%- endcomment -%}
+    <div class="bundle-main__accordions" data-bundle-accordions>
+      <hr class="bundle-main__divider">
+
+      {% if product_details %}
+        <div class="bundle-main__accordion" data-accordion>
+          <button
+            type="button"
+            id="accordion-details-trigger-{{ section.id }}"
+            class="bundle-main__accordion-trigger"
+            aria-expanded="false"
+            aria-controls="accordion-details-{{ section.id }}">
+            <span>{{ 'sections.product_bundle.details' | t }}</span>
+            <svg class="bundle-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            class="bundle-main__accordion-content"
+            id="accordion-details-{{ section.id }}"
+            role="region"
+            aria-labelledby="accordion-details-trigger-{{ section.id }}"
+            aria-hidden="true">
+            <div class="bundle-main__accordion-body">
+              {{ product_details }}
+            </div>
+          </div>
+          <hr class="bundle-main__divider">
+        </div>
+      {% endif %}
+
+      {% if scent_notes %}
+        <div class="bundle-main__accordion" data-accordion>
+          <button
+            type="button"
+            id="accordion-scent-trigger-{{ section.id }}"
+            class="bundle-main__accordion-trigger"
+            aria-expanded="false"
+            aria-controls="accordion-scent-{{ section.id }}">
+            <span>{{ 'sections.product_bundle.scent_notes' | t }}</span>
+            <svg class="bundle-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            class="bundle-main__accordion-content"
+            id="accordion-scent-{{ section.id }}"
+            role="region"
+            aria-labelledby="accordion-scent-trigger-{{ section.id }}"
+            aria-hidden="true">
+            <div class="bundle-main__accordion-body">
+              {{ scent_notes }}
+            </div>
+          </div>
+          <hr class="bundle-main__divider">
+        </div>
+      {% endif %}
+
+      {% if key_ingredients %}
+        <div class="bundle-main__accordion is-open" data-accordion>
+          <button
+            type="button"
+            id="accordion-ingredients-trigger-{{ section.id }}"
+            class="bundle-main__accordion-trigger"
+            aria-expanded="true"
+            aria-controls="accordion-ingredients-{{ section.id }}">
+            <span>{{ 'sections.product_bundle.key_ingredients' | t }}</span>
+            <svg class="bundle-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            class="bundle-main__accordion-content"
+            id="accordion-ingredients-{{ section.id }}"
+            role="region"
+            aria-labelledby="accordion-ingredients-trigger-{{ section.id }}"
+            aria-hidden="false">
+            <div class="bundle-main__accordion-body">
+              {{ key_ingredients }}
+              {% if full_ingredient_list %}
+                <button
+                  type="button"
+                  class="bundle-main__ingredients-link"
+                  data-open-ingredients
+                  aria-haspopup="dialog">
+                  {{ 'sections.product_bundle.all_ingredients' | t }}
+                </button>
+              {% endif %}
+            </div>
+          </div>
+          <hr class="bundle-main__divider">
+        </div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Trust Badges {%- endcomment -%}
+    {% if section.blocks.size > 0 %}
+      <div class="bundle-main__badges">
+        {% for block in section.blocks %}
+          {% if block.type == 'trust_badge' %}
+            <div class="bundle-main__badge" {{ block.shopify_attributes }}>
+              {% if block.settings.icon %}
+                <span
+                  class="bundle-main__badge-icon"
+                  role="img"
+                  aria-label="{{ block.settings.label | default: '' }}"
+                  style="-webkit-mask-image: url('{{ block.settings.icon | image_url: width: 60 }}'); mask-image: url('{{ block.settings.icon | image_url: width: 60 }}');">
+                </span>
+              {% endif %}
+              {% if block.settings.label %}
+                <p class="bundle-main__badge-label">{{ block.settings.label }}</p>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  {%- comment -%} Ingredients Popup {%- endcomment -%}
+  {% if full_ingredient_list %}
+    <dialog
+      class="bundle-main__dialog"
+      id="ingredients-dialog-{{ section.id }}"
+      scroll-lock
+      aria-labelledby="dialog-title-{{ section.id }}">
+      <div class="bundle-main__dialog-inner">
+        <div class="bundle-main__dialog-header">
+          <h2 id="dialog-title-{{ section.id }}" class="bundle-main__dialog-title">{{ 'sections.product_bundle.ingredients_popup_title' | t }}</h2>
+          <button
+            type="button"
+            class="bundle-main__dialog-close"
+            data-close-ingredients
+            aria-label="{{ 'sections.product_bundle.close' | t }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+              <path d="M2 2L18 18M18 2L2 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="bundle-main__dialog-body">
+          {{ full_ingredient_list }}
+        </div>
+      </div>
+    </dialog>
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  .bundle-main {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, var(--gradient-1) 1.4%, var(--gradient-2) 55%);
+    margin-top: var(--total-header-height, 110px);
+    min-height: calc(100vh - var(--total-header-height, 110px));
+    color: var(--product-text, #3E2027);
+  }
+
+  .bundle-main__mobile-header {
+    display: none;
+  }
+
+  /* --- Desktop Header --- */
+
+  .bundle-main__desktop-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 120px 40px 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .bundle-main__subtitle {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 20px;
+    line-height: normal;
+    letter-spacing: -0.2px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+  }
+
+  .bundle-main__title {
+    font-family: var(--font-alyona);
+    font-weight: 400;
+    font-size: 74px;
+    line-height: 1;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+  }
+
+  .bundle-main__size,
+  .bundle-main__size-line {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 20px;
+    line-height: normal;
+    letter-spacing: -0.2px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+  }
+
+  /* --- Content below app widget --- */
+
+  .bundle-main__content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-width: 555px;
+    padding: 30px 40px 60px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+
+  /* --- Divider --- */
+
+  .bundle-main__divider {
+    border: none;
+    border-top: 1px solid var(--product-text, #3E2027);
+    opacity: 0.2;
+    margin: 0;
+  }
+
+  /* --- Watch It In Action --- */
+
+  .bundle-main__video-section {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  .bundle-main__video-heading {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+  }
+
+  .bundle-main__video-grid {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+
+  .bundle-main__video-placeholder {
+    width: 90px;
+    height: 125px;
+    background-color: #D9D9D9;
+    flex-shrink: 0;
+  }
+
+  /* --- Accordions --- */
+
+  .bundle-main__accordion-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+  }
+
+  .bundle-main__accordion-trigger:focus-visible {
+    outline: 2px solid var(--product-text, #3E2027);
+    outline-offset: 2px;
+  }
+
+  .bundle-main__accordion-icon {
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .bundle-main__accordion.is-open .bundle-main__accordion-icon {
+    transform: rotate(45deg);
+  }
+
+  .bundle-main__accordion-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+  }
+
+  .bundle-main__accordion.is-open .bundle-main__accordion-content {
+    grid-template-rows: 1fr;
+  }
+
+  .bundle-main__accordion-body {
+    overflow: hidden;
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--product-text, #3E2027);
+    padding-bottom: 0;
+  }
+
+  .bundle-main__accordion.is-open .bundle-main__accordion-body {
+    padding-bottom: 15px;
+  }
+
+  .bundle-main__ingredients-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--product-text, #3E2027);
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 4px;
+    display: inline-block;
+  }
+
+  /* --- Trust Badges --- */
+
+  .bundle-main__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 10px;
+  }
+
+  .bundle-main__badge {
+    width: 130px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .bundle-main__badge-icon {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    display: block;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    background-color: var(--product-text, #3E2027);
+  }
+
+  .bundle-main__badge-label {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+    line-height: normal;
+    white-space: pre-line;
+  }
+
+  /* --- Ingredients Dialog --- */
+
+  .bundle-main__dialog {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    z-index: 999;
+  }
+
+  .bundle-main__dialog::backdrop {
+    background-color: rgba(62, 32, 39, 0.5);
+  }
+
+  .bundle-main__dialog-inner {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+    max-width: 500px;
+    height: 100%;
+    background: #FFFFFF;
+    color: var(--popup-text, #3E2027);
+    padding: 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .bundle-main__dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .bundle-main__dialog-title {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: -0.2px;
+    color: var(--popup-text, #3E2027);
+    margin: 0;
+  }
+
+  .bundle-main__dialog-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: var(--popup-text, #3E2027);
+  }
+
+  .bundle-main__dialog-body {
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--popup-text, #3E2027);
+  }
+
+  /* ============================================
+     Responsive — Tablet
+     ============================================ */
+
+  @media (max-width: 1200px) {
+    .bundle-main__desktop-header {
+      padding: 80px 24px 0;
+    }
+
+    .bundle-main__title {
+      font-size: 56px;
+    }
+
+    .bundle-main__content {
+      padding: 30px 24px 40px;
+    }
+  }
+
+  /* ============================================
+     Responsive — Mobile (< 900px)
+     ============================================ */
+
+  @media (max-width: 900px) {
+    .bundle-main__mobile-header {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 52px 12px 0;
+    }
+
+    .bundle-main__mobile-subtitle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .bundle-main__mobile-subtitle-row .bundle-main__subtitle {
+      font-size: 16px;
+      letter-spacing: -0.16px;
+    }
+
+    .bundle-main__mobile-subtitle-row .bundle-main__size {
+      font-size: 16px;
+      letter-spacing: -0.16px;
+      text-align: right;
+    }
+
+    .bundle-main__mobile-header .bundle-main__title {
+      font-size: 34px;
+    }
+
+    .bundle-main__desktop-header {
+      display: none;
+    }
+
+    .bundle-main__content {
+      padding: 0 12px 40px;
+      max-width: 100%;
+    }
+
+    .bundle-main__dialog-inner {
+      max-width: 100%;
+      padding: 24px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    class BundleSection {
+      constructor(section) {
+        this.section = section;
+        this.initAccordions();
+        this.initIngredientsDialog();
+      }
+
+      initAccordions() {
+        const accordions = this.section.querySelectorAll('[data-accordion]');
+        accordions.forEach(accordion => {
+          const trigger = accordion.querySelector('.bundle-main__accordion-trigger');
+          if (!trigger) return;
+
+          trigger.addEventListener('click', () => {
+            const isOpen = accordion.classList.contains('is-open');
+            accordion.classList.toggle('is-open');
+            trigger.setAttribute('aria-expanded', !isOpen);
+
+            const content = accordion.querySelector('.bundle-main__accordion-content');
+            if (content) {
+              content.setAttribute('aria-hidden', isOpen);
+            }
+          });
+        });
+      }
+
+      initIngredientsDialog() {
+        const sectionId = this.section.getAttribute('data-section-id');
+        const dialog = this.section.querySelector(`#ingredients-dialog-${sectionId}`);
+        if (!dialog) return;
+
+        const openBtn = this.section.querySelector('[data-open-ingredients]');
+        const closeBtn = this.section.querySelector('[data-close-ingredients]');
+
+        if (openBtn) {
+          openBtn.addEventListener('click', () => dialog.showModal());
+        }
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => dialog.close());
+        }
+        dialog.addEventListener('click', (e) => {
+          if (e.target === dialog) dialog.close();
+        });
+      }
+    }
+
+    function init() {
+      const section = document.querySelector('.bundle-main');
+      if (section) new BundleSection(section);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    document.addEventListener('shopify:section:load', (e) => {
+      if (e.target.querySelector('.bundle-main')) {
+        init();
+      }
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.product_bundle.name",
+  "class": "bundle-main-section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "bundle_size",
+      "label": "t:sections.product_bundle.settings.bundle_size",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_bundle.settings.colors_header"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_1",
+      "label": "t:sections.product_bundle.settings.gradient_color_1",
+      "default": "#F4D2A4"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_2",
+      "label": "t:sections.product_bundle.settings.gradient_color_2",
+      "default": "#FCF5DE"
+    },
+    {
+      "type": "color",
+      "id": "popup_text_color",
+      "label": "t:sections.product_bundle.settings.popup_text_color",
+      "default": "#3E2027"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust_badge",
+      "name": "t:sections.product.trust_badge",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.product.trust_badge_icon"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.product.trust_badge_label",
+          "default": "Free"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.product_bundle.name",
+      "blocks": [
+        { "type": "trust_badge", "settings": { "label": "Aluminum\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Paraben\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Sulfate\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Cruelty\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Plant-Based\nIngredients" } },
+        { "type": "trust_badge", "settings": { "label": "Phthalate\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Vegan" } },
+        { "type": "trust_badge", "settings": { "label": "U.S. Patent\n11,857,668" } }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}
