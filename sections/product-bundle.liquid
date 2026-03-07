@@ -98,7 +98,7 @@
                   data-product-title="{{ scent_product.title | escape }}"
                   data-variant-id="{{ scent_product.selected_or_first_available_variant.id }}"
                   data-variant-gid="{{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' }}"
-                  data-card-image="{{ scent_product.metafields.custom.card_image | default: scent_product.featured_image | image_url: width: 800 }}">
+                  data-card-image="{% if scent_product.metafields.custom.card_image != blank %}{{ scent_product.metafields.custom.card_image | image_url: width: 800 }}{% elsif scent_product.featured_image %}{{ scent_product.featured_image | image_url: width: 800 }}{% endif %}">
                   {{ scent_product.title }}
                 </li>
               {% endfor %}
@@ -304,7 +304,13 @@
               "title": {{ scent_product.title | json }},
               "variantId": {{ scent_product.selected_or_first_available_variant.id | json }},
               "variantGid": {{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' | json }},
-              "cardImage": {{ scent_product.metafields.custom.card_image | default: scent_product.featured_image | image_url: width: 800 | json }},
+              {%- if scent_product.metafields.custom.card_image != blank -%}
+                "cardImage": {{ scent_product.metafields.custom.card_image | image_url: width: 800 | json }},
+              {%- elsif scent_product.featured_image -%}
+                "cardImage": {{ scent_product.featured_image | image_url: width: 800 | json }},
+              {%- else -%}
+                "cardImage": "",
+              {%- endif -%}
               "price": {{ scent_product.price | json }},
               "available": {{ scent_product.available | json }},
               "variantAvailable": {{ scent_product.selected_or_first_available_variant.available | json }}
