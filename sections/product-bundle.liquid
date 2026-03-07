@@ -1144,6 +1144,7 @@
             window.location.href = '/cart';
           } else {
             document.dispatchEvent(new CustomEvent('cart:updated'));
+            document.dispatchEvent(new CustomEvent('cart:open'));
             if (addBtn) addBtn.disabled = false;
             if (buyBtn) buyBtn.disabled = false;
           }
