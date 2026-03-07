@@ -294,15 +294,19 @@
   {% if scent_collection %}
     <script type="application/json" data-bundle-products>
       {
-        {% for scent_product in scent_collection.products %}
-          "{{ scent_product.handle }}": {
-            "title": {{ scent_product.title | json }},
-            "variantId": {{ scent_product.selected_or_first_available_variant.id | json }},
-            "cardImage": {{ scent_product.metafields.custom.card_image | image_url: width: 800 | json }},
-            "price": {{ scent_product.price | json }},
-            "available": {{ scent_product.available | json }}
-          }{% unless forloop.last %},{% endunless %}
-        {% endfor %}
+        "parentVariantId": {{ current_variant.id | json }},
+        "scents": {
+          {% for scent_product in scent_collection.products %}
+            "{{ scent_product.handle }}": {
+              "title": {{ scent_product.title | json }},
+              "variantId": {{ scent_product.selected_or_first_available_variant.id | json }},
+              "variantGid": {{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' | json }},
+              "cardImage": {{ scent_product.metafields.custom.card_image | image_url: width: 800 | json }},
+              "price": {{ scent_product.price | json }},
+              "available": {{ scent_product.available | json }}
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        }
       }
     </script>
   {% endif %}
@@ -938,7 +942,9 @@
         const jsonEl = this.section.querySelector('[data-bundle-products]');
         if (jsonEl) {
           try {
-            this.productData = JSON.parse(jsonEl.textContent);
+            const data = JSON.parse(jsonEl.textContent);
+            this.parentVariantId = data.parentVariantId;
+            this.productData = data.scents || {};
           } catch (e) {
             console.error('Bundle: failed to parse product data', e);
           }
@@ -1047,10 +1053,10 @@
         if (buyBtn) buyBtn.disabled = !allSelected;
       }
 
-      getSelectedVariantIds() {
-        return Object.values(this.selections).map(handle => {
+      getSelectedProducts() {
+        return Object.entries(this.selections).map(([index, handle]) => {
           const product = this.productData[handle];
-          return product ? product.variantId : null;
+          return product ? { index, ...product } : null;
         }).filter(Boolean);
       }
 
@@ -1067,8 +1073,12 @@
       }
 
       async addToCart(goToCart) {
-        const variantIds = this.getSelectedVariantIds();
-        if (variantIds.length < this.bundleSize) return;
+        const selected = this.getSelectedProducts();
+        if (selected.length < this.bundleSize) return;
+        if (!this.parentVariantId) {
+          console.error('Bundle: no parent variant ID');
+          return;
+        }
 
         const addBtn = this.section.querySelector('[data-bundle-add]');
         const buyBtn = this.section.querySelector('[data-bundle-buy]');
@@ -1076,16 +1086,25 @@
         if (buyBtn) buyBtn.disabled = true;
 
         try {
-          const items = variantIds.map(id => ({
-            id: id,
-            quantity: 1,
-            properties: { '_bundle': 'true' }
-          }));
+          const componentGids = selected.map(p => p.variantGid);
+          const properties = {
+            '_bundle': 'true',
+            '_component_variants': JSON.stringify(componentGids),
+          };
+          selected.forEach(p => {
+            properties['Scent ' + p.index] = p.title;
+          });
 
           const response = await fetch('/cart/add.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items: items })
+            body: JSON.stringify({
+              items: [{
+                id: this.parentVariantId,
+                quantity: 1,
+                properties: properties
+              }]
+            })
           });
 
           if (!response.ok) throw new Error('Failed to add to cart');

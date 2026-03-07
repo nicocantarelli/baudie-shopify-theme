@@ -51,7 +51,15 @@
       {%- if item_variant != 'Default Title' -%}
         <p class="sidecart-item__variant">{{ item_variant }}</p>
       {%- endif -%}
-      {%- if short_description != blank -%}
+      {%- if item.properties['_bundle'] == 'true' -%}
+        <ul class="sidecart-item__bundle-scents">
+          {%- for p in item.properties -%}
+            {%- unless p.first contains '_' -%}
+              <li class="sidecart-item__bundle-scent">{{ p.first }}: {{ p.last }}</li>
+            {%- endunless -%}
+          {%- endfor -%}
+        </ul>
+      {%- elsif short_description != blank -%}
         <p class="sidecart-item__description">{{ short_description }}</p>
       {%- endif -%}
     </div>
