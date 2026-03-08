@@ -153,23 +153,29 @@
                   </div>
 
                   <div class="bundle-card-mobile__actions">
-                    {%- form 'product', bundle_product -%}
-                      {%- assign selected_variant = bundle_product.selected_or_first_available_variant -%}
-                      <input type="hidden" name="id" value="{{ selected_variant.id }}">
-                      <button type="submit" name="add" class="bundle-card-mobile__btn bundle-card-mobile__btn--add" {% unless selected_variant.available %}disabled{% endunless %}>
-                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
-                        {{ 'products.add_to_cart' | t }}
-                      </button>
-                    {%- endform -%}
-                    {%- form 'product', bundle_product -%}
-                      <input type="hidden" name="id" value="{{ selected_variant.id }}">
-                      <input type="hidden" name="return_to" value="/cart">
-                      <button type="submit" class="bundle-card-mobile__btn bundle-card-mobile__btn--buy" {% unless selected_variant.available %}disabled{% endunless %}>
-                        {{ 'products.buy_now' | t }}
-                      </button>
-                    {%- endform -%}
+                    {%- if block.settings.custom_button_text != blank -%}
+                      <a href="{{ bundle_product.url }}" class="bundle-card-mobile__btn bundle-card-mobile__btn--buy">
+                        {{ block.settings.custom_button_text }}
+                      </a>
+                    {%- else -%}
+                      {%- form 'product', bundle_product -%}
+                        {%- assign selected_variant = bundle_product.selected_or_first_available_variant -%}
+                        <input type="hidden" name="id" value="{{ selected_variant.id }}">
+                        <button type="submit" name="add" class="bundle-card-mobile__btn bundle-card-mobile__btn--add" {% unless selected_variant.available %}disabled{% endunless %}>
+                          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                          </svg>
+                          {{ 'products.add_to_cart' | t }}
+                        </button>
+                      {%- endform -%}
+                      {%- form 'product', bundle_product -%}
+                        <input type="hidden" name="id" value="{{ selected_variant.id }}">
+                        <input type="hidden" name="return_to" value="/cart">
+                        <button type="submit" class="bundle-card-mobile__btn bundle-card-mobile__btn--buy" {% unless selected_variant.available %}disabled{% endunless %}>
+                          {{ 'products.buy_now' | t }}
+                        </button>
+                      {%- endform -%}
+                    {%- endif -%}
                   </div>
                 </article>
               {% endif %}
