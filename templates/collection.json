@@ -12,6 +12,16 @@
     "main": {
       "type": "collection-grid",
       "blocks": {
+        "product_card_yDHWTz": {
+          "type": "product_card",
+          "settings": {
+            "product": "sweet-muse",
+            "card_width": "1",
+            "show_badge": false,
+            "custom_button_text": "",
+            "badge_text": ""
+          }
+        },
         "product_card_9eHGPj": {
           "type": "product_card",
           "settings": {
@@ -74,6 +84,7 @@
         }
       },
       "block_order": [
+        "product_card_yDHWTz",
         "product_card_9eHGPj",
         "product_card_GcwzJA",
         "product_card_AdP3Ty",
