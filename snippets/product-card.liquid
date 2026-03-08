@@ -70,16 +70,19 @@
         {%- else -%}
           {%- if card_image -%}
             {%- assign card_image_width = 500 -%}
+            {%- assign card_html_width = 247 -%}
+            {%- assign card_html_height = 370 -%}
             {%- if is_wide -%}
               {%- assign card_image_width = 1400 -%}
+              {%- assign card_html_width = 700 -%}
+              {%- assign card_html_height = 420 -%}
             {%- endif -%}
             {{ card_image | image_url: width: card_image_width | image_tag:
               loading: loading_attr,
               class: 'product-card__img product-card__img--single',
               alt: card_image.alt | default: product.title,
-              width: 247,
-              height: 370,
-              style: 'aspect-ratio: 247/370'
+              width: card_html_width,
+              height: card_html_height
             }}
           {%- else -%}
             <div class="product-card__placeholder">
