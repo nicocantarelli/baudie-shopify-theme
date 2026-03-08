@@ -6,6 +6,7 @@
   @param {boolean} [show_badge] - Whether to show a badge
   @param {string} [badge_text] - Text for the badge
   @param {string} [custom_button_text] - Replaces action buttons with a link to product page
+  @param {image} [card_image_override] - Override the product's card_image metafield
   @param {boolean} [lazy_load] - Whether to lazy load images, default true
 {% enddoc %}
 
@@ -29,7 +30,11 @@
 
   assign short_description = product.metafields.custom.short_description | default: product.description | strip_html | truncate: 120
 
-  assign card_image = product.metafields.custom.card_image | default: product.featured_image
+  if card_image_override != blank
+    assign card_image = card_image_override
+  else
+    assign card_image = product.metafields.custom.card_image | default: product.featured_image
+  endif
   assign card_hover_image = product.metafields.custom.card_hover_image
   assign card_bg = product.metafields.custom.product_card_background | default: '#FCF0D2'
 

@@ -135,6 +135,7 @@
     "display_products": "Display products",
     "custom_title": "Custom title",
     "custom_description": "Custom description",
+    "card_image_override": "Card image override",
     "card_background_color": "Card background color",
     "show_badge": "Show badge",
     "badge_text": "Badge text",

@@ -74,7 +74,8 @@
                     product: bundle_product,
                     show_badge: block.settings.show_badge,
                     badge_text: block.settings.badge_text,
-                    custom_button_text: block.settings.custom_button_text
+                    custom_button_text: block.settings.custom_button_text,
+                    card_image_override: block.settings.card_image_override
                   %}
                 </div>
               {% endif %}
@@ -890,6 +891,11 @@
             "type": "product",
             "id": "product",
             "label": "t:labels.bundle_product"
+          },
+          {
+            "type": "image_picker",
+            "id": "card_image_override",
+            "label": "t:labels.card_image_override"
           },
           {
             "type": "product_list",
