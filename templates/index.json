@@ -133,6 +133,7 @@
             "display_products": [],
             "custom_title": "",
             "custom_description": "",
+            "custom_button_text": "Choose Your Scents",
             "card_bg_color": "#fcf0d2",
             "show_badge": false,
             "badge_text": "25% off"
@@ -145,6 +146,7 @@
             "display_products": [],
             "custom_title": "",
             "custom_description": "",
+            "custom_button_text": "",
             "card_bg_color": "#fcf0d2",
             "show_badge": false,
             "badge_text": "25% off"
