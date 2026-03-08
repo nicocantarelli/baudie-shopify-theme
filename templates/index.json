@@ -171,6 +171,7 @@
           "type": "bundle_card",
           "settings": {
             "product": "discovery-set-6-mini-sprays",
+            "card_image_override": "shopify://shop_images/discovery-set-card.png",
             "display_products": [],
             "custom_title": "",
             "custom_description": "",
