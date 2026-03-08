@@ -108,6 +108,17 @@
     "article": {
       "name": "Article"
     },
+    "our_story": {
+      "name": "Our story",
+      "settings": {
+        "intro_text": "Intro text",
+        "subheading": "Subheading",
+        "body_text": "Body text",
+        "attribution_header": "Attribution",
+        "attribution_line_1": "Attribution line 1",
+        "attribution_line_2": "Attribution line 2"
+      }
+    },
     "blog": {
       "name": "Blog",
       "aria_label": "Blog articles",
@@ -311,7 +322,9 @@
     "review_text": "Review text",
     "background_color": "Background color",
     "text_color": "Text color",
-    "title": "Title"
+    "title": "Title",
+    "colors": "Colors",
+    "image": "Image"
   },
   "blocks": {
     "tooltip_marker": {

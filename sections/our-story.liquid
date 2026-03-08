@@ -1,0 +1,310 @@
+{%- liquid
+  assign has_image = false
+  if section.settings.image != blank
+    assign has_image = true
+  endif
+
+  assign has_attribution = false
+  if section.settings.attribution_line_1 != blank or section.settings.attribution_line_2 != blank
+    assign has_attribution = true
+  endif
+-%}
+
+<section
+  class="our-story full-width"
+  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }};"
+>
+  <div class="our-story__wrapper">
+    <div class="our-story__divider"></div>
+
+    <div class="our-story__layout">
+      <div class="our-story__content">
+        {%- if section.settings.heading != blank -%}
+          <h1 class="our-story__heading">{{ section.settings.heading }}</h1>
+        {%- endif -%}
+
+        {%- if section.settings.intro_text != blank -%}
+          <div class="our-story__intro">{{ section.settings.intro_text }}</div>
+        {%- endif -%}
+
+        {%- if section.settings.subheading != blank -%}
+          <h2 class="our-story__subheading">{{ section.settings.subheading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.body_text != blank -%}
+          <div class="our-story__body">{{ section.settings.body_text }}</div>
+        {%- endif -%}
+      </div>
+
+      {%- if has_image -%}
+        <div class="our-story__image-column">
+          <div class="our-story__image-wrapper">
+            <img
+              src="{{ section.settings.image | image_url: width: 1340 }}"
+              srcset="{{ section.settings.image | image_url: width: 440 }} 440w,
+                      {{ section.settings.image | image_url: width: 670 }} 670w,
+                      {{ section.settings.image | image_url: width: 880 }} 880w,
+                      {{ section.settings.image | image_url: width: 1340 }} 1340w"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              alt="{{ section.settings.image.alt | default: section.settings.heading | escape }}"
+              class="our-story__image"
+              width="{{ section.settings.image.width }}"
+              height="{{ section.settings.image.height }}"
+              loading="lazy"
+            >
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if has_attribution -%}
+      <p class="our-story__attribution">
+        {%- if section.settings.attribution_line_1 != blank -%}
+          {{ section.settings.attribution_line_1 }}
+        {%- endif -%}
+        {%- if section.settings.attribution_line_1 != blank and section.settings.attribution_line_2 != blank -%}
+          <br>
+        {%- endif -%}
+        {%- if section.settings.attribution_line_2 != blank -%}
+          {{ section.settings.attribution_line_2 }}
+        {%- endif -%}
+      </p>
+    {%- endif -%}
+  </div>
+
+  {%- render 'breadcrumbs' -%}
+</section>
+
+{% stylesheet %}
+  .our-story {
+    background-color: var(--section-bg, #FFF7EA);
+    color: var(--text-color, #3E2027);
+    padding-top: var(--total-header-height, 120px);
+    padding-bottom: 0;
+  }
+
+  .our-story__wrapper {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .our-story__divider {
+    border-top: 1px solid var(--text-color, #3E2027);
+    margin-bottom: 88px;
+  }
+
+  .our-story__layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .our-story__content {
+    max-width: 630px;
+  }
+
+  .our-story__heading {
+    font-family: var(--font-alyona);
+    font-size: 70px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--text-color, #3E2027);
+    margin: 0 0 20px;
+  }
+
+  .our-story__intro,
+  .our-story__body {
+    font-family: var(--font-jokker);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-color, #3E2027);
+  }
+
+  .our-story__intro p,
+  .our-story__body p {
+    margin: 0 0 1em;
+  }
+
+  .our-story__intro p:last-child,
+  .our-story__body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .our-story__subheading {
+    font-family: var(--font-alyona);
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--text-color, #3E2027);
+    margin: 50px 0 30px;
+  }
+
+  .our-story__image-column {
+    position: sticky;
+    top: calc(var(--total-header-height, 120px) + 20px);
+  }
+
+  .our-story__image-wrapper {
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+
+  .our-story__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .our-story__attribution {
+    text-align: right;
+    font-family: var(--font-sweet-sans);
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: -0.14px;
+    line-height: normal;
+    color: var(--text-color, #3E2027);
+    opacity: 0.7;
+    margin: 30px 0 0;
+  }
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    .our-story__wrapper {
+      padding: 0 24px;
+    }
+
+    .our-story__layout {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .our-story__content {
+      max-width: 100%;
+    }
+
+    .our-story__image-column {
+      position: static;
+    }
+
+    .our-story__heading {
+      font-size: 56px;
+    }
+
+    .our-story__subheading {
+      font-size: 36px;
+    }
+
+    .our-story__divider {
+      margin-bottom: 50px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .our-story__wrapper {
+      padding: 0 12px;
+    }
+
+    .our-story__heading {
+      font-size: 52px;
+      margin-bottom: 14px;
+    }
+
+    .our-story__intro,
+    .our-story__body {
+      font-size: 14px;
+    }
+
+    .our-story__subheading {
+      font-size: 34px;
+      margin: 40px 0 20px;
+    }
+
+    .our-story__image-wrapper {
+      margin-left: -12px;
+      margin-right: -12px;
+      width: calc(100% + 24px);
+    }
+
+    .our-story__divider {
+      margin-bottom: 40px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.our_story.name",
+  "class": "our-story-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Our story"
+    },
+    {
+      "type": "richtext",
+      "id": "intro_text",
+      "label": "t:sections.our_story.settings.intro_text"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:sections.our_story.settings.subheading"
+    },
+    {
+      "type": "richtext",
+      "id": "body_text",
+      "label": "t:sections.our_story.settings.body_text"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:labels.image"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.our_story.settings.attribution_header"
+    },
+    {
+      "type": "text",
+      "id": "attribution_line_1",
+      "label": "t:sections.our_story.settings.attribution_line_1",
+      "default": "Diana + Alexandra"
+    },
+    {
+      "type": "text",
+      "id": "attribution_line_2",
+      "label": "t:sections.our_story.settings.attribution_line_2",
+      "default": "(Mother/Daughter Duo)"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFF7EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Our story"
+    }
+  ]
+}
+{% endschema %}
