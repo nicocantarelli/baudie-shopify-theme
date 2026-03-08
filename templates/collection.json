@@ -18,6 +18,7 @@
             "product": "bundle-of-3",
             "card_width": "2",
             "show_badge": false,
+            "custom_button_text": "Choose your scents",
             "badge_text": ""
           }
         },
@@ -27,6 +28,7 @@
             "product": "capri-seaside",
             "card_width": "1",
             "show_badge": false,
+            "custom_button_text": "",
             "badge_text": ""
           }
         },
@@ -36,6 +38,7 @@
             "product": "deep-ritual",
             "card_width": "1",
             "show_badge": false,
+            "custom_button_text": "",
             "badge_text": ""
           }
         },
@@ -45,6 +48,7 @@
             "product": "petal-kiss",
             "card_width": "1",
             "show_badge": false,
+            "custom_button_text": "",
             "badge_text": ""
           }
         },
@@ -54,6 +58,7 @@
             "product": "barely-there",
             "card_width": "1",
             "show_badge": false,
+            "custom_button_text": "",
             "badge_text": ""
           }
         }
