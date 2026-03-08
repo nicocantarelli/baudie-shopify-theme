@@ -77,6 +77,7 @@
   },
   "header": {
     "account": "Account",
+    "rewards": "Rewards",
     "cart": "Cart",
     "menu": "Menu",
     "close_menu": "Close menu"
