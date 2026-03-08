@@ -69,7 +69,11 @@
           </div>
         {%- else -%}
           {%- if card_image -%}
-            {{ card_image | image_url: width: 500 | image_tag:
+            {%- assign card_image_width = 500 -%}
+            {%- if is_wide -%}
+              {%- assign card_image_width = 1400 -%}
+            {%- endif -%}
+            {{ card_image | image_url: width: card_image_width | image_tag:
               loading: loading_attr,
               class: 'product-card__img product-card__img--single',
               alt: card_image.alt | default: product.title,
