@@ -134,7 +134,7 @@
             "custom_title": "",
             "custom_description": "",
             "custom_button_text": "Choose Your Scents",
-            "card_bg_color": "#fcf0d2",
+            "card_bg_color": "#f6e8e0",
             "show_badge": false,
             "badge_text": "25% off"
           }
@@ -142,12 +142,12 @@
         "bundle_card_Y7MARn": {
           "type": "bundle_card",
           "settings": {
-            "product": "capri-seaside",
+            "product": "discovery-set-6-mini-sprays",
             "display_products": [],
             "custom_title": "",
             "custom_description": "",
             "custom_button_text": "",
-            "card_bg_color": "#fcf0d2",
+            "card_bg_color": "#f6e8e0",
             "show_badge": false,
             "badge_text": "25% off"
           }
