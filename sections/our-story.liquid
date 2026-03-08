@@ -70,7 +70,7 @@
     </div>
   </div>
 
-  {%- render 'breadcrumbs' -%}
+
 </section>
 
 {% stylesheet %}
@@ -92,6 +92,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 60px;
     align-items: start;
+    margin-top: 90px;
   }
 
   .our-story__content {
@@ -135,11 +136,6 @@
     margin: 50px 0 30px;
   }
 
-  .our-story__image-column {
-    position: sticky;
-    top: calc(var(--total-header-height, 120px) + 20px);
-  }
-
   .our-story__image-wrapper {
     aspect-ratio: 1;
     overflow: hidden;
@@ -178,10 +174,6 @@
 
     .our-story__content {
       max-width: 100%;
-    }
-
-    .our-story__image-column {
-      position: static;
     }
 
     .our-story__heading {
