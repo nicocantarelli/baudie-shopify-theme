@@ -12,6 +12,15 @@
     "main": {
       "type": "collection-grid",
       "blocks": {
+        "product_card_MDjGH8": {
+          "type": "product_card",
+          "settings": {
+            "product": "bundle-of-3",
+            "card_width": "2",
+            "show_badge": false,
+            "badge_text": ""
+          }
+        },
         "product_card_9eHGPj": {
           "type": "product_card",
           "settings": {
@@ -50,6 +59,7 @@
         }
       },
       "block_order": [
+        "product_card_MDjGH8",
         "product_card_9eHGPj",
         "product_card_GcwzJA",
         "product_card_AdP3Ty",
