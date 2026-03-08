@@ -12,15 +12,6 @@
     "main": {
       "type": "collection-grid",
       "blocks": {
-        "product_card_Rbntaj": {
-          "type": "product_card",
-          "settings": {
-            "product": "scent-trio",
-            "card_width": "2",
-            "show_badge": false,
-            "badge_text": "Limited Edition"
-          }
-        },
         "product_card_9eHGPj": {
           "type": "product_card",
           "settings": {
@@ -39,15 +30,6 @@
             "badge_text": ""
           }
         },
-        "product_card_YAhtB6": {
-          "type": "product_card",
-          "settings": {
-            "product": "capri-seaside",
-            "card_width": "2",
-            "show_badge": false,
-            "badge_text": ""
-          }
-        },
         "product_card_AdP3Ty": {
           "type": "product_card",
           "settings": {
@@ -60,16 +42,7 @@
         "product_card_dJmhWz": {
           "type": "product_card",
           "settings": {
-            "product": "",
-            "card_width": "1",
-            "show_badge": false,
-            "badge_text": ""
-          }
-        },
-        "product_card_EJmJpx": {
-          "type": "product_card",
-          "settings": {
-            "product": "",
+            "product": "barely-there",
             "card_width": "1",
             "show_badge": false,
             "badge_text": ""
@@ -77,13 +50,10 @@
         }
       },
       "block_order": [
-        "product_card_Rbntaj",
         "product_card_9eHGPj",
         "product_card_GcwzJA",
-        "product_card_YAhtB6",
         "product_card_AdP3Ty",
-        "product_card_dJmhWz",
-        "product_card_EJmJpx"
+        "product_card_dJmhWz"
       ],
       "settings": {
         "heading": "Meet Your Scents",
