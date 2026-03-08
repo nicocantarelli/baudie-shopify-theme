@@ -323,29 +323,51 @@
 </section>
 
 {% stylesheet %}
+  /* ============================================
+     Base styles (Mobile-first, matching product.liquid)
+     ============================================ */
+
   .bundle-main {
-    display: grid;
-    grid-template-columns: 55% 45%;
+    display: flex;
+    flex-direction: column;
     background: linear-gradient(to bottom, var(--gradient-1) 1.4%, var(--gradient-2) 55%);
     margin-top: var(--total-header-height, 110px);
-    min-height: calc(100vh - var(--total-header-height, 110px));
     color: var(--product-text, #3E2027);
   }
 
+  /* --- Mobile Header (above image on mobile) --- */
+
   .bundle-main__mobile-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 50px 12px 0;
+  }
+
+  .bundle-main__mobile-subtitle-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  /* --- Desktop-only header (hidden on mobile) --- */
+
+  .bundle-main__desktop-header {
     display: none;
+    flex-direction: column;
+    gap: 12px;
   }
 
   /* --- Image Column --- */
 
   .bundle-main__image-column {
-    position: sticky;
-    top: var(--total-header-height, 110px);
-    height: calc(100vh - var(--total-header-height, 110px));
+    position: relative;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 20px 12px 30px;
   }
 
   .bundle-main__bottles {
@@ -354,7 +376,7 @@
     justify-content: center;
     gap: 0;
     width: 100%;
-    max-width: 700px;
+    max-width: 416px;
   }
 
   .bundle-main__bottle-slot {
@@ -363,20 +385,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 -70px;
+    margin: 0 -30px;
   }
 
   .bundle-main__bottle-img {
     width: 100%;
     height: auto;
-    max-height: 600px;
+    max-height: 340px;
     object-fit: contain;
     transition: opacity 0.4s ease;
   }
 
   .bundle-main__bottle-placeholder {
-    width: 55%;
-    aspect-ratio: 3 / 5;
+    width: 45%;
+    aspect-ratio: 3 / 4;
     border: 2px dashed var(--product-text, #3E2027);
     border-radius: 40% 40% 10% 10%;
     opacity: 0.15;
@@ -387,31 +409,27 @@
 
   .bundle-main__bottle-number {
     font-family: var(--font-alyona);
-    font-size: 48px;
+    font-size: 32px;
     opacity: 0.5;
   }
 
   /* --- Info Column --- */
 
   .bundle-main__info-column {
-    padding: 120px 40px 60px;
     display: flex;
     flex-direction: column;
     gap: 30px;
+    padding: 0 12px 40px;
   }
 
-  .bundle-main__desktop-header {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+  /* --- Header Typography --- */
 
   .bundle-main__subtitle {
     font-family: var(--font-sweet-sans);
     font-weight: 500;
-    font-size: 20px;
+    font-size: 16px;
     line-height: normal;
-    letter-spacing: -0.2px;
+    letter-spacing: -0.16px;
     text-transform: uppercase;
     color: var(--product-text, #3E2027);
     margin: 0;
@@ -420,7 +438,7 @@
   .bundle-main__title {
     font-family: var(--font-alyona);
     font-weight: 400;
-    font-size: 74px;
+    font-size: 34px;
     line-height: 1;
     color: var(--product-text, #3E2027);
     margin: 0;
@@ -430,9 +448,9 @@
   .bundle-main__size-line {
     font-family: var(--font-sweet-sans);
     font-weight: 500;
-    font-size: 20px;
+    font-size: 16px;
     line-height: normal;
-    letter-spacing: -0.2px;
+    letter-spacing: -0.16px;
     text-transform: uppercase;
     color: var(--product-text, #3E2027);
     margin: 0;
@@ -448,7 +466,7 @@
 
   .bundle-main__selector {
     position: relative;
-    width: 255px;
+    width: 100%;
   }
 
   .bundle-main__selector-trigger {
@@ -543,14 +561,15 @@
   .bundle-main__purchase-row {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 12px;
   }
 
   .bundle-main__price {
     font-family: var(--font-sweet-sans);
     font-weight: 500;
-    font-size: 26px;
-    letter-spacing: -0.26px;
+    font-size: 20px;
+    line-height: normal;
+    letter-spacing: -0.2px;
     text-transform: uppercase;
     color: var(--product-text, #3E2027);
     margin: 0;
@@ -559,23 +578,24 @@
 
   .bundle-main__actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex: 1;
+    min-width: 0;
   }
 
   .bundle-main__button {
     flex: 1;
     height: 40px;
-    padding: 10px 20px;
+    padding: 10px 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 6px;
     font-family: var(--font-sweet-sans);
     font-weight: 500;
-    font-size: 14px;
+    font-size: 12px;
     line-height: normal;
-    letter-spacing: -0.14px;
+    letter-spacing: -0.12px;
     text-transform: uppercase;
     text-decoration: none;
     border: none;
@@ -647,6 +667,12 @@
     gap: 10px;
     overflow-x: auto;
     padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .bundle-main__video-grid::-webkit-scrollbar {
+    display: none;
   }
 
   .bundle-main__video-placeholder {
@@ -664,7 +690,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 15px 0;
-    background: none;
+    background: transparent;
     border: none;
     cursor: pointer;
     font-family: var(--font-sweet-sans);
@@ -681,8 +707,10 @@
   }
 
   .bundle-main__accordion-icon {
-    transition: transform 0.3s ease;
+    width: 16px;
+    height: 16px;
     flex-shrink: 0;
+    transition: transform 0.3s ease;
   }
 
   .bundle-main__accordion.is-open .bundle-main__accordion-icon {
@@ -706,6 +734,7 @@
     line-height: 1.5;
     color: var(--product-text, #3E2027);
     padding-bottom: 0;
+    transition: padding-bottom 0.3s ease;
   }
 
   .bundle-main__accordion.is-open .bundle-main__accordion-body {
@@ -713,6 +742,7 @@
   }
 
   .bundle-main__ingredients-link {
+    display: inline;
     background: none;
     border: none;
     padding: 0;
@@ -722,8 +752,15 @@
     color: var(--product-text, #3E2027);
     text-decoration: underline;
     cursor: pointer;
-    margin-top: 4px;
-    display: inline-block;
+  }
+
+  .bundle-main__ingredients-link:hover {
+    opacity: 0.7;
+  }
+
+  .bundle-main__ingredients-link:focus-visible {
+    outline: 2px solid var(--product-text, #3E2027);
+    outline-offset: 2px;
   }
 
   /* --- Trust Badges --- */
@@ -733,6 +770,7 @@
     flex-wrap: wrap;
     gap: 10px;
     padding-top: 10px;
+    justify-content: center;
   }
 
   .bundle-main__badge {
@@ -746,14 +784,14 @@
     width: 30px;
     height: 30px;
     flex-shrink: 0;
-    display: block;
+    display: inline-block;
+    background-color: var(--product-text, #3E2027);
     -webkit-mask-size: contain;
     mask-size: contain;
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: center;
     mask-position: center;
-    background-color: var(--product-text, #3E2027);
   }
 
   .bundle-main__badge-label {
@@ -768,7 +806,7 @@
     white-space: pre-line;
   }
 
-  /* --- Ingredients Dialog --- */
+  /* --- Ingredients Dialog (mobile: bottom sheet) --- */
 
   .bundle-main__dialog {
     position: fixed;
@@ -790,18 +828,17 @@
 
   .bundle-main__dialog-inner {
     position: absolute;
+    bottom: 0;
+    left: 0;
     right: 0;
-    top: 0;
-    width: 100%;
-    max-width: 500px;
-    height: 100%;
-    background: #FFFFFF;
+    max-height: 80vh;
+    background: #FFF7EA;
     color: var(--popup-text, #3E2027);
-    padding: 40px;
+    padding: 30px 20px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
   }
 
   .bundle-main__dialog-header {
@@ -813,19 +850,29 @@
   .bundle-main__dialog-title {
     font-family: var(--font-sweet-sans);
     font-weight: 500;
-    font-size: 20px;
+    font-size: 18px;
     text-transform: uppercase;
-    letter-spacing: -0.2px;
+    letter-spacing: -0.18px;
     color: var(--popup-text, #3E2027);
     margin: 0;
   }
 
   .bundle-main__dialog-close {
-    background: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
     border: none;
     cursor: pointer;
-    padding: 4px;
+    padding: 0;
     color: var(--popup-text, #3E2027);
+  }
+
+  .bundle-main__dialog-close:focus-visible {
+    outline: 2px solid var(--popup-text, #3E2027);
+    outline-offset: 2px;
   }
 
   .bundle-main__dialog-body {
@@ -836,114 +883,112 @@
   }
 
   /* ============================================
-     Responsive — Tablet
+     Desktop (1024px+) — matching product.liquid
      ============================================ */
 
-  @media (max-width: 1200px) {
-    .bundle-main__info-column {
-      padding: 80px 24px 40px;
-    }
-
-    .bundle-main__title {
-      font-size: 56px;
-    }
-
-    .bundle-main__selector {
-      width: 100%;
-    }
-  }
-
-  /* ============================================
-     Responsive — Mobile (< 900px)
-     ============================================ */
-
-  @media (max-width: 900px) {
+  @media (min-width: 1024px) {
     .bundle-main {
-      grid-template-columns: 1fr;
+      flex-direction: row;
+      min-height: calc(100vh - var(--total-header-height, 110px));
     }
 
     .bundle-main__mobile-header {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 52px 12px 0;
-    }
-
-    .bundle-main__mobile-subtitle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .bundle-main__mobile-subtitle-row .bundle-main__subtitle {
-      font-size: 16px;
-      letter-spacing: -0.16px;
-    }
-
-    .bundle-main__mobile-subtitle-row .bundle-main__size {
-      font-size: 16px;
-      letter-spacing: -0.16px;
-      text-align: right;
-    }
-
-    .bundle-main__mobile-header .bundle-main__title {
-      font-size: 34px;
-    }
-
-    .bundle-main__desktop-header {
       display: none;
     }
 
+    .bundle-main__desktop-header {
+      display: flex;
+      gap: 16px;
+    }
+
     .bundle-main__image-column {
-      position: relative;
-      top: auto;
-      height: auto;
-      padding: 20px 12px 30px;
+      width: 55%;
+      position: sticky;
+      top: var(--total-header-height, 110px);
+      height: calc(100vh - var(--total-header-height, 110px));
+      padding: 40px;
+      flex-shrink: 0;
     }
 
     .bundle-main__bottles {
-      max-width: 416px;
+      max-width: 700px;
     }
 
     .bundle-main__bottle-slot {
-      margin: 0 -30px;
+      margin: 0 -70px;
     }
 
     .bundle-main__bottle-img {
-      max-height: 340px;
+      max-height: 600px;
     }
 
     .bundle-main__bottle-placeholder {
-      width: 45%;
-      aspect-ratio: 3 / 4;
+      width: 55%;
+      aspect-ratio: 3 / 5;
     }
 
     .bundle-main__bottle-number {
-      font-size: 32px;
+      font-size: 48px;
     }
 
     .bundle-main__info-column {
-      padding: 0 12px 40px;
-      max-width: 100%;
+      width: 45%;
+      padding: 120px 40px 60px;
     }
 
-    .bundle-main__selector {
-      width: 100%;
-    }
-
-    .bundle-main__price {
+    .bundle-main__subtitle {
       font-size: 20px;
       letter-spacing: -0.2px;
     }
 
+    .bundle-main__title {
+      font-size: 74px;
+    }
+
+    .bundle-main__size,
+    .bundle-main__size-line {
+      font-size: 20px;
+      letter-spacing: -0.2px;
+    }
+
+    .bundle-main__selector {
+      width: 255px;
+    }
+
+    .bundle-main__purchase-row {
+      gap: 20px;
+    }
+
+    .bundle-main__price {
+      font-size: 26px;
+      letter-spacing: -0.26px;
+    }
+
+    .bundle-main__actions {
+      gap: 10px;
+    }
+
     .bundle-main__button {
-      font-size: 12px;
-      letter-spacing: -0.12px;
+      padding: 10px 20px;
+      gap: 10px;
+      font-size: 14px;
+      letter-spacing: -0.14px;
+    }
+
+    .bundle-main__badges {
+      justify-content: flex-start;
     }
 
     .bundle-main__dialog-inner {
-      max-width: 100%;
-      padding: 24px;
+      top: 50%;
+      left: 50%;
+      right: auto;
+      bottom: auto;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 560px;
+      max-height: 70vh;
+      padding: 40px;
     }
   }
 {% endstylesheet %}
