@@ -155,7 +155,8 @@
     "arrow_color": "Arrow color",
     "divider_color": "Divider color",
     "summary_background_color": "Summary background color",
-    "colors": "Colors"
+    "colors": "Colors",
+    "image": "Image"
   },
   "options": {
     "alignment": {
@@ -374,6 +375,17 @@
       "name": "Related products",
       "settings": {
         "max_products": "Maximum products"
+      }
+    },
+    "our_story": {
+      "name": "Our story",
+      "settings": {
+        "intro_text": "Intro text",
+        "subheading": "Subheading",
+        "body_text": "Body text",
+        "attribution_header": "Attribution",
+        "attribution_line_1": "Attribution line 1",
+        "attribution_line_2": "Attribution line 2"
       }
     },
     "customer_care": {
