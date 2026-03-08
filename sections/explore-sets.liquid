@@ -73,7 +73,8 @@
                   {% render 'product-card',
                     product: bundle_product,
                     show_badge: block.settings.show_badge,
-                    badge_text: block.settings.badge_text
+                    badge_text: block.settings.badge_text,
+                    custom_button_text: block.settings.custom_button_text
                   %}
                 </div>
               {% endif %}
@@ -910,6 +911,11 @@
             "id": "custom_description",
             "label": "t:labels.custom_description",
             "info": "t:blocks.bundle_card.custom_description_info"
+          }, {
+            "type": "text",
+            "id": "custom_button_text",
+            "label": "t:blocks.product_card.settings.custom_button_text",
+            "info": "t:blocks.product_card.settings.custom_button_text_info"
           }, {
             "type": "header",
             "content": "t:blocks.bundle_card.styling_header"
