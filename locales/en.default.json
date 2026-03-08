@@ -337,11 +337,7 @@
       "name": "Feature"
     },
     "product_card": {
-      "name": "Product card",
-      "settings": {
-        "custom_button_text": "Custom button text",
-        "custom_button_text_info": "Replaces add to cart and buy now with a single link to the product page"
-      }
+      "name": "Product card"
     },
     "product": {
       "name": "Product"
