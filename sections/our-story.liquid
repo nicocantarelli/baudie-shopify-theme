@@ -15,8 +15,6 @@
   style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }};"
 >
   <div class="our-story__wrapper">
-    <div class="our-story__divider"></div>
-
     <div class="our-story__layout">
       <div class="our-story__content">
         {%- if section.settings.heading != blank -%}
@@ -53,23 +51,23 @@
               loading="lazy"
             >
           </div>
+
+          {%- if has_attribution -%}
+            <p class="our-story__attribution">
+              {%- if section.settings.attribution_line_1 != blank -%}
+                {{ section.settings.attribution_line_1 }}
+              {%- endif -%}
+              {%- if section.settings.attribution_line_1 != blank and section.settings.attribution_line_2 != blank -%}
+                <br>
+              {%- endif -%}
+              {%- if section.settings.attribution_line_2 != blank -%}
+                {{ section.settings.attribution_line_2 }}
+              {%- endif -%}
+            </p>
+          {%- endif -%}
         </div>
       {%- endif -%}
     </div>
-
-    {%- if has_attribution -%}
-      <p class="our-story__attribution">
-        {%- if section.settings.attribution_line_1 != blank -%}
-          {{ section.settings.attribution_line_1 }}
-        {%- endif -%}
-        {%- if section.settings.attribution_line_1 != blank and section.settings.attribution_line_2 != blank -%}
-          <br>
-        {%- endif -%}
-        {%- if section.settings.attribution_line_2 != blank -%}
-          {{ section.settings.attribution_line_2 }}
-        {%- endif -%}
-      </p>
-    {%- endif -%}
   </div>
 
   {%- render 'breadcrumbs' -%}
@@ -79,7 +77,7 @@
   .our-story {
     background-color: var(--section-bg, #FFF7EA);
     color: var(--text-color, #3E2027);
-    padding-top: var(--total-header-height, 120px);
+    padding-top: calc(var(--total-header-height, 120px) + 88px);
     padding-bottom: 0;
   }
 
@@ -87,11 +85,6 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 0 40px;
-  }
-
-  .our-story__divider {
-    border-top: 1px solid var(--text-color, #3E2027);
-    margin-bottom: 88px;
   }
 
   .our-story__layout {
@@ -198,10 +191,6 @@
     .our-story__subheading {
       font-size: 36px;
     }
-
-    .our-story__divider {
-      margin-bottom: 50px;
-    }
   }
 
   /* Mobile */
@@ -229,10 +218,6 @@
       margin-left: -12px;
       margin-right: -12px;
       width: calc(100% + 24px);
-    }
-
-    .our-story__divider {
-      margin-bottom: 40px;
     }
   }
 {% endstylesheet %}
