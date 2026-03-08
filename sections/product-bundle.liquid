@@ -297,8 +297,6 @@
   {% if scent_collection %}
     <script type="application/json" data-bundle-products>
       {
-        "bundlePrice": "{{ product.price | money_without_currency | remove: ',' }}",
-        "bundleTitle": {{ product.title | json }},
         "scents": {
           {% for scent_product in scent_collection.products %}
             "{{ scent_product.handle }}": {
@@ -965,8 +963,6 @@
         if (jsonEl) {
           try {
             const data = JSON.parse(jsonEl.textContent);
-            this.bundlePrice = data.bundlePrice;
-            this.bundleTitle = data.bundleTitle;
             this.productData = data.scents || {};
           } catch (e) {
             console.error('Bundle: failed to parse product data', e);
@@ -1111,27 +1107,15 @@
         if (buyBtn) buyBtn.disabled = true;
 
         try {
-          const componentGids = selected.map(p => p.variantGid);
-          const properties = {
-            '_bundle': 'true',
-            '_component_variants': JSON.stringify(componentGids),
-            '_bundle_price': this.bundlePrice,
-            '_bundle_title': this.bundleTitle,
-          };
-          selected.forEach(p => {
-            properties['Scent ' + p.index] = p.title;
-          });
+          const items = selected.map(p => ({
+            id: parseInt(p.variantId),
+            quantity: 1
+          }));
 
           const response = await fetch('/cart/add.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              items: [{
-                id: selected[0].variantId,
-                quantity: 1,
-                properties: properties
-              }]
-            })
+            body: JSON.stringify({ items })
           });
 
           if (!response.ok) {

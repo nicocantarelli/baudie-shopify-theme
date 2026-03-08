@@ -15,27 +15,15 @@
   assign item_key = item.key
   assign short_description = item.product.metafields.custom.short_description | default: ''
 
-  if item.properties['_bundle'] == 'true'
-    if item.properties['_bundle_title'] != blank
-      assign item_title = item.properties['_bundle_title']
-    endif
-    if item.properties['_bundle_price'] != blank
-      assign item_price = item.properties['_bundle_price'] | times: 100 | round
-      assign item_unit_price = item_price
-    endif
-  endif
-
   assign has_compare_price = false
   assign compare_price = 0
-  unless item.properties['_bundle'] == 'true'
-    if item.variant.compare_at_price > item.variant.price
-      assign has_compare_price = true
-      assign compare_price = item.variant.compare_at_price | times: item_quantity
-    elsif item.original_line_price > item.final_line_price
-      assign has_compare_price = true
-      assign compare_price = item.original_line_price
-    endif
-  endunless
+  if item.variant.compare_at_price > item.variant.price
+    assign has_compare_price = true
+    assign compare_price = item.variant.compare_at_price | times: item_quantity
+  elsif item.original_line_price > item.final_line_price
+    assign has_compare_price = true
+    assign compare_price = item.original_line_price
+  endif
 -%}
 
 <li class="sidecart-item" data-sidecart-item data-key="{{ item_key }}" data-unit-price="{{ item_unit_price }}" data-compare-unit-price="{{ item.variant.compare_at_price | default: 0 }}">
@@ -63,15 +51,7 @@
       {%- if item_variant != 'Default Title' -%}
         <p class="sidecart-item__variant">{{ item_variant }}</p>
       {%- endif -%}
-      {%- if item.properties['_bundle'] == 'true' -%}
-        <ul class="sidecart-item__bundle-scents">
-          {%- for p in item.properties -%}
-            {%- unless p.first contains '_' -%}
-              <li class="sidecart-item__bundle-scent">{{ p.first }}: {{ p.last }}</li>
-            {%- endunless -%}
-          {%- endfor -%}
-        </ul>
-      {%- elsif short_description != blank -%}
+      {%- if short_description != blank -%}
         <p class="sidecart-item__description">{{ short_description }}</p>
       {%- endif -%}
     </div>

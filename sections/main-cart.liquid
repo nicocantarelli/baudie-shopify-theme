@@ -3,17 +3,6 @@
   if cart.item_count > 0
     assign has_items = true
   endif
-
-  assign display_subtotal = 0
-  for item in cart.items
-    if item.properties['_bundle'] == 'true' and item.properties['_bundle_price'] != blank
-      assign bundle_cents = item.properties['_bundle_price'] | times: 100 | round
-      assign bundle_line_total = bundle_cents | times: item.quantity
-      assign display_subtotal = display_subtotal | plus: bundle_line_total
-    else
-      assign display_subtotal = display_subtotal | plus: item.final_line_price
-    endif
-  endfor
 -%}
 
 <main
@@ -51,7 +40,7 @@
               <span class="main-cart__item-count" data-cart-item-count>(<span data-cart-count>{{ cart.item_count }}</span> <span data-cart-items-label>{% if cart.item_count == 1 %}{{ 'sidecart.item' | t }}{% else %}{{ 'sidecart.items' | t }}{% endif %}</span>)</span>
             </div>
             <div class="main-cart__subtotal-row">
-              <span class="main-cart__subtotal-value" data-cart-subtotal aria-live="polite">{{ display_subtotal | money }}</span>
+              <span class="main-cart__subtotal-value" data-cart-subtotal aria-live="polite">{{ cart.total_price | money }}</span>
               <span class="main-cart__shipping-note">{{ 'sidecart.shipping_note' | t }}</span>
             </div>
           </div>
@@ -517,22 +506,6 @@
     line-height: 140%;
     color: var(--cart-text);
     margin: 0;
-  }
-
-  .cart-item__bundle-scents {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .cart-item__bundle-scent {
-    font-family: var(--font-jokker);
-    font-size: 13px;
-    color: var(--cart-text);
-    opacity: 0.7;
   }
 
   .cart-item__quantity-col {
@@ -1028,7 +1001,7 @@
             itemCountContainer.style.display = cart.item_count > 0 ? '' : 'none';
           }
           if (this.subtotalElement) {
-            this.subtotalElement.textContent = this.formatMoney(this.calculateSubtotalFromDOM());
+            this.subtotalElement.textContent = this.formatMoney(cart.total_price);
           }
 
           if (cart.item_count === 0) {
@@ -1041,16 +1014,6 @@
           window.location.reload();
         }
       }
-    }
-
-    calculateSubtotalFromDOM() {
-      let total = 0;
-      this.cart.querySelectorAll('[data-cart-item]').forEach(item => {
-        const unitPrice = parseInt(item.dataset.unitPrice || '0', 10);
-        const qty = parseInt(item.querySelector('[data-quantity]')?.value || '0', 10);
-        total += unitPrice * qty;
-      });
-      return total;
     }
 
     formatMoney(cents) {
