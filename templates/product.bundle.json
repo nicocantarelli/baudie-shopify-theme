@@ -18,9 +18,30 @@
         "gradient_color_2": "#fcf5de",
         "popup_text_color": "#3e2027"
       }
+    },
+    "1772934873d7f51644": {
+      "type": "apps",
+      "blocks": {
+        "simple_bundles_kits_infinite_options_selector_M77xgA": {
+          "type": "shopify://apps/simple-bundles-kits/blocks/infinite-options-selector/e553276b-36b2-446d-b80a-aa47fe5f96ac",
+          "settings": {
+            "select_placeholder": "Please select an option",
+            "disable_oos_options": true,
+            "show_price_variance": true,
+            "rank_options_by_price_diff": true,
+            "custom_css": "",
+            "custom_js": ""
+          }
+        }
+      },
+      "block_order": [
+        "simple_bundles_kits_infinite_options_selector_M77xgA"
+      ],
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "1772934873d7f51644"
   ]
 }
