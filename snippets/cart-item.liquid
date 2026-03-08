@@ -51,6 +51,15 @@
     {%- if item_variant != 'Default Title' -%}
       <p class="cart-item__variant">{{ item_variant }}</p>
     {%- endif -%}
+    {%- if item.properties.size > 0 -%}
+      <ul class="cart-item__properties">
+        {%- for property in item.properties -%}
+          {%- unless property.last == blank or property.first contains '_' -%}
+            <li class="cart-item__property">{{ property.first }}: {{ property.last }}</li>
+          {%- endunless -%}
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
     {%- if short_description != blank -%}
       <p class="cart-item__description">{{ short_description }}</p>
     {%- endif -%}
