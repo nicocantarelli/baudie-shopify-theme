@@ -16,7 +16,7 @@
           "type": "product_card",
           "settings": {
             "product": "bundle-of-3",
-            "card_width": "1",
+            "card_width": "2",
             "show_badge": false,
             "badge_text": ""
           }
