@@ -15,9 +15,9 @@
         "product_card_Rbntaj": {
           "type": "product_card",
           "settings": {
-            "product": "capri-seaside",
+            "product": "scent-trio",
             "card_width": "2",
-            "show_badge": true,
+            "show_badge": false,
             "badge_text": "Limited Edition"
           }
         },
