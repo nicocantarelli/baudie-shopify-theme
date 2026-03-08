@@ -97,22 +97,27 @@
                 {%- endif -%}
                 {%- assign short_description = bundle_product.metafields.custom.short_description | default: bundle_product.description | strip_html | truncate: 180 -%}
 
+                {%- assign mobile_card_image = block.settings.card_image_override | default: bundle_product.featured_image -%}
+                {%- assign mobile_card_image_alt = mobile_card_image.alt | default: bundle_product.title -%}
                 {%- assign bundle_hover_image = bundle_product.metafields.custom.card_hover_image -%}
+                {%- assign bundle_hover_alt = bundle_hover_image.alt | default: bundle_product.title -%}
                 <article class="bundle-card-mobile" {{ block.shopify_attributes }}>
                   {%- comment -%} Image area with overlapping products {%- endcomment -%}
                   <a href="{{ bundle_product.url }}" class="bundle-card-mobile__image-area">
                     {% if block.settings.show_badge and block.settings.badge_text != blank %}
                       <span class="bundle-card-mobile__badge">{{ block.settings.badge_text | escape }}</span>
                     {% endif %}
-                    <div class="bundle-card-mobile__images">
-                      {{ bundle_product.featured_image | image_url: width: 500 | image_tag: loading: 'lazy', alt: bundle_product.featured_image.alt | default: bundle_product.title }}
-                    </div>
+                    {%- if mobile_card_image -%}
+                      <div class="bundle-card-mobile__images">
+                        {{ mobile_card_image | image_url: width: 500 | image_tag: loading: 'lazy', alt: mobile_card_image_alt }}
+                      </div>
+                    {%- endif -%}
                     {%- if bundle_hover_image -%}
                       <div class="bundle-card-mobile__hover-image">
                         {{ bundle_hover_image | image_url: width: 600 | image_tag:
                           loading: 'lazy',
                           class: 'bundle-card-mobile__hover-img',
-                          alt: bundle_hover_image.alt | default: bundle_product.title
+                          alt: bundle_hover_alt
                         }}
                       </div>
                     {%- endif -%}
