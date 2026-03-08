@@ -137,6 +137,14 @@
             "tab_color": "#7f9dc3",
             "tab_text_color": "#fffae6"
           }
+        },
+        "product_E4JWyD": {
+          "type": "product",
+          "settings": {
+            "product": "st-tropez",
+            "tab_color": "#c52d5d",
+            "tab_text_color": "#fffae6"
+          }
         }
       },
       "block_order": [
@@ -144,7 +152,8 @@
         "product_eJgreR",
         "product_JT9xbH",
         "product_xkTXWb",
-        "product_qEfH7c"
+        "product_qEfH7c",
+        "product_E4JWyD"
       ],
       "settings": {
         "heading": "Meet Your Scents",
