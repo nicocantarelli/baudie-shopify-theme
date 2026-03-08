@@ -97,11 +97,35 @@
     "meet_scents_AbC456": {
       "type": "meet-your-scents",
       "blocks": {
+        "product_dgwCbC": {
+          "type": "product",
+          "settings": {
+            "product": "sweet-muse",
+            "tab_color": "#fff4c7",
+            "tab_text_color": "#3e2027"
+          }
+        },
+        "product_eJgreR": {
+          "type": "product",
+          "settings": {
+            "product": "petal-kiss",
+            "tab_color": "#ffcad2",
+            "tab_text_color": "#fffae6"
+          }
+        },
+        "product_JT9xbH": {
+          "type": "product",
+          "settings": {
+            "product": "barely-there",
+            "tab_color": "#bfbb6b",
+            "tab_text_color": "#fffae6"
+          }
+        },
         "product_xkTXWb": {
           "type": "product",
           "settings": {
             "product": "capri-seaside",
-            "tab_color": "#ffcad2",
+            "tab_color": "#e26046",
             "tab_text_color": "#fffae6"
           }
         },
@@ -109,12 +133,15 @@
           "type": "product",
           "settings": {
             "product": "deep-ritual",
-            "tab_color": "#0b619b",
+            "tab_color": "#7f9dc3",
             "tab_text_color": "#fffae6"
           }
         }
       },
       "block_order": [
+        "product_dgwCbC",
+        "product_eJgreR",
+        "product_JT9xbH",
         "product_xkTXWb",
         "product_qEfH7c"
       ],
