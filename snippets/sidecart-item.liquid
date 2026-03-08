@@ -30,7 +30,7 @@
 <li class="sidecart-item" data-sidecart-item data-key="{{ item_key }}" data-unit-price="{{ item_unit_price }}" data-compare-unit-price="{{ item.variant.compare_at_price | default: 0 }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if item_image -%}
-      {{ item_image | image_url: width: 150 | image_tag:
+      {{ item_image | image_url: width: 400 | image_tag:
         loading: 'lazy',
         class: 'sidecart-item__image',
         alt: item_title,
