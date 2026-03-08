@@ -6,7 +6,8 @@
 
 {%- liquid
   assign item_url = item.url
-  assign item_image = item.image
+  assign item_image = item.product.metafields.custom.card_image | default: item.image
+  assign card_bg = item.product.metafields.custom.product_card_background | default: '#FCF0D2'
   assign item_title = item.product.title
   assign item_variant = item.variant.title
   assign item_price = item.final_line_price
@@ -27,7 +28,7 @@
 -%}
 
 <li class="sidecart-item" data-sidecart-item data-key="{{ item_key }}" data-unit-price="{{ item_unit_price }}" data-compare-unit-price="{{ item.variant.compare_at_price | default: 0 }}">
-  <a href="{{ item_url }}" class="sidecart-item__image-link">
+  <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if item_image -%}
       {{ item_image | image_url: width: 150 | image_tag:
         loading: 'lazy',
