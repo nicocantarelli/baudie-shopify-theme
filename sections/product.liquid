@@ -42,7 +42,13 @@
         <p class="product-main__size">{{ bottle_size }}</p>
       {% endif %}
     </div>
-    <h1 class="product-main__title">{{ 'sections.product.scent_prefix' | t }} {{ product.title }}</h1>
+    <h1 class="product-main__title">
+      {%- if product.metafields.custom.scent_name != blank -%}
+        {{ 'sections.product.scent_prefix' | t }} {{ product.metafields.custom.scent_name }}
+      {%- else -%}
+        {{ product.title }}
+      {%- endif -%}
+    </h1>
   </div>
 
   {%- comment -%} Image Column {%- endcomment -%}
@@ -86,7 +92,13 @@
     {%- comment -%} Product Header (desktop only — mobile header is above image) {%- endcomment -%}
     <div class="product-main__header--desktop">
       <p class="product-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
-      <h1 class="product-main__title">{{ 'sections.product.scent_prefix' | t }} {{ product.title }}</h1>
+      <h1 class="product-main__title">
+        {%- if product.metafields.custom.scent_name != blank -%}
+          {{ 'sections.product.scent_prefix' | t }} {{ product.metafields.custom.scent_name }}
+        {%- else -%}
+          {{ product.title }}
+        {%- endif -%}
+      </h1>
       {% if bottle_size %}
         <p class="product-main__size">{{ bottle_size }}</p>
       {% endif %}
