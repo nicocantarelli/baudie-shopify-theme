@@ -61,12 +61,6 @@
         "always_visible": "Always visible",
         "hide_on_scroll": "Hide when scrolling down"
       },
-      "layout_header": "Layout",
-      "header_layout": "Header layout",
-      "header_layout_options": {
-        "logo_center": "Logo center",
-        "menu_center": "Menu center"
-      },
       "logo_header": "Logo",
       "logo": "Logo image",
       "menu_header": "Menu",
