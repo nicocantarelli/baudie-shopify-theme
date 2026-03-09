@@ -47,7 +47,7 @@
   {% endif %}
 
   <header class="header">
-    <div class="header__inner">
+    <div class="header__inner header__inner--{{ section.settings.header_layout }}">
       <div class="header__logo">
         {% if section.settings.logo %}
           <a href="{{ routes.root_url }}">
@@ -353,6 +353,22 @@
     display: flex;
     gap: 30px;
     align-items: center;
+  }
+
+  /* Layout: Logo center (menu left, logo center) */
+  .header__inner--logo_center .header__menu {
+    order: -1;
+  }
+
+  .header__inner--logo_center .header__logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+  }
+
+  /* Layout: Menu center (logo left, menu center) */
+  .header__inner--menu_center .header__menu {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -653,6 +669,8 @@
     }
 
     .header__logo {
+      position: static;
+      transform: none;
       margin: 13.5px auto 13.5px 0;
       height: 33px;
       width: auto;
@@ -876,6 +894,26 @@
         ],
         "default": "hide_on_scroll",
         "info": "t:header.settings.sticky_behavior_info"
+      },
+      {
+        "type": "header",
+        "content": "t:header.settings.layout_header"
+      },
+      {
+        "type": "select",
+        "id": "header_layout",
+        "label": "t:header.settings.header_layout",
+        "options": [
+          {
+            "value": "logo_center",
+            "label": "t:header.settings.header_layout_options.logo_center"
+          },
+          {
+            "value": "menu_center",
+            "label": "t:header.settings.header_layout_options.menu_center"
+          }
+        ],
+        "default": "logo_center"
       },
       {
         "type": "header",
