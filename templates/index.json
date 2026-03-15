@@ -156,6 +156,7 @@
         "product_E4JWyD"
       ],
       "settings": {
+        "background_color": "#ffe4e8",
         "heading": "Meet Your Scents",
         "side_image": "shopify://shop_images/meet-your-scents-left.png",
         "background_image": "shopify://shop_images/meet-your-scents-right.png"
@@ -445,7 +446,8 @@
       ],
       "name": "Product benefits",
       "settings": {
-        "text_color": "#ffffff"
+        "background_color": "#ffe4e8",
+        "text_color": "#fffae6"
       }
     },
     "newsletter_LECjXh": {
