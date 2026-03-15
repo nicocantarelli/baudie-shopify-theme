@@ -5,7 +5,7 @@
   endif
 -%}
 
-<meet-scents-section class="meet-scents full-width">
+<meet-scents-section class="meet-scents full-width" style="--section-bg: {{ section.settings.background_color }};">
   {%- if section.settings.heading != blank -%}
     <h2 class="meet-scents__mobile-heading">{{ section.settings.heading | escape }}</h2>
   {%- endif -%}
@@ -131,7 +131,7 @@
 
 {% stylesheet %}
   .meet-scents {
-    background-color: #FFF7EA;
+    background-color: var(--section-bg, #FFF7EA);
   }
 
   .meet-scents__container {
@@ -647,6 +647,16 @@
   "tag": "section",
   "class": "meet-scents-section",
   "settings": [
+    {
+      "type": "header",
+      "content": "t:labels.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFF7EA"
+    },
     {
       "type": "header",
       "content": "t:sections.meet_scents.settings.content_header"
