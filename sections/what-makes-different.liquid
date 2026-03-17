@@ -20,12 +20,21 @@
 
     {%- comment -%} Main Content with Image and Features {%- endcomment -%}
     <div class="what-makes-different__content">
-      {%- comment -%} Center Image {%- endcomment -%}
+      {%- comment -%} Center Image (desktop) {%- endcomment -%}
       <div class="what-makes-different__image-wrapper">
         {% if section.settings.center_image %}
           {{ section.settings.center_image | image_url: width: 800 | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
         {% else %}
           <div class="what-makes-different__image-placeholder"></div>
+        {% endif %}
+      </div>
+
+      {%- comment -%} Center Image (mobile — molecule + lines baked in) {%- endcomment -%}
+      <div class="what-makes-different__mobile-image-wrapper">
+        {% if section.settings.mobile_center_image %}
+          {{ section.settings.mobile_center_image | image_url: width: 800 | image_tag: class: 'what-makes-different__mobile-image', loading: 'lazy' }}
+        {% elsif section.settings.center_image %}
+          {{ section.settings.center_image | image_url: width: 800 | image_tag: class: 'what-makes-different__mobile-image', loading: 'lazy' }}
         {% endif %}
       </div>
 
@@ -35,7 +44,7 @@
           {% if block.type == 'feature' %}
             {% assign block_index = forloop.index %}
             {% if block_index == 1 or block_index == 3 or block_index == 5 %}
-              <div class="what-makes-different__feature what-makes-different__feature--left what-makes-different__feature--{{ block_index }}" {{ block.shopify_attributes }}>
+              <div class="what-makes-different__feature what-makes-different__feature--left what-makes-different__feature--{{ block_index }}" style="--mobile-offset-x: {{ block.settings.mobile_offset_x }}px; --mobile-offset-y: {{ block.settings.mobile_offset_y }}px;" {{ block.shopify_attributes }}>
                 <div class="what-makes-different__badge">
                   <span>{{ block.settings.number }}</span>
                 </div>
@@ -109,16 +118,6 @@
                   {% endif %}
                 </div>
 
-                {%- comment -%} Mobile SVG Line {%- endcomment -%}
-                {% if block_index == 1 %}
-                <div class="what-makes-different__mobile-line what-makes-different__mobile-line--1">
-                  <svg viewBox="0 0 200 70" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 3 H80 L188 62" stroke="#3E2027" stroke-width="0.5"/><rect x="178" y="52" width="16" height="16" rx="8" fill="#3E2027"/><circle cx="186" cy="60" r="6" fill="#F5F0EC"/></svg>
-                </div>
-                {% elsif block_index == 3 %}
-                <div class="what-makes-different__mobile-line what-makes-different__mobile-line--3">
-                  <svg viewBox="0 0 200 70" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 67 H80 L188 8" stroke="#3E2027" stroke-width="0.5"/><rect x="178" y="0" width="16" height="16" rx="8" fill="#3E2027"/><circle cx="186" cy="8" r="6" fill="#F5F0EC"/></svg>
-                </div>
-                {% endif %}
               </div>
             {% endif %}
           {% endif %}
@@ -131,7 +130,7 @@
           {% if block.type == 'feature' %}
             {% assign block_index = forloop.index %}
             {% if block_index == 2 or block_index == 4 or block_index == 6 %}
-              <div class="what-makes-different__feature what-makes-different__feature--right what-makes-different__feature--{{ block_index }}" {{ block.shopify_attributes }}>
+              <div class="what-makes-different__feature what-makes-different__feature--right what-makes-different__feature--{{ block_index }}" style="--mobile-offset-x: {{ block.settings.mobile_offset_x }}px; --mobile-offset-y: {{ block.settings.mobile_offset_y }}px;" {{ block.shopify_attributes }}>
                 <div class="what-makes-different__badge">
                   <span>{{ block.settings.number }}</span>
                 </div>
@@ -200,16 +199,6 @@
                   {% endif %}
                 </div>
 
-                {%- comment -%} Mobile SVG Line {%- endcomment -%}
-                {% if block_index == 2 %}
-                <div class="what-makes-different__mobile-line what-makes-different__mobile-line--2">
-                  <svg viewBox="0 0 200 70" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M200 3 H120 L12 62" stroke="#3E2027" stroke-width="0.5"/><rect x="6" y="52" width="16" height="16" rx="8" fill="#3E2027"/><circle cx="14" cy="60" r="6" fill="#F5F0EC"/></svg>
-                </div>
-                {% elsif block_index == 4 %}
-                <div class="what-makes-different__mobile-line what-makes-different__mobile-line--4">
-                  <svg viewBox="0 0 200 70" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M200 67 H120 L12 8" stroke="#3E2027" stroke-width="0.5"/><rect x="6" y="0" width="16" height="16" rx="8" fill="#3E2027"/><circle cx="14" cy="8" r="6" fill="#F5F0EC"/></svg>
-                </div>
-                {% endif %}
               </div>
             {% endif %}
           {% endif %}
@@ -458,7 +447,7 @@
   display: block;
 }
 
-.what-makes-different__mobile-line {
+.what-makes-different__mobile-image-wrapper {
   display: none;
 }
 
@@ -730,17 +719,24 @@
     display: contents;
   }
 
+  /* Hide desktop image, show mobile image */
   .what-makes-different__image-wrapper {
-    position: relative;
-    top: auto;
-    left: auto;
-    transform: none;
+    display: none;
+  }
+
+  .what-makes-different__mobile-image-wrapper {
+    display: block;
     grid-column: 1 / -1;
     grid-row: 2;
-    width: 220px;
-    height: 220px;
-    margin: 0 auto;
-    z-index: 1;
+    margin: 10px auto;
+    max-width: 320px;
+    width: 100%;
+  }
+
+  .what-makes-different__mobile-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
   }
 
   .what-makes-different__feature {
@@ -748,7 +744,7 @@
     flex-direction: column;
     gap: 12px;
     position: static;
-    overflow: visible;
+    transform: translate(var(--mobile-offset-x, 0px), var(--mobile-offset-y, 0px));
   }
 
   .what-makes-different__feature--1 {
@@ -784,48 +780,6 @@
 
   .what-makes-different__line {
     display: none;
-  }
-
-  .what-makes-different__mobile-line {
-    display: flex;
-    position: relative;
-    z-index: 5;
-  }
-
-  .what-makes-different__mobile-line svg {
-    display: block;
-    width: 100%;
-    max-width: 140px;
-    height: auto;
-  }
-
-  /* Top features: line extends down, overlapping molecule */
-  .what-makes-different__mobile-line--1,
-  .what-makes-different__mobile-line--2 {
-    margin-bottom: -35px;
-  }
-
-  .what-makes-different__mobile-line--1 {
-    justify-content: flex-end;
-  }
-
-  .what-makes-different__mobile-line--2 {
-    justify-content: flex-start;
-  }
-
-  /* Bottom features: line extends up, overlapping molecule */
-  .what-makes-different__mobile-line--3,
-  .what-makes-different__mobile-line--4 {
-    order: -1;
-    margin-top: -35px;
-  }
-
-  .what-makes-different__mobile-line--3 {
-    justify-content: flex-end;
-  }
-
-  .what-makes-different__mobile-line--4 {
-    justify-content: flex-start;
   }
 
   .what-makes-different__badge {
@@ -883,14 +837,8 @@
     max-width: 110px;
   }
 
-  .what-makes-different__mobile-line--1,
-  .what-makes-different__mobile-line--2 {
-    margin-bottom: -25px;
-  }
-
-  .what-makes-different__mobile-line--3,
-  .what-makes-different__mobile-line--4 {
-    margin-top: -25px;
+  .what-makes-different__mobile-image-wrapper {
+    max-width: 260px;
   }
 
   .what-makes-different__feature-title {
@@ -934,6 +882,11 @@
         "id": "center_image",
         "label": "t:sections.what_makes_different.settings.center_image",
         "info": "t:sections.what_makes_different.settings.center_image_info"
+      }, {
+        "type": "image_picker",
+        "id": "mobile_center_image",
+        "label": "Mobile center image",
+        "info": "Molecule with lines baked in. Falls back to desktop image if empty."
       }, {
         "type": "header",
         "content": "t:sections.what_makes_different.settings.header_colors"
@@ -980,6 +933,27 @@
             "id": "description",
             "label": "t:labels.description",
             "default": "Feature description goes here."
+          }, {
+            "type": "header",
+            "content": "Mobile position offset"
+          }, {
+            "type": "range",
+            "id": "mobile_offset_x",
+            "label": "Horizontal offset (px)",
+            "min": -50,
+            "max": 50,
+            "step": 5,
+            "default": 0,
+            "unit": "px"
+          }, {
+            "type": "range",
+            "id": "mobile_offset_y",
+            "label": "Vertical offset (px)",
+            "min": -50,
+            "max": 50,
+            "step": 5,
+            "default": 0,
+            "unit": "px"
           }
         ]
       }
