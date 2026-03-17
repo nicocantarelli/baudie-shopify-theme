@@ -349,8 +349,8 @@
             "number": "1",
             "title": "Gentle AHAs (Lactic Acid)",
             "description": "Keeps skin slightly acidic — stopping odor-causing bacteria before they start.",
-            "mobile_offset_x": 0,
-            "mobile_offset_y": 0
+            "mobile_offset_x": -5,
+            "mobile_offset_y": 50
           }
         },
         "feature_hrRVte": {
@@ -359,8 +359,8 @@
             "number": "2",
             "title": "Wipe-Off Formula",
             "description": "Cleanses and preps skin for deodorant, leaving no residue or scent behind.",
-            "mobile_offset_x": 0,
-            "mobile_offset_y": 0
+            "mobile_offset_x": 20,
+            "mobile_offset_y": 50
           }
         },
         "feature_nYhdYz": {
