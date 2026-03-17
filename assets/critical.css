@@ -76,7 +76,7 @@ body {
   font-family: var(--font-primary--family);
   background-color: #FFF7EA;
   color: var(--color-foreground);
-};
+}
 
 /** Section layout utilities */
 
