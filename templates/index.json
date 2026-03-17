@@ -79,7 +79,7 @@
       "name": "t:general.in_press",
       "settings": {
         "title": "IN PRESS",
-        "background_color": "#ffe4e8",
+        "background_color": "#fff2f4",
         "text_color": "#3e2027",
         "divider_color": "#3e2027"
       }
