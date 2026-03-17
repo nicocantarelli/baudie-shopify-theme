@@ -108,6 +108,17 @@
                         fill="#F5F0EC" /></svg>
                   {% endif %}
                 </div>
+
+                {%- comment -%} Mobile SVG Line {%- endcomment -%}
+                {% if block_index == 1 %}
+                <div class="what-makes-different__mobile-line what-makes-different__mobile-line--1">
+                  <svg viewBox="0 0 200 70" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 3 H80 L188 62" stroke="#3E2027" stroke-width="0.5"/><rect x="178" y="52" width="16" height="16" rx="8" fill="#3E2027"/><circle cx="186" cy="60" r="6" fill="#F5F0EC"/></svg>
+                </div>
+                {% elsif block_index == 3 %}
+                <div class="what-makes-different__mobile-line what-makes-different__mobile-line--3">
+                  <svg viewBox="0 0 200 70" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 67 H80 L188 8" stroke="#3E2027" stroke-width="0.5"/><rect x="178" y="0" width="16" height="16" rx="8" fill="#3E2027"/><circle cx="186" cy="8" r="6" fill="#F5F0EC"/></svg>
+                </div>
+                {% endif %}
               </div>
             {% endif %}
           {% endif %}
@@ -188,6 +199,17 @@
                         fill="#F5F0EC" /></svg>
                   {% endif %}
                 </div>
+
+                {%- comment -%} Mobile SVG Line {%- endcomment -%}
+                {% if block_index == 2 %}
+                <div class="what-makes-different__mobile-line what-makes-different__mobile-line--2">
+                  <svg viewBox="0 0 200 70" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M200 3 H120 L12 62" stroke="#3E2027" stroke-width="0.5"/><rect x="6" y="52" width="16" height="16" rx="8" fill="#3E2027"/><circle cx="14" cy="60" r="6" fill="#F5F0EC"/></svg>
+                </div>
+                {% elsif block_index == 4 %}
+                <div class="what-makes-different__mobile-line what-makes-different__mobile-line--4">
+                  <svg viewBox="0 0 200 70" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M200 67 H120 L12 8" stroke="#3E2027" stroke-width="0.5"/><rect x="6" y="0" width="16" height="16" rx="8" fill="#3E2027"/><circle cx="14" cy="8" r="6" fill="#F5F0EC"/></svg>
+                </div>
+                {% endif %}
               </div>
             {% endif %}
           {% endif %}
@@ -436,6 +458,10 @@
   display: block;
 }
 
+.what-makes-different__mobile-line {
+  display: none;
+}
+
 
 .what-makes-different__line--1 {
   left: calc(50% - 545px);
@@ -669,21 +695,39 @@
   }
 }
 
-/* Small Tablet Styles */
+/* Mobile: 4-feature grid layout */
 @media screen and (max-width: 900px) {
   .what-makes-different {
-    padding: 70px 0 50px;
+    padding: 60px 0 40px;
+  }
+
+  .what-makes-different__header {
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
   }
 
   .what-makes-different__title {
-    font-size: 42px;
+    font-size: 36px;
+  }
+
+  .what-makes-different__intro {
+    max-width: 100%;
+    padding-top: 0;
   }
 
   .what-makes-different__content {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
     min-height: auto;
     gap: 0;
+    column-gap: 16px;
     position: relative;
+  }
+
+  .what-makes-different__column {
+    display: contents;
   }
 
   .what-makes-different__image-wrapper {
@@ -691,113 +735,103 @@
     top: auto;
     left: auto;
     transform: none;
-    width: 100%;
-    max-width: 320px;
-    height: 320px;
-    margin: 0 auto 50px;
-    order: -1;
-  }
-
-  .what-makes-different__column {
-    width: 100%;
-    max-width: 600px;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 200px;
+    height: 200px;
     margin: 0 auto;
   }
 
-  .what-makes-different__column--right {
-    margin-top: 0;
-  }
-
-  .what-makes-different__feature--1,
-  .what-makes-different__feature--2,
-  .what-makes-different__feature--3,
-  .what-makes-different__feature--4,
-  .what-makes-different__feature--5,
-  .what-makes-different__feature--6 {
-    margin: 0 0 36px;
-    width: 100%;
-  }
-
   .what-makes-different__feature {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 20px;
-  }
-
-  .what-makes-different__badge {
-    width: 44px;
-    height: 44px;
-  }
-
-  .what-makes-different__feature-content {
+    display: flex;
+    flex-direction: column;
     gap: 12px;
+    position: static;
   }
 
-  .what-makes-different__feature-description {
-    max-width: none;
-  }
-}
-
-/* Mobile Styles */
-@media screen and (max-width: 768px) {
-  .what-makes-different {
-    padding: 60px 0 40px;
+  .what-makes-different__feature--1 {
+    grid-row: 1;
+    grid-column: 1;
+    margin: 0;
+    width: auto;
   }
 
-  .what-makes-different__container {
-    padding: 0 20px;
+  .what-makes-different__feature--2 {
+    grid-row: 1;
+    grid-column: 2;
+    margin: 0;
   }
 
-  .what-makes-different__title {
-    font-size: 36px;
+  .what-makes-different__feature--3 {
+    grid-row: 3;
+    grid-column: 1;
+    margin: 0;
+    width: auto;
   }
 
-  .what-makes-different__intro p {
-    font-size: 15px;
+  .what-makes-different__feature--4 {
+    grid-row: 3;
+    grid-column: 2;
+    margin: 0;
   }
 
-  .what-makes-different__content {
-    gap: 0;
-  }
-
-  .what-makes-different__image-wrapper {
-    max-width: 280px;
-    height: 280px;
-    margin: 0 auto 40px;
-  }
-
-  .what-makes-different__column {
-    max-width: 100%;
-  }
-
-  .what-makes-different__feature--1,
-  .what-makes-different__feature--2,
-  .what-makes-different__feature--3,
-  .what-makes-different__feature--4,
   .what-makes-different__feature--5,
   .what-makes-different__feature--6 {
-    margin: 0 0 32px;
+    display: none;
   }
 
-  .what-makes-different__feature {
-    gap: 16px;
+  .what-makes-different__line {
+    display: none;
+  }
+
+  .what-makes-different__mobile-line {
+    display: flex;
+    padding: 8px 0;
+  }
+
+  .what-makes-different__mobile-line svg {
+    display: block;
+    width: 100%;
+    max-width: 140px;
+    height: auto;
+  }
+
+  .what-makes-different__mobile-line--1,
+  .what-makes-different__mobile-line--3 {
+    justify-content: flex-end;
+  }
+
+  .what-makes-different__mobile-line--2,
+  .what-makes-different__mobile-line--4 {
+    justify-content: flex-start;
+  }
+
+  .what-makes-different__mobile-line--3,
+  .what-makes-different__mobile-line--4 {
+    order: -1;
   }
 
   .what-makes-different__badge {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
   }
 
   .what-makes-different__badge span {
-    font-size: 13px;
+    font-size: 12px;
+  }
+
+  .what-makes-different__feature-content {
+    gap: 8px;
   }
 
   .what-makes-different__feature-title {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .what-makes-different__feature-description {
-    font-size: 15px;
+    font-size: 13px;
+    max-width: none;
+    line-height: 1.4;
   }
 }
 
@@ -812,48 +846,32 @@
   }
 
   .what-makes-different__title {
-    font-size: 32px;
+    font-size: 30px;
   }
 
   .what-makes-different__intro p {
     font-size: 14px;
   }
 
+  .what-makes-different__content {
+    column-gap: 12px;
+  }
+
   .what-makes-different__image-wrapper {
-    max-width: 240px;
-    height: 240px;
-    margin: 0 auto 32px;
+    width: 160px;
+    height: 160px;
   }
 
-  .what-makes-different__feature--1,
-  .what-makes-different__feature--2,
-  .what-makes-different__feature--3,
-  .what-makes-different__feature--4,
-  .what-makes-different__feature--5,
-  .what-makes-different__feature--6 {
-    margin: 0 0 28px;
-  }
-
-  .what-makes-different__feature {
-    gap: 14px;
-  }
-
-  .what-makes-different__badge {
-    width: 36px;
-    height: 36px;
-  }
-
-  .what-makes-different__badge span {
-    font-size: 12px;
+  .what-makes-different__mobile-line svg {
+    max-width: 110px;
   }
 
   .what-makes-different__feature-title {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .what-makes-different__feature-description {
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: 12px;
   }
 }
 
