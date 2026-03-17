@@ -369,8 +369,8 @@
             "number": "3",
             "title": "Plant-Powered Actives",
             "description": "Naturally balance your underarm microbiome for long-lasting freshness.",
-            "mobile_offset_x": 0,
-            "mobile_offset_y": 0
+            "mobile_offset_x": -5,
+            "mobile_offset_y": -75
           }
         },
         "feature_TqVrwc": {
@@ -379,8 +379,8 @@
             "number": "4",
             "title": "Dermatologist-Tested",
             "description": "Safe for sensitive skin. Proven effective in bacterial control.",
-            "mobile_offset_x": 0,
-            "mobile_offset_y": 0
+            "mobile_offset_x": 30,
+            "mobile_offset_y": -80
           }
         },
         "feature_XBjAqb": {
