@@ -109,6 +109,13 @@ body {
 /* Child elements, by default, are constrained to the central column of the grid. */
 .shopify-section > * {
   grid-column: 2;
+  min-height: 0;
+}
+
+/* Ensure section backgrounds fill the entire .shopify-section wrapper */
+.shopify-section > .full-width,
+.shopify-section > :only-child {
+  min-height: 100%;
 }
 
 /* Child elements that use the full-width utility class span the entire viewport. */

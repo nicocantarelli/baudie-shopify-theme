@@ -3,7 +3,7 @@
   Products display with their hero images from metafields and allow navigation between items.
 {% endcomment %}
 
-<section class="hero-product full-width" aria-label="{{ 'sections.hero_product.aria_label' | t }}">
+<section class="hero-product full-width" aria-label="{{ 'sections.hero_product.aria_label' | t }}" style="--section-bg: {{ section.settings.background_color | default: '#FFF7EA' }};">
   <div class="hero-product__inner">
     {%- comment -%} Hero Images Container {%- endcomment -%}
     <div class="hero-product__images" data-hero-images>
@@ -242,7 +242,7 @@
   .hero-product {
     position: relative;
     width: 100%;
-    background-color: #FFF7EA;
+    background-color: var(--section-bg, #FFF7EA);
     overflow: hidden;
     margin-top: var(--total-header-height, 110px);
   }
@@ -940,6 +940,16 @@
         "type": "product_list",
         "id": "hero_products",
         "label": "t:sections.hero_product.settings.products"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.colors"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "t:labels.background_color",
+        "default": "#FFF7EA"
       },
       {
         "type": "header",
