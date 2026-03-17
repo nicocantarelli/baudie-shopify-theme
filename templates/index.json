@@ -79,7 +79,7 @@
       "name": "t:general.in_press",
       "settings": {
         "title": "IN PRESS",
-        "background_color": "#fff2f4",
+        "background_color": "#fff7ea",
         "text_color": "#3e2027",
         "divider_color": "#3e2027"
       }
@@ -91,7 +91,7 @@
         "second_heading": "The step your deodorant's been missing.",
         "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
         "product_image": "shopify://shop_images/product-details-image.png",
-        "background_color": "#fff2f4",
+        "background_color": "#fff7ea",
         "text_color": "#3e2027"
       }
     },
@@ -156,7 +156,7 @@
         "product_E4JWyD"
       ],
       "settings": {
-        "background_color": "#fff2f4",
+        "background_color": "#fff7ea",
         "heading": "Meet Your Scents",
         "side_image": "shopify://shop_images/meet-your-scents-left.png",
         "background_image": "shopify://shop_images/meet-your-scents-right.png"
@@ -205,7 +205,7 @@
         "heading_color": "#ffffff",
         "description": "<p>Meet six Baudie scents and them all.<br/>Spray, wipe, and let your deodorant do its best work.</p>",
         "description_color": "#ffffff",
-        "background_color": "#fff2f4",
+        "background_color": "#fff7ea",
         "text_color": "#3e2027"
       }
     },
@@ -405,7 +405,7 @@
         "heading": "What Makes Baudie Different",
         "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
         "center_image": "shopify://shop_images/molecule-image.png",
-        "background_color": "#ffe4e8",
+        "background_color": "#fff7ea",
         "text_color": "#3e2027",
         "badge_color": "#3e2027",
         "badge_text_color": "#f5f0ec"
