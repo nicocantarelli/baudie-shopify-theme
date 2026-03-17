@@ -45,7 +45,7 @@
   <svg width="4" height="4" viewBox="0 0 4 4" fill="none" aria-hidden="true"><circle cx="2" cy="2" r="2" fill="#3E2027"/></svg>
 {%- endcapture -%}
 
-<nav class="{{ breadcrumb_class }}" aria-label="{{ 'breadcrumbs.navigation' | t }}">
+<nav class="{{ breadcrumb_class }} full-width" aria-label="{{ 'breadcrumbs.navigation' | t }}">
   <ol class="breadcrumbs__list" itemscope itemtype="https://schema.org/BreadcrumbList">
     <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
       <a href="{{ routes.root_url }}" class="breadcrumbs__link" itemprop="item">
@@ -195,9 +195,8 @@
 <style>
   .breadcrumbs {
     display: block;
-    max-width: 1600px;
-    margin: 0 auto;
     padding: 60px 40px 0;
+    background-color: #FFF7EA;
   }
 
   .breadcrumbs__list {
@@ -206,8 +205,9 @@
     align-items: center;
     gap: 0;
     list-style: none;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
+    max-width: 1600px;
   }
 
   .breadcrumbs__item {
