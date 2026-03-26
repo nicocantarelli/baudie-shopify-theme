@@ -85,7 +85,7 @@
         "product_card_tyRErt": {
           "type": "product_card",
           "settings": {
-            "product": "discovery-set-6-mini-sprays",
+            "product": "discovery-set",
             "card_width": "2",
             "show_badge": false,
             "custom_button_text": "",
