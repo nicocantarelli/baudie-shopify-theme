@@ -181,7 +181,8 @@
         "bundle_card_Y7MARn": {
           "type": "bundle_card",
           "settings": {
-            "product": "discovery-set-6-mini-sprays",
+            "product": "discovery-set",
+            "card_image_override": "shopify://shop_images/discovery-set-card.png",
             "display_products": [],
             "custom_title": "",
             "custom_description": "",
@@ -198,6 +199,7 @@
       ],
       "name": "t:general.explore_sets",
       "settings": {
+        "background_image": "shopify://shop_images/explore-our-sets-background_3a24be6f-5c93-4c77-b6ee-9d5633ec779a.png",
         "mobile_background_image": "shopify://shop_images/explore-our-sets-background.png",
         "heading": "Explore our sets",
         "heading_color": "#ffffff",
