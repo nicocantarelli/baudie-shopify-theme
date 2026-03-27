@@ -11,6 +11,57 @@
   "sections": {
     "main": {
       "type": "product-bundle",
+      "blocks": {
+        "trust_badge_bwYgHD": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Vegan.svg",
+            "label": "Vegan"
+          }
+        },
+        "trust_badge_F3cg9Y": {
+          "type": "trust_badge",
+          "settings": {
+            "label": "Free"
+          }
+        },
+        "trust_badge_aBV6b6": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Phthalate.svg",
+            "label": "Phthalate Free"
+          }
+        },
+        "trust_badge_HymVnK": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Sulfate.svg",
+            "label": "Sulfate Free"
+          }
+        },
+        "trust_badge_njJAQ4": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Plant-Based.svg",
+            "label": "Plant-Based"
+          }
+        },
+        "trust_badge_eyweTh": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/aluminium.svg",
+            "label": "Aluminium Free"
+          }
+        }
+      },
+      "block_order": [
+        "trust_badge_bwYgHD",
+        "trust_badge_F3cg9Y",
+        "trust_badge_aBV6b6",
+        "trust_badge_HymVnK",
+        "trust_badge_njJAQ4",
+        "trust_badge_eyweTh"
+      ],
       "settings": {
         "scent_collection": "shop",
         "bundle_size": 3,
@@ -107,7 +158,7 @@
         "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
         "sprays_title": "How many sprays do i need?",
         "background_color": "#fce9ec",
-        "text_color": "#3E2027"
+        "text_color": "#3e2027"
       }
     },
     "in_press_VFHyTx": {
@@ -116,8 +167,8 @@
       "settings": {
         "title": "IN PRESS",
         "background_color": "#fce9ec",
-        "text_color": "#3E2027",
-        "divider_color": "#3E2027"
+        "text_color": "#3e2027",
+        "divider_color": "#3e2027"
       }
     },
     "what_makes_different_LWNLJB": {
@@ -199,9 +250,9 @@
         "center_image": "shopify://shop_images/molecule-image.png",
         "mobile_center_image": "shopify://shop_images/mobile-molecule.png",
         "background_color": "#fce9ec",
-        "text_color": "#3E2027",
-        "badge_color": "#3E2027",
-        "badge_text_color": "#F5F0EC"
+        "text_color": "#3e2027",
+        "badge_color": "#3e2027",
+        "badge_text_color": "#f5f0ec"
       }
     },
     "related_products_adCLpM": {
@@ -209,9 +260,10 @@
       "name": "t:sections.related_products.name",
       "settings": {
         "heading": "You may also like",
+        "collection": "",
         "max_products": 4,
-        "background_color": "#FFF7EA",
-        "text_color": "#3E2027"
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027"
       }
     },
     "product_faq_dDjEXh": {
@@ -297,7 +349,7 @@
         "title": "Frequently Asked Questions",
         "intro": "",
         "background_color": "#fce9ec",
-        "text_color": "#3E2027"
+        "text_color": "#3e2027"
       }
     }
   },
