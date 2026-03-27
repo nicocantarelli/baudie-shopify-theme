@@ -39,10 +39,275 @@
       ],
       "disabled": true,
       "settings": {}
+    },
+    "how_to_use_jJUAG8": {
+      "type": "how-to-use",
+      "blocks": {
+        "step_JwEGnG": {
+          "type": "step",
+          "settings": {
+            "label": "Spray"
+          }
+        },
+        "step_rF3Rmp": {
+          "type": "step",
+          "settings": {
+            "label": "Wipe"
+          }
+        },
+        "step_dhLY9E": {
+          "type": "step",
+          "settings": {
+            "label": "Apply Deo"
+          }
+        },
+        "step_3PFwcw": {
+          "type": "step",
+          "settings": {
+            "label": "Stay fresh"
+          }
+        },
+        "dosage_UTC4gX": {
+          "type": "dosage",
+          "settings": {
+            "label": "I smell a little",
+            "drops": 2,
+            "amount": "2-4 Sprays"
+          }
+        },
+        "dosage_i6kpRW": {
+          "type": "dosage",
+          "settings": {
+            "label": "It's... Noticeable",
+            "drops": 4,
+            "amount": "4-8 Sprays"
+          }
+        },
+        "dosage_DaEyLn": {
+          "type": "dosage",
+          "settings": {
+            "label": "I'm really stinky",
+            "drops": 8,
+            "amount": "8–12 Sprays"
+          }
+        }
+      },
+      "block_order": [
+        "step_JwEGnG",
+        "step_rF3Rmp",
+        "step_dhLY9E",
+        "step_3PFwcw",
+        "dosage_UTC4gX",
+        "dosage_i6kpRW",
+        "dosage_DaEyLn"
+      ],
+      "name": "How to use",
+      "settings": {
+        "title": "How to use",
+        "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
+        "sprays_title": "How many sprays do i need?",
+        "background_color": "#fce9ec",
+        "text_color": "#3E2027"
+      }
+    },
+    "in_press_VFHyTx": {
+      "type": "in-press",
+      "name": "t:general.in_press",
+      "settings": {
+        "title": "IN PRESS",
+        "background_color": "#fce9ec",
+        "text_color": "#3E2027",
+        "divider_color": "#3E2027"
+      }
+    },
+    "what_makes_different_LWNLJB": {
+      "type": "what-makes-different",
+      "blocks": {
+        "feature_URPmbQ": {
+          "type": "feature",
+          "settings": {
+            "number": "1",
+            "title": "Gentle AHAs (Lactic Acid)",
+            "description": "Keeps skin slightly acidic — stopping odor-causing bacteria before they start.",
+            "mobile_offset_x": 0,
+            "mobile_offset_y": 0
+          }
+        },
+        "feature_DhNYQg": {
+          "type": "feature",
+          "settings": {
+            "number": "2",
+            "title": "Wipe-Off Formula",
+            "description": "Cleanses and preps skin for deodorant, leaving no residue or scent behind.",
+            "mobile_offset_x": 0,
+            "mobile_offset_y": 0
+          }
+        },
+        "feature_XUFHnj": {
+          "type": "feature",
+          "settings": {
+            "number": "3",
+            "title": "Plant-Powered Actives",
+            "description": "Naturally balance your underarm microbiome for long-lasting freshness.",
+            "mobile_offset_x": 0,
+            "mobile_offset_y": 0
+          }
+        },
+        "feature_eLG4aM": {
+          "type": "feature",
+          "settings": {
+            "number": "4",
+            "title": "Dermatologist-Tested",
+            "description": "Safe for sensitive skin. Proven effective in bacterial control.",
+            "mobile_offset_x": 0,
+            "mobile_offset_y": 0
+          }
+        },
+        "feature_G6wMJN": {
+          "type": "feature",
+          "settings": {
+            "number": "5",
+            "title": "Vegan & Cruelty-Free",
+            "description": "Never tested on animals — only tested on real, sweaty humans.",
+            "mobile_offset_x": 0,
+            "mobile_offset_y": 0
+          }
+        },
+        "feature_7YVfEp": {
+          "type": "feature",
+          "settings": {
+            "number": "6",
+            "title": "Science-Backed Confidence",
+            "description": "Clinically developed and lab-tested to make your deodorant last longer.",
+            "mobile_offset_x": 0,
+            "mobile_offset_y": 0
+          }
+        }
+      },
+      "block_order": [
+        "feature_URPmbQ",
+        "feature_DhNYQg",
+        "feature_XUFHnj",
+        "feature_eLG4aM",
+        "feature_G6wMJN",
+        "feature_7YVfEp"
+      ],
+      "name": "t:sections.what_makes_different.name",
+      "settings": {
+        "heading": "What Makes Baudie Different",
+        "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
+        "center_image": "shopify://shop_images/molecule-image.png",
+        "mobile_center_image": "shopify://shop_images/mobile-molecule.png",
+        "background_color": "#fce9ec",
+        "text_color": "#3E2027",
+        "badge_color": "#3E2027",
+        "badge_text_color": "#F5F0EC"
+      }
+    },
+    "related_products_adCLpM": {
+      "type": "related-products",
+      "name": "t:sections.related_products.name",
+      "settings": {
+        "heading": "You may also like",
+        "max_products": 4,
+        "background_color": "#FFF7EA",
+        "text_color": "#3E2027"
+      }
+    },
+    "product_faq_dDjEXh": {
+      "type": "product-faq",
+      "blocks": {
+        "faq_item_8G4ye8": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is Baudie a deodorant?",
+            "answer": ""
+          }
+        },
+        "faq_item_y4DAHY": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I use it?",
+            "answer": ""
+          }
+        },
+        "faq_item_zBPWmx": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Why do I need a pre-deodorant?",
+            "answer": ""
+          }
+        },
+        "faq_item_UxgLEU": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What does \"odor-eliminating bacterial technology\" mean?",
+            "answer": ""
+          }
+        },
+        "faq_item_4CXF84": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Will the enhancer scent mix with my deodorant or perfume?",
+            "answer": ""
+          }
+        },
+        "faq_item_bNifqF": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I use Baudie without deodorant?",
+            "answer": ""
+          }
+        },
+        "faq_item_LQTrHm": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I use it before workouts?",
+            "answer": ""
+          }
+        },
+        "faq_item_tehRF6": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is it suitable for sensitive skin?",
+            "answer": ""
+          }
+        },
+        "faq_item_qgUYG8": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can teens use Baudie?",
+            "answer": ""
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_8G4ye8",
+        "faq_item_y4DAHY",
+        "faq_item_zBPWmx",
+        "faq_item_UxgLEU",
+        "faq_item_4CXF84",
+        "faq_item_bNifqF",
+        "faq_item_LQTrHm",
+        "faq_item_tehRF6",
+        "faq_item_qgUYG8"
+      ],
+      "name": "Product FAQ",
+      "settings": {
+        "title": "Frequently Asked Questions",
+        "intro": "",
+        "background_color": "#fce9ec",
+        "text_color": "#3E2027"
+      }
     }
   },
   "order": [
     "main",
-    "1772934873d7f51644"
+    "1772934873d7f51644",
+    "how_to_use_jJUAG8",
+    "in_press_VFHyTx",
+    "what_makes_different_LWNLJB",
+    "related_products_adCLpM",
+    "product_faq_dDjEXh"
   ]
 }
