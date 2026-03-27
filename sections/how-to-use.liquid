@@ -82,14 +82,14 @@
       assign meta_image = product.metafields.custom.how_to_use_image.value
     -%}
     {% if meta_video != blank %}
-      {{ meta_video | video_tag:
-        class: 'how-to-use__video',
-        autoplay: true,
-        loop: true,
-        muted: true,
-        playsinline: true,
-        controls: false
-      }}
+      <video
+        class="how-to-use__video"
+        autoplay
+        loop
+        muted
+        playsinline
+        src="{{ meta_video.sources[1].url | default: meta_video.sources[0].url }}">
+      </video>
     {% elsif meta_image != blank %}
       {{ meta_image | image_url: width: 1440 | image_tag:
         loading: 'lazy',
