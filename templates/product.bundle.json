@@ -269,9 +269,9 @@
       "name": "t:sections.related_products.name",
       "settings": {
         "heading": "You may also like",
-        "collection": "",
+        "collection": "shop",
         "max_products": 4,
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
     },
