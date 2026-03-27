@@ -80,7 +80,7 @@
       "name": "t:general.in_press",
       "settings": {
         "title": "IN PRESS",
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027",
         "divider_color": "#3e2027"
       }
@@ -92,7 +92,7 @@
         "second_heading": "The step your deodorant's been missing.",
         "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
         "product_image": "shopify://shop_images/product-details-image.png",
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
     },
@@ -157,7 +157,7 @@
         "product_E4JWyD"
       ],
       "settings": {
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "heading": "Meet Your Scents",
         "side_image": "shopify://shop_images/meet-your-scents-left.png",
         "background_image": "shopify://shop_images/meet-your-scents-right.png"
@@ -206,7 +206,7 @@
         "heading_color": "#ffffff",
         "description": "<p>Meet six Baudie scents and them all.<br/>Spray, wipe, and let your deodorant do its best work.</p>",
         "description_color": "#ffffff",
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
     },
@@ -259,8 +259,8 @@
         "view_all_url": "shopify://collections",
         "yotpo_app_key": "",
         "product_id": "",
-        "background_color": "#fff7ea",
-        "card_background_color": "#fcf0d2",
+        "background_color": "#fce9ec",
+        "card_background_color": "#ffcad2",
         "text_color": "#3e2027"
       }
     },
@@ -419,7 +419,7 @@
         "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
         "center_image": "shopify://shop_images/molecule-image.png",
         "mobile_center_image": "shopify://shop_images/mobile-molecule.png",
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027",
         "badge_color": "#3e2027",
         "badge_text_color": "#f5f0ec"
@@ -457,7 +457,7 @@
       ],
       "name": "Product benefits",
       "settings": {
-        "background_color": "#ffe4e8",
+        "background_color": "#fce9ec",
         "text_color": "#fffae6"
       }
     },
@@ -470,7 +470,7 @@
         "placeholder": "Enter your email",
         "button_text": "SUBSCRIBE",
         "fine_print": "<p>We'll only email you when it's worth it — new scents, early access, or something good for your pits.<br/>See our <a href=\"https://lumiosdigital.myshopify.com/pages/customer-care#privacy\" target=\"_blank\" title=\"https://lumiosdigital.myshopify.com/pages/customer-care#privacy\">Privacy Policy</a> and <a href=\"https://lumiosdigital.myshopify.com/pages/customer-care#terms\" target=\"_blank\" title=\"https://lumiosdigital.myshopify.com/pages/customer-care#terms\">Terms</a>.</p>",
-        "background_color": "#ffe4e8",
+        "background_color": "#ffcad2",
         "text_color": "#3e2027",
         "button_background_color": "#3e2027",
         "button_text_color": "#fffae6"
