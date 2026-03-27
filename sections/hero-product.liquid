@@ -73,7 +73,7 @@
     </div>
 
     {%- comment -%} Mobile Content {%- endcomment -%}
-    <div class="hero-product__mobile-content">
+    <div class="hero-product__mobile-content {% if section.settings.mobile_content_position == 'top' %}hero-product__mobile-content--top{% endif %}">
       <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
       <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
       <a href="{{ section.settings.mobile_button_url }}" class="hero-product__mobile-button">
@@ -244,7 +244,7 @@
     width: 100%;
     background-color: #FFF7EA;
     overflow: hidden;
-    margin-top: var(--total-header-height, 110px);
+    margin-top: var(--total-header-height, 105px);
   }
 
   .hero-product__inner {
@@ -736,6 +736,11 @@
       z-index: 3;
     }
 
+    .hero-product__mobile-content--top {
+      bottom: auto;
+      top: 160px;
+    }
+
     .hero-product__mobile-title {
       font-family: var(--font-alyona);
       font-size: 30px;
@@ -800,6 +805,11 @@
 
   /* Extra small screens (320px and below) */
   @media (max-width: 320px) {
+    .hero-product__inner {
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
     .hero-product__heading h1 {
       font-size: 36px;
     }
@@ -807,6 +817,11 @@
     .hero-product__mobile-content {
       bottom: 30px;
       gap: 6px;
+    }
+
+    .hero-product__mobile-content--top {
+      bottom: auto;
+      top: 135px;
     }
 
     .hero-product__mobile-title {
@@ -990,6 +1005,22 @@
       {
         "type": "header",
         "content": "t:sections.hero_product.settings.mobile_header"
+      },
+      {
+        "type": "select",
+        "id": "mobile_content_position",
+        "label": "t:sections.hero_product.settings.mobile_content_position",
+        "options": [
+          {
+            "value": "bottom",
+            "label": "t:sections.hero_product.settings.mobile_content_position_bottom"
+          },
+          {
+            "value": "top",
+            "label": "t:sections.hero_product.settings.mobile_content_position_top"
+          }
+        ],
+        "default": "bottom"
       },
       {
         "type": "text",

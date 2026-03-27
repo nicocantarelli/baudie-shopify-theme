@@ -22,14 +22,23 @@
   ">
 
   {% if has_announcements %}
+    {%- liquid
+      assign has_stacked = false
+      for block in section.blocks
+        if block.settings.link_text_layout == 'below' and block.settings.link_text != blank
+          assign has_stacked = true
+          break
+        endif
+      endfor
+    -%}
     <div
-      class="announcement-bar"
+      class="announcement-bar {% if has_stacked %}announcement-bar--has-stacked{% endif %}"
       role="region"
       aria-label="Announcements">
       {% for block in section.blocks %}
-        <div class="announcement-bar__item announcement-bar__item--{{ forloop.index }}" {{ block.shopify_attributes }}>
+        <div class="announcement-bar__item announcement-bar__item--{{ forloop.index }} {% if block.settings.link_text_layout == 'below' %}announcement-bar__item--stacked{% endif %}" {{ block.shopify_attributes }}>
           {% if block.settings.url != blank %}
-            <a href="{{ block.settings.url }}" class="announcement-bar__link">
+            <a href="{{ block.settings.url }}" class="announcement-bar__link {% if block.settings.link_text_layout == 'below' %}announcement-bar__link--stacked{% endif %}">
               <span class="announcement-bar__text">{{ block.settings.text }}</span>
               {% if block.settings.link_text != blank %}
                 <span class="announcement-bar__link-text">{{ block.settings.link_text }}</span>
@@ -287,6 +296,25 @@
   .announcement-bar__link-text {
     text-decoration: underline;
     text-underline-offset: 2px;
+  }
+
+  /* Stacked layout - link text below main text */
+  .announcement-bar--has-stacked {
+    height: auto;
+    min-height: 40px;
+    padding: 8px 0;
+  }
+
+  .announcement-bar__item--stacked {
+    flex-direction: column;
+    gap: 2px;
+    text-align: center;
+  }
+
+  .announcement-bar__link--stacked {
+    flex-direction: column;
+    gap: 2px;
+    text-align: center;
   }
 
   /* Header */
@@ -939,6 +967,21 @@
             "id": "link_text",
             "label": "t:header.blocks.announcement.settings.link_text",
             "info": "t:header.blocks.announcement.settings.link_text_info"
+          }, {
+            "type": "select",
+            "id": "link_text_layout",
+            "label": "t:header.blocks.announcement.settings.link_text_layout",
+            "options": [
+              {
+                "value": "inline",
+                "label": "t:header.blocks.announcement.settings.link_text_layout_inline"
+              },
+              {
+                "value": "below",
+                "label": "t:header.blocks.announcement.settings.link_text_layout_below"
+              }
+            ],
+            "default": "inline"
           }, {
             "type": "url",
             "id": "url",

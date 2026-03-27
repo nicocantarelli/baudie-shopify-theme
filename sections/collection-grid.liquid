@@ -50,7 +50,7 @@
       <p class="collection-grid__empty">{{ 'collections.title' | t }}</p>
     {%- endif -%}
 
-    {%- if section.settings.seo_heading != blank or section.settings.seo_text != blank -%}
+    {%- if section.settings.show_seo_content and section.settings.seo_heading != blank or section.settings.show_seo_content and section.settings.seo_text != blank -%}
       <div class="collection-grid__seo">
         <div class="collection-grid__seo-inner">
           {%- if section.settings.seo_heading != blank -%}
@@ -742,6 +742,12 @@
     {
       "type": "header",
       "content": "t:sections.collection_grid.settings.seo_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_seo_content",
+      "label": "t:sections.collection_grid.settings.show_seo_content",
+      "default": true
     },
     {
       "type": "text",

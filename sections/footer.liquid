@@ -3,7 +3,7 @@
 {% endcomment %}
 
 {%- unless template == 'index' -%}
-  {% render 'breadcrumbs' %}
+  {% render 'breadcrumbs', background_color: section.settings.breadcrumb_background_color, text_color: section.settings.breadcrumb_text_color %}
 {%- endunless -%}
 
 <footer class="footer full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --button-bg: {{ section.settings.button_background_color }}; --button-text: {{ section.settings.button_text_color }};">
@@ -557,6 +557,22 @@
         "id": "contact_email",
         "label": "t:footer.settings.contact_email",
         "default": "info@baudie.com"
+      },
+      {
+        "type": "header",
+        "content": "t:footer.settings.breadcrumb_header"
+      },
+      {
+        "type": "color",
+        "id": "breadcrumb_background_color",
+        "label": "t:footer.settings.breadcrumb_background_color",
+        "default": "#FFF7EA"
+      },
+      {
+        "type": "color",
+        "id": "breadcrumb_text_color",
+        "label": "t:footer.settings.breadcrumb_text_color",
+        "default": "#3E2027"
       },
       {
         "type": "header",

@@ -79,6 +79,9 @@
           "text": "Announcement text",
           "link_text": "Link text (underlined)",
           "link_text_info": "Optional text that appears underlined after the main text",
+          "link_text_layout": "Link text position",
+          "link_text_layout_inline": "Next to text",
+          "link_text_layout_below": "Below text",
           "url": "Link URL"
         }
       }
@@ -97,7 +100,10 @@
       "facebook_url": "Facebook URL",
       "instagram_url": "Instagram URL",
       "contact_header": "Contact Information",
-      "contact_email": "Contact email"
+      "contact_email": "Contact email",
+      "breadcrumb_header": "Breadcrumbs",
+      "breadcrumb_background_color": "Breadcrumb background color",
+      "breadcrumb_text_color": "Breadcrumb text color"
     }
   },
   "labels": {
@@ -276,6 +282,9 @@
         "use_default_colors_info": "When enabled, uses the colors below instead of product metafield colors",
         "default_card_text_color": "Default card text color",
         "default_card_button_color": "Default card button color",
+        "mobile_content_position": "Content position",
+        "mobile_content_position_bottom": "Bottom",
+        "mobile_content_position_top": "Below title",
         "mobile_button_text": "Mobile button text",
         "mobile_button_url": "Mobile button URL"
       }
@@ -315,6 +324,7 @@
       "name": "Collection grid",
       "settings": {
         "seo_header": "SEO content",
+        "show_seo_content": "Show SEO content",
         "seo_heading": "SEO heading",
         "seo_heading_info": "Heading for the SEO text section below the grid",
         "seo_text": "SEO text",

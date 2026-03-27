@@ -75,9 +75,28 @@
     {% endif %}
   </div>
 
-  {%- comment -%} Media Column (image or video) {%- endcomment -%}
+  {%- comment -%} Media Column (image or video) — product metafield takes priority over section settings {%- endcomment -%}
   <div class="how-to-use__media">
-    {% if section.settings.media_video != blank %}
+    {%- liquid
+      assign meta_video = product.metafields.custom.how_to_use_video.value
+      assign meta_image = product.metafields.custom.how_to_use_image.value
+    -%}
+    {% if meta_video != blank %}
+      {{ meta_video | video_tag:
+        class: 'how-to-use__video',
+        autoplay: true,
+        loop: true,
+        muted: true,
+        playsinline: true,
+        controls: false
+      }}
+    {% elsif meta_image != blank %}
+      {{ meta_image | image_url: width: 1440 | image_tag:
+        loading: 'lazy',
+        class: 'how-to-use__image',
+        alt: product.title | append: ' - ' | append: section.settings.title | default: 'How to use'
+      }}
+    {% elsif section.settings.media_video != blank %}
       {{ section.settings.media_video | video_tag:
         class: 'how-to-use__video',
         autoplay: true,
