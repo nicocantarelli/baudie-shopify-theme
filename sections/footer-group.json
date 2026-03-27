@@ -14,14 +14,15 @@
     "footer": {
       "type": "footer",
       "settings": {
-        "footer_logo": "shopify://shop_images/large-baudie-logo-footer_66743d45-c564-44c1-acdb-5b1381992bb2.svg",
         "menu_shop": "shop",
         "menu_company": "company",
         "menu_customer_care": "customer-care",
         "facebook_url": "https://facebook.com",
         "instagram_url": "https://instagram.com",
         "contact_email": "info@baudie.com",
-        "background_color": "#ffe4e8",
+        "breadcrumb_background_color": "#fce9ec",
+        "breadcrumb_text_color": "#3e2027",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027",
         "button_background_color": "#3e2027",
         "button_text_color": "#fffae6"

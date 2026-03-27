@@ -84,7 +84,7 @@
         "title": "How to use",
         "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
         "sprays_title": "How many sprays do i need?",
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
     },
@@ -93,7 +93,7 @@
       "name": "t:general.in_press",
       "settings": {
         "title": "IN PRESS",
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027",
         "divider_color": "#3e2027"
       }
@@ -176,7 +176,7 @@
         "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
         "center_image": "shopify://shop_images/molecule-image.png",
         "mobile_center_image": "shopify://shop_images/mobile-molecule.png",
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027",
         "badge_color": "#3e2027",
         "badge_text_color": "#f5f0ec"
@@ -187,7 +187,7 @@
       "settings": {
         "heading": "You may also like",
         "max_products": 4,
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
     },
@@ -272,7 +272,7 @@
       "settings": {
         "title": "Frequently Asked Questions",
         "intro": "<p>Baudie is a pre-deodorant enhancer — a step you use before deodorant. It removes odor-causing bacteria using odor-eliminating bacterial technology, gentle AHAs, and plant-powered actives. By cleaning and prepping your skin, it helps your deodorant stay effective longer.</p>",
-        "background_color": "#fff7ea",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
     }
