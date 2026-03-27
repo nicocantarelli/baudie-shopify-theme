@@ -137,7 +137,7 @@
             "number": "4",
             "title": "Dermatologist-Tested",
             "description": "Safe for sensitive skin. Proven effective in bacterial control.",
-            "mobile_offset_x": 35,
+            "mobile_offset_x": 30,
             "mobile_offset_y": -60
           }
         },
@@ -180,6 +180,15 @@
         "text_color": "#3e2027",
         "badge_color": "#3e2027",
         "badge_text_color": "#f5f0ec"
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {
+        "heading": "You may also like",
+        "max_products": 4,
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027"
       }
     },
     "product-faq": {
@@ -263,15 +272,6 @@
       "settings": {
         "title": "Frequently Asked Questions",
         "intro": "<p>Baudie is a pre-deodorant enhancer — a step you use before deodorant. It removes odor-causing bacteria using odor-eliminating bacterial technology, gentle AHAs, and plant-powered actives. By cleaning and prepping your skin, it helps your deodorant stay effective longer.</p>",
-        "background_color": "#fff7ea",
-        "text_color": "#3e2027"
-      }
-    },
-    "related-products": {
-      "type": "related-products",
-      "settings": {
-        "heading": "You may also like",
-        "max_products": 4,
         "background_color": "#fff7ea",
         "text_color": "#3e2027"
       }
