@@ -129,8 +129,8 @@
             "number": "1",
             "title": "Gentle AHAs (Lactic Acid)",
             "description": "Keeps skin slightly acidic — stopping odor-causing bacteria before they start.",
-            "mobile_offset_x": 0,
-            "mobile_offset_y": 0
+            "mobile_offset_x": -80,
+            "mobile_offset_y": 50
           }
         },
         "feature_DhNYQg": {
@@ -140,7 +140,7 @@
             "title": "Wipe-Off Formula",
             "description": "Cleanses and preps skin for deodorant, leaving no residue or scent behind.",
             "mobile_offset_x": 0,
-            "mobile_offset_y": 0
+            "mobile_offset_y": 50
           }
         },
         "feature_XUFHnj": {
@@ -150,7 +150,7 @@
             "title": "Plant-Powered Actives",
             "description": "Naturally balance your underarm microbiome for long-lasting freshness.",
             "mobile_offset_x": 0,
-            "mobile_offset_y": 0
+            "mobile_offset_y": -50
           }
         },
         "feature_eLG4aM": {
@@ -160,7 +160,7 @@
             "title": "Dermatologist-Tested",
             "description": "Safe for sensitive skin. Proven effective in bacterial control.",
             "mobile_offset_x": 0,
-            "mobile_offset_y": 0
+            "mobile_offset_y": -55
           }
         },
         "feature_G6wMJN": {
