@@ -270,7 +270,7 @@
       "settings": {
         "heading": "You may also like",
         "collection": "shop",
-        "max_products": 4,
+        "max_products": 6,
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
