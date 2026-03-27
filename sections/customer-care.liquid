@@ -16,7 +16,7 @@
 {%- endcapture -%}
 
 <section
-  class="customer-care"
+  class="customer-care full-width"
   id="customer-care-{{ section_id }}"
   data-customer-care
   data-active-category="{{ active_category }}"
@@ -239,7 +239,7 @@
 
 {% stylesheet %}
 .customer-care {
-  --cc-cream: #FFFAE6;
+  --cc-cream: color-mix(in srgb, var(--cc-text, #3E2027) 5%, var(--cc-bg, #FFF7EA));
   --cc-border: rgba(62, 32, 39, 0.1);
   background-color: var(--cc-bg);
   padding: calc(var(--total-header-height, 110px) + 60px) 0 120px;
