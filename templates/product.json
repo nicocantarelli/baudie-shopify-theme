@@ -12,6 +12,13 @@
     "main": {
       "type": "product",
       "blocks": {
+        "trust_badge_34WD9G": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Vegan.svg",
+            "label": "Vegan"
+          }
+        },
         "trust_badge_NUR9qx": {
           "type": "trust_badge",
           "settings": {
@@ -56,6 +63,7 @@
         }
       },
       "block_order": [
+        "trust_badge_34WD9G",
         "trust_badge_NUR9qx",
         "trust_badge_wQxwFt",
         "trust_badge_HG9JJg",
