@@ -11,6 +11,42 @@
   "sections": {
     "main": {
       "type": "product",
+      "blocks": {
+        "trust_badge_HG9JJg": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Cruel.svg",
+            "label": "Cruelty Free"
+          }
+        },
+        "trust_badge_7WbrDU": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Phthalate.svg",
+            "label": "Phtalate Free"
+          }
+        },
+        "trust_badge_fnGhiD": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Plant-Based.svg",
+            "label": "Plant Based"
+          }
+        },
+        "trust_badge_fcKKBw": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Sulfate.svg",
+            "label": "Sulfate Free"
+          }
+        }
+      },
+      "block_order": [
+        "trust_badge_HG9JJg",
+        "trust_badge_7WbrDU",
+        "trust_badge_fnGhiD",
+        "trust_badge_fcKKBw"
+      ],
       "settings": {
         "popup_text_color": "#3e2027"
       }
