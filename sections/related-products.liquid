@@ -144,6 +144,15 @@
         {%- endfor -%}
       </div>
 
+      <div class="related-products__nav">
+        <button type="button" class="related-products__arrow related-products__arrow--prev" data-prev aria-label="{{ 'general.previous' | t }}">
+          <svg aria-hidden="true" width="12" height="24" viewBox="0 0 12 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.84306 12.7106L7.50006 18.3676L8.91406 16.9536L3.96406 12.0036L8.91406 7.05365L7.50006 5.63965L1.84306 11.2966C1.65559 11.4842 1.55028 11.7385 1.55028 12.0036C1.55028 12.2688 1.65559 12.5231 1.84306 12.7106Z" fill="currentColor"/></svg>
+        </button>
+        <button type="button" class="related-products__arrow related-products__arrow--next" data-next aria-label="{{ 'general.next' | t }}">
+          <svg aria-hidden="true" width="12" height="24" viewBox="0 0 12 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.1569 12.7106L4.49994 18.3676L3.08594 16.9536L8.03594 12.0036L3.08594 7.05365L4.49994 5.63965L10.1569 11.2966C10.3444 11.4842 10.4497 11.7385 10.4497 12.0036C10.4497 12.2688 10.3444 12.5231 10.1569 12.7106Z" fill="currentColor"/></svg>
+        </button>
+      </div>
+
       {%- if related_count > 1 -%}
         <div class="related-products__dots" data-dots>
           {%- assign dot_count = max_products -%}
@@ -390,6 +399,42 @@
     display: none;
   }
 
+  .related-products__nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .related-products__arrow {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--text-color, #3E2027);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-color, #3E2027);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    padding: 0;
+  }
+
+  .related-products__arrow:hover {
+    background-color: color-mix(in srgb, var(--text-color, #3E2027) 10%, transparent);
+  }
+
+  .related-products__arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .related-products__arrow:focus-visible {
+    outline: 2px solid var(--text-color, #3E2027);
+    outline-offset: 2px;
+  }
+
   /* Tablet */
   @media (max-width: 1024px) {
     .related-products {
@@ -492,57 +537,44 @@
   class RelatedProducts extends HTMLElement {
     connectedCallback() {
       this.track = this.querySelector('[data-track]');
-      this.dots = this.querySelectorAll('[data-dot]');
+      this.prevBtn = this.querySelector('[data-prev]');
+      this.nextBtn = this.querySelector('[data-next]');
       this.cards = this.querySelectorAll('[data-card]');
 
-      if (!this.track || !this.dots.length || !this.cards.length) return;
+      if (!this.track || !this.cards.length) return;
 
-      this.setupDotClicks();
-      this.setupScrollObserver();
+      this.setupArrows();
+      this.updateArrows();
+      this.track.addEventListener('scroll', () => this.updateArrows());
     }
 
-    setupDotClicks() {
-      this.dots.forEach(dot => {
-        dot.addEventListener('click', () => {
-          const index = parseInt(dot.dataset.dot, 10);
-          const card = this.cards[index];
-          if (card) {
-            card.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-          }
-        });
-      });
-    }
-
-    setupScrollObserver() {
-      const options = {
-        root: this.track,
-        threshold: 0.5
-      };
-
-      this.observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const index = Array.from(this.cards).indexOf(entry.target);
-            this.setActiveDot(index);
-          }
-        });
-      }, options);
-
-      this.cards.forEach(card => this.observer.observe(card));
-    }
-
-    setActiveDot(index) {
-      this.dots.forEach(dot => dot.classList.remove('is-active'));
-      if (this.dots[index]) {
-        this.dots[index].classList.add('is-active');
+    setupArrows() {
+      if (this.prevBtn) {
+        this.prevBtn.addEventListener('click', () => this.scroll(-1));
+      }
+      if (this.nextBtn) {
+        this.nextBtn.addEventListener('click', () => this.scroll(1));
       }
     }
 
-    disconnectedCallback() {
-      if (this.observer) {
-        this.observer.disconnect();
+    scroll(direction) {
+      const card = this.cards[0];
+      if (!card) return;
+      const scrollAmount = card.offsetWidth + 20;
+      this.track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
+
+    updateArrows() {
+      const { scrollLeft, scrollWidth, clientWidth } = this.track;
+      if (this.prevBtn) {
+        this.prevBtn.disabled = scrollLeft <= 0;
+      }
+      if (this.nextBtn) {
+        this.nextBtn.disabled = scrollLeft + clientWidth >= scrollWidth - 1;
       }
     }
+
+    disconnectedCallback() {}
   }
 
   if (!customElements.get('related-products')) {
