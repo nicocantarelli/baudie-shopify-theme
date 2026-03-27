@@ -12,6 +12,20 @@
     "main": {
       "type": "product",
       "blocks": {
+        "trust_badge_NUR9qx": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/aluminium.svg",
+            "label": "Aluminium Free"
+          }
+        },
+        "trust_badge_wQxwFt": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Paraben.svg",
+            "label": "Paraben Free"
+          }
+        },
         "trust_badge_HG9JJg": {
           "type": "trust_badge",
           "settings": {
@@ -42,6 +56,8 @@
         }
       },
       "block_order": [
+        "trust_badge_NUR9qx",
+        "trust_badge_wQxwFt",
         "trust_badge_HG9JJg",
         "trust_badge_7WbrDU",
         "trust_badge_fnGhiD",
