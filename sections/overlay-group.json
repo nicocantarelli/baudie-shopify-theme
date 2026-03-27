@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "aside",
   "name": "t:general.overlay",
@@ -7,9 +16,13 @@
       "settings": {
         "empty_title": "Your cart is empty",
         "empty_message": "Looks like you haven't added anything yet.",
-        "continue_button_text": "Continue shopping"
+        "continue_button_text": "Continue shopping",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
       }
     }
   },
-  "order": ["sidecart"]
+  "order": [
+    "sidecart"
+  ]
 }
