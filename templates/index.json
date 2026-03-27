@@ -103,7 +103,7 @@
           "type": "product",
           "settings": {
             "product": "capri-seaside",
-            "tab_color": "#ffcad2",
+            "tab_color": "#ffbd8e",
             "tab_text_color": "#fffae6"
           }
         },
@@ -111,15 +111,15 @@
           "type": "product",
           "settings": {
             "product": "sweet-muse",
-            "tab_color": "#ffcad2",
-            "tab_text_color": "#fffae6"
+            "tab_color": "#f8eee0",
+            "tab_text_color": "#3e2027"
           }
         },
         "product_LwTCEz": {
           "type": "product",
           "settings": {
             "product": "barely-there",
-            "tab_color": "#ffcad2",
+            "tab_color": "#abd99b",
             "tab_text_color": "#fffae6"
           }
         },
@@ -128,7 +128,7 @@
           "settings": {
             "product": "petal-kiss",
             "tab_color": "#ffcad2",
-            "tab_text_color": "#fffae6"
+            "tab_text_color": "#3e2027"
           }
         },
         "product_qEfH7c": {
@@ -157,7 +157,7 @@
         "product_E4JWyD"
       ],
       "settings": {
-        "background_color": "#fce9ec",
+        "background_color": "#f4d2a4",
         "heading": "Meet Your Scents",
         "side_image": "shopify://shop_images/meet-your-scents-left.png",
         "background_image": "shopify://shop_images/meet-your-scents-right.png"
