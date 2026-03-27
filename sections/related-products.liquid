@@ -3,7 +3,9 @@
   assign collection_products = blank
   assign is_cart = false
 
-  if template.name == 'cart'
+  if section.settings.collection != blank
+    assign collection_products = section.settings.collection.products
+  elsif template.name == 'cart'
     assign is_cart = true
     for cart_item in cart.items
       if cart_item.product.collections.first != blank
@@ -558,6 +560,12 @@
       "id": "heading",
       "label": "t:labels.heading",
       "default": "You may also like"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.related_products.settings.collection",
+      "info": "t:sections.related_products.settings.collection_info"
     },
     {
       "type": "range",
