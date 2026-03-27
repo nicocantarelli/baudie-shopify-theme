@@ -22,7 +22,8 @@
         "trust_badge_F3cg9Y": {
           "type": "trust_badge",
           "settings": {
-            "label": "Free"
+            "icon": "shopify://shop_images/Cruel.svg",
+            "label": "Cruelty Free"
           }
         },
         "trust_badge_aBV6b6": {
@@ -30,6 +31,13 @@
           "settings": {
             "icon": "shopify://shop_images/Phthalate.svg",
             "label": "Phthalate Free"
+          }
+        },
+        "trust_badge_8jVwYw": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Paraben.svg",
+            "label": "Paraben Free"
           }
         },
         "trust_badge_HymVnK": {
@@ -58,6 +66,7 @@
         "trust_badge_bwYgHD",
         "trust_badge_F3cg9Y",
         "trust_badge_aBV6b6",
+        "trust_badge_8jVwYw",
         "trust_badge_HymVnK",
         "trust_badge_njJAQ4",
         "trust_badge_eyweTh"
