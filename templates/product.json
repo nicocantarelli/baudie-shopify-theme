@@ -93,9 +93,9 @@
       "name": "t:general.in_press",
       "settings": {
         "title": "IN PRESS",
-        "background_color": "#FFF7EA",
-        "text_color": "#3E2027",
-        "divider_color": "#3E2027"
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027",
+        "divider_color": "#3e2027"
       }
     },
     "what_makes_different_HFC6bE": {
@@ -127,8 +127,8 @@
             "number": "3",
             "title": "Plant-Powered Actives",
             "description": "Naturally balance your underarm microbiome for long-lasting freshness.",
-            "mobile_offset_x": -10,
-            "mobile_offset_y": -45
+            "mobile_offset_x": 35,
+            "mobile_offset_y": -50
           }
         },
         "feature_nNHzQQ": {
@@ -176,10 +176,10 @@
         "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
         "center_image": "shopify://shop_images/molecule-image.png",
         "mobile_center_image": "shopify://shop_images/mobile-molecule.png",
-        "background_color": "#FFF7EA",
-        "text_color": "#3E2027",
-        "badge_color": "#3E2027",
-        "badge_text_color": "#F5F0EC"
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027",
+        "badge_color": "#3e2027",
+        "badge_text_color": "#f5f0ec"
       }
     },
     "product-faq": {
