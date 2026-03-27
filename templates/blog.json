@@ -11,7 +11,12 @@
   "sections": {
     "main": {
       "type": "blog",
-      "settings": {}
+      "settings": {
+        "seo_heading": "",
+        "seo_text": "",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
     }
   },
   "order": [
