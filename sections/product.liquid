@@ -160,7 +160,7 @@
           id="scent-list-{{ section.id }}"
           aria-label="{{ 'sections.product.explore_scents' | t }}">
           {% for item in collection_products %}
-            {% if item.id != product.id %}
+            {% if item.id != product.id and item.metafields.custom.scent_name != blank %}
               <li>
                 <a href="{{ item.url }}" class="product-main__scent-option">
                   {{ item.title }}
