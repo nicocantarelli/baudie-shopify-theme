@@ -1,18 +1,36 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "main-cart",
       "settings": {
+        "title": "Your Cart",
         "empty_title": "Your cart is empty",
         "empty_message": "Looks like you haven't added anything yet.",
         "continue_button_text": "Continue shopping",
-        "checkout_button_text": "Proceed to checkout"
+        "checkout_button_text": "Proceed to checkout",
+        "shipping_content": "<ul><li>Orders under $55 ship for $1.99. Get free delivery on all orders over $55.</li><li>Standard delivery within the UK takes 3-5 business days.</li></ul>",
+        "returns_content": "<p>You have 14 days from the date you receive your order to return it to us. All earrings are non-returnable due to hygiene reasons. All other items can be returned if returned unopened in their original packaging.</p><p>To begin your return, please send us an email:</p>",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027",
+        "summary_background_color": "#fcf0d2"
       }
     },
     "related-products": {
       "type": "related-products",
       "settings": {
-        "heading": "You may also like"
+        "heading": "You may also like",
+        "max_products": 4,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
       }
     }
   },
