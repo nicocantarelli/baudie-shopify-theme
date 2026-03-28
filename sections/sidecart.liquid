@@ -1137,6 +1137,16 @@
         const existingItem = preCart.items.find(i => String(i.variant_id) === String(variantId));
         const existingQty = existingItem ? existingItem.quantity : 0;
 
+        if (existingItem) {
+          const existingEl = sidecart?.querySelector(`[data-sidecart-item][data-key="${existingItem.key}"]`);
+          const maxStock = parseInt(existingEl?.dataset.inventory || '99999', 10);
+          const policy = existingEl?.dataset.inventoryPolicy || 'deny';
+          if (policy === 'deny' && existingQty >= maxStock) {
+            const stockWarningMsg = sidecart?.dataset.stockWarning || 'Only COUNT available';
+            throw new Error(stockWarningMsg.replace('COUNT', maxStock));
+          }
+        }
+
         const addResponse = await fetch('/cart/add.js', {
           method: 'POST',
           headers: {
@@ -1186,14 +1196,41 @@
 
         const postItem = cart.items.find(i => String(i.variant_id) === String(variantId));
         if (postItem) {
-          const requestedTotal = existingQty + parseInt(quantity, 10);
           const itemEl = sidecart?.querySelector(`[data-sidecart-item][data-key="${postItem.key}"]`);
           const maxStock = parseInt(itemEl?.dataset.inventory || '99999', 10);
           const policy = itemEl?.dataset.inventoryPolicy || 'deny';
 
-          if (policy === 'deny' && postItem.quantity >= maxStock && requestedTotal > maxStock) {
+          if (policy === 'deny' && postItem.quantity > maxStock) {
+            await fetch('/cart/change.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: postItem.key, quantity: maxStock })
+            });
+
+            const [fixedCartRes, fixedSectionRes] = await Promise.all([
+              fetch('/cart.js'),
+              fetch('/?section_id=sidecart')
+            ]);
+            const fixedCart = await fixedCartRes.json();
+            const fixedHtml = await fixedSectionRes.text();
+
+            const fixedDoc = new DOMParser().parseFromString(fixedHtml, 'text/html');
+            const fixedContent = fixedDoc.querySelector('[data-sidecart-content]');
+            const fixedFooter = fixedDoc.querySelector('[data-sidecart-footer]');
+            if (fixedContent && content) content.innerHTML = fixedContent.innerHTML;
+            if (fixedFooter && footer) footer.innerHTML = fixedFooter.innerHTML;
+
+            document.querySelectorAll('[data-cart-count]').forEach(el => {
+              el.textContent = fixedCart.item_count;
+              el.style.display = fixedCart.item_count > 0 ? '' : 'none';
+            });
+            if (countEl) countEl.textContent = fixedCart.item_count;
+
+            document.dispatchEvent(new CustomEvent('cart:dom-updated'));
+
+            const fixedItemEl = sidecart?.querySelector(`[data-sidecart-item][data-key="${postItem.key}"]`);
+            const warning = fixedItemEl?.querySelector('[data-stock-warning]');
             const stockWarningMsg = sidecart?.dataset.stockWarning || 'Only COUNT available';
-            const warning = itemEl?.querySelector('[data-stock-warning]');
             if (warning) {
               warning.textContent = stockWarningMsg.replace('COUNT', maxStock);
               warning.hidden = false;
