@@ -1014,7 +1014,7 @@
       const timeout = setTimeout(() => {
         warning.hidden = true;
         this.stockWarningTimeouts.delete(itemEl);
-      }, 5000);
+      }, 8000);
       this.stockWarningTimeouts.set(itemEl, timeout);
     }
 
@@ -1036,12 +1036,6 @@
         this.inFlightRequests--;
 
         if (!response.ok) {
-          const itemEl = this.cart?.querySelector(`[data-cart-item][data-key="${key}"]`);
-          if (itemEl) {
-            const qtyEl = itemEl.querySelector('[data-quantity]');
-            if (qtyEl) qtyEl.value = qtyEl.defaultValue;
-          }
-          this.showStockWarning(itemEl, parseInt(itemEl?.querySelector('[data-quantity]')?.defaultValue || '1', 10));
           window.location.reload();
           return;
         }
