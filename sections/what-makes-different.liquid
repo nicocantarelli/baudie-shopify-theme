@@ -10,20 +10,31 @@
       </div>
     </div>
 
+    {%- liquid
+      if section.settings.desktop_image
+        assign desktop_width = section.settings.desktop_image.width
+      endif
+      if section.settings.mobile_image
+        assign mobile_width = section.settings.mobile_image.width
+      elsif section.settings.desktop_image
+        assign mobile_width = section.settings.desktop_image.width
+      endif
+    -%}
+
     <div class="what-makes-different__content">
       {% if section.settings.desktop_image %}
         <div class="what-makes-different__image-wrapper what-makes-different__image-wrapper--desktop">
-          {{ section.settings.desktop_image | image_url: width: section.settings.desktop_image.width | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
+          {{ section.settings.desktop_image | image_url: width: desktop_width | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
         </div>
       {% endif %}
 
       {% if section.settings.mobile_image %}
         <div class="what-makes-different__image-wrapper what-makes-different__image-wrapper--mobile">
-          {{ section.settings.mobile_image | image_url: width: section.settings.mobile_image.width | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
+          {{ section.settings.mobile_image | image_url: width: mobile_width | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
         </div>
       {% elsif section.settings.desktop_image %}
         <div class="what-makes-different__image-wrapper what-makes-different__image-wrapper--mobile">
-          {{ section.settings.desktop_image | image_url: width: section.settings.desktop_image.width | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
+          {{ section.settings.desktop_image | image_url: width: mobile_width | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
         </div>
       {% endif %}
     </div>
