@@ -204,86 +204,16 @@
     },
     "what_makes_different_HFC6bE": {
       "type": "what-makes-different",
-      "blocks": {
-        "feature_CCcAV7": {
-          "type": "feature",
-          "settings": {
-            "number": "1",
-            "title": "Gentle AHAs (Lactic Acid)",
-            "description": "Keeps skin slightly acidic — stopping odor-causing bacteria before they start.",
-            "mobile_offset_x": -10,
-            "mobile_offset_y": 50
-          }
-        },
-        "feature_zMHJJq": {
-          "type": "feature",
-          "settings": {
-            "number": "2",
-            "title": "Wipe-Off Formula",
-            "description": "Cleanses and preps skin for deodorant, leaving no residue or scent behind.",
-            "mobile_offset_x": 30,
-            "mobile_offset_y": 50
-          }
-        },
-        "feature_nYP6kM": {
-          "type": "feature",
-          "settings": {
-            "number": "3",
-            "title": "Plant-Powered Actives",
-            "description": "Naturally balance your underarm microbiome for long-lasting freshness.",
-            "mobile_offset_x": 35,
-            "mobile_offset_y": -50
-          }
-        },
-        "feature_nNHzQQ": {
-          "type": "feature",
-          "settings": {
-            "number": "4",
-            "title": "Dermatologist-Tested",
-            "description": "Safe for sensitive skin. Proven effective in bacterial control.",
-            "mobile_offset_x": 30,
-            "mobile_offset_y": -60
-          }
-        },
-        "feature_k3XiFp": {
-          "type": "feature",
-          "settings": {
-            "number": "5",
-            "title": "Vegan & Cruelty-Free",
-            "description": "Never tested on animals — only tested on real, sweaty humans.",
-            "mobile_offset_x": 0,
-            "mobile_offset_y": 0
-          }
-        },
-        "feature_JGYBea": {
-          "type": "feature",
-          "settings": {
-            "number": "6",
-            "title": "Science-Backed Confidence",
-            "description": "Clinically developed and lab-tested to make your deodorant last longer.",
-            "mobile_offset_x": 0,
-            "mobile_offset_y": 0
-          }
-        }
-      },
-      "block_order": [
-        "feature_CCcAV7",
-        "feature_zMHJJq",
-        "feature_nYP6kM",
-        "feature_nNHzQQ",
-        "feature_k3XiFp",
-        "feature_JGYBea"
-      ],
       "name": "t:sections.what_makes_different.name",
       "settings": {
         "heading": "What Makes Baudie Different",
         "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
-        "center_image": "shopify://shop_images/molecule-image.png",
-        "mobile_center_image": "shopify://shop_images/mobile-molecule.png",
+        "desktop_base": "shopify://shop_images/test.png",
+        "desktop_overlay": "shopify://shop_images/text-desktop.svg",
+        "mobile_base": "shopify://shop_images/molecule-m.png",
+        "mobile_overlay": "shopify://shop_images/mobile-text.svg",
         "background_color": "#fce9ec",
-        "text_color": "#3e2027",
-        "badge_color": "#3e2027",
-        "badge_text_color": "#f5f0ec"
+        "text_color": "#3e2027"
       }
     },
     "related-products": {
