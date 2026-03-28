@@ -639,6 +639,8 @@
     gap: 0;
     column-gap: 16px;
     position: relative;
+    max-width: 700px;
+    margin: 0 auto;
   }
 
   .what-makes-different__column {
@@ -739,6 +741,13 @@
     font-size: 10px;
     max-width: none;
     line-height: 1.2;
+  }
+}
+
+/* Phone - remove max-width constraint */
+@media screen and (max-width: 900px) {
+  .what-makes-different__content {
+    max-width: none;
   }
 }
 
