@@ -28,7 +28,8 @@
       "type": "related-products",
       "settings": {
         "heading": "You may also like",
-        "max_products": 4,
+        "collection": "shop",
+        "max_products": 6,
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
