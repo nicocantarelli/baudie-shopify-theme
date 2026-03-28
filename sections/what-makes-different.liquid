@@ -11,32 +11,38 @@
     </div>
 
     {%- liquid
-      if section.settings.desktop_image
-        assign desktop_width = section.settings.desktop_image.width
+      if section.settings.desktop_base
+        assign desktop_base_width = section.settings.desktop_base.width
       endif
-      if section.settings.mobile_image
-        assign mobile_width = section.settings.mobile_image.width
-      elsif section.settings.desktop_image
-        assign mobile_width = section.settings.desktop_image.width
+      if section.settings.desktop_overlay
+        assign desktop_overlay_width = section.settings.desktop_overlay.width
+      endif
+      if section.settings.mobile_base
+        assign mobile_base_width = section.settings.mobile_base.width
+      endif
+      if section.settings.mobile_overlay
+        assign mobile_overlay_width = section.settings.mobile_overlay.width
       endif
     -%}
 
     <div class="what-makes-different__content">
-      {% if section.settings.desktop_image %}
-        <div class="what-makes-different__image-wrapper what-makes-different__image-wrapper--desktop">
-          {{ section.settings.desktop_image | image_url: width: desktop_width | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
-        </div>
-      {% endif %}
+      <div class="what-makes-different__composite what-makes-different__composite--desktop">
+        {% if section.settings.desktop_base %}
+          {{ section.settings.desktop_base | image_url: width: desktop_base_width | image_tag: class: 'what-makes-different__layer what-makes-different__layer--base', loading: 'lazy' }}
+        {% endif %}
+        {% if section.settings.desktop_overlay %}
+          {{ section.settings.desktop_overlay | image_url: width: desktop_overlay_width | image_tag: class: 'what-makes-different__layer what-makes-different__layer--overlay', loading: 'lazy' }}
+        {% endif %}
+      </div>
 
-      {% if section.settings.mobile_image %}
-        <div class="what-makes-different__image-wrapper what-makes-different__image-wrapper--mobile">
-          {{ section.settings.mobile_image | image_url: width: mobile_width | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
-        </div>
-      {% elsif section.settings.desktop_image %}
-        <div class="what-makes-different__image-wrapper what-makes-different__image-wrapper--mobile">
-          {{ section.settings.desktop_image | image_url: width: mobile_width | image_tag: class: 'what-makes-different__image', loading: 'lazy' }}
-        </div>
-      {% endif %}
+      <div class="what-makes-different__composite what-makes-different__composite--mobile">
+        {% if section.settings.mobile_base %}
+          {{ section.settings.mobile_base | image_url: width: mobile_base_width | image_tag: class: 'what-makes-different__layer what-makes-different__layer--base', loading: 'lazy' }}
+        {% endif %}
+        {% if section.settings.mobile_overlay %}
+          {{ section.settings.mobile_overlay | image_url: width: mobile_overlay_width | image_tag: class: 'what-makes-different__layer what-makes-different__layer--overlay', loading: 'lazy' }}
+        {% endif %}
+      </div>
     </div>
   </div>
 </section>
@@ -86,14 +92,31 @@
     color: var(--text-color, #3E2027);
   }
 
-  .what-makes-different__image-wrapper--mobile {
+  .what-makes-different__composite {
+    position: relative;
+    width: 100%;
+  }
+
+  .what-makes-different__composite--mobile {
     display: none;
   }
 
-  .what-makes-different__image {
+  .what-makes-different__layer {
     width: 100%;
     height: auto;
     display: block;
+  }
+
+  .what-makes-different__layer--base {
+    position: relative;
+    z-index: 1;
+  }
+
+  .what-makes-different__layer--overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
   }
 
   @media screen and (max-width: 749px) {
@@ -123,11 +146,11 @@
       font-size: 14px;
     }
 
-    .what-makes-different__image-wrapper--desktop {
+    .what-makes-different__composite--desktop {
       display: none;
     }
 
-    .what-makes-different__image-wrapper--mobile {
+    .what-makes-different__composite--mobile {
       display: block;
     }
   }
@@ -157,19 +180,35 @@
       },
       {
         "type": "header",
-        "content": "t:sections.what_makes_different.settings.header_image"
+        "content": "Desktop images"
       },
       {
         "type": "image_picker",
-        "id": "desktop_image",
-        "label": "Desktop image",
-        "info": "Full-width image with molecule and features baked in."
+        "id": "desktop_base",
+        "label": "Desktop base layer",
+        "info": "Bottom layer — molecule photo (PNG)."
       },
       {
         "type": "image_picker",
-        "id": "mobile_image",
-        "label": "Mobile image",
-        "info": "Mobile version of the image. Falls back to desktop image if empty."
+        "id": "desktop_overlay",
+        "label": "Desktop overlay layer",
+        "info": "Top layer — text and lines (SVG/PNG with transparency)."
+      },
+      {
+        "type": "header",
+        "content": "Mobile images"
+      },
+      {
+        "type": "image_picker",
+        "id": "mobile_base",
+        "label": "Mobile base layer",
+        "info": "Bottom layer — molecule photo (PNG)."
+      },
+      {
+        "type": "image_picker",
+        "id": "mobile_overlay",
+        "label": "Mobile overlay layer",
+        "info": "Top layer — text and lines (SVG/PNG with transparency)."
       },
       {
         "type": "header",
