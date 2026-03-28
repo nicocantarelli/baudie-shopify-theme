@@ -1143,7 +1143,13 @@
           const policy = existingEl?.dataset.inventoryPolicy || 'deny';
           if (policy === 'deny' && existingQty >= maxStock) {
             const stockWarningMsg = sidecart?.dataset.stockWarning || 'Only COUNT available';
-            throw new Error(stockWarningMsg.replace('COUNT', maxStock));
+            const warning = existingEl?.querySelector('[data-stock-warning]');
+            if (warning) {
+              warning.textContent = stockWarningMsg.replace('COUNT', maxStock);
+              warning.hidden = false;
+              setTimeout(() => { warning.hidden = true; }, 8000);
+            }
+            return;
           }
         }
 
