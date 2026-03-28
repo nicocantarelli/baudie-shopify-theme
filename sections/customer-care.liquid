@@ -12,7 +12,7 @@
 -%}
 
 {%- capture breadcrumb_labels_json -%}
-{"delivery":"{{ 'breadcrumbs.delivery' | t | escape }}","payment":"{{ 'breadcrumbs.payment' | t | escape }}","returns":"{{ 'breadcrumbs.returns' | t | escape }}","faq":"{{ 'breadcrumbs.faq' | t | escape }}","terms":"{{ 'breadcrumbs.terms' | t | escape }}","privacy":"{{ 'breadcrumbs.privacy' | t | escape }}","contact":"{{ 'breadcrumbs.contact' | t | escape }}"}
+{"delivery":"{{ 'breadcrumbs.delivery' | t }}","payment":"{{ 'breadcrumbs.payment' | t }}","returns":"{{ 'breadcrumbs.returns' | t }}","faq":"{{ 'breadcrumbs.faq' | t }}","terms":"{{ 'breadcrumbs.terms' | t }}","privacy":"{{ 'breadcrumbs.privacy' | t }}","contact":"{{ 'breadcrumbs.contact' | t }}"}
 {%- endcapture -%}
 
 <section
