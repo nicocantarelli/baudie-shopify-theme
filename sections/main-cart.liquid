@@ -1032,13 +1032,22 @@
           body: JSON.stringify({ id: key, quantity })
         });
 
-        if (!response.ok) throw new Error('Failed to update cart');
-
         const cart = await response.json();
         this.inFlightRequests--;
 
+        if (!response.ok) {
+          const itemEl = this.cart?.querySelector(`[data-cart-item][data-key="${key}"]`);
+          if (itemEl) {
+            const qtyEl = itemEl.querySelector('[data-quantity]');
+            if (qtyEl) qtyEl.value = qtyEl.defaultValue;
+          }
+          this.showStockWarning(itemEl, parseInt(itemEl?.querySelector('[data-quantity]')?.defaultValue || '1', 10));
+          window.location.reload();
+          return;
+        }
+
         const updatedItem = cart.items.find(i => i.key === key);
-        const itemEl = this.cart?.querySelector(`[data-key="${key}"]`);
+        const itemEl = this.cart?.querySelector(`[data-cart-item][data-key="${key}"]`);
 
         if (updatedItem && updatedItem.quantity < quantity) {
           const qtyEl = itemEl?.querySelector('[data-quantity]');

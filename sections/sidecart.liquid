@@ -945,6 +945,18 @@
       if (warning) warning.hidden = true;
     }
 
+    showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'sidecart__toast';
+      toast.textContent = msg;
+      this.drawer?.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('sidecart__toast--visible'));
+      setTimeout(() => {
+        toast.classList.remove('sidecart__toast--visible');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
     async updateQuantity(key, quantity) {
       this.inFlightRequests++;
       try {
@@ -954,13 +966,25 @@
           body: JSON.stringify({ id: key, quantity })
         });
 
-        if (!response.ok) throw new Error('Failed to update cart');
-
         const cart = await response.json();
         this.inFlightRequests--;
 
+        if (!response.ok) {
+          const errorMsg = cart.description || cart.message || '';
+          const itemEl = this.sidecart?.querySelector(`[data-sidecart-item][data-key="${key}"]`);
+          if (itemEl) {
+            const qtyEl = itemEl.querySelector('[data-quantity]');
+            if (qtyEl) {
+              qtyEl.value = qtyEl.defaultValue;
+            }
+          }
+          this.showStockWarning(itemEl, parseInt(itemEl?.querySelector('[data-quantity]')?.defaultValue || '1', 10));
+          this.refreshFromServer();
+          return;
+        }
+
         const updatedItem = cart.items.find(i => i.key === key);
-        const itemEl = this.sidecart?.querySelector(`[data-key="${key}"]`);
+        const itemEl = this.sidecart?.querySelector(`[data-sidecart-item][data-key="${key}"]`);
 
         if (updatedItem && updatedItem.quantity < quantity) {
           const qtyEl = itemEl?.querySelector('[data-quantity]');
@@ -1120,16 +1144,12 @@
         const responseData = await addResponse.json().catch(() => ({}));
 
         if (!addResponse.ok) {
-          const errorMsg = responseData.description || responseData.message || '';
-          if (errorMsg.toLowerCase().includes('sold out')) {
-            console.warn(
-              'Shopify Cart API returned "sold out" error. This is often a store configuration issue.\n' +
-              'Fix: Go to Shopify Admin → Settings → Locations, ensure a location exists,\n' +
-              'then go to Products → [Product] → Inventory and assign stock to that location.'
-            );
-          }
-          throw new Error(errorMsg || 'Failed to add to cart');
+          const errorMsg = responseData.description || responseData.message || 'Could not add item to cart';
+          throw new Error(errorMsg);
         }
+
+        const requestedQty = parseInt(quantity, 10);
+        const addedItem = responseData;
 
         const [cartResponse, sectionResponse] = await Promise.all([
           fetch('/cart.js'),
@@ -1161,16 +1181,30 @@
         const labelEl = sidecart?.querySelector('[data-sidecart-items-label]');
         if (countEl) countEl.textContent = cart.item_count;
         if (labelEl) labelEl.textContent = cart.item_count === 1 ? (sidecart?.dataset.itemSingular || 'item') : (sidecart?.dataset.itemPlural || 'items');
+
+        if (addedItem && addedItem.key) {
+          const cartItem = cart.items.find(i => i.key === addedItem.key);
+          if (cartItem && addedItem.quantity < requestedQty) {
+            const stockWarningMsg = sidecart?.dataset.stockWarning || 'Only COUNT available';
+            const itemEl = sidecart?.querySelector(`[data-sidecart-item][data-key="${addedItem.key}"]`);
+            const warning = itemEl?.querySelector('[data-stock-warning]');
+            if (warning) {
+              warning.textContent = stockWarningMsg.replace('COUNT', cartItem.quantity);
+              warning.hidden = false;
+              setTimeout(() => { warning.hidden = true; }, 5000);
+            }
+          }
+        }
       } catch (error) {
         const msg = error.message || 'Could not add item to cart. Please try again.';
-        const toast = document.createElement('div');
-        toast.className = 'sidecart__toast';
-        toast.textContent = msg;
-        sidecart?.querySelector('.sidecart__drawer')?.appendChild(toast);
-        requestAnimationFrame(() => toast.classList.add('sidecart__toast--visible'));
+        const toastEl = document.createElement('div');
+        toastEl.className = 'sidecart__toast';
+        toastEl.textContent = msg;
+        sidecart?.querySelector('.sidecart__drawer')?.appendChild(toastEl);
+        requestAnimationFrame(() => toastEl.classList.add('sidecart__toast--visible'));
         setTimeout(() => {
-          toast.classList.remove('sidecart__toast--visible');
-          setTimeout(() => toast.remove(), 300);
+          toastEl.classList.remove('sidecart__toast--visible');
+          setTimeout(() => toastEl.remove(), 300);
         }, 4000);
       } finally {
         sidecart?.classList.remove('is-loading');
