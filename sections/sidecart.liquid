@@ -745,7 +745,14 @@
 
         let newQty = currentQty;
 
+        const inventory = parseInt(item?.dataset.inventory || '99999', 10);
+        const inventoryPolicy = item?.dataset.inventoryPolicy || 'deny';
+
         if (action === 'increase') {
+          if (inventoryPolicy === 'deny' && currentQty >= inventory) {
+            this.showStockWarning(item, inventory);
+            return;
+          }
           newQty = currentQty + 1;
         } else if (action === 'decrease') {
           newQty = currentQty > 1 ? currentQty - 1 : 0;
@@ -1126,6 +1133,10 @@
           throw new Error('No variant ID found');
         }
 
+        const preCart = await fetch('/cart.js').then(r => r.json());
+        const existingItem = preCart.items.find(i => String(i.variant_id) === String(variantId));
+        const existingQty = existingItem ? existingItem.quantity : 0;
+
         const addResponse = await fetch('/cart/add.js', {
           method: 'POST',
           headers: {
@@ -1141,9 +1152,6 @@
           const errorMsg = responseData.description || responseData.message || 'Could not add item to cart';
           throw new Error(errorMsg);
         }
-
-        const requestedQty = parseInt(quantity, 10);
-        const addedItem = responseData;
 
         const [cartResponse, sectionResponse] = await Promise.all([
           fetch('/cart.js'),
@@ -1176,16 +1184,20 @@
         if (countEl) countEl.textContent = cart.item_count;
         if (labelEl) labelEl.textContent = cart.item_count === 1 ? (sidecart?.dataset.itemSingular || 'item') : (sidecart?.dataset.itemPlural || 'items');
 
-        if (addedItem && addedItem.key) {
-          const cartItem = cart.items.find(i => i.key === addedItem.key);
-          if (cartItem && addedItem.quantity < requestedQty) {
+        const postItem = cart.items.find(i => String(i.variant_id) === String(variantId));
+        if (postItem) {
+          const requestedTotal = existingQty + parseInt(quantity, 10);
+          const itemEl = sidecart?.querySelector(`[data-sidecart-item][data-key="${postItem.key}"]`);
+          const maxStock = parseInt(itemEl?.dataset.inventory || '99999', 10);
+          const policy = itemEl?.dataset.inventoryPolicy || 'deny';
+
+          if (policy === 'deny' && postItem.quantity >= maxStock && requestedTotal > maxStock) {
             const stockWarningMsg = sidecart?.dataset.stockWarning || 'Only COUNT available';
-            const itemEl = sidecart?.querySelector(`[data-sidecart-item][data-key="${addedItem.key}"]`);
             const warning = itemEl?.querySelector('[data-stock-warning]');
             if (warning) {
-              warning.textContent = stockWarningMsg.replace('COUNT', cartItem.quantity);
+              warning.textContent = stockWarningMsg.replace('COUNT', maxStock);
               warning.hidden = false;
-              setTimeout(() => { warning.hidden = true; }, 5000);
+              setTimeout(() => { warning.hidden = true; }, 8000);
             }
           }
         }

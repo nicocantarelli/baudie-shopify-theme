@@ -867,7 +867,14 @@
 
         let newQty = currentQty;
 
+        const inventory = parseInt(item?.dataset.inventory || '99999', 10);
+        const inventoryPolicy = item?.dataset.inventoryPolicy || 'deny';
+
         if (action === 'increase') {
+          if (inventoryPolicy === 'deny' && currentQty >= inventory) {
+            this.showStockWarning(item, inventory);
+            return;
+          }
           newQty = currentQty + 1;
         } else if (action === 'decrease') {
           newQty = currentQty > 1 ? currentQty - 1 : 0;

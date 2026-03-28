@@ -27,7 +27,7 @@
   endif
 -%}
 
-<li class="cart-item" data-cart-item data-key="{{ item_key }}" data-unit-price="{{ item_unit_price }}" data-compare-unit-price="{{ item.variant.compare_at_price | default: 0 }}">
+<li class="cart-item" data-cart-item data-key="{{ item_key }}" data-unit-price="{{ item_unit_price }}" data-compare-unit-price="{{ item.variant.compare_at_price | default: 0 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}">
   <a href="{{ item_url }}" class="cart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if item_image -%}
       {{ item_image | image_url: width: 500 | image_tag:
