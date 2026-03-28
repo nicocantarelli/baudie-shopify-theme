@@ -11,7 +11,12 @@
   "sections": {
     "main": {
       "type": "article",
-      "settings": {}
+      "settings": {
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027",
+        "button_background_color": "#3e2027",
+        "button_text_color": "#ffffff"
+      }
     }
   },
   "order": [
