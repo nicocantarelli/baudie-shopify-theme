@@ -12,7 +12,7 @@
 -%}
 
 <script type="application/json" id="breadcrumb-labels-{{ section.id }}">
-  {"delivery":"{{ 'breadcrumbs.delivery' | t }}","payment":"{{ 'breadcrumbs.payment' | t }}","returns":"{{ 'breadcrumbs.returns' | t }}","faq":"{{ 'breadcrumbs.faq' | t }}","terms":"{{ 'breadcrumbs.terms' | t }}","privacy":"{{ 'breadcrumbs.privacy' | t }}","contact":"{{ 'breadcrumbs.contact' | t }}"}
+  {"delivery":{{ 'breadcrumbs.delivery' | t | json }},"payment":{{ 'breadcrumbs.payment' | t | json }},"returns":{{ 'breadcrumbs.returns' | t | json }},"faq":{{ 'breadcrumbs.faq' | t | json }},"terms":{{ 'breadcrumbs.terms' | t | json }},"privacy":{{ 'breadcrumbs.privacy' | t | json }},"contact":{{ 'breadcrumbs.contact' | t | json }}}
 </script>
 
 <section
