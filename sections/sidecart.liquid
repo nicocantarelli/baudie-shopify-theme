@@ -17,6 +17,7 @@
     data-money-format="{{ shop.money_format | escape }}"
     data-item-singular="{{ 'sidecart.item' | t | escape }}"
     data-item-plural="{{ 'sidecart.items' | t | escape }}"
+    data-stock-warning="{{ 'sidecart.stock_warning' | t | escape }}"
     style="--sidecart-bg: {{ section.settings.background_color }}; --sidecart-text: {{ section.settings.text_color }};">
 
     <div class="sidecart__overlay" id="sidecart-overlay"></div>
@@ -392,6 +393,14 @@
     outline-offset: 2px;
   }
 
+  .sidecart-item__stock-warning {
+    font-family: var(--font-jokker);
+    font-size: 12px;
+    font-weight: 500;
+    color: #c44;
+    margin: 0 0 6px;
+  }
+
   .sidecart-item__price {
     display: flex;
     align-items: baseline;
@@ -652,6 +661,29 @@
     white-space: nowrap !important;
     border: 0 !important;
   }
+
+  .sidecart__toast {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background-color: #c44;
+    color: #fff;
+    font-family: var(--font-jokker);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 12px 16px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 100;
+  }
+
+  .sidecart__toast--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 {% endstylesheet %}
 
 {% javascript %}
@@ -888,6 +920,31 @@
       }
     }
 
+    showStockWarning(itemEl, actualQty) {
+      const warning = itemEl?.querySelector('[data-stock-warning]');
+      if (!warning) return;
+
+      const msg = this.sidecart?.dataset.stockWarning || 'Only COUNT available';
+      warning.textContent = msg.replace('COUNT', actualQty);
+      warning.hidden = false;
+
+      if (this.stockWarningTimeouts?.has(itemEl)) {
+        clearTimeout(this.stockWarningTimeouts.get(itemEl));
+      }
+      if (!this.stockWarningTimeouts) this.stockWarningTimeouts = new Map();
+
+      const timeout = setTimeout(() => {
+        warning.hidden = true;
+        this.stockWarningTimeouts.delete(itemEl);
+      }, 5000);
+      this.stockWarningTimeouts.set(itemEl, timeout);
+    }
+
+    clearStockWarning(itemEl) {
+      const warning = itemEl?.querySelector('[data-stock-warning]');
+      if (warning) warning.hidden = true;
+    }
+
     async updateQuantity(key, quantity) {
       this.inFlightRequests++;
       try {
@@ -901,6 +958,28 @@
 
         const cart = await response.json();
         this.inFlightRequests--;
+
+        const updatedItem = cart.items.find(i => i.key === key);
+        const itemEl = this.sidecart?.querySelector(`[data-key="${key}"]`);
+
+        if (updatedItem && updatedItem.quantity < quantity) {
+          const qtyEl = itemEl?.querySelector('[data-quantity]');
+          const priceEl = itemEl?.querySelector('[data-price]');
+          const comparePriceEl = itemEl?.querySelector('[data-compare-price]');
+          const unitPrice = itemEl?.dataset.unitPrice ? parseInt(itemEl.dataset.unitPrice, 10) : 0;
+          const compareUnitPrice = itemEl?.dataset.compareUnitPrice ? parseInt(itemEl.dataset.compareUnitPrice, 10) : 0;
+
+          if (qtyEl) {
+            qtyEl.value = updatedItem.quantity;
+            qtyEl.defaultValue = updatedItem.quantity;
+          }
+          if (priceEl && unitPrice) priceEl.textContent = this.formatMoney(unitPrice * updatedItem.quantity);
+          if (comparePriceEl && compareUnitPrice) comparePriceEl.textContent = this.formatMoney(compareUnitPrice * updatedItem.quantity);
+
+          this.showStockWarning(itemEl, updatedItem.quantity);
+        } else if (itemEl) {
+          this.clearStockWarning(itemEl);
+        }
 
         if (this.pendingUpdates.size === 0 && this.inFlightRequests === 0) {
           if (this.countElement) this.countElement.textContent = cart.item_count;
@@ -1083,7 +1162,16 @@
         if (countEl) countEl.textContent = cart.item_count;
         if (labelEl) labelEl.textContent = cart.item_count === 1 ? (sidecart?.dataset.itemSingular || 'item') : (sidecart?.dataset.itemPlural || 'items');
       } catch (error) {
-        alert(error.message || 'Could not add item to cart. Please try again.');
+        const msg = error.message || 'Could not add item to cart. Please try again.';
+        const toast = document.createElement('div');
+        toast.className = 'sidecart__toast';
+        toast.textContent = msg;
+        sidecart?.querySelector('.sidecart__drawer')?.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('sidecart__toast--visible'));
+        setTimeout(() => {
+          toast.classList.remove('sidecart__toast--visible');
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
       } finally {
         sidecart?.classList.remove('is-loading');
         if (submitBtn) {

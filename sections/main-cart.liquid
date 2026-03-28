@@ -11,7 +11,8 @@
   style="--cart-bg: {{ section.settings.background_color }}; --cart-text: {{ section.settings.text_color }}; --cart-summary-bg: {{ section.settings.summary_background_color }};"
   data-money-format="{{ shop.money_format | escape }}"
   data-item-singular="{{ 'sidecart.item' | t | escape }}"
-  data-item-plural="{{ 'sidecart.items' | t | escape }}">
+  data-item-plural="{{ 'sidecart.items' | t | escape }}"
+  data-stock-warning="{{ 'sidecart.stock_warning' | t | escape }}">
 
   <div class="main-cart__container">
     <header class="main-cart__header">
@@ -529,6 +530,14 @@
     gap: 8px;
   }
 
+  .cart-item__stock-warning {
+    font-family: var(--font-jokker);
+    font-size: 12px;
+    font-weight: 500;
+    color: #c44;
+    margin: 0;
+  }
+
   .cart-item__quantity {
     display: flex;
     align-items: center;
@@ -989,6 +998,31 @@
       }
     }
 
+    showStockWarning(itemEl, actualQty) {
+      const warning = itemEl?.querySelector('[data-stock-warning]');
+      if (!warning) return;
+
+      const msg = this.cart?.dataset.stockWarning || 'Only COUNT available';
+      warning.textContent = msg.replace('COUNT', actualQty);
+      warning.hidden = false;
+
+      if (!this.stockWarningTimeouts) this.stockWarningTimeouts = new Map();
+      if (this.stockWarningTimeouts.has(itemEl)) {
+        clearTimeout(this.stockWarningTimeouts.get(itemEl));
+      }
+
+      const timeout = setTimeout(() => {
+        warning.hidden = true;
+        this.stockWarningTimeouts.delete(itemEl);
+      }, 5000);
+      this.stockWarningTimeouts.set(itemEl, timeout);
+    }
+
+    clearStockWarning(itemEl) {
+      const warning = itemEl?.querySelector('[data-stock-warning]');
+      if (warning) warning.hidden = true;
+    }
+
     async updateQuantity(key, quantity) {
       this.inFlightRequests++;
       try {
@@ -1002,6 +1036,28 @@
 
         const cart = await response.json();
         this.inFlightRequests--;
+
+        const updatedItem = cart.items.find(i => i.key === key);
+        const itemEl = this.cart?.querySelector(`[data-key="${key}"]`);
+
+        if (updatedItem && updatedItem.quantity < quantity) {
+          const qtyEl = itemEl?.querySelector('[data-quantity]');
+          const priceEl = itemEl?.querySelector('[data-price]');
+          const comparePriceEl = itemEl?.querySelector('[data-compare-price]');
+          const unitPrice = itemEl?.dataset.unitPrice ? parseInt(itemEl.dataset.unitPrice, 10) : 0;
+          const compareUnitPrice = itemEl?.dataset.compareUnitPrice ? parseInt(itemEl.dataset.compareUnitPrice, 10) : 0;
+
+          if (qtyEl) {
+            qtyEl.value = updatedItem.quantity;
+            qtyEl.defaultValue = updatedItem.quantity;
+          }
+          if (priceEl && unitPrice) priceEl.textContent = this.formatMoney(unitPrice * updatedItem.quantity);
+          if (comparePriceEl && compareUnitPrice) comparePriceEl.textContent = this.formatMoney(compareUnitPrice * updatedItem.quantity);
+
+          this.showStockWarning(itemEl, updatedItem.quantity);
+        } else if (itemEl) {
+          this.clearStockWarning(itemEl);
+        }
 
         if (this.pendingUpdates.size === 0 && this.inFlightRequests === 0) {
           document.querySelectorAll('[data-cart-count]').forEach(el => {
