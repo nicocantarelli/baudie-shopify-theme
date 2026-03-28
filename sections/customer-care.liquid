@@ -11,16 +11,16 @@
   assign text_color = section.settings.text_color | default: '#3E2027'
 -%}
 
-{%- capture breadcrumb_labels_json -%}
-{"delivery":"{{ 'breadcrumbs.delivery' | t }}","payment":"{{ 'breadcrumbs.payment' | t }}","returns":"{{ 'breadcrumbs.returns' | t }}","faq":"{{ 'breadcrumbs.faq' | t }}","terms":"{{ 'breadcrumbs.terms' | t }}","privacy":"{{ 'breadcrumbs.privacy' | t }}","contact":"{{ 'breadcrumbs.contact' | t }}"}
-{%- endcapture -%}
+<script type="application/json" id="breadcrumb-labels-{{ section.id }}">
+  {"delivery":"{{ 'breadcrumbs.delivery' | t }}","payment":"{{ 'breadcrumbs.payment' | t }}","returns":"{{ 'breadcrumbs.returns' | t }}","faq":"{{ 'breadcrumbs.faq' | t }}","terms":"{{ 'breadcrumbs.terms' | t }}","privacy":"{{ 'breadcrumbs.privacy' | t }}","contact":"{{ 'breadcrumbs.contact' | t }}"}
+</script>
 
 <section
   class="customer-care full-width"
   id="customer-care-{{ section_id }}"
   data-customer-care
   data-active-category="{{ active_category }}"
-  data-breadcrumb-labels="{{ breadcrumb_labels_json | escape }}"
+  data-breadcrumb-section-id="{{ section.id }}"
   style="--cc-bg: {{ bg_color }}; --cc-text: {{ text_color }};">
 
   <div class="customer-care__container">
@@ -698,11 +698,12 @@ class CustomerCare {
     const breadcrumbText = document.querySelector('[data-breadcrumb-current-text]');
     if (!breadcrumbText) return;
 
-    const labelsAttr = this.section.dataset.breadcrumbLabels;
-    if (!labelsAttr) return;
+    const sectionId = this.section.dataset.breadcrumbSectionId;
+    const scriptEl = document.getElementById(`breadcrumb-labels-${sectionId}`);
+    if (!scriptEl) return;
 
     try {
-      const breadcrumbLabels = JSON.parse(labelsAttr);
+      const breadcrumbLabels = JSON.parse(scriptEl.textContent);
       const label = breadcrumbLabels[tabId];
       if (label) {
         breadcrumbText.textContent = label;
