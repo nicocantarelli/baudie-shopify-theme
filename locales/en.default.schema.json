@@ -189,6 +189,9 @@
     }
   },
   "sections": {
+    "article": {
+      "name": "Article"
+    },
     "product_details": {
       "content_header": "Content",
       "image_header": "Image"
