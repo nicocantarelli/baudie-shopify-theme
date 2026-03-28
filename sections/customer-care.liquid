@@ -11,8 +11,15 @@
   assign text_color = section.settings.text_color | default: '#3E2027'
 -%}
 
+{%- capture breadcrumb_labels -%}
+  {
+    {%- for block in section.blocks -%}
+      {{ block.settings.url_slug | json }}: {{ block.settings.tab_label | json }}{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  }
+{%- endcapture -%}
 <script type="application/json" id="breadcrumb-labels-{{ section.id }}">
-  {"delivery":{{ 'breadcrumbs.delivery' | t | json }},"payment":{{ 'breadcrumbs.payment' | t | json }},"returns":{{ 'breadcrumbs.returns' | t | json }},"faq":{{ 'breadcrumbs.faq' | t | json }},"terms":{{ 'breadcrumbs.terms' | t | json }},"privacy":{{ 'breadcrumbs.privacy' | t | json }},"contact":{{ 'breadcrumbs.contact' | t | json }}}
+  {{ breadcrumb_labels }}
 </script>
 
 <section
