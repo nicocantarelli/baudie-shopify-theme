@@ -334,8 +334,18 @@
   .sidecart-item__controls {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 15px;
     margin-top: auto;
+  }
+
+  .sidecart-item__stock-warning {
+    width: 100%;
+    font-family: var(--font-jokker);
+    font-size: 12px;
+    font-weight: 500;
+    color: #c44;
+    margin: 0;
   }
 
   .sidecart-item__quantity {
@@ -391,14 +401,6 @@
   .sidecart-item__qty-input:focus {
     outline: 2px solid var(--sidecart-text);
     outline-offset: 2px;
-  }
-
-  .sidecart-item__stock-warning {
-    font-family: var(--font-jokker);
-    font-size: 12px;
-    font-weight: 500;
-    color: #c44;
-    margin: 0 0 6px;
   }
 
   .sidecart-item__price {
