@@ -172,6 +172,50 @@
     },
     "in_press_VFHyTx": {
       "type": "in-press",
+      "blocks": {
+        "press_logo_fLeqCg": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/the-new-yorker-logo.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_fMzjrq": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/bustle-logo.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_iUwiMD": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/the-new-york-times-logo.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_TgBxkT": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/goop-logo.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_L69iTx": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/vice-logo.png",
+            "alt_text": "Press logo"
+          }
+        }
+      },
+      "block_order": [
+        "press_logo_fLeqCg",
+        "press_logo_fMzjrq",
+        "press_logo_iUwiMD",
+        "press_logo_TgBxkT",
+        "press_logo_L69iTx"
+      ],
       "name": "t:general.in_press",
       "settings": {
         "title": "IN PRESS",
