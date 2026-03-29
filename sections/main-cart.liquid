@@ -848,6 +848,13 @@
       if (!this.cart) return;
 
       this.bindEvents();
+      this.listenForSidecartChanges();
+    }
+
+    listenForSidecartChanges() {
+      document.addEventListener('cart:updated', () => {
+        window.location.reload();
+      });
     }
 
     bindEvents() {
