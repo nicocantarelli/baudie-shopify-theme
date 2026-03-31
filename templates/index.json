@@ -205,7 +205,7 @@
         "mobile_background_image": "shopify://shop_images/explore-our-sets-background.png",
         "heading": "Explore our sets",
         "heading_color": "#ffffff",
-        "description": "<p>Meet six Baudie scents and them all.<br/>Spray, wipe, and let your deodorant do its best work.</p>",
+        "description": "<p>Everything you need to boost your deodorant and stay fresh all day.</p>",
         "description_color": "#ffffff",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
@@ -346,8 +346,8 @@
       "type": "what-makes-different",
       "name": "t:sections.what_makes_different.name",
       "settings": {
-        "heading": "What Makes Baudie Different",
-        "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
+        "heading": "What Makes Baudie Different?",
+        "description": "",
         "desktop_base": "shopify://shop_images/test.png",
         "desktop_overlay": "shopify://shop_images/text-desktop.svg",
         "mobile_base": "shopify://shop_images/molecule-m.png",
@@ -389,6 +389,7 @@
         "benefit_9HPW3d",
         "benefit_4XEJRL"
       ],
+      "disabled": true,
       "name": "Product benefits",
       "settings": {
         "background_color": "#fce9ec",
