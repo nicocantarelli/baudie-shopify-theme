@@ -15,10 +15,10 @@
         "product_card_7NHkmE": {
           "type": "product_card",
           "settings": {
-            "product": "barely-there",
+            "product": "christmas-special-scent",
             "card_width": "2",
             "show_badge": true,
-            "custom_button_text": "",
+            "custom_button_text": "Merry Christmas",
             "badge_text": "Limited Edition"
           }
         },
