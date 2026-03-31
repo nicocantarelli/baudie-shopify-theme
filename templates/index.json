@@ -43,7 +43,7 @@
           "type": "press_logo",
           "name": "Goop Logo",
           "settings": {
-            "logo": "shopify://shop_images/goop-logo.png",
+            "logo": "shopify://shop_images/6.png",
             "alt_text": "Goop Logo"
           }
         },
@@ -51,7 +51,7 @@
           "type": "press_logo",
           "name": "The New Yorker Logo",
           "settings": {
-            "logo": "shopify://shop_images/the-new-yorker-logo.png",
+            "logo": "shopify://shop_images/3.png",
             "alt_text": "The New Yorker Logo"
           }
         },
