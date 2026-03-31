@@ -82,68 +82,30 @@
     "how-to-use": {
       "type": "how-to-use",
       "blocks": {
-        "step-1": {
+        "step_NJPp79": {
           "type": "step",
           "settings": {
-            "label": "Spray"
-          }
-        },
-        "step-2": {
-          "type": "step",
-          "settings": {
+            "icon": "shopify://shop_images/wipe-icon.svg",
             "label": "Wipe"
           }
         },
-        "step-3": {
-          "type": "step",
-          "settings": {
-            "label": "Apply Deo"
-          }
-        },
-        "step-4": {
-          "type": "step",
-          "settings": {
-            "label": "Stay Fresh"
-          }
-        },
-        "dosage-1": {
+        "dosage_yyrwrd": {
           "type": "dosage",
           "settings": {
-            "label": "I smell a little",
+            "label": "I'm clean",
             "drops": 2,
-            "amount": "2-4 Sprays"
-          }
-        },
-        "dosage-2": {
-          "type": "dosage",
-          "settings": {
-            "label": "It's... Noticeable",
-            "drops": 4,
-            "amount": "4-8 Sprays"
-          }
-        },
-        "dosage-3": {
-          "type": "dosage",
-          "settings": {
-            "label": "I'm really stinky",
-            "drops": 8,
-            "amount": "8-12 Sprays"
+            "amount": ""
           }
         }
       },
       "block_order": [
-        "step-1",
-        "step-2",
-        "step-3",
-        "step-4",
-        "dosage-1",
-        "dosage-2",
-        "dosage-3"
+        "step_NJPp79",
+        "dosage_yyrwrd"
       ],
       "settings": {
         "title": "How to use",
         "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer powered by odor-eliminating bacterial technology that works with any deodorant you already own. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
-        "sprays_title": "How many sprays do i need?",
+        "sprays_title": "",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
