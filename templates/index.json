@@ -41,7 +41,7 @@
       "blocks": {
         "press_logo_ghD8X7": {
           "type": "press_logo",
-          "name": "Goop Logo",
+          "name": "Vogue Logo",
           "settings": {
             "logo": "shopify://shop_images/6.png",
             "alt_text": "Goop Logo"
@@ -49,7 +49,7 @@
         },
         "press_logo_YXxpJy": {
           "type": "press_logo",
-          "name": "The New Yorker Logo",
+          "name": "Byrdie Logo",
           "settings": {
             "logo": "shopify://shop_images/3.png",
             "alt_text": "The New Yorker Logo"
@@ -57,7 +57,7 @@
         },
         "press_logo_Acaiwg": {
           "type": "press_logo",
-          "name": "Vice Logo",
+          "name": "Instyle Logo",
           "settings": {
             "logo": "shopify://shop_images/4.png",
             "alt_text": "Vice Logo"
@@ -65,7 +65,7 @@
         },
         "press_logo_aKkAft": {
           "type": "press_logo",
-          "name": "Bustle Logo",
+          "name": "Cosmopolitan Logo",
           "settings": {
             "logo": "shopify://shop_images/5.png",
             "alt_text": "Bustle Logo"
@@ -73,6 +73,7 @@
         },
         "press_logo_pqQMPB": {
           "type": "press_logo",
+          "name": "Popsugar Logo",
           "settings": {
             "logo": "shopify://shop_images/1.png",
             "alt_text": "Press logo"
@@ -80,6 +81,7 @@
         },
         "press_logo_rih9t3": {
           "type": "press_logo",
+          "name": "NewBeauty Logo",
           "settings": {
             "logo": "shopify://shop_images/2.png",
             "alt_text": "Press logo"

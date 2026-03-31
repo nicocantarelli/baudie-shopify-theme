@@ -17,16 +17,18 @@
         "announcement_BcNDUD": {
           "type": "announcement",
           "settings": {
-            "text": "Free USA shipping",
+            "text": "Free Shipping on orders over $50",
             "link_text": "",
+            "link_text_layout": "inline",
             "url": ""
           }
         },
         "announcement_ehMV6T": {
           "type": "announcement",
           "settings": {
-            "text": "Complimentary samples with every order",
+            "text": "Bundle and save",
             "link_text": "",
+            "link_text_layout": "inline",
             "url": ""
           }
         }
