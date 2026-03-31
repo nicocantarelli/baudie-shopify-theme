@@ -403,6 +403,13 @@
         "attribution_line_2": "Attribution line 2"
       }
     },
+    "contact": {
+      "name": "Contact",
+      "settings": {
+        "content_header": "Content",
+        "colors_header": "Colors"
+      }
+    },
     "customer_care": {
       "name": "Customer Care",
       "navigation_label": "Customer care categories",
