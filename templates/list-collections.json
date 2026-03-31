@@ -11,7 +11,12 @@
   "sections": {
     "main": {
       "type": "main-list-collections",
-      "settings": {}
+      "settings": {
+        "heading": "Collections",
+        "collection_list": [],
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
     }
   },
   "order": [
