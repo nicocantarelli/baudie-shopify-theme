@@ -13,7 +13,7 @@
       "type": "hero-product",
       "name": "Hero Section",
       "settings": {
-        "heading": "Smelling good shouldn't be a gamble.",
+        "heading": "The world's first and only patented Deodorant Enhancer",
         "heading_color": "#ffffff",
         "hero_products": [
           "capri-seaside",
@@ -91,8 +91,8 @@
       "settings": {
         "heading": "Not a deodorant.",
         "second_heading": "The step your deodorant's been missing.",
-        "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
-        "product_image": "shopify://shop_images/product-details-image.png",
+        "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer powered by odor-eliminating bacterial technology that works with any deodorant you already own. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome.. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
+        "product_image": "shopify://shop_images/freepik__high-quality-studio-photoa-young-athletic-woman-wi__36206.jpg",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
@@ -160,7 +160,7 @@
       "settings": {
         "background_color": "#fce9ec",
         "heading": "Meet Your Scents",
-        "side_image": "shopify://shop_images/meet-your-scents-left.png",
+        "side_image": "shopify://shop_images/freepik__studio-beautiful-women-in-whitetowel-holding-littl__90528.png",
         "background_image": "shopify://shop_images/meet-your-scents-right.png"
       }
     },
