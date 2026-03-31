@@ -278,6 +278,29 @@
         "privacy": "Privacy",
         "contact": "Contact"
       }
+    },
+    "contact": {
+      "name": "Contact",
+      "settings": {
+        "content_header": "Content",
+        "colors_header": "Colors"
+      },
+      "name_label": "Name",
+      "name_placeholder": "Your full name",
+      "email_label": "Email",
+      "email_placeholder": "your@email.com",
+      "subject_label": "Subject",
+      "subject_placeholder": "Select a subject",
+      "subject_order_status": "Order Status",
+      "subject_returns": "Returns & Exchanges",
+      "subject_product_question": "Product Question",
+      "subject_feedback": "Feedback",
+      "subject_other": "Other",
+      "message_label": "Message",
+      "message_placeholder": "How can we help?",
+      "submit_button": "Send Message",
+      "success_message": "Thanks for reaching out! We've received your message and will get back to you within 24–48 hours.",
+      "error_message": "Oops — something went wrong. Please check the following:"
     }
   },
   "labels": {
@@ -312,6 +335,8 @@
     "review_text": "Review text",
     "background_color": "Background color",
     "text_color": "Text color",
+    "button_background_color": "Button background color",
+    "button_text_color": "Button text color",
     "title": "Title"
   },
   "blocks": {

@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "contact": {
+      "type": "contact",
+      "settings": {
+        "heading": "Get In Touch",
+        "description": "We'd love to hear from you! Send us a message and one of our team members will get back to you within 24–48 hours. Thank you for your patience — we look forward to helping you out.",
+        "background_color": "#FCE9EC",
+        "text_color": "#3E2027",
+        "button_background_color": "#3E2027",
+        "button_text_color": "#FFFAE6"
+      }
+    }
+  },
+  "order": [
+    "contact"
+  ]
+}

@@ -1,0 +1,389 @@
+{%- liquid
+  assign heading = section.settings.heading
+  assign description = section.settings.description
+-%}
+
+<section
+  class="contact full-width"
+  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --button-bg: {{ section.settings.button_background_color }}; --button-text: {{ section.settings.button_text_color }};"
+>
+  <div class="contact__container">
+    {%- if heading != blank -%}
+      <h1 class="contact__heading">{{ heading }}</h1>
+    {%- endif -%}
+
+    {%- if description != blank -%}
+      <p class="contact__description">{{ description }}</p>
+    {%- endif -%}
+
+    {%- form 'contact' -%}
+      {%- if form.posted_successfully? -%}
+        <div class="contact__success" role="status">
+          <p>{{ 'sections.contact.success_message' | t }}</p>
+        </div>
+      {%- endif -%}
+
+      {%- if form.errors -%}
+        <div class="contact__errors" role="alert">
+          <p>{{ 'sections.contact.error_message' | t }}</p>
+          <ul>
+            {%- for field in form.errors -%}
+              <li>{{ form.errors.messages[field] }}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <div class="contact__fields">
+        <div class="contact__field">
+          <label class="contact__label" for="contact-name">{{ 'sections.contact.name_label' | t }}</label>
+          <input
+            type="text"
+            id="contact-name"
+            name="contact[{{ 'sections.contact.name_label' | t }}]"
+            class="contact__input"
+            placeholder="{{ 'sections.contact.name_placeholder' | t }}"
+            required
+            autocomplete="name"
+          >
+        </div>
+
+        <div class="contact__field">
+          <label class="contact__label" for="contact-email">{{ 'sections.contact.email_label' | t }}</label>
+          <input
+            type="email"
+            id="contact-email"
+            name="contact[email]"
+            class="contact__input"
+            placeholder="{{ 'sections.contact.email_placeholder' | t }}"
+            required
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="contact__field">
+          <label class="contact__label" for="contact-subject">{{ 'sections.contact.subject_label' | t }}</label>
+          <select
+            id="contact-subject"
+            name="contact[{{ 'sections.contact.subject_label' | t }}]"
+            class="contact__select"
+            required
+          >
+            <option value="" disabled selected>{{ 'sections.contact.subject_placeholder' | t }}</option>
+            <option value="{{ 'sections.contact.subject_order_status' | t }}">{{ 'sections.contact.subject_order_status' | t }}</option>
+            <option value="{{ 'sections.contact.subject_returns' | t }}">{{ 'sections.contact.subject_returns' | t }}</option>
+            <option value="{{ 'sections.contact.subject_product_question' | t }}">{{ 'sections.contact.subject_product_question' | t }}</option>
+            <option value="{{ 'sections.contact.subject_feedback' | t }}">{{ 'sections.contact.subject_feedback' | t }}</option>
+            <option value="{{ 'sections.contact.subject_other' | t }}">{{ 'sections.contact.subject_other' | t }}</option>
+          </select>
+        </div>
+
+        <div class="contact__field">
+          <label class="contact__label" for="contact-message">{{ 'sections.contact.message_label' | t }}</label>
+          <textarea
+            id="contact-message"
+            name="contact[body]"
+            class="contact__textarea"
+            placeholder="{{ 'sections.contact.message_placeholder' | t }}"
+            rows="6"
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="contact__button">
+          {{ 'sections.contact.submit_button' | t }}
+        </button>
+      </div>
+    {%- endform -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .contact {
+    background-color: var(--section-bg, #FCE9EC);
+    padding: calc(var(--total-header-height, 120px) + 60px) 0 80px;
+  }
+
+  .contact__container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .contact__heading {
+    font-family: var(--font-alyona);
+    font-size: 70px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--text-color, #3E2027);
+    text-align: center;
+    margin: 0;
+  }
+
+  .contact__description {
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-color, #3E2027);
+    text-align: center;
+    margin: 0;
+    max-width: 560px;
+  }
+
+  .contact__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  .contact__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .contact__label {
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text-color, #3E2027);
+  }
+
+  .contact__input,
+  .contact__select,
+  .contact__textarea {
+    width: 100%;
+    padding: 10px 25px;
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-color, #3E2027);
+    background-color: transparent;
+    border: 1px solid var(--text-color, #3E2027);
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  .contact__input,
+  .contact__select {
+    height: 50px;
+  }
+
+  .contact__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%233E2027' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    padding-right: 50px;
+    cursor: pointer;
+  }
+
+  .contact__textarea {
+    resize: vertical;
+    min-height: 150px;
+  }
+
+  .contact__input::placeholder,
+  .contact__textarea::placeholder {
+    color: var(--text-color, #3E2027);
+    opacity: 0.5;
+  }
+
+  .contact__input:focus,
+  .contact__select:focus,
+  .contact__textarea:focus {
+    border-color: var(--text-color, #3E2027);
+    outline: 2px solid rgba(62, 32, 39, 0.1);
+    outline-offset: 0;
+  }
+
+  .contact__button {
+    width: 100%;
+    height: 50px;
+    padding: 10px 20px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: var(--button-text, #FFFAE6);
+    background-color: var(--button-bg, #3E2027);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    margin-top: 8px;
+  }
+
+  .contact__button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .contact__button:active {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+
+  .contact__success {
+    width: 100%;
+    padding: 16px 24px;
+    background-color: rgba(62, 32, 39, 0.08);
+    border: 1px solid var(--text-color, #3E2027);
+  }
+
+  .contact__success p {
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-color, #3E2027);
+    text-align: center;
+    margin: 0;
+  }
+
+  .contact__errors {
+    width: 100%;
+    padding: 16px 24px;
+    background-color: rgba(200, 50, 50, 0.08);
+    border: 1px solid #c83232;
+  }
+
+  .contact__errors p {
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    line-height: 1.5;
+    color: #c83232;
+    margin: 0 0 8px;
+  }
+
+  .contact__errors ul {
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.5;
+    color: #c83232;
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  /* Responsive — Tablet */
+  @media (max-width: 1024px) {
+    .contact {
+      padding-top: calc(var(--total-header-height, 100px) + 40px);
+      padding-bottom: 60px;
+    }
+
+    .contact__container {
+      padding: 0 24px;
+    }
+
+    .contact__heading {
+      font-size: 56px;
+    }
+  }
+
+  /* Responsive — Mobile */
+  @media (max-width: 768px) {
+    .contact {
+      padding-top: calc(var(--total-header-height, 80px) + 32px);
+      padding-bottom: 50px;
+    }
+
+    .contact__container {
+      padding: 0 16px;
+      gap: 20px;
+    }
+
+    .contact__heading {
+      font-size: 42px;
+      line-height: 1.1;
+    }
+
+    .contact__description {
+      font-size: 14px;
+    }
+
+    .contact__fields {
+      gap: 16px;
+    }
+
+    .contact__input,
+    .contact__select {
+      height: 48px;
+      font-size: 15px;
+    }
+
+    .contact__textarea {
+      font-size: 15px;
+      min-height: 130px;
+    }
+
+    .contact__button {
+      height: 48px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+  {
+    "name": "t:sections.contact.name",
+    "class": "contact-section-wrapper",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:sections.contact.settings.content_header"
+      },
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "t:labels.heading",
+        "default": "Get In Touch"
+      },
+      {
+        "type": "textarea",
+        "id": "description",
+        "label": "t:labels.description",
+        "default": "We'd love to hear from you! Send us a message and one of our team members will get back to you within 24–48 hours. Thank you for your patience — we look forward to helping you out."
+      },
+      {
+        "type": "header",
+        "content": "t:sections.contact.settings.colors_header"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "t:labels.background_color",
+        "default": "#FCE9EC"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "t:labels.text_color",
+        "default": "#3E2027"
+      },
+      {
+        "type": "color",
+        "id": "button_background_color",
+        "label": "t:labels.button_background_color",
+        "default": "#3E2027"
+      },
+      {
+        "type": "color",
+        "id": "button_text_color",
+        "label": "t:labels.button_text_color",
+        "default": "#FFFAE6"
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:sections.contact.name"
+      }
+    ]
+  }
+{% endschema %}
