@@ -281,10 +281,8 @@
     },
     "contact": {
       "name": "Contact",
-      "settings": {
-        "content_header": "Content",
-        "colors_header": "Colors"
-      },
+      "content_header": "Content",
+      "colors_header": "Colors",
       "name_label": "Name",
       "name_placeholder": "Your full name",
       "email_label": "Email",
