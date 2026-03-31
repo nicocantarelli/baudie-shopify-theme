@@ -12,6 +12,16 @@
     "main": {
       "type": "collection-grid",
       "blocks": {
+        "product_card_7NHkmE": {
+          "type": "product_card",
+          "settings": {
+            "product": "barely-there",
+            "card_width": "2",
+            "show_badge": true,
+            "custom_button_text": "",
+            "badge_text": "Limited Edition"
+          }
+        },
         "product_card_eE9z3y": {
           "type": "product_card",
           "settings": {
@@ -94,6 +104,7 @@
         }
       },
       "block_order": [
+        "product_card_7NHkmE",
         "product_card_eE9z3y",
         "product_card_yDHWTz",
         "product_card_9eHGPj",
