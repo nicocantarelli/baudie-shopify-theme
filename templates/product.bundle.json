@@ -308,15 +308,8 @@
         "faq_item_tehRF6": {
           "type": "faq_item",
           "settings": {
-            "question": "Is it suitable for sensitive skin?",
-            "answer": ""
-          }
-        },
-        "faq_item_qgUYG8": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Can teens use Baudie?",
-            "answer": ""
+            "question": "Who can use this product?",
+            "answer": "<p>The Deodorant Enhancer is unisex and can be used for pre-teens and up. Please make sure to patch-test before use.</p>"
           }
         }
       },
@@ -329,8 +322,7 @@
         "faq_item_4CXF84",
         "faq_item_bNifqF",
         "faq_item_LQTrHm",
-        "faq_item_tehRF6",
-        "faq_item_qgUYG8"
+        "faq_item_tehRF6"
       ],
       "name": "Product FAQ",
       "settings": {
