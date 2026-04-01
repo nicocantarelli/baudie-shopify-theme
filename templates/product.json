@@ -113,9 +113,25 @@
         "dosage_yyrwrd": {
           "type": "dosage",
           "settings": {
-            "label": "I'm clean",
+            "label": "I smell a little",
             "drops": 2,
-            "amount": ""
+            "amount": "2-4 Sprays"
+          }
+        },
+        "dosage_aUJPpK": {
+          "type": "dosage",
+          "settings": {
+            "label": "It's... Noticeable",
+            "drops": 4,
+            "amount": "4-8 Sprays"
+          }
+        },
+        "dosage_UWPPiP": {
+          "type": "dosage",
+          "settings": {
+            "label": "I'm really stinky",
+            "drops": 8,
+            "amount": "8-12 Sprays"
           }
         }
       },
@@ -124,7 +140,9 @@
         "step_NJPp79",
         "step_6hRLkr",
         "step_HABXyn",
-        "dosage_yyrwrd"
+        "dosage_yyrwrd",
+        "dosage_aUJPpK",
+        "dosage_UWPPiP"
       ],
       "settings": {
         "title": "How to use",
