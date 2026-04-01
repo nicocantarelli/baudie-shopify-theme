@@ -259,15 +259,15 @@
         "faq_item_UpwmVD": {
           "type": "faq_item",
           "settings": {
-            "question": "",
-            "answer": ""
+            "question": "Do I need to wipe after I spray it on?",
+            "answer": "<p>Yes! This is of utmost importance. Think of this product as a cleanse for your armpits. When you cleanse your face you always wash off the cleanser. Same goes here...You want to spray and then use a tissue/towel to wipe away all the odor-causing bacteria under your arms. If you do not wipe off, the product will not work effectively.</p>"
           }
         },
         "faq_item_y4DAHY": {
           "type": "faq_item",
           "settings": {
-            "question": "How do I use it?",
-            "answer": ""
+            "question": "Where exactly do I spray it + how many sprays do I need?",
+            "answer": "<p>Our armpit extends greater than just the middle area. Make sure to spray the product all around the sides, top, and middle of the armpit or the product may not be as effective. Please refer to the spray chart in the \"how to use\" section above for a reference as to how many sprays you should be using per armpit.</p>"
           }
         },
         "faq_item_zBPWmx": {
