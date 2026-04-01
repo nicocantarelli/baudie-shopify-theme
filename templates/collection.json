@@ -86,7 +86,7 @@
           "type": "product_card",
           "settings": {
             "product": "discovery-set",
-            "card_width": "1",
+            "card_width": "2",
             "show_badge": false,
             "custom_button_text": "",
             "badge_text": ""
