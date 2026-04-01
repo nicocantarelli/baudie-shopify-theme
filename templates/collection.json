@@ -12,6 +12,16 @@
     "main": {
       "type": "collection-grid",
       "blocks": {
+        "product_card_tyRErt": {
+          "type": "product_card",
+          "settings": {
+            "product": "discovery-set",
+            "card_width": "2",
+            "show_badge": false,
+            "custom_button_text": "",
+            "badge_text": ""
+          }
+        },
         "product_card_eE9z3y": {
           "type": "product_card",
           "settings": {
@@ -81,27 +91,17 @@
             "custom_button_text": "Choose your scents",
             "badge_text": ""
           }
-        },
-        "product_card_tyRErt": {
-          "type": "product_card",
-          "settings": {
-            "product": "discovery-set",
-            "card_width": "2",
-            "show_badge": false,
-            "custom_button_text": "",
-            "badge_text": ""
-          }
         }
       },
       "block_order": [
+        "product_card_tyRErt",
         "product_card_eE9z3y",
         "product_card_yDHWTz",
         "product_card_9eHGPj",
         "product_card_GcwzJA",
         "product_card_AdP3Ty",
         "product_card_dJmhWz",
-        "product_card_MDjGH8",
-        "product_card_tyRErt"
+        "product_card_MDjGH8"
       ],
       "settings": {
         "heading": "Meet Your Scents",
