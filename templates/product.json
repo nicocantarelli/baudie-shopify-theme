@@ -155,52 +155,60 @@
     "in_press_TBfPET": {
       "type": "in-press",
       "blocks": {
-        "press_logo_EB7Mwh": {
+        "press_logo_g7n4wB": {
           "type": "press_logo",
           "settings": {
-            "logo": "shopify://shop_images/the-new-yorker-logo.png",
+            "logo": "shopify://shop_images/5.png",
             "alt_text": "Press logo"
           }
         },
-        "press_logo_8wt8WW": {
+        "press_logo_cTVV7V": {
           "type": "press_logo",
           "settings": {
-            "logo": "shopify://shop_images/the-new-york-times-logo.png",
+            "logo": "shopify://shop_images/2.png",
             "alt_text": "Press logo"
           }
         },
-        "press_logo_kD6Eb8": {
+        "press_logo_tnykgG": {
           "type": "press_logo",
           "settings": {
-            "logo": "shopify://shop_images/bustle-logo.png",
+            "logo": "shopify://shop_images/1.png",
             "alt_text": "Press logo"
           }
         },
-        "press_logo_aqaaL7": {
+        "press_logo_EAamKc": {
           "type": "press_logo",
           "settings": {
-            "logo": "shopify://shop_images/goop-logo.png",
+            "logo": "shopify://shop_images/4.png",
             "alt_text": "Press logo"
           }
         },
-        "press_logo_MaPPiD": {
+        "press_logo_TjWmwD": {
           "type": "press_logo",
           "settings": {
-            "logo": "shopify://shop_images/vice-logo.png",
+            "logo": "shopify://shop_images/6.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_gNfxKr": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/3.png",
             "alt_text": "Press logo"
           }
         }
       },
       "block_order": [
-        "press_logo_EB7Mwh",
-        "press_logo_8wt8WW",
-        "press_logo_kD6Eb8",
-        "press_logo_aqaaL7",
-        "press_logo_MaPPiD"
+        "press_logo_g7n4wB",
+        "press_logo_cTVV7V",
+        "press_logo_tnykgG",
+        "press_logo_EAamKc",
+        "press_logo_TjWmwD",
+        "press_logo_gNfxKr"
       ],
       "name": "t:general.in_press",
       "settings": {
-        "title": "IN PRESS",
+        "title": "TRUSTED AND LOVED BY",
         "background_color": "#fce9ec",
         "text_color": "#3e2027",
         "divider_color": "#3e2027"
