@@ -202,7 +202,7 @@
           "type": "bundle_card",
           "settings": {
             "product": "discovery-set",
-            "card_image_override": "shopify://shop_images/discovery-set-card.png",
+            "card_image_override": "shopify://shop_images/Deodorant_Enhancer_11.png",
             "display_products": [],
             "custom_title": "",
             "custom_description": "",
@@ -220,7 +220,7 @@
       "name": "t:general.explore_sets",
       "settings": {
         "background_image": "shopify://shop_images/explore-our-sets-background_3a24be6f-5c93-4c77-b6ee-9d5633ec779a.png",
-        "mobile_background_image": "shopify://shop_images/explore-our-sets-background.png",
+        "mobile_background_image": "shopify://shop_images/no-residue_6f509d96-bd92-4b5c-b10d-77a27213b9bd.png",
         "heading": "Explore our sets",
         "heading_color": "#ffffff",
         "description": "<p>Everything you need to boost your deodorant and stay fresh all day.</p>",
@@ -407,6 +407,7 @@
         "benefit_9HPW3d",
         "benefit_4XEJRL"
       ],
+      "disabled": true,
       "name": "Product benefits",
       "settings": {
         "background_color": "#fce9ec",
@@ -433,11 +434,11 @@
     "hero_product_tkHfVy",
     "in_press_9ChkGH",
     "product_details_XyZ123",
+    "what_makes_different_tVrMDA",
     "meet_scents_AbC456",
     "explore_sets_UjtGBG",
     "reviews_wFhWb3",
     "product_features_aNgxYb",
-    "what_makes_different_tVrMDA",
     "product_benefits_P36iK9",
     "newsletter_LECjXh"
   ]
