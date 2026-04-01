@@ -115,6 +115,20 @@
         "text_color": "#3e2027"
       }
     },
+    "what_makes_different_tVrMDA": {
+      "type": "what-makes-different",
+      "name": "t:sections.what_makes_different.name",
+      "settings": {
+        "heading": "What Makes Baudie Different?",
+        "description": "",
+        "desktop_base": "shopify://shop_images/test.png",
+        "desktop_overlay": "shopify://shop_images/text-desktop.svg",
+        "mobile_base": "shopify://shop_images/molecule-m.png",
+        "mobile_overlay": "shopify://shop_images/mobile-text.svg",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
     "meet_scents_AbC456": {
       "type": "meet-your-scents",
       "blocks": {
@@ -360,20 +374,6 @@
         "arrow_color": "#fffae6"
       }
     },
-    "what_makes_different_tVrMDA": {
-      "type": "what-makes-different",
-      "name": "t:sections.what_makes_different.name",
-      "settings": {
-        "heading": "What Makes Baudie Different?",
-        "description": "",
-        "desktop_base": "shopify://shop_images/test.png",
-        "desktop_overlay": "shopify://shop_images/text-desktop.svg",
-        "mobile_base": "shopify://shop_images/molecule-m.png",
-        "mobile_overlay": "shopify://shop_images/mobile-text.svg",
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
-      }
-    },
     "product_benefits_P36iK9": {
       "type": "product-benefits",
       "blocks": {
@@ -423,7 +423,7 @@
         "placeholder": "Enter your email",
         "button_text": "SUBSCRIBE",
         "fine_print": "<p>We'll only email you when it's worth it — new scents, early access, or something good for your pits.<br/>See our <a href=\"https://lumiosdigital.myshopify.com/pages/customer-care#privacy\" target=\"_blank\" title=\"https://lumiosdigital.myshopify.com/pages/customer-care#privacy\">Privacy Policy</a> and <a href=\"https://lumiosdigital.myshopify.com/pages/customer-care#terms\" target=\"_blank\" title=\"https://lumiosdigital.myshopify.com/pages/customer-care#terms\">Terms</a>.</p>",
-        "background_color": "#ffcad2",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027",
         "button_background_color": "#3e2027",
         "button_text_color": "#fffae6"
