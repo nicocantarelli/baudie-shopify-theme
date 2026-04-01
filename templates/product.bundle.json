@@ -173,43 +173,51 @@
     "in_press_VFHyTx": {
       "type": "in-press",
       "blocks": {
+        "press_logo_hLBQRT": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/2.png",
+            "alt_text": "Press logo"
+          }
+        },
         "press_logo_fLeqCg": {
           "type": "press_logo",
           "settings": {
-            "logo": "shopify://shop_images/the-new-yorker-logo.png",
+            "logo": "shopify://shop_images/6.png",
             "alt_text": "Press logo"
           }
         },
         "press_logo_fMzjrq": {
           "type": "press_logo",
           "settings": {
-            "logo": "shopify://shop_images/bustle-logo.png",
+            "logo": "shopify://shop_images/3.png",
             "alt_text": "Press logo"
           }
         },
         "press_logo_iUwiMD": {
           "type": "press_logo",
           "settings": {
-            "logo": "shopify://shop_images/the-new-york-times-logo.png",
+            "logo": "shopify://shop_images/4.png",
             "alt_text": "Press logo"
           }
         },
         "press_logo_TgBxkT": {
           "type": "press_logo",
           "settings": {
-            "logo": "shopify://shop_images/goop-logo.png",
+            "logo": "shopify://shop_images/5.png",
             "alt_text": "Press logo"
           }
         },
         "press_logo_L69iTx": {
           "type": "press_logo",
           "settings": {
-            "logo": "shopify://shop_images/vice-logo.png",
+            "logo": "shopify://shop_images/1.png",
             "alt_text": "Press logo"
           }
         }
       },
       "block_order": [
+        "press_logo_hLBQRT",
         "press_logo_fLeqCg",
         "press_logo_fMzjrq",
         "press_logo_iUwiMD",
