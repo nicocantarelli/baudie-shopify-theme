@@ -82,11 +82,32 @@
     "how-to-use": {
       "type": "how-to-use",
       "blocks": {
+        "step_bKjy3H": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/spray-icon.svg",
+            "label": "Spray"
+          }
+        },
         "step_NJPp79": {
           "type": "step",
           "settings": {
             "icon": "shopify://shop_images/wipe-icon.svg",
             "label": "Wipe"
+          }
+        },
+        "step_6hRLkr": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/apply-icon.svg",
+            "label": "Apply Deo"
+          }
+        },
+        "step_HABXyn": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/fresh-icon.svg",
+            "label": "Stay Fresh"
           }
         },
         "dosage_yyrwrd": {
@@ -99,7 +120,10 @@
         }
       },
       "block_order": [
+        "step_bKjy3H",
         "step_NJPp79",
+        "step_6hRLkr",
+        "step_HABXyn",
         "dosage_yyrwrd"
       ],
       "settings": {
