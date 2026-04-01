@@ -246,17 +246,6 @@
         "text_color": "#3e2027"
       }
     },
-    "related_products_adCLpM": {
-      "type": "related-products",
-      "name": "t:sections.related_products.name",
-      "settings": {
-        "heading": "You may also like",
-        "collection": "shop",
-        "max_products": 6,
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
-      }
-    },
     "product_faq_dDjEXh": {
       "type": "product-faq",
       "blocks": {
@@ -264,7 +253,7 @@
           "type": "faq_item",
           "settings": {
             "question": "Is Baudie a deodorant?",
-            "answer": "<p>kjlksdjflsdkajf;ldaskfj;alsdkfja;sldkfja;sldkfj;alsdkj</p>"
+            "answer": "<p>No. Baudie is not a deodorant and does not replace one. It is a Deodorant Enhancer that works before deodorant to stop odor at the source and create the perfect base for your deo to shine.</p>"
           }
         },
         "faq_item_UpwmVD": {
@@ -346,7 +335,18 @@
       "name": "Product FAQ",
       "settings": {
         "title": "Frequently Asked Questions",
-        "intro": "",
+        "intro": "<p>Got questions? We’ve got answers. This is your go-to spot for everything you might be wondering about Baudie - from how to use it, to what makes it different, to all the little details in between. Think of this as the cheat sheet to staying fresh, informed, and fully in the know.</p>",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "related_products_adCLpM": {
+      "type": "related-products",
+      "name": "t:sections.related_products.name",
+      "settings": {
+        "heading": "You may also like",
+        "collection": "shop",
+        "max_products": 6,
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
@@ -358,7 +358,7 @@
     "how_to_use_jJUAG8",
     "in_press_VFHyTx",
     "what_makes_different_LWNLJB",
-    "related_products_adCLpM",
-    "product_faq_dDjEXh"
+    "product_faq_dDjEXh",
+    "related_products_adCLpM"
   ]
 }
