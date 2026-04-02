@@ -29,6 +29,7 @@
         "use_static_image": true,
         "static_hero_image": "shopify://shop_images/capri-seaside-hero_063e419c-fa29-4fa5-b955-f05a99a5c7f3.png",
         "static_hero_image_alt": "",
+        "mobile_heading": "The world's first and only patented Deodorant Enhancer",
         "mobile_content_position": "top",
         "mobile_title": "Deodorant Enhancer",
         "mobile_subtitle": "Not a deodorant — the step that makes it work better.",
@@ -365,8 +366,6 @@
       "name": "t:general.reviews",
       "settings": {
         "heading": "People Are Raving...",
-        "view_all_text": "",
-        "view_all_url": "shopify://collections",
         "yotpo_app_key": "",
         "product_id": "",
         "background_color": "#fce9ec",
