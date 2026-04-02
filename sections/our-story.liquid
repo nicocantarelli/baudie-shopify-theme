@@ -16,23 +16,13 @@
 >
   <div class="our-story__wrapper">
     <div class="our-story__layout">
-      <div class="our-story__content">
-        {%- if section.settings.heading != blank -%}
-          <h1 class="our-story__heading">{{ section.settings.heading }}</h1>
-        {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h1 class="our-story__heading">{{ section.settings.heading }}</h1>
+      {%- endif -%}
 
-        {%- if section.settings.intro_text != blank -%}
-          <div class="our-story__intro">{{ section.settings.intro_text }}</div>
-        {%- endif -%}
-
-        {%- if section.settings.subheading != blank -%}
-          <h2 class="our-story__subheading">{{ section.settings.subheading }}</h2>
-        {%- endif -%}
-
-        {%- if section.settings.body_text != blank -%}
-          <div class="our-story__body">{{ section.settings.body_text }}</div>
-        {%- endif -%}
-      </div>
+      {%- if section.settings.intro_text != blank -%}
+        <div class="our-story__intro">{{ section.settings.intro_text }}</div>
+      {%- endif -%}
 
       {%- if has_image -%}
         <div class="our-story__image-column">
@@ -67,6 +57,14 @@
           {%- endif -%}
         </div>
       {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <h2 class="our-story__subheading">{{ section.settings.subheading }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.body_text != blank -%}
+        <div class="our-story__body">{{ section.settings.body_text }}</div>
+      {%- endif -%}
     </div>
   </div>
 
@@ -90,14 +88,24 @@
   .our-story__layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    gap: 20px 60px;
     align-items: start;
     margin-top: 90px;
     margin-bottom: 120px;
   }
 
-  .our-story__content {
+  /* Desktop: text items in left column, image in right column spanning all rows */
+  .our-story__heading,
+  .our-story__intro,
+  .our-story__subheading,
+  .our-story__body {
+    grid-column: 1;
     max-width: 630px;
+  }
+
+  .our-story__image-column {
+    grid-column: 2;
+    grid-row: 1 / -1;
   }
 
   .our-story__heading {
@@ -170,11 +178,20 @@
 
     .our-story__layout {
       grid-template-columns: 1fr;
-      gap: 40px;
+      gap: 20px;
     }
 
-    .our-story__content {
+    .our-story__heading,
+    .our-story__intro,
+    .our-story__subheading,
+    .our-story__body {
+      grid-column: 1;
       max-width: 100%;
+    }
+
+    .our-story__image-column {
+      grid-column: 1;
+      grid-row: auto;
     }
 
     .our-story__heading {
@@ -214,10 +231,6 @@
     .our-story__layout {
       margin-top: 16px;
       margin-bottom: 60px;
-    }
-
-    .our-story__image-column {
-      order: -1;
     }
 
     .our-story__image-wrapper {
