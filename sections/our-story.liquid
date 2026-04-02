@@ -16,16 +16,60 @@
 >
   <div class="our-story__wrapper">
     <div class="our-story__layout">
-      {%- if section.settings.heading != blank -%}
-        <h1 class="our-story__heading">{{ section.settings.heading }}</h1>
-      {%- endif -%}
+      <div class="our-story__content">
+        {%- if section.settings.heading != blank -%}
+          <h1 class="our-story__heading">{{ section.settings.heading }}</h1>
+        {%- endif -%}
 
-      {%- if section.settings.intro_text != blank -%}
-        <div class="our-story__intro">{{ section.settings.intro_text }}</div>
-      {%- endif -%}
+        {%- if section.settings.intro_text != blank -%}
+          <div class="our-story__intro">{{ section.settings.intro_text }}</div>
+        {%- endif -%}
+
+        {%- if has_image -%}
+          <div class="our-story__image-column our-story__image-column--mobile">
+            <div class="our-story__image-wrapper">
+              <img
+                src="{{ section.settings.image | image_url: width: 1340 }}"
+                srcset="{{ section.settings.image | image_url: width: 440 }} 440w,
+                        {{ section.settings.image | image_url: width: 670 }} 670w,
+                        {{ section.settings.image | image_url: width: 880 }} 880w,
+                        {{ section.settings.image | image_url: width: 1340 }} 1340w"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                alt="{{ section.settings.image.alt | default: section.settings.heading | escape }}"
+                class="our-story__image"
+                width="{{ section.settings.image.width }}"
+                height="{{ section.settings.image.height }}"
+                loading="lazy"
+              >
+            </div>
+
+            {%- if has_attribution -%}
+              <p class="our-story__attribution">
+                {%- if section.settings.attribution_line_1 != blank -%}
+                  {{ section.settings.attribution_line_1 }}
+                {%- endif -%}
+                {%- if section.settings.attribution_line_1 != blank and section.settings.attribution_line_2 != blank -%}
+                  <br>
+                {%- endif -%}
+                {%- if section.settings.attribution_line_2 != blank -%}
+                  {{ section.settings.attribution_line_2 }}
+                {%- endif -%}
+              </p>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.subheading != blank -%}
+          <h2 class="our-story__subheading">{{ section.settings.subheading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.body_text != blank -%}
+          <div class="our-story__body">{{ section.settings.body_text }}</div>
+        {%- endif -%}
+      </div>
 
       {%- if has_image -%}
-        <div class="our-story__image-column">
+        <div class="our-story__image-column our-story__image-column--desktop">
           <div class="our-story__image-wrapper">
             <img
               src="{{ section.settings.image | image_url: width: 1340 }}"
@@ -33,7 +77,7 @@
                       {{ section.settings.image | image_url: width: 670 }} 670w,
                       {{ section.settings.image | image_url: width: 880 }} 880w,
                       {{ section.settings.image | image_url: width: 1340 }} 1340w"
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              sizes="50vw"
               alt="{{ section.settings.image.alt | default: section.settings.heading | escape }}"
               class="our-story__image"
               width="{{ section.settings.image.width }}"
@@ -56,14 +100,6 @@
             </p>
           {%- endif -%}
         </div>
-      {%- endif -%}
-
-      {%- if section.settings.subheading != blank -%}
-        <h2 class="our-story__subheading">{{ section.settings.subheading }}</h2>
-      {%- endif -%}
-
-      {%- if section.settings.body_text != blank -%}
-        <div class="our-story__body">{{ section.settings.body_text }}</div>
       {%- endif -%}
     </div>
   </div>
@@ -88,24 +124,19 @@
   .our-story__layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px 60px;
+    gap: 60px;
     align-items: start;
     margin-top: 90px;
     margin-bottom: 120px;
   }
 
-  /* Desktop: text items in left column, image in right column spanning all rows */
-  .our-story__heading,
-  .our-story__intro,
-  .our-story__subheading,
-  .our-story__body {
-    grid-column: 1;
+  .our-story__content {
     max-width: 630px;
   }
 
-  .our-story__image-column {
-    grid-column: 2;
-    grid-row: 1 / -1;
+  /* Mobile image hidden on desktop, desktop image hidden on mobile */
+  .our-story__image-column--mobile {
+    display: none;
   }
 
   .our-story__heading {
@@ -178,20 +209,19 @@
 
     .our-story__layout {
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 40px;
     }
 
-    .our-story__heading,
-    .our-story__intro,
-    .our-story__subheading,
-    .our-story__body {
-      grid-column: 1;
+    .our-story__content {
       max-width: 100%;
     }
 
-    .our-story__image-column {
-      grid-column: 1;
-      grid-row: auto;
+    .our-story__image-column--desktop {
+      display: none;
+    }
+
+    .our-story__image-column--mobile {
+      display: block;
     }
 
     .our-story__heading {
