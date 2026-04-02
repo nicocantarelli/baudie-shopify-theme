@@ -358,6 +358,9 @@
     "product": {
       "name": "Product",
       "popup_text_color": "Popup text color",
+      "bundle_upsell_header": "Bundle upsell",
+      "bundle_upsell_text": "Button text",
+      "bundle_upsell_url": "Button link",
       "trust_badge": "Trust badge",
       "trust_badge_icon": "Badge icon",
       "trust_badge_label": "Badge label"

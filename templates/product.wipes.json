@@ -1,0 +1,97 @@
+{
+  "sections": {
+    "main": {
+      "type": "product",
+      "blocks": {
+        "trust_badge_34WD9G": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Vegan.svg",
+            "label": "Vegan"
+          }
+        },
+        "trust_badge_NUR9qx": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/aluminium.svg",
+            "label": "Aluminium Free"
+          }
+        },
+        "trust_badge_wQxwFt": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Paraben.svg",
+            "label": "Paraben Free"
+          }
+        },
+        "trust_badge_HG9JJg": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Cruel.svg",
+            "label": "Cruelty Free"
+          }
+        },
+        "trust_badge_7WbrDU": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Phthalate.svg",
+            "label": "Phtalate Free"
+          }
+        },
+        "trust_badge_fnGhiD": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Plant-Based.svg",
+            "label": "Plant Based"
+          }
+        },
+        "trust_badge_fcKKBw": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Sulfate.svg",
+            "label": "Sulfate Free"
+          }
+        }
+      },
+      "block_order": [
+        "trust_badge_34WD9G",
+        "trust_badge_NUR9qx",
+        "trust_badge_wQxwFt",
+        "trust_badge_HG9JJg",
+        "trust_badge_7WbrDU",
+        "trust_badge_fnGhiD",
+        "trust_badge_fcKKBw"
+      ],
+      "settings": {
+        "popup_text_color": "#3e2027",
+        "bundle_upsell_text": "Save with the 3-pack →",
+        "bundle_upsell_url": ""
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {
+        "heading": "You may also like",
+        "collection": "",
+        "max_products": 4,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "product-faq": {
+      "type": "product-faq",
+      "blocks": {},
+      "block_order": [],
+      "settings": {
+        "title": "Frequently Asked Questions",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "related-products",
+    "product-faq"
+  ]
+}
