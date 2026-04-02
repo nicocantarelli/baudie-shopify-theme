@@ -16,6 +16,7 @@
       "blocks": {
         "announcement_BcNDUD": {
           "type": "announcement",
+          "disabled": true,
           "settings": {
             "text": "Free Shipping on orders over $50",
             "link_text": "",
