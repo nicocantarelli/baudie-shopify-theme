@@ -72,7 +72,9 @@
         "trust_badge_fcKKBw"
       ],
       "settings": {
-        "popup_text_color": "#3e2027"
+        "popup_text_color": "#3e2027",
+        "bundle_upsell_text": "Buy 3 and save",
+        "bundle_upsell_url": ""
       }
     },
     "related-products": {
@@ -89,6 +91,7 @@
       "type": "product-faq",
       "settings": {
         "title": "Frequently Asked Questions",
+        "intro": "",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
