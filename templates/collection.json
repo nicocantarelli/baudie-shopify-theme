@@ -12,6 +12,16 @@
     "main": {
       "type": "collection-grid",
       "blocks": {
+        "product_card_TdxRJP": {
+          "type": "product_card",
+          "settings": {
+            "product": "cotton-dry-wipes",
+            "card_width": "1",
+            "show_badge": false,
+            "custom_button_text": "",
+            "badge_text": ""
+          }
+        },
         "product_card_tyRErt": {
           "type": "product_card",
           "settings": {
@@ -94,6 +104,7 @@
         }
       },
       "block_order": [
+        "product_card_TdxRJP",
         "product_card_tyRErt",
         "product_card_eE9z3y",
         "product_card_yDHWTz",

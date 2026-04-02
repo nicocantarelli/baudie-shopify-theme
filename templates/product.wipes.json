@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
@@ -63,9 +72,7 @@
         "trust_badge_fcKKBw"
       ],
       "settings": {
-        "popup_text_color": "#3e2027",
-        "bundle_upsell_text": "Save with the 3-pack →",
-        "bundle_upsell_url": ""
+        "popup_text_color": "#3e2027"
       }
     },
     "related-products": {
@@ -80,8 +87,6 @@
     },
     "product-faq": {
       "type": "product-faq",
-      "blocks": {},
-      "block_order": [],
       "settings": {
         "title": "Frequently Asked Questions",
         "background_color": "#fce9ec",
