@@ -278,6 +278,7 @@
         "static_hero_image_alt": "Static hero image alt text",
         "static_hero_image_alt_info": "Describe the image for accessibility (uses heading as fallback)",
         "mobile_header": "Mobile settings",
+        "mobile_heading": "Mobile heading",
         "mobile_title": "Mobile title",
         "mobile_subtitle": "Mobile subtitle",
         "card_colors_header": "Card colors",

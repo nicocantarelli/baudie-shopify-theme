@@ -4,7 +4,7 @@
 {% endcomment %}
 
 <section class="hero-product full-width" aria-label="{{ 'sections.hero_product.aria_label' | t }}">
-  <div class="hero-product__inner {% if section.settings.mobile_content_position == 'top' %}hero-product__inner--mobile-top{% endif %}">
+  <div class="hero-product__inner">
     {%- comment -%} Hero Images Container {%- endcomment -%}
     <div class="hero-product__images" data-hero-images>
       {%- comment -%} Static Image Mode (Desktop Only) - main hero is static, secondary images cycle {%- endcomment -%}
@@ -71,6 +71,13 @@
     <div class="hero-product__heading" style="--heading-color: {{ section.settings.heading_color }}">
       <h1>{{ section.settings.heading }}</h1>
     </div>
+
+    {%- comment -%} Mobile Heading (always fixed at top, never moves) {%- endcomment -%}
+    {% if section.settings.mobile_heading != blank %}
+      <div class="hero-product__mobile-heading" style="--heading-color: {{ section.settings.heading_color }}">
+        <h1>{{ section.settings.mobile_heading }}</h1>
+      </div>
+    {% endif %}
 
     {%- comment -%} Mobile Content {%- endcomment -%}
     <div class="hero-product__mobile-content {% if section.settings.mobile_content_position == 'top' %}hero-product__mobile-content--top{% endif %}">
@@ -343,6 +350,11 @@
 
   /* Mobile Product Image - hidden on desktop */
   .hero-product__mobile-image {
+    display: none;
+  }
+
+  /* Mobile Heading - hidden on desktop */
+  .hero-product__mobile-heading {
     display: none;
   }
 
@@ -704,21 +716,32 @@
       display: none;
     }
 
-    /* Mobile heading */
+    /* Hide desktop heading on mobile */
     .hero-product__heading {
+      display: none;
+    }
+
+    /* Mobile heading - always fixed at top */
+    .hero-product__mobile-heading {
+      display: block;
+      position: absolute;
       left: 50%;
       transform: translateX(-50%);
       top: 51px;
-      bottom: auto;
       max-width: 100%;
       width: 100%;
       padding: 0 12px;
+      z-index: 3;
     }
 
-    .hero-product__heading h1 {
+    .hero-product__mobile-heading h1 {
+      font-family: var(--font-alyona);
       font-size: 45px;
-      text-align: center;
       font-weight: 400;
+      line-height: 1;
+      text-align: center;
+      color: var(--heading-color);
+      margin: 0;
     }
 
     /* Show mobile content */
@@ -739,10 +762,6 @@
     .hero-product__mobile-content--top {
       bottom: auto;
       top: 50px;
-    }
-
-    .hero-product__inner--mobile-top .hero-product__heading {
-      display: none;
     }
 
     .hero-product__mobile-title {
@@ -814,7 +833,7 @@
       min-height: 100dvh;
     }
 
-    .hero-product__heading h1 {
+    .hero-product__mobile-heading h1 {
       font-size: 36px;
     }
 
@@ -1009,6 +1028,12 @@
       {
         "type": "header",
         "content": "t:sections.hero_product.settings.mobile_header"
+      },
+      {
+        "type": "text",
+        "id": "mobile_heading",
+        "label": "t:sections.hero_product.settings.mobile_heading",
+        "default": "Deodorant Enhancer"
       },
       {
         "type": "select",
