@@ -98,10 +98,11 @@
         src="{{ meta_video.sources[1].url | default: meta_video.sources[0].url }}">
       </video>
     {% elsif meta_image != blank %}
+      {%- assign how_to_use_alt = product.title | append: ' — ' | append: section.settings.title | default: 'How to use' -%}
       {{ meta_image | image_url: width: 1440 | image_tag:
         loading: 'lazy',
         class: 'how-to-use__image',
-        alt: product.title | append: ' - ' | append: section.settings.title | default: 'How to use'
+        alt: how_to_use_alt
       }}
     {% elsif section.settings.media_video != blank %}
       {{ section.settings.media_video | video_tag:
@@ -113,10 +114,11 @@
         controls: false
       }}
     {% elsif section.settings.media_image %}
+      {%- assign how_to_use_fallback_alt = section.settings.title | default: 'How to use' -%}
       {{ section.settings.media_image | image_url: width: 1440 | image_tag:
         loading: 'lazy',
         class: 'how-to-use__image',
-        alt: section.settings.title | default: 'How to use'
+        alt: how_to_use_fallback_alt
       }}
     {% endif %}
   </div>
