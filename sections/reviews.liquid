@@ -12,23 +12,6 @@
       <h2 class="reviews-section__heading">{{ section.settings.heading }}</h2>
     {% endif %}
 
-    {%- comment -%} View All Button {%- endcomment -%}
-    {% if section.settings.view_all_url != blank %}
-      <a href="{{ section.settings.view_all_url }}" class="reviews-section__view-all">
-        <span>{{ section.settings.view_all_text | default: 'VIEW ALL' }}</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="13"
-          height="22"
-          viewBox="0 0 13 22"
-          fill="none">
-          <path
-            d="M0.707031 0.707031L10.707 10.707L0.707031 20.707"
-            stroke="currentColor"
-            stroke-width="2" />
-        </svg>
-      </a>
-    {% endif %}
 
     {%- comment -%} Reviews Carousel {%- endcomment -%}
     <div class="reviews-section__carousel" data-reviews-carousel>
@@ -152,38 +135,6 @@
     margin: 0 0 90px;
     padding-top: 70px;
     position: relative;
-  }
-
-  /* View All Button */
-  .reviews-section__view-all {
-    position: absolute;
-    right: 40px;
-    top: 168px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 18px;
-    line-height: normal;
-    letter-spacing: -0.18px;
-    text-transform: uppercase;
-    color: var(--text-color, #3E2027);
-    text-decoration: none;
-    z-index: 2;
-    transition: opacity 0.2s ease
-    , transform 0.2s ease;
-  }
-
-  .reviews-section__view-all:hover {
-    opacity: 0.8;
-    transform: translateX(2px);
-  }
-
-  .reviews-section__view-all svg {
-    width: 6px;
-    height: 12px;
-    flex-shrink: 0;
   }
 
   /* Carousel */
@@ -338,10 +289,6 @@
       margin-bottom: 50px;
     }
 
-    .reviews-section__view-all {
-      right: 24px;
-      top: 143px;
-    }
 
     .reviews-section__carousel {
       padding: 0 35px;
@@ -371,13 +318,6 @@
       font-size: 50px;
       margin-bottom: 40px;
       padding-top: 50px;
-    }
-
-    .reviews-section__view-all {
-      right: 16px;
-      top: 53px;
-      font-size: 16px;
-      gap: 10px;
     }
 
     .reviews-section__carousel {
@@ -630,20 +570,6 @@ function initReviews () {
         "default": "Reviews"
       },
       {
-        "type": "header",
-        "content": "t:sections.reviews.view_all_header"
-      },
-      {
-        "type": "text",
-        "id": "view_all_text",
-        "label": "t:labels.view_all_text",
-        "default": "VIEW ALL"
-      }, {
-        "type": "url",
-        "id": "view_all_url",
-        "label": "t:labels.view_all_url",
-        "info": "t:sections.reviews.view_all_info"
-      }, {
         "type": "header",
         "content": "t:sections.reviews.yotpo_header"
       }, {

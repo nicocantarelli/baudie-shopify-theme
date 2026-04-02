@@ -4,7 +4,7 @@
 {% endcomment %}
 
 <section class="hero-product full-width" aria-label="{{ 'sections.hero_product.aria_label' | t }}">
-  <div class="hero-product__inner">
+  <div class="hero-product__inner {% if section.settings.mobile_content_position == 'top' %}hero-product__inner--mobile-top{% endif %}">
     {%- comment -%} Hero Images Container {%- endcomment -%}
     <div class="hero-product__images" data-hero-images>
       {%- comment -%} Static Image Mode (Desktop Only) - main hero is static, secondary images cycle {%- endcomment -%}
@@ -738,7 +738,11 @@
 
     .hero-product__mobile-content--top {
       bottom: auto;
-      top: 160px;
+      top: 50px;
+    }
+
+    .hero-product__inner--mobile-top .hero-product__heading {
+      display: none;
     }
 
     .hero-product__mobile-title {
@@ -821,7 +825,7 @@
 
     .hero-product__mobile-content--top {
       bottom: auto;
-      top: 135px;
+      top: 40px;
     }
 
     .hero-product__mobile-title {
