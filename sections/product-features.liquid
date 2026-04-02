@@ -1,16 +1,14 @@
 {% comment %}
   Product Features Section
-  Displays product badges/features in a horizontal carousel with arrow navigation
-  Themes/Sections/product-features.liquid
+  Displays product badges/features in an infinite marquee
 {% endcomment %}
 
-<div class="product-features full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --icon-color: {{ section.settings.icon_color | default: section.settings.text_color }}; --arrow-color: {{ section.settings.arrow_color }};">
+<div class="product-features full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --icon-color: {{ section.settings.icon_color | default: section.settings.text_color }};">
   <div class="product-features__container">
     {% if section.blocks.size > 0 %}
-      <div class="product-features__wrapper" data-features-carousel>
-        <!-- Carousel Track -->
-        <div class="product-features__track" data-features-track>
-          <div class="product-features__items" data-features-items>
+      <div class="product-features__viewport">
+        <div class="product-features__track" data-features-marquee>
+          <div class="product-features__group">
             {% for block in section.blocks %}
               {% if block.type == 'feature_badge' %}
                 <div class="product-features__item" {{ block.shopify_attributes }}>
@@ -30,47 +28,6 @@
             {% endfor %}
           </div>
         </div>
-
-        <!-- Navigation Arrows -->
-        <button
-          type="button"
-          class="product-features__arrow product-features__arrow--prev"
-          aria-label="{{ 'sections.product_features.scroll_left' | t }}"
-          data-features-prev>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="13"
-            height="22"
-            viewBox="0 0 13 22"
-            fill="none">
-            <path
-              d="M11.4142 0.707031L1.41418 10.707L11.4142 20.707"
-              stroke="currentColor"
-              stroke-width="2" />
-          </svg>
-        </button>
-
-        <button
-          type="button"
-          class="product-features__arrow product-features__arrow--next"
-          aria-label="{{ 'sections.product_features.scroll_right' | t }}"
-          data-features-next>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="13"
-            height="22"
-            viewBox="0 0 13 22"
-            fill="none">
-            <path
-              d="M0.707031 0.707031L10.707 10.707L0.707031 20.707"
-              stroke="currentColor"
-              stroke-width="2" />
-          </svg>
-        </button>
-
-        <!-- Gradient Overlays -->
-        <div class="product-features__gradient product-features__gradient--left"></div>
-        <div class="product-features__gradient product-features__gradient--right"></div>
       </div>
     {% endif %}
   </div>
@@ -87,38 +44,34 @@
     background-color: var(--section-bg, #3E2027);
   }
 
-  .product-features__wrapper {
-    position: relative;
-    background-color: var(--section-bg, #3E2027);
-    height: 130px;
+  .product-features__viewport {
     overflow: hidden;
-    width: 100%;
+    position: relative;
     max-width: 1600px;
     margin: 0 auto;
-    padding: 0 40px;
   }
 
-  /* Carousel Track */
   .product-features__track {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    padding: 0 10px;
-    overflow: hidden;
-  }
-
-  /* Items Container */
-  .product-features__items {
     display: flex;
-    gap: 40px;
-    height: 100%;
     align-items: center;
-    transition: transform 0.4s ease;
+    width: max-content;
+    white-space: nowrap;
     will-change: transform;
-    touch-action: pan-y pinch-zoom;
+    transform: translate3d(0, 0, 0);
   }
 
-  /* Feature Item */
+  .product-features__track.is-ready {
+    animation: features-marquee var(--marquee-duration, 40s) linear infinite;
+  }
+
+  .product-features__group {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 0 20px;
+    height: 90px;
+  }
+
   .product-features__item {
     flex: 0 0 auto;
     display: flex;
@@ -127,8 +80,8 @@
   }
 
   .product-features__icon {
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
     flex-shrink: 0;
     display: inline-block;
     background-color: var(--icon-color, var(--text-color, #FFFFFF));
@@ -143,446 +96,134 @@
   .product-features__text {
     font-family: var(--font-sweet-sans);
     font-weight: 500;
-    font-size: 18px;
+    font-size: 14px;
     line-height: normal;
-    letter-spacing: -0.18px;
+    letter-spacing: -0.14px;
     text-transform: uppercase;
     color: var(--text-color, #FFFFFF);
     white-space: pre-line;
     margin: 0;
   }
 
-  /* Navigation Arrows - ALWAYS VISIBLE */
-  .product-features__arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 3;
-    background: transparent;
-    border: none;
-    color: var(--arrow-color, #FFFAE6);
-    cursor: pointer;
-    padding: 10px;
-    transition: opacity 0.2s ease
-    , transform 0.2s ease;
-    width: 30px;
-    height: 40px;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .product-features__arrow:hover {
-    opacity: 0.7;
-  }
-
-  .product-features__arrow:active {
-    opacity: 0.5;
-  }
-
-  .product-features__arrow:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-
-  .product-features__arrow--prev {
-    left: 30px;
-  }
-
-  .product-features__arrow--next {
-    right: 30px;
-  }
-
-  .product-features__arrow svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    pointer-events: none;
-  }
-
-  /* Gradient Overlays */
-  .product-features__gradient {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 238px;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-
-  .product-features__gradient--left {
-    left: 0;
-    background: linear-gradient(to right, rgba(62, 32, 39, 0.61), rgba(62, 32, 39, 0));
-  }
-
-
-  .product-features__gradient--right {
-    right: 0;
-    background: linear-gradient(to left, rgba(62, 32, 39, 0.61), rgba(62, 32, 39, 0));
-  }
-
-  /* Large Tablet - 1200px and below */
-  @media (max-width: 1200px) {
-    .product-features__wrapper {
-      padding: 0 70px;
+  @keyframes features-marquee {
+    from {
+      transform: translate3d(0, 0, 0);
     }
-
-    .product-features__items {
-      gap: 32px;
-    }
-
-    .product-features__arrow--prev {
-      left: 25px;
-    }
-
-    .product-features__arrow--next {
-      right: 25px;
-    }
-
-    .product-features__gradient {
-      width: 200px;
+    to {
+      transform: translate3d(calc(-1 * var(--marquee-distance)), 0, 0);
     }
   }
 
-  /* Tablet - 1024px and below */
-  @media (max-width: 1024px) {
-    .product-features__wrapper {
-      width: 100%;
-      max-width: 1024px;
-      height: 110px;
-      padding: 0 55px;
+  @media (prefers-reduced-motion: reduce) {
+    .product-features__track.is-ready {
+      animation: none;
+      transform: translateX(0);
+      justify-content: center;
     }
 
-    .product-features__track {
-      padding: 0 8px;
-    }
-
-    .product-features__items {
-      gap: 28px;
-    }
-
-    .product-features__icon {
-      width: 50px;
-      height: 50px;
-    }
-
-    .product-features__text {
-      font-size: 16px;
-      letter-spacing: -0.16px;
-    }
-
-    .product-features__arrow {
-      width: 28px;
-      height: 38px;
-      padding: 8px;
-    }
-
-    .product-features__arrow--prev {
-      left: 20px;
-    }
-
-    .product-features__arrow--next {
-      right: 20px;
-    }
-
-    .product-features__gradient {
-      width: 160px;
+    .product-features__group[aria-hidden="true"] {
+      display: none;
     }
   }
 
-  /* Mobile Large - 768px and below */
   @media (max-width: 768px) {
-    .product-features__wrapper {
-      height: 95px;
-      padding: 0 45px;
-    }
-
-    .product-features__track {
-      padding: 0 6px;
-    }
-
-    .product-features__items {
-      gap: 22px;
+    .product-features__group {
+      gap: 30px;
+      padding: 0 15px;
+      height: 70px;
     }
 
     .product-features__icon {
-      width: 42px;
-      height: 42px;
-    }
-
-    .product-features__text {
-      font-size: 14px;
-      letter-spacing: -0.14px;
-    }
-
-    .product-features__arrow {
-      width: 26px;
-      height: 36px;
-      padding: 7px;
-    }
-
-    .product-features__arrow--prev {
-      left: 15px;
-    }
-
-    .product-features__arrow--next {
-      right: 15px;
-    }
-
-    .product-features__gradient {
-      width: 120px;
-    }
-  }
-
-  /* Mobile - 480px and below */
-  @media (max-width: 480px) {
-    .product-features__wrapper {
-      height: 85px;
-      padding: 0 38px;
-    }
-
-    .product-features__track {
-      padding: 0 4px;
-    }
-
-    .product-features__items {
-      gap: 18px;
-    }
-
-    .product-features__icon {
-      width: 36px;
-      height: 36px;
-    }
-
-    .product-features__text {
-      font-size: 14px;
-      letter-spacing: -0.14px;
-    }
-
-    .product-features__arrow {
-      width: 24px;
+      width: 32px;
       height: 32px;
-      padding: 6px;
     }
 
-    .product-features__arrow--prev {
-      left: 12px;
-    }
-
-    .product-features__arrow--next {
-      right: 12px;
-    }
-
-    .product-features__gradient {
-      width: 80px;
+    .product-features__text {
+      font-size: 12px;
+      letter-spacing: -0.12px;
     }
   }
 {% endstylesheet %}
 
 {% javascript %}
-  class FeaturesCarousel {
-    constructor(container) {
-      this.container = container;
-      this.track = container.querySelector('[data-features-track]');
-      this.items = container.querySelectorAll('.product-features__item');
-      this.prevBtn = container.querySelector('[data-features-prev]');
-      this.nextBtn = container.querySelector('[data-features-next]');
-      this.currentIndex = 0;
-      this.itemsToShow = this.getItemsToShow();
-
-// Always initialize if we have items
-      if (this.items.length === 0) return;
-      
-
-
-      console.log('FeaturesCarousel initialized with', this.items.length, 'items');
-      console.log('Showing', this.itemsToShow, 'items at a time');
-      console.log('Prev button:', this.prevBtn);
-      console.log('Next button:', this.nextBtn);
+  class FeaturesMarquee {
+    constructor() {
+      this.sections = Array.from(document.querySelectorAll('.product-features'));
+      if (!this.sections.length) return;
 
       this.init();
       this.setupResizeHandler();
     }
 
     init() {
-      this.updateCarousel();
-
-// Click events for arrows
-      if (this.prevBtn) {
-        this.prevBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          console.log('Prev button clicked');
-          this.prev();
-        });
-        this.prevBtn.addEventListener('touchend', (e) => {
-          e.preventDefault();
-          console.log('Prev button touched');
-          this.prev();
-        });
-      }
-
-      if (this.nextBtn) {
-        this.nextBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          console.log('Next button clicked');
-          this.next();
-        });
-        this.nextBtn.addEventListener('touchend', (e) => {
-          e.preventDefault();
-          console.log('Next button touched');
-          this.next();
-        });
-      }
-
-// Touch swipe events for mobile
-      this.setupTouchEvents();
-
-// Keyboard navigation
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') 
-          this.prev();
-        
-
-
-        if (e.key === 'ArrowRight') 
-          this.next();
-        
-
-
-      });
-    }
-
-    setupTouchEvents() {
-      let touchStartX = 0;
-      let touchEndX = 0;
-
-      const itemsContainer = this.container.querySelector('[data-features-items]');
-      if (! itemsContainer) return;
-      
-
-
-      itemsContainer.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-      }, {passive: true});
-
-      itemsContainer.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        this.handleSwipe();
-      }, {passive: true});
-
-      this.handleSwipe = () => {
-        const swipeThreshold = 50;
-        const diff = touchStartX - touchEndX;
-
-        if (Math.abs(diff) > swipeThreshold) {
-          if (diff > 0) { // Swiped left - go next
-            console.log('Swiped left');
-            this.next();
-          } else { // Swiped right - go prev
-            console.log('Swiped right');
-            this.prev();
-          }
-        }
-      };
-    }
-
-    getItemsToShow() {
-      const width = window.innerWidth;
-      if (width <= 480) {
-        return 1;
-      }
-      if (width <= 768) {
-        return 2;
-      }
-      if (width <= 1024) {
-        return 3;
-      }
-      if (width <= 1200) {
-        return 4;
-      }
-      return 6;
-    }
-
-    updateCarousel() {
-      const itemsContainer = this.container.querySelector('[data-features-items]');
-      if (! itemsContainer || this.items.length === 0) return;
-      
-
-
-      const itemWidth = this.items[0].offsetWidth;
-      const gap = parseFloat(getComputedStyle(itemsContainer).gap) || 0;
-      const offset = -(this.currentIndex * (itemWidth + gap));
-
-      itemsContainer.style.transform = `translateX(${offset}px)`;
-
-      console.log('Updated carousel: index', this.currentIndex, 'offset', offset, 'itemWidth', itemWidth, 'gap', gap);
-      console.log('Total items:', this.items.length, 'Items to show:', this.itemsToShow);
-
-// Update button states
-      if (this.prevBtn) {
-        this.prevBtn.disabled = this.currentIndex === 0;
-        this.prevBtn.style.opacity = this.currentIndex === 0
-          ? '0.3'
-          : '';
-      }
-      if (this.nextBtn) { // Ensure we can scroll to show all remaining items
-        const maxIndex = Math.max(0, this.items.length - this.itemsToShow);
-        const isAtEnd = this.currentIndex >= maxIndex;
-        this.nextBtn.disabled = isAtEnd;
-        this.nextBtn.style.opacity = isAtEnd
-          ? '0.3'
-          : '';
-        console.log('Max index:', maxIndex, 'Is at end:', isAtEnd);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => requestAnimationFrame(() => this.buildAll()));
+      } else {
+        requestAnimationFrame(() => this.buildAll());
       }
     }
 
-    next() {
-      const maxIndex = Math.max(0, this.items.length - this.itemsToShow);
-      console.log('Next called. Current index:', this.currentIndex, 'Max index:', maxIndex);
-      if (this.currentIndex<maxIndex) {
-        this.currentIndex++;
-        this.updateCarousel();
-      }
+    buildAll() {
+      this.sections.forEach((section) => this.buildMarquee(section));
     }
 
-    prev() {
-      console.log('Prev called. Current index:', this.currentIndex);
-      if (this.currentIndex> 0) {
-        this.currentIndex --;
-        this.updateCarousel();
+    buildMarquee(section) {
+      const viewport = section.querySelector('.product-features__viewport');
+      const track = section.querySelector('[data-features-marquee]');
+      const group = track && track.querySelector('.product-features__group');
+      if (!viewport || !track || !group) return;
+
+      track.querySelectorAll('.product-features__group[aria-hidden="true"]').forEach((n) => n.remove());
+
+      track.classList.remove('is-ready');
+      track.style.animation = 'none';
+      track.style.transform = 'translate3d(0,0,0)';
+
+      void track.offsetHeight;
+
+      const viewportWidth = viewport.getBoundingClientRect().width;
+      const groupWidth = group.getBoundingClientRect().width;
+
+      if (!groupWidth || !viewportWidth) return;
+
+      let totalWidth = groupWidth;
+      const targetWidth = viewportWidth * 3;
+
+      while (totalWidth < targetWidth) {
+        const clone = group.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+        totalWidth += groupWidth;
       }
+
+      const distance = Math.ceil(groupWidth);
+      track.style.setProperty('--marquee-distance', `${distance}px`);
+
+      const speed = 25;
+      const duration = Math.max(20, distance / speed);
+      track.style.setProperty('--marquee-duration', `${duration}s`);
+
+      track.style.animation = '';
+      track.classList.add('is-ready');
     }
 
     setupResizeHandler() {
       let resizeTimer;
+      let lastWidth = window.innerWidth;
       window.addEventListener('resize', () => {
+        const newWidth = window.innerWidth;
+        if (newWidth === lastWidth) return;
+        lastWidth = newWidth;
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-          const newItemsToShow = this.getItemsToShow();
-          if (newItemsToShow !== this.itemsToShow) {
-            this.itemsToShow = newItemsToShow;
-            this.currentIndex = Math.min(this.currentIndex, Math.max(0, this.items.length - this.itemsToShow));
-            this.updateCarousel();
-          }
-        }, 150);
+        resizeTimer = setTimeout(() => this.buildAll(), 150);
       });
     }
   }
 
-// Initialize on page load
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFeatures);
+    document.addEventListener('DOMContentLoaded', () => new FeaturesMarquee());
   } else {
-    initFeatures();
-  }
-
-  function initFeatures() {
-    const featuresSection = document.querySelector('[data-features-carousel]');
-    if (featuresSection) {
-      new FeaturesCarousel(featuresSection);
-    }
+    new FeaturesMarquee();
   }
 {% endjavascript %}
 
@@ -612,12 +253,6 @@
         "id": "icon_color",
         "label": "t:sections.product_features.settings.icon_color",
         "default": "#FFFFFF"
-      },
-      {
-        "type": "color",
-        "id": "arrow_color",
-        "label": "t:labels.arrow_color",
-        "default": "#FFFAE6"
       }
     ],
     "blocks": [
