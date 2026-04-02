@@ -72,21 +72,32 @@
       <h1>{{ section.settings.heading }}</h1>
     </div>
 
-    {%- comment -%} Mobile Heading (always fixed at top, never moves) {%- endcomment -%}
-    {% if section.settings.mobile_heading != blank %}
-      <div class="hero-product__mobile-heading" style="--heading-color: {{ section.settings.heading_color }}">
-        <h1>{{ section.settings.mobile_heading }}</h1>
+    {%- comment -%} Mobile Top Block (heading + content when position is top) {%- endcomment -%}
+    <div class="hero-product__mobile-top-block" style="--heading-color: {{ section.settings.heading_color }}">
+      {% if section.settings.mobile_heading != blank %}
+        <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading }}</h1>
+      {% endif %}
+      {% if section.settings.mobile_content_position == 'top' %}
+        <div class="hero-product__mobile-content hero-product__mobile-content--top">
+          <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
+          <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
+          <a href="{{ section.settings.mobile_button_url }}" class="hero-product__mobile-button">
+            {{ section.settings.mobile_button_text }}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Mobile Content (when position is bottom) {%- endcomment -%}
+    {% if section.settings.mobile_content_position == 'bottom' %}
+      <div class="hero-product__mobile-content">
+        <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
+        <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
+        <a href="{{ section.settings.mobile_button_url }}" class="hero-product__mobile-button">
+          {{ section.settings.mobile_button_text }}
+        </a>
       </div>
     {% endif %}
-
-    {%- comment -%} Mobile Content {%- endcomment -%}
-    <div class="hero-product__mobile-content {% if section.settings.mobile_content_position == 'top' %}hero-product__mobile-content--top{% endif %}">
-      <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
-      <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
-      <a href="{{ section.settings.mobile_button_url }}" class="hero-product__mobile-button">
-        {{ section.settings.mobile_button_text }}
-      </a>
-    </div>
 
     {%- comment -%} Navigation Controls {%- endcomment -%}
     {% if section.settings.hero_products.size > 1 %}
@@ -353,8 +364,8 @@
     display: none;
   }
 
-  /* Mobile Heading - hidden on desktop */
-  .hero-product__mobile-heading {
+  /* Mobile Top Block - hidden on desktop */
+  .hero-product__mobile-top-block {
     display: none;
   }
 
@@ -721,20 +732,20 @@
       display: none;
     }
 
-    /* Mobile heading - always fixed at top */
-    .hero-product__mobile-heading {
-      display: block;
+    /* Mobile top block - heading + optional content */
+    .hero-product__mobile-top-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
       position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
       top: 51px;
-      max-width: 100%;
-      width: 100%;
-      padding: 0 12px;
+      left: 12px;
+      right: 12px;
       z-index: 3;
     }
 
-    .hero-product__mobile-heading h1 {
+    .hero-product__mobile-heading {
       font-family: var(--font-alyona);
       font-size: 45px;
       font-weight: 400;
@@ -750,18 +761,16 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
+      width: 100%;
+    }
+
+    /* When bottom: absolute position at bottom */
+    .hero-product__mobile-content:not(.hero-product__mobile-content--top) {
       position: absolute;
       bottom: 60px;
       left: 12px;
       right: 12px;
-      transform: none;
-      width: auto;
       z-index: 3;
-    }
-
-    .hero-product__mobile-content--top {
-      bottom: auto;
-      top: 50px;
     }
 
     .hero-product__mobile-title {
@@ -833,18 +842,13 @@
       min-height: 100dvh;
     }
 
-    .hero-product__mobile-heading h1 {
+    .hero-product__mobile-heading {
       font-size: 36px;
     }
 
-    .hero-product__mobile-content {
+    .hero-product__mobile-content:not(.hero-product__mobile-content--top) {
       bottom: 30px;
       gap: 6px;
-    }
-
-    .hero-product__mobile-content--top {
-      bottom: auto;
-      top: 40px;
     }
 
     .hero-product__mobile-title {
