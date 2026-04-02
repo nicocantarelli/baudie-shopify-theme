@@ -74,7 +74,7 @@
       "settings": {
         "popup_text_color": "#3e2027",
         "bundle_upsell_text": "Buy 3 and save",
-        "bundle_upsell_url": ""
+        "bundle_upsell_url": "shopify://products/bundle-of-3"
       }
     },
     "related-products": {
