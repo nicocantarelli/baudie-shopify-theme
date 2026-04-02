@@ -38,9 +38,6 @@
   <div class="product-main__mobile-header">
     <div class="product-main__mobile-subtitle-row">
       <p class="product-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
-      {% if bottle_size %}
-        <p class="product-main__size">{{ bottle_size }}</p>
-      {% endif %}
     </div>
     <h1 class="product-main__title">
       {%- if product.metafields.custom.scent_name != blank -%}
@@ -49,6 +46,9 @@
         {{ product.title }}
       {%- endif -%}
     </h1>
+    {% if bottle_size %}
+      <p class="product-main__size product-main__size--mobile">{{ bottle_size }}</p>
+    {% endif %}
   </div>
 
   {%- comment -%} Image Column {%- endcomment -%}
@@ -471,7 +471,7 @@
   .product-main__title {
     font-family: var(--font-alyona);
     font-weight: 400;
-    font-size: 34px;
+    font-size: 40px;
     line-height: 1;
     color: var(--product-text);
     margin: 0;
