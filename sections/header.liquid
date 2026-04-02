@@ -1,8 +1,11 @@
 {%- liquid
   assign has_announcements = false
-  if section.blocks.size > 0
-    assign has_announcements = true
-  endif
+  for block in section.blocks
+    if block.settings.text != blank
+      assign has_announcements = true
+      break
+    endif
+  endfor
 
   assign is_homepage = false
   if request.page_type == 'index'
