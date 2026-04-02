@@ -16,6 +16,8 @@
   assign scent_notes = product.metafields.custom.scent_notes
   assign key_ingredients = product.metafields.custom.key_ingredients
   assign full_ingredient_list = product.metafields.custom.full_ingredient_list
+  assign bundle_upsell_text = product.metafields.custom.bundle_upsell_text
+  assign bundle_upsell_url = product.metafields.custom.bundle_upsell_url
 
   if product.metafields.reviews.rating.value
     assign rating = product.metafields.reviews.rating.value.rating | round: 1
@@ -143,9 +145,9 @@
     </div>
 
     {%- comment -%} Bundle Upsell Button (replaces scent dropdown when configured) {%- endcomment -%}
-    {% if section.settings.bundle_upsell_text != blank and section.settings.bundle_upsell_url != blank %}
-      <a href="{{ section.settings.bundle_upsell_url }}" class="product-main__bundle-upsell">
-        <span>{{ section.settings.bundle_upsell_text }}</span>
+    {% if bundle_upsell_text != blank and bundle_upsell_url != blank %}
+      <a href="{{ bundle_upsell_url }}" class="product-main__bundle-upsell">
+        <span>{{ bundle_upsell_text }}</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
           <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -1219,20 +1221,6 @@
       "id": "popup_text_color",
       "label": "t:sections.product.popup_text_color",
       "default": "#3E2027"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.product.bundle_upsell_header"
-    },
-    {
-      "type": "text",
-      "id": "bundle_upsell_text",
-      "label": "t:sections.product.bundle_upsell_text"
-    },
-    {
-      "type": "url",
-      "id": "bundle_upsell_url",
-      "label": "t:sections.product.bundle_upsell_url"
     }
   ],
   "blocks": [

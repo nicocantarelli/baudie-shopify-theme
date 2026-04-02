@@ -72,9 +72,7 @@
         "trust_badge_fcKKBw"
       ],
       "settings": {
-        "popup_text_color": "#3e2027",
-        "bundle_upsell_text": "Buy 3 and save",
-        "bundle_upsell_url": "shopify://products/bundle-of-3"
+        "popup_text_color": "#3e2027"
       }
     },
     "related-products": {
