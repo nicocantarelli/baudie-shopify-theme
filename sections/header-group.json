@@ -25,6 +25,7 @@
         },
         "announcement_ehMV6T": {
           "type": "announcement",
+          "disabled": true,
           "settings": {
             "text": "Bundle and save",
             "link_text": "",
