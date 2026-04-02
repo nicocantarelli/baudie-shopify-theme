@@ -232,7 +232,11 @@
 
     setupResizeHandler() {
       let resizeTimer;
+      let lastWidth = window.innerWidth;
       window.addEventListener('resize', () => {
+        const newWidth = window.innerWidth;
+        if (newWidth === lastWidth) return;
+        lastWidth = newWidth;
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => this.buildAll(), 150);
       });
