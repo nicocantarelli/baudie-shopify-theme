@@ -41,9 +41,16 @@
       </div>
     {% endif %}
 
+    {%- comment -%} Mobile Description (visible on mobile only) {%- endcomment -%}
+    {% if section.settings.mobile_description != blank %}
+      <div class="how-to-use__description how-to-use__description--mobile">
+        {{ section.settings.mobile_description }}
+      </div>
+    {% endif %}
+
     {%- comment -%} Description (hidden on mobile) {%- endcomment -%}
     {% if section.settings.description != blank %}
-      <div class="how-to-use__description">
+      <div class="how-to-use__description how-to-use__description--desktop">
         {{ section.settings.description }}
       </div>
     {% endif %}
@@ -187,18 +194,25 @@
     margin: 0;
   }
 
-  /* --- Description (hidden on mobile) --- */
+  /* --- Description --- */
 
   .how-to-use__description {
-    display: none;
     font-family: var(--font-jokker);
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.5;
     color: var(--text-color, #3E2027);
   }
 
   .how-to-use__description p {
     margin: 0;
+  }
+
+  .how-to-use__description--desktop {
+    display: none;
+  }
+
+  .how-to-use__description--mobile {
+    display: block;
   }
 
   /* --- Sprays Title --- */
@@ -314,9 +328,7 @@
       flex-shrink: 0;
       position: sticky;
       top: 0;
-      height: 100svh;
       align-self: flex-start;
-      overflow-y: auto;
       justify-content: center;
     }
 
@@ -339,8 +351,13 @@
       white-space: nowrap;
     }
 
-    .how-to-use__description {
+    .how-to-use__description--desktop {
       display: block;
+      font-size: 18px;
+    }
+
+    .how-to-use__description--mobile {
+      display: none;
     }
 
     .how-to-use__sprays-title {
@@ -375,6 +392,11 @@
       "id": "title",
       "label": "t:sections.how_to_use.title",
       "default": "How to use"
+    },
+    {
+      "type": "richtext",
+      "id": "mobile_description",
+      "label": "t:sections.how_to_use.mobile_description"
     },
     {
       "type": "richtext",

@@ -364,6 +364,7 @@
     "how_to_use": {
       "name": "How to use",
       "title": "Title",
+      "mobile_description": "Mobile description",
       "description": "Description",
       "sprays_title": "Sprays title",
       "media_image": "Image",
