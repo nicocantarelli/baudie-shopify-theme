@@ -72,7 +72,9 @@
         "trust_badge_fcKKBw"
       ],
       "settings": {
-        "popup_text_color": "#3e2027"
+        "popup_text_color": "#3e2027",
+        "bundle_upsell_bg_color": "#ffffff",
+        "bundle_upsell_text_color": "#3e2027"
       }
     },
     "1772843462a5334ed3": {
@@ -146,6 +148,7 @@
       ],
       "settings": {
         "title": "How to use",
+        "mobile_description": "",
         "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer powered by odor-eliminating bacterial technology that works with any deodorant you already own. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
         "sprays_title": "",
         "background_color": "#fce9ec",
@@ -221,9 +224,9 @@
         "heading": "What Makes Baudie Different",
         "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
         "desktop_base": "shopify://shop_images/test.png",
-        "desktop_overlay": "shopify://shop_images/text-desktop.svg",
+        "desktop_overlay": "shopify://shop_images/new-desktop-molecule-text.png",
         "mobile_base": "shopify://shop_images/molecule-m.png",
-        "mobile_overlay": "shopify://shop_images/mobile-text.svg",
+        "mobile_overlay": "shopify://shop_images/next-mobile-molecule-text.png",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
