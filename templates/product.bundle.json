@@ -131,16 +131,16 @@
           "type": "dosage",
           "settings": {
             "label": "I smell a little",
-            "drops": 2,
-            "amount": "2-4 Sprays"
+            "drops": 4,
+            "amount": "4-5 Sprays"
           }
         },
         "dosage_i6kpRW": {
           "type": "dosage",
           "settings": {
             "label": "It's... Noticeable",
-            "drops": 4,
-            "amount": "4-8 Sprays"
+            "drops": 6,
+            "amount": "5-8 Sprays"
           }
         },
         "dosage_DaEyLn": {
