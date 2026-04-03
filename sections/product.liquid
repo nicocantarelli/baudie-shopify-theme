@@ -146,7 +146,7 @@
 
     {%- comment -%} Bundle Upsell Button (replaces scent dropdown when configured) {%- endcomment -%}
     {% if bundle_upsell_text != blank and bundle_upsell_product != blank %}
-      <a href="{{ bundle_upsell_product.url }}" class="product-main__bundle-upsell">
+      <a href="{{ bundle_upsell_product.url }}" class="product-main__bundle-upsell" style="--bundle-upsell-bg: {{ section.settings.bundle_upsell_bg_color }}; --bundle-upsell-text: {{ section.settings.bundle_upsell_text_color }}">
         <span>{{ bundle_upsell_text }}</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
           <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -508,14 +508,14 @@
     width: 100%;
     height: 40px;
     padding: 10px 20px;
-    background: #FFFFFF;
+    background: var(--bundle-upsell-bg, #FFFFFF);
     font-family: var(--font-sweet-sans);
     font-weight: 500;
     font-size: 14px;
     line-height: normal;
     letter-spacing: -0.14px;
     text-transform: uppercase;
-    color: var(--product-text);
+    color: var(--bundle-upsell-text, var(--product-text));
     text-decoration: none;
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
@@ -1220,6 +1220,22 @@
       "type": "color",
       "id": "popup_text_color",
       "label": "t:sections.product.popup_text_color",
+      "default": "#3E2027"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product.bundle_upsell_header"
+    },
+    {
+      "type": "color",
+      "id": "bundle_upsell_bg_color",
+      "label": "t:sections.product.bundle_upsell_bg_color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "bundle_upsell_text_color",
+      "label": "t:sections.product.bundle_upsell_text_color",
       "default": "#3E2027"
     }
   ],
