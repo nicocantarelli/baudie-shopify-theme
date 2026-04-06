@@ -49,7 +49,7 @@
                 {%- assign product = block.settings.product -%}
                 {%- if product != blank -%}
                   {%- assign card_color = product.metafields.custom.card_background_color | default: '#FFCAD2' -%}
-                  {%- assign product_image = product.featured_image -%}
+                  {%- assign product_image = product.metafields.custom.meet_scents_image | default: product.featured_image -%}
                   <a
                     href="{{ product.url }}"
                     id="meet-scents-card-{{ forloop.index0 }}"
