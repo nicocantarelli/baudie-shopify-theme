@@ -21,6 +21,13 @@
   if shipping_progress > 100
     assign shipping_progress = 100
   endif
+
+  assign shipping_bar_preview = false
+  if request.design_mode and shipping_bar_enabled and has_items == false
+    assign shipping_bar_preview = true
+    assign shipping_remaining_cents = shipping_threshold_cents | times: 40 | divided_by: 100
+    assign shipping_progress = 60
+  endif
 -%}
 
 {% if enable_quick_cart %}
@@ -66,7 +73,7 @@
       </div>
 
       {% if shipping_bar_enabled and shipping_bar_position == 'top' %}
-        <div class="sidecart__shipping-bar{% unless has_items %} sidecart__shipping-bar--hidden{% endunless %}" data-shipping-bar
+        <div class="sidecart__shipping-bar{% unless has_items or shipping_bar_preview %} sidecart__shipping-bar--hidden{% endunless %}" data-shipping-bar
           style="--shipping-bar-fill: {{ section.settings.shipping_bar_fill_color }}; --shipping-bar-track: {{ section.settings.shipping_bar_track_color }}; --shipping-bar-text: {{ section.settings.shipping_bar_text_color | default: section.settings.text_color }};">
           <p class="sidecart__shipping-bar-text" data-shipping-bar-text>
             {%- if has_free_shipping -%}
@@ -97,7 +104,7 @@
         </div>
       </div>
 
-      <div class="sidecart__footer{% unless has_items %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
+      <div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
         {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
           <div class="sidecart__shipping-bar" data-shipping-bar
             style="--shipping-bar-fill: {{ section.settings.shipping_bar_fill_color }}; --shipping-bar-track: {{ section.settings.shipping_bar_track_color }}; --shipping-bar-text: {{ section.settings.shipping_bar_text_color | default: section.settings.text_color }};">
