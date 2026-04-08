@@ -971,7 +971,7 @@
       if (remaining <= 0) {
         this.shippingBarText.textContent = this.shippingSuccessMsg;
       } else {
-        this.shippingBarText.textContent = this.shippingProgressMsg.replace('{{ amount }}', this.formatMoney(remaining));
+        this.shippingBarText.textContent = this.shippingProgressMsg.replace('{' + '{ amount }' + '}', this.formatMoney(remaining));
       }
     }
 
@@ -1208,18 +1208,20 @@
     }
 
     formatMoney(cents) {
-      const moneyFormat = this.sidecart?.dataset.moneyFormat || '${{amount}}';
+      const b = '{' + '{';
+      const e = '}' + '}';
+      const moneyFormat = this.sidecart?.dataset.moneyFormat || ('$' + b + 'amount' + e);
       const amount = (cents / 100).toFixed(2);
       const amountNoDecimals = Math.floor(cents / 100).toString();
       const amountWithCommas = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       const amountNoDecimalsWithCommas = amountNoDecimals.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
       return moneyFormat
-        .replace('{{amount_with_comma_separator}}', amountWithCommas.replace('.', ','))
-        .replace('{{amount_no_decimals_with_comma_separator}}', amountNoDecimalsWithCommas.replace(/,/g, '.'))
-        .replace('{{amount_with_apostrophe_separator}}', amountWithCommas.replace(/,/g, "'"))
-        .replace('{{amount_no_decimals}}', amountNoDecimals)
-        .replace('{{amount}}', amount);
+        .replace(b + 'amount_with_comma_separator' + e, amountWithCommas.replace('.', ','))
+        .replace(b + 'amount_no_decimals_with_comma_separator' + e, amountNoDecimalsWithCommas.replace(/,/g, '.'))
+        .replace(b + 'amount_with_apostrophe_separator' + e, amountWithCommas.replace(/,/g, "'"))
+        .replace(b + 'amount_no_decimals' + e, amountNoDecimals)
+        .replace(b + 'amount' + e, amount);
     }
   }
 
