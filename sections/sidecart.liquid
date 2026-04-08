@@ -109,8 +109,9 @@
               data-shipping-bar-fill
               style="width: {{ shipping_progress }}%">
               {% if section.settings.shipping_bar_icon != blank %}
-                <span class="sidecart__shipping-bar-icon" aria-hidden="true">
-                  <img src="{{ section.settings.shipping_bar_icon | image_url: width: 40 }}" alt="" width="20" height="20" loading="lazy">
+                <span class="sidecart__shipping-bar-icon" aria-hidden="true"
+                  style="--shipping-bar-icon-url: url('{{ section.settings.shipping_bar_icon | image_url: width: 56 }}'); --shipping-bar-icon-color: {{ section.settings.shipping_bar_icon_color | default: section.settings.shipping_bar_fill_color }};">
+                  <span class="sidecart__shipping-bar-icon-img"></span>
                 </span>
               {% endif %}
     </div>
@@ -658,7 +659,7 @@
 
 .sidecart__shipping-bar-icon {
   position: absolute;
-  right: -10px;
+  right: -14px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
@@ -670,9 +671,24 @@
 .sidecart__shipping-bar-icon img,
 .sidecart__shipping-bar-icon svg {
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
+}
+
+.sidecart__shipping-bar-icon-img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  background-color: var(--shipping-bar-icon-color, var(--shipping-bar-fill, #3E2027));
+  -webkit-mask-image: var(--shipping-bar-icon-url);
+  mask-image: var(--shipping-bar-icon-url);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 .sidecart__footer {
@@ -1668,6 +1684,12 @@ document.addEventListener('shopify:section:deselect', (e) => {
       "type": "image_picker",
       "id": "shipping_bar_icon",
       "label": "t:sidecart.settings.shipping_bar_icon.label"
+    },
+    {
+      "type": "color",
+      "id": "shipping_bar_icon_color",
+      "label": "t:sidecart.settings.shipping_bar_icon_color.label",
+      "default": "#3E2027"
     }, {
       "type": "header",
       "content": "t:labels.colors"
