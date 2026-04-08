@@ -30,11 +30,11 @@
   <div class="bundle-main__mobile-header">
     <div class="bundle-main__mobile-subtitle-row">
       <p class="bundle-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
-      {% if bottle_size %}
-        <p class="bundle-main__size">{{ bottle_size }}</p>
-      {% endif %}
     </div>
     <h1 class="bundle-main__title" data-bundle-title>{{ product.title }}</h1>
+    {% if bottle_size %}
+      <p class="bundle-main__size bundle-main__size--mobile">{{ bundle_size }} x {{ bottle_size }}</p>
+    {% endif %}
   </div>
 
   {%- comment -%} Image Column — bottle slots {%- endcomment -%}

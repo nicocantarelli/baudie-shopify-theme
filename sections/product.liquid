@@ -277,12 +277,12 @@
 
       {%- comment -%} Key Ingredients {%- endcomment -%}
       {% if key_ingredients %}
-        <div class="product-main__accordion is-open" data-accordion>
+        <div class="product-main__accordion" data-accordion>
           <button
             type="button"
             id="accordion-ingredients-trigger-{{ section.id }}"
             class="product-main__accordion-trigger"
-            aria-expanded="true"
+            aria-expanded="false"
             aria-controls="accordion-ingredients-{{ section.id }}">
             <span>{{ 'sections.product.key_ingredients' | t }}</span>
             <svg class="product-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
@@ -294,7 +294,7 @@
             id="accordion-ingredients-{{ section.id }}"
             role="region"
             aria-labelledby="accordion-ingredients-trigger-{{ section.id }}"
-            aria-hidden="false">
+            aria-hidden="true">
             <div class="product-main__accordion-body">
               {{ product.metafields.custom.key_ingredients | metafield_tag }}
               {% if full_ingredient_list %}
