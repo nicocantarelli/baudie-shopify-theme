@@ -570,6 +570,9 @@
       "shipping_bar_text_color": {
         "label": "Bar text color"
       },
+      "shipping_bar_icon": {
+        "label": "Bar icon"
+      },
       "colors_header": "Colors",
       "background_color": "Background color",
       "text_color": "Text color"
