@@ -556,7 +556,7 @@
         "label": "Free shipping threshold (in dollars)"
       },
       "shipping_progress_message": {
-        "label": "Progress message (use {{ amount }} for remaining)"
+        "label": "Progress message (use [amount] for remaining)"
       },
       "shipping_success_message": {
         "label": "Free shipping reached message"

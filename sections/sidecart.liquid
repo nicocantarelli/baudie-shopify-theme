@@ -72,7 +72,8 @@
             {%- if has_free_shipping -%}
               {{ section.settings.shipping_success_message }}
             {%- else -%}
-              {{ section.settings.shipping_progress_message | replace: '{{ amount }}', shipping_remaining_cents | money }}
+              {%- assign shipping_amount_display = shipping_remaining_cents | money -%}
+              {{ section.settings.shipping_progress_message | replace: '[amount]', shipping_amount_display }}
             {%- endif -%}
           </p>
           <div class="sidecart__shipping-bar-track">
@@ -104,7 +105,8 @@
               {%- if has_free_shipping -%}
                 {{ section.settings.shipping_success_message }}
               {%- else -%}
-                {{ section.settings.shipping_progress_message | replace: '{{ amount }}', shipping_remaining_cents | money }}
+                {%- assign shipping_amount_display = shipping_remaining_cents | money -%}
+                {{ section.settings.shipping_progress_message | replace: '[amount]', shipping_amount_display }}
               {%- endif -%}
             </p>
             <div class="sidecart__shipping-bar-track">
@@ -971,7 +973,7 @@
       if (remaining <= 0) {
         this.shippingBarText.textContent = this.shippingSuccessMsg;
       } else {
-        this.shippingBarText.textContent = this.shippingProgressMsg.replace('{' + '{ amount }' + '}', this.formatMoney(remaining));
+        this.shippingBarText.textContent = this.shippingProgressMsg.replace('[amount]', this.formatMoney(remaining));
       }
     }
 
@@ -1490,7 +1492,7 @@
       "type": "text",
       "id": "shipping_progress_message",
       "label": "t:sidecart.settings.shipping_progress_message.label",
-      "default": "You're only {{ amount }} away from free shipping!"
+      "default": "You're only [amount] away from free shipping!"
     },
     {
       "type": "text",
