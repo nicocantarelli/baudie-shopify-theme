@@ -541,6 +541,35 @@
       "continue_button_text": {
         "label": "Continue shopping button text"
       },
+      "shipping_bar_header": "Free shipping bar",
+      "enable_shipping_bar": {
+        "label": "Enable free shipping bar"
+      },
+      "shipping_bar_position": {
+        "label": "Position",
+        "options": {
+          "top": "Top (below header)",
+          "bottom": "Bottom (above subtotal)"
+        }
+      },
+      "shipping_threshold": {
+        "label": "Free shipping threshold (in dollars)"
+      },
+      "shipping_progress_message": {
+        "label": "Progress message (use {{ amount }} for remaining)"
+      },
+      "shipping_success_message": {
+        "label": "Free shipping reached message"
+      },
+      "shipping_bar_fill_color": {
+        "label": "Bar fill color"
+      },
+      "shipping_bar_track_color": {
+        "label": "Bar track color"
+      },
+      "shipping_bar_text_color": {
+        "label": "Bar text color"
+      },
       "colors_header": "Colors",
       "background_color": "Background color",
       "text_color": "Text color"

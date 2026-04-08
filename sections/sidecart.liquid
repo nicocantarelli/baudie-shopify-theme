@@ -6,6 +6,21 @@
   endif
   assign enable_quick_cart = settings.enable_quick_cart
   assign show_dynamic_checkout = settings.show_dynamic_checkout
+
+  assign shipping_bar_enabled = section.settings.enable_shipping_bar
+  assign shipping_bar_position = section.settings.shipping_bar_position
+  assign shipping_threshold_cents = section.settings.shipping_threshold | times: 100
+  assign cart_total = cart.total_price
+  assign shipping_remaining_cents = shipping_threshold_cents | minus: cart_total
+  assign has_free_shipping = false
+  if cart_total >= shipping_threshold_cents
+    assign has_free_shipping = true
+    assign shipping_remaining_cents = 0
+  endif
+  assign shipping_progress = cart_total | times: 100 | divided_by: shipping_threshold_cents
+  if shipping_progress > 100
+    assign shipping_progress = 100
+  endif
 -%}
 
 {% if enable_quick_cart %}
@@ -18,7 +33,13 @@
     data-item-singular="{{ 'sidecart.item' | t | escape }}"
     data-item-plural="{{ 'sidecart.items' | t | escape }}"
     data-stock-warning="{{ 'sidecart.stock_warning' | t | escape }}"
-    style="--sidecart-bg: {{ section.settings.background_color }}; --sidecart-text: {{ section.settings.text_color }};">
+    style="--sidecart-bg: {{ section.settings.background_color }}; --sidecart-text: {{ section.settings.text_color }};"
+    {% if shipping_bar_enabled %}
+      data-shipping-bar-enabled
+      data-shipping-threshold="{{ shipping_threshold_cents }}"
+      data-shipping-progress-msg="{{ section.settings.shipping_progress_message | escape }}"
+      data-shipping-success-msg="{{ section.settings.shipping_success_message | escape }}"
+    {% endif %}>
 
     <div class="sidecart__overlay" id="sidecart-overlay"></div>
 
@@ -44,6 +65,22 @@
         </button>
       </div>
 
+      {% if shipping_bar_enabled and shipping_bar_position == 'top' %}
+        <div class="sidecart__shipping-bar{% unless has_items %} sidecart__shipping-bar--hidden{% endunless %}" data-shipping-bar
+          style="--shipping-bar-fill: {{ section.settings.shipping_bar_fill_color }}; --shipping-bar-track: {{ section.settings.shipping_bar_track_color }}; --shipping-bar-text: {{ section.settings.shipping_bar_text_color | default: section.settings.text_color }};">
+          <p class="sidecart__shipping-bar-text" data-shipping-bar-text>
+            {%- if has_free_shipping -%}
+              {{ section.settings.shipping_success_message }}
+            {%- else -%}
+              {{ section.settings.shipping_progress_message | replace: '{{ amount }}', shipping_remaining_cents | money }}
+            {%- endif -%}
+          </p>
+          <div class="sidecart__shipping-bar-track">
+            <div class="sidecart__shipping-bar-fill" data-shipping-bar-fill style="width: {{ shipping_progress }}%"></div>
+          </div>
+        </div>
+      {% endif %}
+
       <div class="sidecart__content" data-sidecart-content>
         <ul class="sidecart__items{% unless has_items %} sidecart__items--hidden{% endunless %}" role="list" data-sidecart-items>
           {% for item in cart.items %}
@@ -60,6 +97,22 @@
       </div>
 
       <div class="sidecart__footer{% unless has_items %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
+        {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
+          <div class="sidecart__shipping-bar" data-shipping-bar
+            style="--shipping-bar-fill: {{ section.settings.shipping_bar_fill_color }}; --shipping-bar-track: {{ section.settings.shipping_bar_track_color }}; --shipping-bar-text: {{ section.settings.shipping_bar_text_color | default: section.settings.text_color }};">
+            <p class="sidecart__shipping-bar-text" data-shipping-bar-text>
+              {%- if has_free_shipping -%}
+                {{ section.settings.shipping_success_message }}
+              {%- else -%}
+                {{ section.settings.shipping_progress_message | replace: '{{ amount }}', shipping_remaining_cents | money }}
+              {%- endif -%}
+            </p>
+            <div class="sidecart__shipping-bar-track">
+              <div class="sidecart__shipping-bar-fill" data-shipping-bar-fill style="width: {{ shipping_progress }}%"></div>
+            </div>
+          </div>
+        {% endif %}
+
         <div class="sidecart__subtotal-row">
           <span class="sidecart__subtotal-label">{{ 'sidecart.subtotal' | t }}</span>
           <div class="sidecart__subtotal-value-wrapper">
@@ -511,6 +564,50 @@
     opacity: 0.85;
   }
 
+  .sidecart__shipping-bar {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--sidecart-border);
+    flex-shrink: 0;
+    color: var(--shipping-bar-text, var(--sidecart-text));
+  }
+
+  .sidecart__shipping-bar--hidden {
+    display: none;
+  }
+
+  .sidecart__footer .sidecart__shipping-bar {
+    border-bottom: none;
+    border-top: none;
+    padding: 0 0 14px;
+  }
+
+  .sidecart__shipping-bar-text {
+    font-family: var(--font-sweet-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.13px;
+    margin: 0 0 8px;
+    text-align: center;
+    color: var(--shipping-bar-text, var(--sidecart-text));
+  }
+
+  .sidecart__shipping-bar-track {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background-color: var(--shipping-bar-track, rgba(62, 32, 39, 0.15));
+    overflow: hidden;
+  }
+
+  .sidecart__shipping-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background-color: var(--shipping-bar-fill, #3E2027);
+    transition: width 0.3s ease;
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .sidecart__footer {
     padding: 20px;
     border-top: 1px solid var(--sidecart-border);
@@ -705,6 +802,14 @@
       this.itemSingular = this.sidecart?.dataset.itemSingular || 'item';
       this.itemPlural = this.sidecart?.dataset.itemPlural || 'items';
 
+      this.shippingBarEnabled = this.sidecart?.hasAttribute('data-shipping-bar-enabled') || false;
+      this.shippingThreshold = parseInt(this.sidecart?.dataset.shippingThreshold || '0', 10);
+      this.shippingProgressMsg = this.sidecart?.dataset.shippingProgressMsg || '';
+      this.shippingSuccessMsg = this.sidecart?.dataset.shippingSuccessMsg || '';
+      this.shippingBarText = this.sidecart?.querySelector('[data-shipping-bar-text]');
+      this.shippingBarFill = this.sidecart?.querySelector('[data-shipping-bar-fill]');
+      this.shippingBar = this.sidecart?.querySelector('[data-shipping-bar]');
+
       this.triggerElement = null;
       this.pendingUpdates = new Map();
       this.updateTimeouts = new Map();
@@ -724,6 +829,9 @@
       this.itemsLabelElement = this.sidecart?.querySelector('[data-sidecart-items-label]');
       this.subtotalElement = this.sidecart?.querySelector('[data-sidecart-subtotal]');
       this.emptyElement = this.sidecart?.querySelector('[data-sidecart-empty]');
+      this.shippingBarText = this.sidecart?.querySelector('[data-shipping-bar-text]');
+      this.shippingBarFill = this.sidecart?.querySelector('[data-shipping-bar-fill]');
+      this.shippingBar = this.sidecart?.querySelector('[data-shipping-bar]');
     }
 
     bindEvents() {
@@ -841,11 +949,29 @@
 
       if (this.subtotalElement) {
         const currentSubtotal = this.parseMoneyToNumber(this.subtotalElement.textContent);
-        this.subtotalElement.textContent = this.formatMoney(currentSubtotal + priceDiff);
+        const newSubtotal = currentSubtotal + priceDiff;
+        this.subtotalElement.textContent = this.formatMoney(newSubtotal);
+        this.updateShippingBar(newSubtotal);
       }
 
       if (newCount === 0) {
         this.showEmptyState();
+      }
+    }
+
+    updateShippingBar(cartTotalCents) {
+      if (!this.shippingBarEnabled || !this.shippingBarText || !this.shippingBarFill) return;
+
+      const threshold = this.shippingThreshold;
+      const remaining = Math.max(0, threshold - cartTotalCents);
+      const progress = Math.min(100, (cartTotalCents / threshold) * 100);
+
+      this.shippingBarFill.style.width = progress + '%';
+
+      if (remaining <= 0) {
+        this.shippingBarText.textContent = this.shippingSuccessMsg;
+      } else {
+        this.shippingBarText.textContent = this.shippingProgressMsg.replace('{{ amount }}', this.formatMoney(remaining));
       }
     }
 
@@ -854,6 +980,7 @@
       if (this.itemsContainer) this.itemsContainer.classList.add('sidecart__items--hidden');
       if (this.emptyElement) this.emptyElement.classList.remove('sidecart__empty--hidden');
       if (this.footer) this.footer.classList.add('sidecart__footer--hidden');
+      if (this.shippingBar) this.shippingBar.classList.add('sidecart__shipping-bar--hidden');
     }
 
     hideEmptyState() {
@@ -861,6 +988,7 @@
       if (this.itemsContainer) this.itemsContainer.classList.remove('sidecart__items--hidden');
       if (this.emptyElement) this.emptyElement.classList.add('sidecart__empty--hidden');
       if (this.footer) this.footer.classList.remove('sidecart__footer--hidden');
+      if (this.shippingBar) this.shippingBar.classList.remove('sidecart__shipping-bar--hidden');
     }
 
     updateItemsLabel(count) {
@@ -1018,6 +1146,7 @@
           if (this.subtotalElement) {
             this.subtotalElement.textContent = this.formatMoney(cart.total_price);
           }
+          this.updateShippingBar(cart.total_price);
 
           if (cart.item_count === 0) {
             this.showEmptyState();
@@ -1046,6 +1175,12 @@
         }
         if (newFooter && this.footer) {
           this.footer.innerHTML = newFooter.innerHTML;
+        }
+        const topShippingBar = this.sidecart?.querySelector('.sidecart__drawer > [data-shipping-bar]');
+        const newTopShippingBar = doc.querySelector('.sidecart__drawer > [data-shipping-bar]');
+        if (topShippingBar && newTopShippingBar) {
+          topShippingBar.innerHTML = newTopShippingBar.innerHTML;
+          topShippingBar.className = newTopShippingBar.className;
         }
         this.refreshElementRefs();
       } catch (e) {
@@ -1316,6 +1451,68 @@
       "id": "continue_button_text",
       "label": "t:sidecart.settings.continue_button_text.label",
       "default": "Continue shopping"
+    },
+    {
+      "type": "header",
+      "content": "t:sidecart.settings.shipping_bar_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_shipping_bar",
+      "label": "t:sidecart.settings.enable_shipping_bar.label",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "shipping_bar_position",
+      "label": "t:sidecart.settings.shipping_bar_position.label",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:sidecart.settings.shipping_bar_position.options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:sidecart.settings.shipping_bar_position.options.bottom"
+        }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "text",
+      "id": "shipping_threshold",
+      "label": "t:sidecart.settings.shipping_threshold.label",
+      "default": "50"
+    },
+    {
+      "type": "text",
+      "id": "shipping_progress_message",
+      "label": "t:sidecart.settings.shipping_progress_message.label",
+      "default": "You're only {{ amount }} away from free shipping!"
+    },
+    {
+      "type": "text",
+      "id": "shipping_success_message",
+      "label": "t:sidecart.settings.shipping_success_message.label",
+      "default": "You've unlocked free shipping!"
+    },
+    {
+      "type": "color",
+      "id": "shipping_bar_fill_color",
+      "label": "t:sidecart.settings.shipping_bar_fill_color.label",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "shipping_bar_track_color",
+      "label": "t:sidecart.settings.shipping_bar_track_color.label",
+      "default": "#E8DDD0"
+    },
+    {
+      "type": "color",
+      "id": "shipping_bar_text_color",
+      "label": "t:sidecart.settings.shipping_bar_text_color.label",
+      "default": "#3E2027"
     },
     {
       "type": "header",
