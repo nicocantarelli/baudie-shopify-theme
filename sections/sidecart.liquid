@@ -873,24 +873,24 @@ class Sidecart {
     this.sidecart = document.getElementById('sidecart');
     this.overlay = document.getElementById('sidecart-overlay');
     this.closeButton = document.getElementById('sidecart-close');
-    this.drawer = this.sidecart ?. querySelector('.sidecart__drawer');
-    this.content = this.sidecart ?. querySelector('[data-sidecart-content]');
-    this.itemsContainer = this.sidecart ?. querySelector('[data-sidecart-items]');
-    this.footer = this.sidecart ?. querySelector('[data-sidecart-footer]');
-    this.countElement = this.sidecart ?. querySelector('[data-sidecart-count]');
-    this.itemsLabelElement = this.sidecart ?. querySelector('[data-sidecart-items-label]');
-    this.subtotalElement = this.sidecart ?. querySelector('[data-sidecart-subtotal]');
-    this.emptyElement = this.sidecart ?. querySelector('[data-sidecart-empty]');
-    this.itemSingular = this.sidecart ?. dataset.itemSingular || 'item';
-    this.itemPlural = this.sidecart ?. dataset.itemPlural || 'items';
+    this.drawer = this.sidecart ?.querySelector('.sidecart__drawer');
+    this.content = this.sidecart ?.querySelector('[data-sidecart-content]');
+    this.itemsContainer = this.sidecart ?.querySelector('[data-sidecart-items]');
+    this.footer = this.sidecart ?.querySelector('[data-sidecart-footer]');
+    this.countElement = this.sidecart ?.querySelector('[data-sidecart-count]');
+    this.itemsLabelElement = this.sidecart ?.querySelector('[data-sidecart-items-label]');
+    this.subtotalElement = this.sidecart ?.querySelector('[data-sidecart-subtotal]');
+    this.emptyElement = this.sidecart ?.querySelector('[data-sidecart-empty]');
+    this.itemSingular = this.sidecart ?.dataset.itemSingular || 'item';
+    this.itemPlural = this.sidecart ?.dataset.itemPlural || 'items';
 
-    this.shippingBarEnabled = this.sidecart ?. hasAttribute('data-shipping-bar-enabled') || false;
-    this.shippingThreshold = parseInt(this.sidecart ?. dataset.shippingThreshold || '0', 10);
-    this.shippingProgressMsg = this.sidecart ?. dataset.shippingProgressMsg || '';
-    this.shippingSuccessMsg = this.sidecart ?. dataset.shippingSuccessMsg || '';
-    this.shippingBarText = this.sidecart ?. querySelector('[data-shipping-bar-text]');
-    this.shippingBarFill = this.sidecart ?. querySelector('[data-shipping-bar-fill]');
-    this.shippingBar = this.sidecart ?. querySelector('[data-shipping-bar]');
+    this.shippingBarEnabled = this.sidecart ?.hasAttribute('data-shipping-bar-enabled') || false;
+    this.shippingThreshold = parseInt(this.sidecart ?.dataset.shippingThreshold || '0', 10);
+    this.shippingProgressMsg = this.sidecart ?.dataset.shippingProgressMsg || '';
+    this.shippingSuccessMsg = this.sidecart ?.dataset.shippingSuccessMsg || '';
+    this.shippingBarText = this.sidecart ?.querySelector('[data-shipping-bar-text]');
+    this.shippingBarFill = this.sidecart ?.querySelector('[data-shipping-bar-fill]');
+    this.shippingBar = this.sidecart ?.querySelector('[data-shipping-bar]');
 
     this.triggerElement = null;
     this.pendingUpdates = new Map();
@@ -905,21 +905,21 @@ class Sidecart {
   }
 
   refreshElementRefs() {
-    this.content = this.sidecart ?. querySelector('[data-sidecart-content]');
-    this.itemsContainer = this.sidecart ?. querySelector('[data-sidecart-items]');
-    this.footer = this.sidecart ?. querySelector('[data-sidecart-footer]');
-    this.countElement = this.sidecart ?. querySelector('[data-sidecart-count]');
-    this.itemsLabelElement = this.sidecart ?. querySelector('[data-sidecart-items-label]');
-    this.subtotalElement = this.sidecart ?. querySelector('[data-sidecart-subtotal]');
-    this.emptyElement = this.sidecart ?. querySelector('[data-sidecart-empty]');
-    this.shippingBarText = this.sidecart ?. querySelector('[data-shipping-bar-text]');
-    this.shippingBarFill = this.sidecart ?. querySelector('[data-shipping-bar-fill]');
-    this.shippingBar = this.sidecart ?. querySelector('[data-shipping-bar]');
+    this.content = this.sidecart ?.querySelector('[data-sidecart-content]');
+    this.itemsContainer = this.sidecart ?.querySelector('[data-sidecart-items]');
+    this.footer = this.sidecart ?.querySelector('[data-sidecart-footer]');
+    this.countElement = this.sidecart ?.querySelector('[data-sidecart-count]');
+    this.itemsLabelElement = this.sidecart ?.querySelector('[data-sidecart-items-label]');
+    this.subtotalElement = this.sidecart ?.querySelector('[data-sidecart-subtotal]');
+    this.emptyElement = this.sidecart ?.querySelector('[data-sidecart-empty]');
+    this.shippingBarText = this.sidecart ?.querySelector('[data-shipping-bar-text]');
+    this.shippingBarFill = this.sidecart ?.querySelector('[data-shipping-bar-fill]');
+    this.shippingBar = this.sidecart ?.querySelector('[data-shipping-bar]');
   }
 
   bindEvents() {
-    this.closeButton ?. addEventListener('click', () => this.close());
-    this.overlay ?. addEventListener('click', () => this.close());
+    this.closeButton ?.addEventListener('click', () => this.close());
+    this.overlay ?.addEventListener('click', () => this.close());
     document.addEventListener('keydown', (e) => this.handleKeydown(e));
 
     this.sidecart.addEventListener('click', (e) => {
@@ -930,21 +930,21 @@ class Sidecart {
       const action = btn.dataset.action;
       const key = btn.dataset.key;
       const item = btn.closest('[data-sidecart-item]');
-      const qtyEl = item ?. querySelector('[data-quantity]');
-      const priceEl = item ?. querySelector('[data-price]');
-      const comparePriceEl = item ?. querySelector('[data-compare-price]');
-      const currentQty = parseInt(qtyEl ?. value || '1', 10);
-      const unitPrice = item ?. dataset.unitPrice
+      const qtyEl = item ?.querySelector('[data-quantity]');
+      const priceEl = item ?.querySelector('[data-price]');
+      const comparePriceEl = item ?.querySelector('[data-compare-price]');
+      const currentQty = parseInt(qtyEl ?.value || '1', 10);
+      const unitPrice = item ?.dataset.unitPrice
         ? parseInt(item.dataset.unitPrice, 10)
         : 0;
-      const compareUnitPrice = item ?. dataset.compareUnitPrice
+      const compareUnitPrice = item ?.dataset.compareUnitPrice
         ? parseInt(item.dataset.compareUnitPrice, 10)
         : 0;
 
       let newQty = currentQty;
 
-      const inventory = parseInt(item ?. dataset.inventory || '99999', 10);
-      const inventoryPolicy = item ?. dataset.inventoryPolicy || 'deny';
+      const inventory = parseInt(item ?.dataset.inventory || '99999', 10);
+      const inventoryPolicy = item ?.dataset.inventoryPolicy || 'deny';
 
       if (action === 'increase') {
         if (inventoryPolicy === 'deny' && currentQty >= inventory) {
@@ -961,7 +961,7 @@ class Sidecart {
       }
 
       if (newQty === 0) {
-        item ?. remove();
+        item ?.remove();
       } else {
         if (qtyEl) {
           qtyEl.value = newQty;
@@ -986,12 +986,12 @@ class Sidecart {
 
       const key = input.dataset.key;
       const item = input.closest('[data-sidecart-item]');
-      const priceEl = item ?. querySelector('[data-price]');
-      const comparePriceEl = item ?. querySelector('[data-compare-price]');
-      const unitPrice = item ?. dataset.unitPrice
+      const priceEl = item ?.querySelector('[data-price]');
+      const comparePriceEl = item ?.querySelector('[data-compare-price]');
+      const unitPrice = item ?.dataset.unitPrice
         ? parseInt(item.dataset.unitPrice, 10)
         : 0;
-      const compareUnitPrice = item ?. dataset.compareUnitPrice
+      const compareUnitPrice = item ?.dataset.compareUnitPrice
         ? parseInt(item.dataset.compareUnitPrice, 10)
         : 0;
 
@@ -1004,7 +1004,7 @@ class Sidecart {
       input.value = newQty;
 
       if (newQty === 0) {
-        item ?. remove();
+        item ?.remove();
       } else {
         if (priceEl && unitPrice) 
           priceEl.textContent = this.formatMoney(unitPrice * newQty);
@@ -1041,7 +1041,7 @@ class Sidecart {
     const diff = newQty - oldQty;
     const priceDiff = unitPrice * diff;
 
-    const currentCount = parseInt(this.countElement ?. textContent || '0', 10);
+    const currentCount = parseInt(this.countElement ?.textContent || '0', 10);
     const newCount = currentCount + diff;
 
     if (this.countElement) 
@@ -1140,17 +1140,17 @@ class Sidecart {
     this.triggerElement = trigger || document.activeElement;
     this.sidecart.classList.add('is-open');
     this.sidecart.setAttribute('aria-hidden', 'false');
-    document.getElementById('cart-toggle') ?. setAttribute('aria-expanded', 'true');
+    document.getElementById('cart-toggle') ?.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
-    setTimeout(() => this.closeButton ?. focus(), 100);
+    setTimeout(() => this.closeButton ?.focus(), 100);
   }
 
   close() {
     this.sidecart.classList.remove('is-open');
     this.sidecart.setAttribute('aria-hidden', 'true');
-    document.getElementById('cart-toggle') ?. setAttribute('aria-expanded', 'false');
+    document.getElementById('cart-toggle') ?.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
-    this.triggerElement ?. focus();
+    this.triggerElement ?.focus();
   }
 
   handleKeydown(e) {
@@ -1186,15 +1186,15 @@ class Sidecart {
   }
 
   showStockWarning(itemEl, actualQty) {
-    const warning = itemEl ?. querySelector('[data-stock-warning]');
+    const warning = itemEl ?.querySelector('[data-stock-warning]');
     if (! warning) return;
     
 
-    const msg = this.sidecart ?. dataset.stockWarning || 'Only COUNT available';
+    const msg = this.sidecart ?.dataset.stockWarning || 'Only COUNT available';
     warning.textContent = msg.replace('COUNT', actualQty);
     warning.hidden = false;
 
-    if (this.stockWarningTimeouts ?. has(itemEl)) {
+    if (this.stockWarningTimeouts ?.has(itemEl)) {
       clearTimeout(this.stockWarningTimeouts.get(itemEl));
     }
     if (!this.stockWarningTimeouts) 
@@ -1209,7 +1209,7 @@ class Sidecart {
   }
 
   clearStockWarning(itemEl) {
-    const warning = itemEl ?. querySelector('[data-stock-warning]');
+    const warning = itemEl ?.querySelector('[data-stock-warning]');
     if (warning) 
       warning.hidden = true;
     
@@ -1219,7 +1219,7 @@ class Sidecart {
     const toast = document.createElement('div');
     toast.className = 'sidecart__toast';
     toast.textContent = msg;
-    this.drawer ?. appendChild(toast);
+    this.drawer ?.appendChild(toast);
     requestAnimationFrame(() => toast.classList.add('sidecart__toast--visible'));
     setTimeout(() => {
       toast.classList.remove('sidecart__toast--visible');
@@ -1245,14 +1245,14 @@ class Sidecart {
 
       if (! response.ok) {
         await this.refreshFromServer();
-        const itemEl = this.sidecart ?. querySelector(`[data-sidecart-item][data-key="${key}"]`);
-        const actualQty = parseInt(itemEl ?. querySelector('[data-quantity]') ?. value || '1', 10);
+        const itemEl = this.sidecart ?.querySelector(`[data-sidecart-item][data-key="${key}"]`);
+        const actualQty = parseInt(itemEl ?.querySelector('[data-quantity]') ?.value || '1', 10);
         this.showStockWarning(itemEl, actualQty);
         return;
       }
 
       const updatedItem = cart.items.find(i => i.key === key);
-      const itemEl = this.sidecart ?. querySelector(`[data-sidecart-item][data-key="${key}"]`);
+      const itemEl = this.sidecart ?.querySelector(`[data-sidecart-item][data-key="${key}"]`);
 
       if (updatedItem && updatedItem.quantity<quantity) {
           const qtyEl = itemEl?.querySelector('[data-quantity]');
@@ -1318,7 +1318,7 @@ async refreshFromServer() {
     if (newFooter && this.footer) {
       this.footer.innerHTML = newFooter.innerHTML;
     }
-    const topShippingBar = this.sidecart ?. querySelector('.sidecart__drawer > [data-shipping-bar]');
+    const topShippingBar = this.sidecart ?.querySelector('.sidecart__drawer > [data-shipping-bar]');
     const newTopShippingBar = doc.querySelector('.sidecart__drawer > [data-shipping-bar]');
     if (topShippingBar && newTopShippingBar) {
       topShippingBar.innerHTML = newTopShippingBar.innerHTML;
@@ -1354,7 +1354,7 @@ async refresh(cartData) {
 formatMoney(cents) {
   const b = '{' + '{';
   const e = '}' + '}';
-  const moneyFormat = this.sidecart ?. dataset.moneyFormat || ('$' + b + 'amount' + e);
+  const moneyFormat = this.sidecart ?.dataset.moneyFormat || ('$' + b + 'amount' + e);
   const amount = (cents / 100).toFixed(2);
   const amountNoDecimals = Math.floor(cents / 100).toString();
   const amountWithCommas = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -1370,15 +1370,15 @@ formatMoney(cents) {
 document.addEventListener('DOMContentLoaded', () => new Sidecart());} else {
 new Sidecart();}(function initAjaxAddToCart () {
 function isProductForm(form) {
-  if (! form || form.tagName !== 'FORM') returnfalse;
+  if (! form || form.tagName !== 'FORM') return false;
   
 
   const action = form.getAttribute('action') || '';
-  if (action.includes('/cart/add')) returntrue;
+  if (action.includes('/cart/add')) return true;
   
 
   const formTypeInput = form.querySelector('input[name="form_type"][value="product"]');
-  if (formTypeInput) returntrue;
+  if (formTypeInput) return true;
   
 
   return false;
@@ -1397,8 +1397,8 @@ document.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const submitBtn = form.querySelector('[type="submit"], button[name="add"]');
-  const originalText = submitBtn ?. innerHTML;
-  const originalDisabled = submitBtn ?. disabled;
+  const originalText = submitBtn ?.innerHTML;
+  const originalDisabled = submitBtn ?.disabled;
 
   if (submitBtn) {
     submitBtn.disabled = true;
@@ -1406,11 +1406,11 @@ document.addEventListener('submit', async (e) => {
   }
 
   const sidecart = document.getElementById('sidecart');
-  sidecart ?. classList.add('is-loading');
+  sidecart ?.classList.add('is-loading');
   document.dispatchEvent(new CustomEvent('cart:open'));
 
   try {
-    const variantId = form.querySelector('input[name="id"]') ?. value;
+    const variantId = form.querySelector('input[name="id"]') ?.value;
     const quantityInput = form.querySelector('input[name="quantity"]');
     const quantity = quantityInput
       ? quantityInput.value
@@ -1427,14 +1427,14 @@ document.addEventListener('submit', async (e) => {
       : 0;
 
     if (existingItem) {
-      const existingEl = sidecart ?. querySelector(`[data-sidecart-item][data-key="${
+      const existingEl = sidecart ?.querySelector(`[data-sidecart-item][data-key="${
         existingItem.key
       }"]`);
-      const maxStock = parseInt(existingEl ?. dataset.inventory || '99999', 10);
-      const policy = existingEl ?. dataset.inventoryPolicy || 'deny';
+      const maxStock = parseInt(existingEl ?.dataset.inventory || '99999', 10);
+      const policy = existingEl ?.dataset.inventoryPolicy || 'deny';
       if (policy === 'deny' && existingQty >= maxStock) {
-        const stockWarningMsg = sidecart ?. dataset.stockWarning || 'Only COUNT available';
-        const warning = existingEl ?. querySelector('[data-stock-warning]');
+        const stockWarningMsg = sidecart ?.dataset.stockWarning || 'Only COUNT available';
+        const warning = existingEl ?.querySelector('[data-stock-warning]');
         if (warning) {
           warning.textContent = stockWarningMsg.replace('COUNT', maxStock);
           warning.hidden = false;
@@ -1480,8 +1480,8 @@ document.addEventListener('submit', async (e) => {
     const doc = parser.parseFromString(sectionHtml, 'text/html');
     const newContent = doc.querySelector('[data-sidecart-content]');
     const newFooter = doc.querySelector('[data-sidecart-footer]');
-    const content = sidecart ?. querySelector('[data-sidecart-content]');
-    const footer = sidecart ?. querySelector('[data-sidecart-footer]');
+    const content = sidecart ?.querySelector('[data-sidecart-content]');
+    const footer = sidecart ?.querySelector('[data-sidecart-footer]');
 
     if (newContent && content) 
       content.innerHTML = newContent.innerHTML;
@@ -1495,24 +1495,24 @@ document.addEventListener('submit', async (e) => {
 
     document.dispatchEvent(new CustomEvent('cart:dom-updated'));
 
-    const countEl = sidecart ?. querySelector('[data-sidecart-count]');
-    const labelEl = sidecart ?. querySelector('[data-sidecart-items-label]');
+    const countEl = sidecart ?.querySelector('[data-sidecart-count]');
+    const labelEl = sidecart ?.querySelector('[data-sidecart-items-label]');
     if (countEl) 
       countEl.textContent = cart.item_count;
     
     if (labelEl) 
       labelEl.textContent = cart.item_count === 1
-        ? (sidecart ?. dataset.itemSingular || 'item')
-        : (sidecart ?. dataset.itemPlural || 'items');
+        ? (sidecart ?.dataset.itemSingular || 'item')
+        : (sidecart ?.dataset.itemPlural || 'items');
     
 
     const postItem = cart.items.find(i => String(i.variant_id) === String(variantId));
     if (postItem) {
-      const itemEl = sidecart ?. querySelector(`[data-sidecart-item][data-key="${
+      const itemEl = sidecart ?.querySelector(`[data-sidecart-item][data-key="${
         postItem.key
       }"]`);
-      const maxStock = parseInt(itemEl ?. dataset.inventory || '99999', 10);
-      const policy = itemEl ?. dataset.inventoryPolicy || 'deny';
+      const maxStock = parseInt(itemEl ?.dataset.inventory || '99999', 10);
+      const policy = itemEl ?.dataset.inventoryPolicy || 'deny';
 
       if (policy === 'deny' && postItem.quantity > maxStock) {
         await fetch('/cart/change.js', {
@@ -1551,11 +1551,11 @@ document.addEventListener('submit', async (e) => {
 
         document.dispatchEvent(new CustomEvent('cart:dom-updated'));
 
-        const fixedItemEl = sidecart ?. querySelector(`[data-sidecart-item][data-key="${
+        const fixedItemEl = sidecart ?.querySelector(`[data-sidecart-item][data-key="${
           postItem.key
         }"]`);
-        const warning = fixedItemEl ?. querySelector('[data-stock-warning]');
-        const stockWarningMsg = sidecart ?. dataset.stockWarning || 'Only COUNT available';
+        const warning = fixedItemEl ?.querySelector('[data-stock-warning]');
+        const stockWarningMsg = sidecart ?.dataset.stockWarning || 'Only COUNT available';
         if (warning) {
           warning.textContent = stockWarningMsg.replace('COUNT', maxStock);
           warning.hidden = false;
@@ -1570,14 +1570,14 @@ document.addEventListener('submit', async (e) => {
     const toastEl = document.createElement('div');
     toastEl.className = 'sidecart__toast';
     toastEl.textContent = msg;
-    sidecart ?. querySelector('.sidecart__drawer') ?. appendChild(toastEl);
+    sidecart ?.querySelector('.sidecart__drawer') ?.appendChild(toastEl);
     requestAnimationFrame(() => toastEl.classList.add('sidecart__toast--visible'));
     setTimeout(() => {
       toastEl.classList.remove('sidecart__toast--visible');
       setTimeout(() => toastEl.remove(), 300);
     }, 4000);
   } finally {
-    sidecart ?. classList.remove('is-loading');
+    sidecart ?.classList.remove('is-loading');
     if (submitBtn) {
       submitBtn.disabled = originalDisabled || false;
       submitBtn.classList.remove('is-loading');
