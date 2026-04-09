@@ -1331,19 +1331,20 @@ async refreshFromServer() {
 }
 
 async refresh(cartData) {
+  const cart = cartData.cart || cartData;
   if (this.countElement) {
-    this.countElement.textContent = cartData.item_count;
+    this.countElement.textContent = cart.item_count;
   }
-  this.updateItemsLabel(cartData.item_count);
+  this.updateItemsLabel(cart.item_count);
 
   document.querySelectorAll('[data-cart-count]').forEach(el => {
-    el.textContent = cartData.item_count;
-    el.style.display = cartData.item_count > 0
+    el.textContent = cart.item_count;
+    el.style.display = cart.item_count > 0
       ? ''
       : 'none';
   });
 
-  if (cartData.item_count === 0) {
+  if (cart.item_count === 0) {
     this.showEmptyState();
   } else {
     this.hideEmptyState();
