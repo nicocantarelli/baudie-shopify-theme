@@ -51,17 +51,29 @@
         {% endfor %}
       {% endif %}
 
-      {%- comment -%} Mobile Product Images - always cycle with product cards (unchanged from original) {%- endcomment -%}
-      {% for product in section.settings.hero_products %}
-        <div class="hero-product__mobile-wrapper {% if forloop.first %}is-active{% endif %}" data-product-index="{{ forloop.index0 }}">
-          {% if product.featured_image %}
-            <div class="hero-product__mobile-image">
-              {{ product.featured_image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__mobile-img', alt: product.featured_image.alt | default: product.title }}
-              <div class="hero-product__mobile-gradient"></div>
-            </div>
-          {% endif %}
+      {%- comment -%} Mobile Product Images {%- endcomment -%}
+      {% if section.settings.mobile_hero_image %}
+        {%- comment -%} Static Mobile Hero Image - single uploaded image replaces product cycling {%- endcomment -%}
+        <div class="hero-product__mobile-wrapper is-active" data-product-index="0">
+          <div class="hero-product__mobile-image">
+            {%- assign mobile_hero_alt = section.settings.mobile_hero_image_alt | default: section.settings.mobile_hero_image.alt | default: section.settings.heading -%}
+            {{ section.settings.mobile_hero_image | image_url: width: 1200 | image_tag: loading: 'eager', class: 'hero-product__mobile-img', alt: mobile_hero_alt }}
+            <div class="hero-product__mobile-gradient"></div>
+          </div>
         </div>
-      {% endfor %}
+      {% else %}
+        {%- comment -%} Default - cycles through product featured images {%- endcomment -%}
+        {% for product in section.settings.hero_products %}
+          <div class="hero-product__mobile-wrapper {% if forloop.first %}is-active{% endif %}" data-product-index="{{ forloop.index0 }}">
+            {% if product.featured_image %}
+              <div class="hero-product__mobile-image">
+                {{ product.featured_image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__mobile-img', alt: product.featured_image.alt | default: product.title }}
+                <div class="hero-product__mobile-gradient"></div>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% endif %}
     </div>
 
     {%- comment -%} Color Block - separate from images so it doesn't fade {%- endcomment -%}
@@ -1055,6 +1067,18 @@
         "id": "mobile_heading",
         "label": "t:sections.hero_product.settings.mobile_heading",
         "default": "Deodorant Enhancer"
+      },
+      {
+        "type": "image_picker",
+        "id": "mobile_hero_image",
+        "label": "t:sections.hero_product.settings.mobile_hero_image",
+        "info": "t:sections.hero_product.settings.mobile_hero_image_info"
+      },
+      {
+        "type": "text",
+        "id": "mobile_hero_image_alt",
+        "label": "t:sections.hero_product.settings.mobile_hero_image_alt",
+        "info": "t:sections.hero_product.settings.mobile_hero_image_alt_info"
       },
       {
         "type": "select",
