@@ -69,7 +69,7 @@
           -%}
           {%- if should_show -%}
             {%- assign card_bg = item.metafields.custom.product_card_background | default: '#FCF0D2' -%}
-            {%- assign card_image = item.metafields.custom.card_image | default: item.featured_image -%}
+            {%- assign card_image = item.metafields.custom.card_image_portrait | default: item.metafields.custom.card_image | default: item.featured_image -%}
             {%- assign card_hover_image = item.metafields.custom.card_hover_image -%}
             {%- assign short_description = item.metafields.custom.short_description | default: item.description | strip_html | truncate: 120 -%}
             {%- assign selected_variant = item.selected_or_first_available_variant -%}

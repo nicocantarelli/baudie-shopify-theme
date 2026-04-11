@@ -32,6 +32,8 @@
 
   if card_image_override != blank
     assign card_image = card_image_override
+  elsif is_wide == false and product.metafields.custom.card_image_portrait != blank
+    assign card_image = product.metafields.custom.card_image_portrait
   else
     assign card_image = product.metafields.custom.card_image | default: product.featured_image
   endif
