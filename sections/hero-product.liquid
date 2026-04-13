@@ -395,10 +395,13 @@
     display: none;
   }
 
-  /* Desktop Overlay - sits above hero images, below content */
+  /* Desktop Overlay - covers only the main hero image area (left 2/3) */
   .hero-product__desktop-overlay {
     position: absolute;
-    inset: 0;
+    bottom: 0;
+    left: 0;
+    width: 66.67%;
+    height: 100%;
     pointer-events: none;
     z-index: 2;
   }
