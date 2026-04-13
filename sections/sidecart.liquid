@@ -1484,15 +1484,21 @@ document.addEventListener('submit', async (e) => {
     const content = sidecart?.querySelector('[data-sidecart-content]');
     const footer = sidecart?.querySelector('[data-sidecart-footer]');
 
-    if (newContent && content) 
+    if (newContent && content)
       content.innerHTML = newContent.innerHTML;
-    
-    if (newFooter && footer) 
+
+    if (newFooter && footer)
       footer.innerHTML = newFooter.innerHTML;
-    
-    if (footer) 
+
+    if (footer)
       footer.classList.remove('sidecart__footer--hidden');
-    
+
+    const topShippingBar = sidecart?.querySelector('.sidecart__drawer > [data-shipping-bar]');
+    const newTopShippingBar = doc.querySelector('.sidecart__drawer > [data-shipping-bar]');
+    if (topShippingBar && newTopShippingBar) {
+      topShippingBar.innerHTML = newTopShippingBar.innerHTML;
+      topShippingBar.className = newTopShippingBar.className;
+    }
 
     document.dispatchEvent(new CustomEvent('cart:dom-updated'));
 
