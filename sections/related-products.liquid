@@ -114,17 +114,6 @@
                       <span>{{ 'products.add_to_cart' | t }}</span>
                     </button>
                   {%- endform -%}
-                  {%- form 'product', item, class: 'related-products__form' -%}
-                    <input type="hidden" name="id" value="{{ selected_variant.id }}">
-                    <input type="hidden" name="return_to" value="/checkout">
-                    <button
-                      type="submit"
-                      class="related-products__action-btn related-products__action-btn--buy"
-                      aria-label="{{ 'products.buy_now' | t }}: {{ item.title }}"
-                      {% unless selected_variant.available %}disabled{% endunless %}>
-                      {{ 'products.buy_now' | t }}
-                    </button>
-                  {%- endform -%}
                 </div>
               </div>
               <div class="related-products__info">

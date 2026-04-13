@@ -131,16 +131,6 @@
             </span>
           </button>
         {% endform %}
-        {% form 'product', product, class: 'product-main__form' %}
-          <input type="hidden" name="id" value="{{ current_variant.id }}">
-          <input type="hidden" name="return_to" value="/checkout">
-          <button
-            type="submit"
-            class="product-main__button product-main__button--buy"
-            {% unless current_variant.available %}disabled{% endunless %}>
-            {{ 'sections.product.buy_now' | t }}
-          </button>
-        {% endform %}
       </div>
     </div>
 
@@ -698,8 +688,8 @@
   }
 
   .product-main__button--add {
-    background-color: #FFFFFF;
-    color: var(--product-text);
+    background-color: var(--product-text);
+    color: #FFFFFF;
   }
 
   .product-main__button--add:disabled {
