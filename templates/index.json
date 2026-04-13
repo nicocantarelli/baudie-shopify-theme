@@ -46,6 +46,22 @@
     "in_press_9ChkGH": {
       "type": "in-press",
       "blocks": {
+        "press_logo_pqQMPB": {
+          "type": "press_logo",
+          "name": "Popsugar Logo",
+          "settings": {
+            "logo": "shopify://shop_images/1.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_rih9t3": {
+          "type": "press_logo",
+          "name": "NewBeauty Logo",
+          "settings": {
+            "logo": "shopify://shop_images/2.png",
+            "alt_text": "Press logo"
+          }
+        },
         "press_logo_ghD8X7": {
           "type": "press_logo",
           "name": "Vogue Logo",
@@ -77,31 +93,15 @@
             "logo": "shopify://shop_images/5.png",
             "alt_text": "Bustle Logo"
           }
-        },
-        "press_logo_pqQMPB": {
-          "type": "press_logo",
-          "name": "Popsugar Logo",
-          "settings": {
-            "logo": "shopify://shop_images/1.png",
-            "alt_text": "Press logo"
-          }
-        },
-        "press_logo_rih9t3": {
-          "type": "press_logo",
-          "name": "NewBeauty Logo",
-          "settings": {
-            "logo": "shopify://shop_images/2.png",
-            "alt_text": "Press logo"
-          }
         }
       },
       "block_order": [
+        "press_logo_pqQMPB",
+        "press_logo_rih9t3",
         "press_logo_ghD8X7",
         "press_logo_YXxpJy",
         "press_logo_Acaiwg",
-        "press_logo_aKkAft",
-        "press_logo_pqQMPB",
-        "press_logo_rih9t3"
+        "press_logo_aKkAft"
       ],
       "name": "t:general.in_press",
       "settings": {
