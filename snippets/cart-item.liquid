@@ -19,7 +19,7 @@
   assign bundle_titles_str = ''
   assign bundle_handles_str = ''
   for property in item.properties
-    if property.first contains 'Scent ' and property.last != blank
+    if property.first contains '_Scent ' and property.last != blank
       assign parts = property.last | split: '::'
       assign scent_title = parts[0]
       assign scent_handle = parts[1] | default: ''

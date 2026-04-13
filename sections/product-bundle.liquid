@@ -1178,7 +1178,7 @@
           formBody.append('id', this.bundleVariantId);
           formBody.append('quantity', '1');
           selected.forEach((p, i) => {
-            formBody.append(`properties[Scent ${i + 1}]`, `${p.title}::${p.handle}`);
+            formBody.append(`properties[_Scent ${i + 1}]`, `${p.title}::${p.handle}`);
           });
 
           const response = await fetch('/cart/add.js', {
