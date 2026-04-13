@@ -6,7 +6,7 @@
 
 {%- liquid
   assign item_url = item.url
-  assign item_image = item.product.metafields.custom.card_image | default: item.image
+  assign item_image = item.product.metafields.custom.card_image_portrait | default: item.product.metafields.custom.card_image | default: item.image
   assign card_bg = item.product.metafields.custom.product_card_background | default: '#FCF0D2'
   assign item_title = item.product.title
   assign item_variant = item.variant.title
