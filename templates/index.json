@@ -300,7 +300,7 @@
           "type": "bundle_card",
           "settings": {
             "product": "discovery-set",
-            "card_image_override": "shopify://shop_images/Untitled_design_96.png",
+            "card_image_override": "shopify://shop_images/10.png",
             "display_products": [],
             "custom_title": "",
             "custom_description": "",
