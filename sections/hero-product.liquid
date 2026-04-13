@@ -96,12 +96,12 @@
       assign mobile_position = section.settings.mobile_content_position
     -%}
 
-    {%- comment -%} Mobile Top Block (heading + optional below-title content) {%- endcomment -%}
-    <div class="hero-product__mobile-top-block" style="--heading-color: {{ section.settings.heading_color }}">
-      {% if section.settings.mobile_heading != blank %}
-        <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading }}</h1>
-      {% endif %}
-      {% if mobile_position == 'below_title' %}
+    {% if mobile_position == 'below_title' %}
+      {%- comment -%} Below title mode - heading at top with content stacked directly below {%- endcomment -%}
+      <div class="hero-product__mobile-top-block" style="--heading-color: {{ section.settings.heading_color }}">
+        {% if section.settings.mobile_heading != blank %}
+          <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading }}</h1>
+        {% endif %}
         <div class="hero-product__mobile-content hero-product__mobile-content--below-title">
           <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
           <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
@@ -109,19 +109,22 @@
             <span>{{ section.settings.mobile_button_text }}</span>
           </a>
         </div>
-      {% endif %}
-    </div>
-
-    {%- comment -%} Mobile Content (top, center, or bottom of screen) {%- endcomment -%}
-    {% unless mobile_position == 'below_title' %}
-      <div class="hero-product__mobile-content hero-product__mobile-content--{{ mobile_position }}">
+      </div>
+    {% else %}
+      {%- comment -%} Top, center or bottom - heading + content move together as one block {%- endcomment -%}
+      <div
+        class="hero-product__mobile-content hero-product__mobile-content--{{ mobile_position }}"
+        style="--heading-color: {{ section.settings.heading_color }}">
+        {% if section.settings.mobile_heading != blank %}
+          <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading }}</h1>
+        {% endif %}
         <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
         <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
         <a href="{{ section.settings.mobile_button_url }}" class="hero-product__mobile-button">
           <span>{{ section.settings.mobile_button_text }}</span>
         </a>
       </div>
-    {% endunless %}
+    {% endif %}
 
     {%- comment -%} Navigation Controls {%- endcomment -%}
     {% if section.settings.hero_products.size > 1 %}
@@ -819,27 +822,38 @@
       width: 100%;
     }
 
-    /* Screen-positioned variants share absolute placement */
+    /* Screen-positioned variants share absolute placement and centering */
     .hero-product__mobile-content--top,
     .hero-product__mobile-content--center,
     .hero-product__mobile-content--bottom {
       position: absolute;
-      left: 12px;
-      right: 12px;
+      left: 50%;
+      width: calc(100% - 24px);
+      max-width: 360px;
+      gap: 14px;
       z-index: 3;
     }
 
     .hero-product__mobile-content--top {
-      top: 140px;
+      top: 51px;
+      transform: translateX(-50%);
     }
 
     .hero-product__mobile-content--center {
       top: 50%;
-      transform: translateY(-50%);
+      transform: translate(-50%, -50%);
     }
 
     .hero-product__mobile-content--bottom {
       bottom: 60px;
+      transform: translateX(-50%);
+    }
+
+    /* When heading is part of the unified content block, match top-block sizing */
+    .hero-product__mobile-content--top .hero-product__mobile-heading,
+    .hero-product__mobile-content--center .hero-product__mobile-heading,
+    .hero-product__mobile-content--bottom .hero-product__mobile-heading {
+      margin-bottom: 6px;
     }
 
     .hero-product__mobile-title {
