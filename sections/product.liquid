@@ -627,12 +627,17 @@
     gap: 12px;
   }
 
+  .product-main__purchase-row + .product-main__scent-dropdown,
+  .product-main__purchase-row + .product-main__bundle-upsell {
+    margin-top: -18px;
+  }
+
   .product-main__price {
     font-family: var(--font-sweet-sans);
     font-weight: 500;
-    font-size: 20px;
+    font-size: 26px;
     line-height: normal;
-    letter-spacing: -0.2px;
+    letter-spacing: -0.26px;
     text-transform: uppercase;
     color: var(--product-text);
     margin: 0;
@@ -1092,6 +1097,11 @@
       flex-direction: row;
       align-items: center;
       gap: 20px;
+    }
+
+    .product-main__purchase-row + .product-main__scent-dropdown,
+    .product-main__purchase-row + .product-main__bundle-upsell {
+      margin-top: 0;
     }
 
     .product-main__actions {
