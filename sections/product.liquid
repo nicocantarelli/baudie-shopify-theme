@@ -415,7 +415,8 @@
   .product-main__image-column {
     position: relative;
     width: 100%;
-    aspect-ratio: 1 / 1.05;
+    aspect-ratio: 1 / 1.15;
+    overflow: hidden;
   }
 
   .product-main__product-image {
@@ -427,8 +428,8 @@
   }
 
   .product-main__img {
-    width: 100%;
-    height: 100%;
+    width: 130%;
+    height: 130%;
     object-fit: contain;
     object-position: center;
   }
@@ -1009,6 +1010,13 @@
       top: var(--total-header-height, 110px);
       height: calc(100vh - var(--total-header-height, 110px));
       flex-shrink: 0;
+      overflow: visible;
+    }
+
+    .product-main__img {
+      width: auto;
+      height: 90%;
+      max-width: 85%;
     }
 
     .product-main__info-column {
