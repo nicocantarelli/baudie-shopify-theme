@@ -291,8 +291,13 @@
         "default_card_text_color": "Default card text color",
         "default_card_button_color": "Default card button color",
         "mobile_content_position": "Content position",
-        "mobile_content_position_bottom": "Bottom",
-        "mobile_content_position_top": "Below title",
+        "mobile_content_position_top": "Top of screen",
+        "mobile_content_position_center": "Center of screen",
+        "mobile_content_position_bottom": "Bottom of screen",
+        "mobile_content_position_below_title": "Below title",
+        "mobile_overlay_enable": "Enable mobile image overlay",
+        "mobile_overlay_color": "Mobile overlay color",
+        "mobile_overlay_opacity": "Mobile overlay opacity",
         "mobile_button_text": "Mobile button text",
         "mobile_button_url": "Mobile button URL"
       }
