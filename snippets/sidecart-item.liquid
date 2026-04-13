@@ -28,6 +28,9 @@
     assign has_bundle_scents = true
   endif
 
+  assign scent_handles_string = item.properties['_scent_handles'] | default: ''
+  assign bundle_handles = scent_handles_string | split: ','
+
   assign has_compare_price = false
   assign compare_price = 0
   if item.variant.compare_at_price > item.variant.price
@@ -41,7 +44,25 @@
 
 <li class="sidecart-item" data-sidecart-item data-key="{{ item_key }}" data-unit-price="{{ item_unit_price }}" data-compare-unit-price="{{ item.variant.compare_at_price | default: 0 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
-    {%- if item_image -%}
+    {%- if has_bundle_scents and bundle_handles.size > 0 -%}
+      <div class="sidecart-item__bundle-bottles">
+        {%- for handle in bundle_handles -%}
+          {%- assign scent_product = all_products[handle] -%}
+          {%- if scent_product != blank -%}
+            {%- assign bottle_image = scent_product.metafields.custom.card_image | default: scent_product.featured_image -%}
+            {%- if bottle_image -%}
+              {{ bottle_image | image_url: width: 200 | image_tag:
+                loading: 'lazy',
+                class: 'sidecart-item__bundle-bottle',
+                alt: scent_product.title,
+                width: 60,
+                height: 120
+              }}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- elsif item_image -%}
       {{ item_image | image_url: width: 400 | image_tag:
         loading: 'lazy',
         class: 'sidecart-item__image',
