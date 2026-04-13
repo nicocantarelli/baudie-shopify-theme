@@ -46,20 +46,22 @@
             </div>
           </div>
 
-          <form class="main-cart__promocode">
-            <label for="promocode-input" class="main-cart__promocode-label">{{ 'cart.promocode_label' | t }}</label>
-            <div class="main-cart__promocode-input-wrapper">
-              <input
-                type="text"
-                id="promocode-input"
-                name="discount"
-                class="main-cart__promocode-input"
-                placeholder="{{ 'cart.promocode_placeholder' | t }}">
-              <button type="submit" class="main-cart__promocode-btn">{{ 'cart.promocode_apply' | t }}</button>
-            </div>
-          </form>
+          {% if section.settings.show_promocode %}
+            <form class="main-cart__promocode">
+              <label for="promocode-input" class="main-cart__promocode-label">{{ 'cart.promocode_label' | t }}</label>
+              <div class="main-cart__promocode-input-wrapper">
+                <input
+                  type="text"
+                  id="promocode-input"
+                  name="discount"
+                  class="main-cart__promocode-input"
+                  placeholder="{{ 'cart.promocode_placeholder' | t }}">
+                <button type="submit" class="main-cart__promocode-btn">{{ 'cart.promocode_apply' | t }}</button>
+              </div>
+            </form>
+          {% endif %}
 
-          {% if section.settings.shipping_content != blank %}
+          {% if section.settings.show_shipping_info and section.settings.shipping_content != blank %}
             <div class="main-cart__info-block">
               <h2 class="main-cart__info-heading">{{ 'cart.shipping_label' | t }}</h2>
               <div class="main-cart__info-content">
@@ -68,7 +70,7 @@
             </div>
           {% endif %}
 
-          {% if section.settings.returns_content != blank %}
+          {% if section.settings.show_returns_info and section.settings.returns_content != blank %}
             <div class="main-cart__info-block">
               <h2 class="main-cart__info-heading">{{ 'cart.returns_label' | t }}</h2>
               <div class="main-cart__info-content">
@@ -1210,7 +1212,23 @@
     },
     {
       "type": "header",
+      "content": "Promocode"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promocode",
+      "label": "Show promocode field",
+      "default": true
+    },
+    {
+      "type": "header",
       "content": "t:sections.main_cart.shipping_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_info",
+      "label": "Show shipping info",
+      "default": true
     },
     {
       "type": "richtext",
@@ -1221,6 +1239,12 @@
     {
       "type": "header",
       "content": "t:sections.main_cart.returns_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_returns_info",
+      "label": "Show return policy",
+      "default": true
     },
     {
       "type": "richtext",
