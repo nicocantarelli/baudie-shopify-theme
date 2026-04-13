@@ -1,0 +1,97 @@
+{% comment %}
+  Lightweight cart page. The store uses a sidecart only — this template
+  immediately opens the sidecart and sends the visitor back to where they
+  came from (or home), so /cart is effectively transparent for direct
+  navigation, browser back-button, Shop Pay return URLs, etc.
+{% endcomment %}
+
+<section class="cart-redirect" aria-hidden="true">
+  <noscript>
+    <div class="cart-redirect__noscript">
+      <h1>{{ 'sidecart.title' | t }}</h1>
+      {% if cart.item_count > 0 %}
+        <ul>
+          {% for item in cart.items %}
+            <li>{{ item.product.title }} &times; {{ item.quantity }} — {{ item.final_line_price | money }}</li>
+          {% endfor %}
+        </ul>
+        <p><strong>{{ 'sidecart.subtotal' | t }}: {{ cart.total_price | money }}</strong></p>
+        <a href="/checkout" class="cart-redirect__btn">{{ 'sidecart.checkout' | t }}</a>
+      {% else %}
+        <p>{{ 'sidecart.empty_message' | t }}</p>
+        <a href="{{ routes.root_url }}" class="cart-redirect__btn">{{ 'general.continue_shopping' | t }}</a>
+      {% endif %}
+    </div>
+  </noscript>
+</section>
+
+{% stylesheet %}
+  .cart-redirect {
+    min-height: 100vh;
+    background-color: var(--color-background, #fce9ec);
+  }
+  .cart-redirect__noscript {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 160px 20px 80px;
+    font-family: var(--font-jokker, sans-serif);
+    color: #3e2027;
+  }
+  .cart-redirect__noscript h1 {
+    font-family: var(--font-alyona, serif);
+    font-size: 40px;
+    margin: 0 0 24px;
+  }
+  .cart-redirect__noscript ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px;
+  }
+  .cart-redirect__noscript li {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(62, 32, 39, 0.15);
+  }
+  .cart-redirect__btn {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 14px 28px;
+    background-color: #3e2027;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function redirectToSidecart() {
+    function openAndLeave() {
+      try {
+        document.dispatchEvent(new CustomEvent('cart:open'));
+      } catch (e) {}
+      var fallback = '/';
+      var target = fallback;
+      try {
+        var ref = document.referrer;
+        if (ref && ref.indexOf(window.location.origin) === 0 && ref.indexOf('/cart') === -1) {
+          target = ref;
+        }
+      } catch (e) {}
+      if (target === window.location.href) target = fallback;
+      window.location.replace(target);
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', openAndLeave);
+    } else {
+      openAndLeave();
+    }
+  })();
+{% endjavascript %}
+
+{% schema %}
+  {
+    "name": "Cart redirect",
+    "settings": []
+  }
+{% endschema %}

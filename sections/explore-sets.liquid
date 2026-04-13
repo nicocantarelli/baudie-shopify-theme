@@ -170,7 +170,7 @@
                       {%- endform -%}
                       {%- form 'product', bundle_product -%}
                         <input type="hidden" name="id" value="{{ selected_variant.id }}">
-                        <input type="hidden" name="return_to" value="/cart">
+                        <input type="hidden" name="return_to" value="/checkout">
                         <button type="submit" class="bundle-card-mobile__btn bundle-card-mobile__btn--buy" {% unless selected_variant.available %}disabled{% endunless %}>
                           {{ 'products.buy_now' | t }}
                         </button>
