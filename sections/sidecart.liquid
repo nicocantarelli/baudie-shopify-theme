@@ -1368,8 +1368,8 @@ formatMoney(cents) {
     .replace(b + 'amount_no_decimals' + e, amountNoDecimals)
     .replace(b + 'amount' + e, amount);
 }}if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', () => new Sidecart());} else {
-new Sidecart();}(function initAjaxAddToCart () {
+document.addEventListener('DOMContentLoaded', () => { window.__sidecartInstance = new Sidecart(); });} else {
+window.__sidecartInstance = new Sidecart();}(function initAjaxAddToCart () {
 function isProductForm(form) {
   if (! form || form.tagName !== 'FORM') return false;
   
@@ -1501,6 +1501,15 @@ document.addEventListener('submit', async (e) => {
     }
 
     document.dispatchEvent(new CustomEvent('cart:dom-updated'));
+
+    const sidecartInstance = window.__sidecartInstance;
+    if (sidecartInstance) {
+      sidecartInstance.refreshElementRefs();
+      if (sidecartInstance.shippingBar) {
+        sidecartInstance.shippingBar.classList.remove('sidecart__shipping-bar--hidden');
+      }
+      sidecartInstance.updateShippingBar(cart.total_price);
+    }
 
     const countEl = sidecart?.querySelector('[data-sidecart-count]');
     const labelEl = sidecart?.querySelector('[data-sidecart-items-label]');
