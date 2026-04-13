@@ -294,7 +294,7 @@
         "mobile_content_position_top": "Top of screen",
         "mobile_content_position_center": "Center of screen",
         "mobile_content_position_bottom": "Bottom of screen",
-        "mobile_content_position_below_title": "Below title",
+        "mobile_heading_gap": "Spacing between heading and content",
         "mobile_overlay_enable": "Enable mobile image overlay",
         "mobile_overlay_color": "Mobile overlay color",
         "mobile_overlay_opacity": "Mobile overlay opacity",

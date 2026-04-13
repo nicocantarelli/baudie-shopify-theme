@@ -96,35 +96,19 @@
       assign mobile_position = section.settings.mobile_content_position
     -%}
 
-    {% if mobile_position == 'below_title' %}
-      {%- comment -%} Below title mode - heading at top with content stacked directly below {%- endcomment -%}
-      <div class="hero-product__mobile-top-block" style="--heading-color: {{ section.settings.heading_color }}">
-        {% if section.settings.mobile_heading != blank %}
-          <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading }}</h1>
-        {% endif %}
-        <div class="hero-product__mobile-content hero-product__mobile-content--below-title">
-          <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
-          <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
-          <a href="{{ section.settings.mobile_button_url }}" class="hero-product__mobile-button">
-            <span>{{ section.settings.mobile_button_text }}</span>
-          </a>
-        </div>
-      </div>
-    {% else %}
-      {%- comment -%} Top, center or bottom - heading + content move together as one block {%- endcomment -%}
-      <div
-        class="hero-product__mobile-content hero-product__mobile-content--{{ mobile_position }}"
-        style="--heading-color: {{ section.settings.heading_color }}">
-        {% if section.settings.mobile_heading != blank %}
-          <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading }}</h1>
-        {% endif %}
-        <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
-        <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
-        <a href="{{ section.settings.mobile_button_url }}" class="hero-product__mobile-button">
-          <span>{{ section.settings.mobile_button_text }}</span>
-        </a>
-      </div>
-    {% endif %}
+    {%- comment -%} Mobile content - heading + content move together at top, center or bottom {%- endcomment -%}
+    <div
+      class="hero-product__mobile-content hero-product__mobile-content--{{ mobile_position }}"
+      style="--heading-color: {{ section.settings.heading_color }}; --mobile-heading-gap: {{ section.settings.mobile_heading_gap }}px;">
+      {% if section.settings.mobile_heading != blank %}
+        <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading }}</h1>
+      {% endif %}
+      <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
+      <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
+      <a href="{{ section.settings.mobile_button_url }}" class="hero-product__mobile-button">
+        <span>{{ section.settings.mobile_button_text }}</span>
+      </a>
+    </div>
 
     {%- comment -%} Navigation Controls {%- endcomment -%}
     {% if section.settings.hero_products.size > 1 %}
@@ -397,11 +381,6 @@
 
   /* Mobile Overlay - hidden on desktop, shown on mobile */
   .hero-product__mobile-overlay {
-    display: none;
-  }
-
-  /* Mobile Top Block - hidden on desktop */
-  .hero-product__mobile-top-block {
     display: none;
   }
 
@@ -781,19 +760,6 @@
       display: none;
     }
 
-    /* Mobile top block - heading + optional content */
-    .hero-product__mobile-top-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      position: absolute;
-      top: 51px;
-      left: 12px;
-      right: 12px;
-      z-index: 3;
-    }
-
     .hero-product__mobile-heading {
       font-family: var(--font-alyona);
       font-size: 45px;
@@ -813,24 +779,16 @@
       z-index: 2;
     }
 
-    /* Show mobile content */
+    /* Mobile content block - absolute positioned, horizontally centered */
     .hero-product__mobile-content {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      width: 100%;
-    }
-
-    /* Screen-positioned variants share absolute placement and centering */
-    .hero-product__mobile-content--top,
-    .hero-product__mobile-content--center,
-    .hero-product__mobile-content--bottom {
       position: absolute;
       left: 50%;
       width: calc(100% - 24px);
       max-width: 360px;
-      gap: 14px;
       z-index: 3;
     }
 
@@ -849,11 +807,9 @@
       transform: translateX(-50%);
     }
 
-    /* When heading is part of the unified content block, match top-block sizing */
-    .hero-product__mobile-content--top .hero-product__mobile-heading,
-    .hero-product__mobile-content--center .hero-product__mobile-heading,
-    .hero-product__mobile-content--bottom .hero-product__mobile-heading {
-      margin-bottom: 6px;
+    /* Adjustable spacing between heading and content */
+    .hero-product__mobile-heading {
+      margin-bottom: var(--mobile-heading-gap, 6px);
     }
 
     .hero-product__mobile-title {
@@ -1160,13 +1116,19 @@
           {
             "value": "bottom",
             "label": "t:sections.hero_product.settings.mobile_content_position_bottom"
-          },
-          {
-            "value": "below_title",
-            "label": "t:sections.hero_product.settings.mobile_content_position_below_title"
           }
         ],
         "default": "center"
+      },
+      {
+        "type": "range",
+        "id": "mobile_heading_gap",
+        "label": "t:sections.hero_product.settings.mobile_heading_gap",
+        "min": 0,
+        "max": 80,
+        "step": 2,
+        "unit": "px",
+        "default": 6
       },
       {
         "type": "checkbox",
