@@ -60,29 +60,14 @@
         <p class="sidecart-item__variant">{{ item_variant }}</p>
       {%- endif -%}
       {%- if has_bundle_scents -%}
-        <div class="sidecart-item__bundle-scents">
-          <p class="sidecart-item__bundle-label">{{ 'sidecart.includes' | t }}</p>
-          <ul class="sidecart-item__bundle-list">
-            {%- for handle in bundle_scents -%}
-              {%- assign scent_product = all_products[handle] -%}
-              {%- if scent_product != blank -%}
-                {%- assign scent_image = scent_product.metafields.custom.card_image_portrait | default: scent_product.metafields.custom.card_image | default: scent_product.featured_image -%}
-                <li class="sidecart-item__bundle-scent">
-                  {%- if scent_image -%}
-                    {{ scent_image | image_url: width: 80 | image_tag:
-                      loading: 'lazy',
-                      class: 'sidecart-item__bundle-scent-img',
-                      alt: scent_product.title,
-                      width: 40,
-                      height: 50
-                    }}
-                  {%- endif -%}
-                  <span class="sidecart-item__bundle-scent-name">{{ scent_product.title }}</span>
-                </li>
-              {%- endif -%}
-            {%- endfor -%}
-          </ul>
-        </div>
+        <ul class="sidecart-item__bundle-list">
+          {%- for handle in bundle_scents -%}
+            {%- assign scent_product = all_products[handle] -%}
+            {%- if scent_product != blank -%}
+              <li class="sidecart-item__bundle-scent">{{ scent_product.title }}</li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
       {%- elsif item.properties.size > 0 -%}
         <ul class="sidecart-item__properties">
           {%- for property in item.properties -%}
