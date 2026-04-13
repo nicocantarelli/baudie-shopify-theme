@@ -1144,7 +1144,7 @@
       getSelectedProducts() {
         return Object.entries(this.selections).map(([index, handle]) => {
           const product = this.productData[handle];
-          return product ? { index, ...product } : null;
+          return product ? { index, handle, ...product } : null;
         }).filter(Boolean);
       }
 
