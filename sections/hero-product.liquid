@@ -53,6 +53,14 @@
         {% endfor %}
       {% endif %}
 
+      {%- comment -%} Desktop Overlay (adjustable opacity for readability) {%- endcomment -%}
+      {% if section.settings.desktop_overlay_enable %}
+        {%- assign desktop_overlay_alpha = section.settings.desktop_overlay_opacity | divided_by: 100.0 -%}
+        <div
+          class="hero-product__desktop-overlay"
+          style="background-color: {{ section.settings.desktop_overlay_color }}; opacity: {{ desktop_overlay_alpha }};"></div>
+      {% endif %}
+
       {%- comment -%} Mobile Overlay (adjustable opacity for readability) {%- endcomment -%}
       {% if section.settings.mobile_overlay_enable %}
         {%- assign mobile_overlay_alpha = section.settings.mobile_overlay_opacity | divided_by: 100.0 -%}
@@ -385,6 +393,14 @@
   /* Mobile Overlay - hidden on desktop, shown on mobile */
   .hero-product__mobile-overlay {
     display: none;
+  }
+
+  /* Desktop Overlay - sits above hero images, below content */
+  .hero-product__desktop-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
   }
 
   /* Mobile Content - hidden on desktop */
@@ -782,6 +798,11 @@
       z-index: 2;
     }
 
+    /* Hide desktop overlay on mobile */
+    .hero-product__desktop-overlay {
+      display: none;
+    }
+
     /* Mobile content block - absolute positioned, horizontally centered */
     .hero-product__mobile-content {
       display: flex;
@@ -1080,6 +1101,28 @@
         "id": "static_hero_image_alt",
         "label": "t:sections.hero_product.settings.static_hero_image_alt",
         "info": "t:sections.hero_product.settings.static_hero_image_alt_info"
+      },
+      {
+        "type": "checkbox",
+        "id": "desktop_overlay_enable",
+        "label": "Enable desktop image overlay",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "desktop_overlay_color",
+        "label": "Desktop overlay color",
+        "default": "#000000"
+      },
+      {
+        "type": "range",
+        "id": "desktop_overlay_opacity",
+        "label": "Desktop overlay opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "default": 30
       },
       {
         "type": "header",
