@@ -16,8 +16,13 @@
   assign item_key = item.key
   assign short_description = item.product.metafields.custom.short_description | default: ''
 
-  assign scent_handles_string = item.properties._scent_handles | default: ''
-  assign bundle_scents = scent_handles_string | split: ','
+  assign bundle_scents = ''
+  for property in item.properties
+    if property.first contains 'Scent ' and property.last != blank
+      assign bundle_scents = bundle_scents | append: property.last | append: '|'
+    endif
+  endfor
+  assign bundle_scents = bundle_scents | split: '|'
   assign has_bundle_scents = false
   if bundle_scents.size > 0
     assign has_bundle_scents = true
@@ -60,27 +65,24 @@
     {%- endif -%}
     {%- if has_bundle_scents -%}
       <ul class="cart-item__bundle-list">
-        {%- for handle in bundle_scents -%}
-          {%- assign scent_product = all_products[handle] -%}
-          {%- if scent_product != blank -%}
-            <li class="cart-item__bundle-scent">{{ scent_product.title }}</li>
-          {%- endif -%}
+        {%- for scent_title in bundle_scents -%}
+          <li class="cart-item__bundle-scent">{{ scent_title }}</li>
         {%- endfor -%}
       </ul>
-    {%- elsif item.properties.size > 0 -%}
-      <ul class="cart-item__properties">
-        {%- for property in item.properties -%}
-          {%- unless property.last == blank or property.first contains '_' -%}
-            <li class="cart-item__property">{{ property.first }}: {{ property.last }}</li>
-          {%- endunless -%}
-        {%- endfor -%}
-      </ul>
-    {%- endif -%}
-    {%- unless has_bundle_scents -%}
+    {%- else -%}
+      {%- if item.properties.size > 0 -%}
+        <ul class="cart-item__properties">
+          {%- for property in item.properties -%}
+            {%- unless property.last == blank or property.first contains '_' -%}
+              <li class="cart-item__property">{{ property.first }}: {{ property.last }}</li>
+            {%- endunless -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
       {%- if short_description != blank -%}
         <p class="cart-item__description">{{ short_description }}</p>
       {%- endif -%}
-    {%- endunless -%}
+    {%- endif -%}
   </div>
 
   <div class="cart-item__quantity-col">

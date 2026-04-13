@@ -1174,20 +1174,17 @@
         if (buyBtn) buyBtn.disabled = true;
 
         try {
-          const properties = {};
+          const formBody = new URLSearchParams();
+          formBody.append('id', this.bundleVariantId);
+          formBody.append('quantity', '1');
           selected.forEach((p, i) => {
-            properties[`Scent ${i + 1}`] = p.title;
+            formBody.append(`properties[Scent ${i + 1}]`, p.title);
           });
-          properties['_scent_handles'] = selected.map(p => p.handle).join(',');
 
           const response = await fetch('/cart/add.js', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: this.bundleVariantId,
-              quantity: 1,
-              properties: properties
-            })
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formBody
           });
 
           if (!response.ok) {
