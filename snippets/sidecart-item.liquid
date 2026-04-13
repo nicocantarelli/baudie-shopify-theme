@@ -16,20 +16,25 @@
   assign item_key = item.key
   assign short_description = item.product.metafields.custom.short_description | default: ''
 
-  assign bundle_scents = ''
+  assign bundle_titles_str = ''
+  assign bundle_handles_str = ''
   for property in item.properties
     if property.first contains 'Scent ' and property.last != blank
-      assign bundle_scents = bundle_scents | append: property.last | append: '|'
+      assign parts = property.last | split: '::'
+      assign scent_title = parts[0]
+      assign scent_handle = parts[1] | default: ''
+      assign bundle_titles_str = bundle_titles_str | append: scent_title | append: '||'
+      if scent_handle != ''
+        assign bundle_handles_str = bundle_handles_str | append: scent_handle | append: '||'
+      endif
     endif
   endfor
-  assign bundle_scents = bundle_scents | split: '|'
+  assign bundle_scents = bundle_titles_str | split: '||'
+  assign bundle_handles = bundle_handles_str | split: '||'
   assign has_bundle_scents = false
   if bundle_scents.size > 0
     assign has_bundle_scents = true
   endif
-
-  assign scent_handles_string = item.properties['_scent_handles'] | default: ''
-  assign bundle_handles = scent_handles_string | split: ','
 
   assign has_compare_price = false
   assign compare_price = 0

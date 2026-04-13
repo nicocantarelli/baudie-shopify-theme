@@ -1386,6 +1386,13 @@ async refresh(cartData) {
   } else {
     this.hideEmptyState();
     await this.refreshFromServer();
+    this.refreshElementRefs();
+    if (this.shippingBar) {
+      this.shippingBar.classList.remove('sidecart__shipping-bar--hidden');
+    }
+    if (typeof cart.total_price === 'number') {
+      this.updateShippingBar(cart.total_price);
+    }
   }
 }
 
