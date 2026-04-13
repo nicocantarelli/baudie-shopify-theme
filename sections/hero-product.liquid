@@ -19,10 +19,11 @@
 
         {%- comment -%} Secondary Product Images (desktop only) - cycle with product cards {%- endcomment -%}
         {% for product in section.settings.hero_products %}
+          {%- assign hero_secondary = product.metafields.custom.hero_secondary_image | default: product.featured_image -%}
           <div class="hero-product__image-wrapper hero-product__image-wrapper--static {% if forloop.first %}is-active{% endif %}" data-product-index="{{ forloop.index0 }}">
-            {% if product.featured_image %}
+            {% if hero_secondary %}
               <div class="hero-product__secondary-image">
-                {{ product.featured_image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__secondary-img', alt: product.featured_image.alt | default: product.title }}
+                {{ hero_secondary | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__secondary-img', alt: hero_secondary.alt | default: product.title }}
               </div>
             {% endif %}
           </div>
@@ -42,9 +43,10 @@
             {% endif %}
 
             {%- comment -%} Secondary Product Image (top right) {%- endcomment -%}
-            {% if product.featured_image %}
+            {%- assign hero_secondary = product.metafields.custom.hero_secondary_image | default: product.featured_image -%}
+            {% if hero_secondary %}
               <div class="hero-product__secondary-image">
-                {{ product.featured_image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__secondary-img', alt: product.featured_image.alt | default: product.title }}
+                {{ hero_secondary | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__secondary-img', alt: hero_secondary.alt | default: product.title }}
               </div>
             {% endif %}
           </div>
@@ -70,12 +72,13 @@
           </div>
         </div>
       {% else %}
-        {%- comment -%} Default - cycles through product featured images {%- endcomment -%}
+        {%- comment -%} Default - cycles through product hero secondary images {%- endcomment -%}
         {% for product in section.settings.hero_products %}
+          {%- assign hero_secondary = product.metafields.custom.hero_secondary_image | default: product.featured_image -%}
           <div class="hero-product__mobile-wrapper {% if forloop.first %}is-active{% endif %}" data-product-index="{{ forloop.index0 }}">
-            {% if product.featured_image %}
+            {% if hero_secondary %}
               <div class="hero-product__mobile-image">
-                {{ product.featured_image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__mobile-img', alt: product.featured_image.alt | default: product.title }}
+                {{ hero_secondary | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'hero-product__mobile-img', alt: hero_secondary.alt | default: product.title }}
                 <div class="hero-product__mobile-gradient"></div>
               </div>
             {% endif %}
