@@ -19,14 +19,13 @@
   assign bundle_titles_str = ''
   assign bundle_handles_str = ''
   for property in item.properties
-    if property.first contains '_Scent ' and property.last != blank
-      assign parts = property.last | split: '::'
-      assign scent_title = parts[0]
-      assign scent_handle = parts[1] | default: ''
-      assign bundle_titles_str = bundle_titles_str | append: scent_title | append: '||'
-      if scent_handle != ''
-        assign bundle_handles_str = bundle_handles_str | append: scent_handle | append: '||'
-      endif
+    assign key_prefix_scent = property.first | slice: 0, 6
+    assign key_prefix_handle = property.first | slice: 0, 8
+    if key_prefix_scent == 'Scent ' and property.last != blank
+      assign bundle_titles_str = bundle_titles_str | append: property.last | append: '||'
+    endif
+    if key_prefix_handle == '_handle_' and property.last != blank
+      assign bundle_handles_str = bundle_handles_str | append: property.last | append: '||'
     endif
   endfor
   assign bundle_scents = bundle_titles_str | split: '||'
