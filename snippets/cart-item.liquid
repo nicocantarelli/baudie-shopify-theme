@@ -55,13 +55,14 @@
           {%- if scent_product != blank -%}
             {%- assign bottle_image = scent_product.metafields.custom.card_image | default: scent_product.featured_image -%}
             {%- if bottle_image -%}
-              {{ bottle_image | image_url: width: 800 | image_tag:
-                loading: 'lazy',
-                class: 'cart-item__bundle-bottle',
-                alt: scent_product.title,
-                width: 160,
-                height: 320
-              }}
+              <img
+                src="{{ bottle_image | image_url: width: 1500 }}"
+                srcset="{{ bottle_image | image_url: width: 600 }} 600w, {{ bottle_image | image_url: width: 1000 }} 1000w, {{ bottle_image | image_url: width: 1500 }} 1500w, {{ bottle_image | image_url: width: 2000 }} 2000w"
+                sizes="150px"
+                loading="lazy"
+                class="cart-item__bundle-bottle"
+                alt="{{ scent_product.title | escape }}">
+              {%- comment -%} Force browser to pick the highest quality available {%- endcomment -%}
             {%- endif -%}
           {%- endif -%}
         {%- endfor -%}
