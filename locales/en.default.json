@@ -389,7 +389,8 @@
     "increase_quantity": "Increase quantity",
     "remove_item": "Remove",
     "quantity": "Quantity",
-    "stock_warning": "Only COUNT available"
+    "stock_warning": "Only COUNT available",
+    "includes": "Includes"
   },
   "breadcrumbs": {
     "navigation": "Breadcrumb navigation",

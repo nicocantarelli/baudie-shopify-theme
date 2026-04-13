@@ -1174,21 +1174,19 @@
         if (buyBtn) buyBtn.disabled = true;
 
         try {
-          const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
           const properties = {};
           selected.forEach((p, i) => {
-            properties[ordinals[i] + ' Scent'] = p.title;
+            properties[`Scent ${i + 1}`] = p.title;
           });
+          properties['_scent_handles'] = selected.map(p => p.handle).join(',');
 
           const response = await fetch('/cart/add.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              items: [{
-                id: this.bundleVariantId,
-                quantity: 1,
-                properties: properties
-              }]
+              id: this.bundleVariantId,
+              quantity: 1,
+              properties: properties
             })
           });
 
