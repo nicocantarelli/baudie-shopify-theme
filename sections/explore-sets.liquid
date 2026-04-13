@@ -109,7 +109,7 @@
                     {% endif %}
                     {%- if card_image -%}
                       <div class="bundle-card-mobile__images">
-                        {{ card_image | image_url: width: 500 | image_tag: loading: 'lazy', alt: card_image_alt }}
+                        {{ card_image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: card_image_alt, width: 600, height: 600 }}
                       </div>
                     {%- endif -%}
                     {%- if card_hover_image -%}

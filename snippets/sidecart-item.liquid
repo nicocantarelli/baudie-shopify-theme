@@ -55,12 +55,12 @@
           {%- if scent_product != blank -%}
             {%- assign bottle_image = scent_product.metafields.custom.card_image | default: scent_product.featured_image -%}
             {%- if bottle_image -%}
-              {{ bottle_image | image_url: width: 200 | image_tag:
+              {{ bottle_image | image_url: width: 600 | image_tag:
                 loading: 'lazy',
                 class: 'sidecart-item__bundle-bottle',
                 alt: scent_product.title,
-                width: 60,
-                height: 120
+                width: 120,
+                height: 240
               }}
             {%- endif -%}
           {%- endif -%}
