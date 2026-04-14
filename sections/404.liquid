@@ -1,23 +1,224 @@
 {% comment %}
-  This section is used in the 404 template to render page shown when customers
-  enter an invalid store URL.
-
+  404 page — shown when customers enter an invalid store URL.
   https://shopify.dev/docs/storefronts/themes/architecture/templates/404
 {% endcomment %}
 
-<h1>{{ '404.title' | t }}</h1>
+<div
+  class="not-found-section full-width"
+  style="
+    --section-bg: {{ section.settings.background_color }};
+    --text-color: {{ section.settings.text_color }};
+    --button-bg: {{ section.settings.button_background_color }};
+    --button-text: {{ section.settings.button_text_color }};
+  ">
+  <div class="not-found-section__container">
+    <p class="not-found-section__eyebrow">{{ section.settings.eyebrow }}</p>
 
-<p>
-  {{ '404.not_found' | t }}
-</p>
+    <h1 class="not-found-section__heading">
+      {{ section.settings.heading }}
+    </h1>
 
-<a href="{{ routes.all_products_collection_url }}">
-  {{ '404.back_to_shopping' | t }}
-</a>
+    <p class="not-found-section__description">
+      {{ section.settings.description }}
+    </p>
+
+    <div class="not-found-section__actions">
+      <a href="{{ routes.root_url }}" class="not-found-section__button">
+        {{ section.settings.button_text }}
+      </a>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .not-found-section {
+    background-color: var(--section-bg, #FFF7EA);
+    padding: 140px 0 160px;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .not-found-section__container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    text-align: center;
+  }
+
+  .not-found-section__eyebrow {
+    font-family: var(--font-sweet-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-color, #3E2027);
+    margin: 0;
+    opacity: 0.75;
+  }
+
+  .not-found-section__heading {
+    font-family: var(--font-alyona);
+    font-size: 96px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--text-color, #3E2027);
+    margin: 0;
+    width: 100%;
+  }
+
+  .not-found-section__description {
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-color, #3E2027);
+    margin: 0;
+    max-width: 480px;
+  }
+
+  .not-found-section__actions {
+    margin-top: 8px;
+  }
+
+  .not-found-section__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    padding: 10px 32px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: var(--button-text, #FFFAE6);
+    background-color: var(--button-bg, #3E2027);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .not-found-section__button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .not-found-section__button:active {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 1024px) {
+    .not-found-section {
+      padding: 110px 0 130px;
+    }
+
+    .not-found-section__heading {
+      font-size: 80px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .not-found-section {
+      padding: 90px 0 110px;
+      min-height: 60vh;
+    }
+
+    .not-found-section__container {
+      padding: 0 24px;
+      gap: 20px;
+    }
+
+    .not-found-section__eyebrow {
+      font-size: 12px;
+    }
+
+    .not-found-section__heading {
+      font-size: 64px;
+      line-height: 1.05;
+    }
+
+    .not-found-section__description {
+      font-size: 14px;
+    }
+
+    .not-found-section__button {
+      height: 48px;
+      padding: 10px 28px;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.404",
-  "settings": []
+  "name": "404",
+  "class": "not-found-section-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Error 404"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Lost in the aisles"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "The page you're looking for took a little detour. Let's get you back to fresh."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "BACK TO HOME"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#FFF7EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background color",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#FFFAE6"
+    }
+  ]
 }
 {% endschema %}
