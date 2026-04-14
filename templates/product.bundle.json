@@ -106,24 +106,28 @@
         "step_JwEGnG": {
           "type": "step",
           "settings": {
+            "icon": "shopify://shop_images/spray-icon.svg",
             "label": "Spray"
           }
         },
         "step_rF3Rmp": {
           "type": "step",
           "settings": {
+            "icon": "shopify://shop_images/wipe-icon_4729b54e-d58f-41ed-8430-ede67b448e49.svg",
             "label": "Wipe"
           }
         },
         "step_dhLY9E": {
           "type": "step",
           "settings": {
+            "icon": "shopify://shop_images/apply-icon.svg",
             "label": "Apply Deo"
           }
         },
         "step_3PFwcw": {
           "type": "step",
           "settings": {
+            "icon": "shopify://shop_images/fresh-icon.svg",
             "label": "Stay fresh"
           }
         },
