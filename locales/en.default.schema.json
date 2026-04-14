@@ -50,28 +50,7 @@
     "explore_sets": "Explore Our Sets",
     "newsletter": "Newsletter",
     "reviews": "Reviews",
-    "what_makes_different": "What Makes Different",
-    "promo_banner": "Promo banner"
-  },
-  "promo_banner": {
-    "settings": {
-      "enabled": "Enable promo banner",
-      "enabled_info": "Show the promo banner below the header and inside the sidecart.",
-      "text": "Text",
-      "url": "Link",
-      "url_info": "Optional. When set, the banner becomes a clickable link.",
-      "bg": "Background color",
-      "text_color": "Text color",
-      "visibility_header": "Visibility",
-      "show_index": "Show on homepage",
-      "show_product": "Show on product pages",
-      "show_collection": "Show on collection pages",
-      "show_page": "Show on regular pages",
-      "show_blog": "Show on blog and article pages",
-      "show_cart": "Show on cart page",
-      "show_search": "Show on search page",
-      "show_404": "Show on 404 page"
-    }
+    "what_makes_different": "What Makes Different"
   },
   "header": {
     "settings": {

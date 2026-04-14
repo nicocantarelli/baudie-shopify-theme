@@ -81,89 +81,89 @@
     ]
   },
   {
-    "name": "t:general.promo_banner",
+    "name": "Promo banner",
     "settings": [
       {
         "type": "checkbox",
         "id": "promo_banner_enabled",
-        "label": "t:promo_banner.settings.enabled",
+        "label": "Enable promo banner",
         "default": false,
-        "info": "t:promo_banner.settings.enabled_info"
+        "info": "Show the promo banner below the header and inside the sidecart."
       },
       {
         "type": "text",
         "id": "promo_banner_text",
-        "label": "t:promo_banner.settings.text",
+        "label": "Text",
         "default": "Free shipping on orders over $50"
       },
       {
         "type": "url",
         "id": "promo_banner_url",
-        "label": "t:promo_banner.settings.url",
-        "info": "t:promo_banner.settings.url_info"
+        "label": "Link",
+        "info": "Optional. When set, the banner becomes a clickable link."
       },
       {
         "type": "color",
         "id": "promo_banner_bg",
-        "label": "t:promo_banner.settings.bg",
+        "label": "Background color",
         "default": "#E53935"
       },
       {
         "type": "color",
         "id": "promo_banner_text_color",
-        "label": "t:promo_banner.settings.text_color",
+        "label": "Text color",
         "default": "#FFFFFF"
       },
       {
         "type": "header",
-        "content": "t:promo_banner.settings.visibility_header"
+        "content": "Visibility"
       },
       {
         "type": "checkbox",
         "id": "promo_banner_show_index",
-        "label": "t:promo_banner.settings.show_index",
+        "label": "Show on homepage",
         "default": false
       },
       {
         "type": "checkbox",
         "id": "promo_banner_show_product",
-        "label": "t:promo_banner.settings.show_product",
+        "label": "Show on product pages",
         "default": true
       },
       {
         "type": "checkbox",
         "id": "promo_banner_show_collection",
-        "label": "t:promo_banner.settings.show_collection",
+        "label": "Show on collection pages",
         "default": true
       },
       {
         "type": "checkbox",
         "id": "promo_banner_show_page",
-        "label": "t:promo_banner.settings.show_page",
+        "label": "Show on regular pages",
         "default": true
       },
       {
         "type": "checkbox",
         "id": "promo_banner_show_blog",
-        "label": "t:promo_banner.settings.show_blog",
+        "label": "Show on blog and article pages",
         "default": true
       },
       {
         "type": "checkbox",
         "id": "promo_banner_show_cart",
-        "label": "t:promo_banner.settings.show_cart",
+        "label": "Show on cart page",
         "default": true
       },
       {
         "type": "checkbox",
         "id": "promo_banner_show_search",
-        "label": "t:promo_banner.settings.show_search",
+        "label": "Show on search page",
         "default": true
       },
       {
         "type": "checkbox",
         "id": "promo_banner_show_404",
-        "label": "t:promo_banner.settings.show_404",
+        "label": "Show on 404 page",
         "default": false
       }
     ]
