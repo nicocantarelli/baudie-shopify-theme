@@ -9,6 +9,7 @@
  */
 {
   "current": {
+    "promo_banner_enabled": true,
     "content_for_index": [],
     "blocks": {
       "124348908681409149": {
