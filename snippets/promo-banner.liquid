@@ -72,7 +72,9 @@
 
 {%- if render_banner -%}
   {%- assign promo_url = settings.promo_banner_url -%}
-  {%- capture promo_style -%}--promo-bg: {{ settings.promo_banner_bg }}; --promo-text: {{ settings.promo_banner_text_color }};{%- endcapture -%}
+  {%- assign promo_font_size = settings.promo_banner_font_size | default: 16 -%}
+  {%- assign promo_font_size_mobile = settings.promo_banner_font_size_mobile | default: 14 -%}
+  {%- capture promo_style -%}--promo-bg: {{ settings.promo_banner_bg }}; --promo-text: {{ settings.promo_banner_text_color }}; --promo-font-size: {{ promo_font_size }}px; --promo-font-size-mobile: {{ promo_font_size_mobile }}px;{%- endcapture -%}
 
   {%- if promo_url != blank -%}
     <a href="{{ promo_url }}" class="promo-banner promo-banner--{{ location }}" style="{{ promo_style }}"><div class="promo-banner__text">{{ settings.promo_banner_text }}</div></a>
@@ -86,13 +88,13 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      padding: 10px 20px;
+      padding: 12px 20px;
       background-color: var(--promo-bg, #E53935);
       color: var(--promo-text, #FFFFFF);
       text-align: center;
       text-decoration: none;
       font-family: var(--font-sweet-sans, inherit);
-      font-size: 13px;
+      font-size: var(--promo-font-size, 16px);
       font-weight: 500;
       line-height: 1.35;
       letter-spacing: -0.13px;
@@ -107,7 +109,7 @@
     .promo-banner--sidecart-top { margin: 14px 0 18px; }
     .promo-banner--sidecart-bottom { margin: 14px -20px 14px; width: auto; }
     @media (max-width: 640px) {
-      .promo-banner { font-size: 12px; padding: 9px 16px; }
+      .promo-banner { font-size: var(--promo-font-size-mobile, 14px); padding: 10px 16px; }
     }
   </style>
 {%- endif -%}
