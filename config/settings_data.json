@@ -12,6 +12,7 @@
     "promo_banner_enabled": true,
     "promo_banner_text": "<p>Packaging Re-brand Sale<br/>35% OFF SITE WIDE<br/>Code: REFRESH35</p>",
     "promo_banner_bg": "#e15374",
+    "promo_banner_show_search": false,
     "content_for_index": [],
     "blocks": {
       "124348908681409149": {
