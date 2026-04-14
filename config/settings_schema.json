@@ -91,10 +91,11 @@
         "info": "Show the promo banner below the header and inside the sidecart."
       },
       {
-        "type": "text",
+        "type": "richtext",
         "id": "promo_banner_text",
         "label": "Text",
-        "default": "Free shipping on orders over $50"
+        "default": "<p>Free shipping on orders over $50</p>",
+        "info": "Supports bold, italic, links, and line breaks."
       },
       {
         "type": "url",

@@ -75,9 +75,9 @@
   {%- capture promo_style -%}--promo-bg: {{ settings.promo_banner_bg }}; --promo-text: {{ settings.promo_banner_text_color }};{%- endcapture -%}
 
   {%- if promo_url != blank -%}
-    <a href="{{ promo_url }}" class="promo-banner promo-banner--{{ location }}" style="{{ promo_style }}"><span class="promo-banner__text">{{ settings.promo_banner_text }}</span></a>
+    <a href="{{ promo_url }}" class="promo-banner promo-banner--{{ location }}" style="{{ promo_style }}"><div class="promo-banner__text">{{ settings.promo_banner_text }}</div></a>
   {%- else -%}
-    <div class="promo-banner promo-banner--{{ location }}" style="{{ promo_style }}"><span class="promo-banner__text">{{ settings.promo_banner_text }}</span></div>
+    <div class="promo-banner promo-banner--{{ location }}" style="{{ promo_style }}"><div class="promo-banner__text">{{ settings.promo_banner_text }}</div></div>
   {%- endif -%}
 
   <style>
@@ -94,10 +94,14 @@
       font-family: var(--font-sweet-sans, inherit);
       font-size: 13px;
       font-weight: 500;
-      line-height: 1.3;
+      line-height: 1.35;
       letter-spacing: -0.13px;
       box-sizing: border-box;
     }
+    .promo-banner__text { max-width: 100%; }
+    .promo-banner__text > * { margin: 0; }
+    .promo-banner__text > * + * { margin-top: 4px; }
+    .promo-banner__text a { color: inherit; text-decoration: underline; }
     a.promo-banner:hover { opacity: 0.92; }
     .promo-banner--site { border-top: 1px solid rgba(0, 0, 0, 0.06); }
     .promo-banner--sidecart-top { margin-top: -1px; }
