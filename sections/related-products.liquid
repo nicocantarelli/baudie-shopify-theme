@@ -13,6 +13,12 @@
         break
       endif
     endfor
+  elsif template.name == '404'
+    if collections['frontpage'].products.size > 0
+      assign collection_products = collections['frontpage'].products
+    else
+      assign collection_products = collections.all.products
+    endif
   elsif product.collections.first != blank
     assign collection_products = product.collections.first.products
   endif
@@ -613,7 +619,7 @@
       "default": "#3E2027"
     }
   ],
-  "templates": ["product", "cart"],
+  "templates": ["product", "cart", "404"],
   "presets": [
     {
       "name": "t:sections.related_products.name"
