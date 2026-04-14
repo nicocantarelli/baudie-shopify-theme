@@ -14,7 +14,7 @@
       "settings": {
         "eyebrow": "Error 404",
         "heading": "Lost in the aisles",
-        "description": "The page you're looking for took a little detour. \nLet's get you back to fresh.",
+        "description": "<p>The page you're looking for took a little detour.<br/>Let's get you back to fresh.</p>",
         "button_text": "BACK TO HOME",
         "background_color": "#fce9ec",
         "text_color": "#3e2027",
@@ -22,16 +22,20 @@
         "button_text_color": "#fffae6"
       }
     },
-    "related_products": {
+    "related_products_EdQH84": {
       "type": "related-products",
+      "name": "t:sections.related_products.name",
       "settings": {
         "heading": "You may also like",
-        "max_products": 4
+        "collection": "shop",
+        "max_products": 8,
+        "background_color": "#fce9ec",
+        "text_color": "#3E2027"
       }
     }
   },
   "order": [
     "main",
-    "related_products"
+    "related_products_EdQH84"
   ]
 }
