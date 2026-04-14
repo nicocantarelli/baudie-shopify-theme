@@ -106,34 +106,30 @@
       {% endif %}
     </div>
 
-    {%- comment -%} Purchase group: row + bundle upsell / scent dropdown share the same width {%- endcomment -%}
+    {%- comment -%} Purchase group: price, button, and upsell share the same width {%- endcomment -%}
     <div class="product-main__purchase-group">
-      <div class="product-main__purchase-row">
-        <p class="product-main__price">{{ current_variant.price | money }}</p>
-        <div class="product-main__actions">
-          {% form 'product', product, class: 'product-main__form' %}
-            <input type="hidden" name="id" value="{{ current_variant.id }}">
-            <button
-              type="submit"
-              name="add"
-              class="product-main__button product-main__button--add"
-              {% unless current_variant.available %}
-                disabled
-              {% endunless %}>
-              <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span>
-                {% if current_variant.available %}
-                  {{ 'sections.product.add_to_cart' | t }}
-                {% else %}
-                  {{ 'products.sold_out' | t }}
-                {% endif %}
-              </span>
-            </button>
-          {% endform %}
-        </div>
-      </div>
+      <p class="product-main__price">{{ current_variant.price | money }}</p>
+      {% form 'product', product, class: 'product-main__form' %}
+        <input type="hidden" name="id" value="{{ current_variant.id }}">
+        <button
+          type="submit"
+          name="add"
+          class="product-main__button product-main__button--add"
+          {% unless current_variant.available %}
+            disabled
+          {% endunless %}>
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>
+            {% if current_variant.available %}
+              {{ 'sections.product.add_to_cart' | t }}
+            {% else %}
+              {{ 'products.sold_out' | t }}
+            {% endif %}
+          </span>
+        </button>
+      {% endform %}
 
       {%- comment -%} Bundle Upsell Button (replaces scent dropdown when configured) {%- endcomment -%}
       {% if bundle_upsell_text != blank and bundle_upsell_product != blank %}
@@ -628,11 +624,13 @@
     gap: 12px;
   }
 
-  .product-main__purchase-row {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
+  .product-main__purchase-group .product-main__form {
+    margin: 0;
+    width: 100%;
+  }
+
+  .product-main__purchase-group .product-main__button {
+    width: 100%;
   }
 
   .product-main__price {
@@ -1098,22 +1096,29 @@
 
     .product-main__purchase-group {
       display: grid;
-      grid-template-columns: auto auto;
+      grid-template-columns: max-content max-content;
       column-gap: 20px;
       row-gap: 12px;
       align-self: flex-start;
       align-items: center;
+      justify-items: stretch;
     }
 
-    .product-main__purchase-row {
-      display: contents;
+    .product-main__purchase-group > .product-main__form {
+      width: auto;
+    }
+
+    .product-main__purchase-group > .product-main__button {
+      width: auto;
+      min-width: 200px;
     }
 
     .product-main__bundle-upsell,
     .product-main__scent-dropdown {
       grid-column: 1 / -1;
-      width: 100%;
+      width: auto;
       min-width: 0;
+      box-sizing: border-box;
     }
 
     .product-main__bundle-upsell {
