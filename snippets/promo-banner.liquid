@@ -1,0 +1,129 @@
+{% doc %}
+  Renders the global promo banner.
+  Reads from theme settings (config/settings_schema.json) so the same content
+  can appear below the site header and inside the sidecart.
+
+  @param {string} [location] - 'site' (default) or 'sidecart'. 'site' respects
+    per-template visibility toggles; 'sidecart' always renders when enabled.
+{% enddoc %}
+
+{%- liquid
+  assign location = location | default: 'site'
+
+  if settings.promo_banner_enabled == false
+    assign render_banner = false
+  elsif settings.promo_banner_text == blank
+    assign render_banner = false
+  else
+    assign render_banner = true
+  endif
+
+  if render_banner and location == 'site'
+    assign template_allowed = false
+    case request.page_type
+      when 'index'
+        if settings.promo_banner_show_index
+          assign template_allowed = true
+        endif
+      when 'product'
+        if settings.promo_banner_show_product
+          assign template_allowed = true
+        endif
+      when 'collection'
+        if settings.promo_banner_show_collection
+          assign template_allowed = true
+        endif
+      when 'list-collections'
+        if settings.promo_banner_show_collection
+          assign template_allowed = true
+        endif
+      when 'page'
+        if settings.promo_banner_show_page
+          assign template_allowed = true
+        endif
+      when 'blog'
+        if settings.promo_banner_show_blog
+          assign template_allowed = true
+        endif
+      when 'article'
+        if settings.promo_banner_show_blog
+          assign template_allowed = true
+        endif
+      when 'cart'
+        if settings.promo_banner_show_cart
+          assign template_allowed = true
+        endif
+      when 'search'
+        if settings.promo_banner_show_search
+          assign template_allowed = true
+        endif
+      when '404'
+        if settings.promo_banner_show_404
+          assign template_allowed = true
+        endif
+    endcase
+
+    if template_allowed == false
+      assign render_banner = false
+    endif
+  endif
+-%}
+
+{%- if render_banner -%}
+  {%- assign promo_url = settings.promo_banner_url -%}
+  {%- capture promo_style -%}
+    --promo-bg: {{ settings.promo_banner_bg }}; --promo-text: {{ settings.promo_banner_text_color }};
+  {%- endcapture -%}
+
+  {%- if promo_url != blank -%}
+    <a
+      href="{{ promo_url }}"
+      class="promo-banner promo-banner--{{ location }}"
+      style="{{ promo_style }}">
+      <span class="promo-banner__text">{{ settings.promo_banner_text }}</span>
+    </a>
+  {%- else -%}
+    <div
+      class="promo-banner promo-banner--{{ location }}"
+      style="{{ promo_style }}">
+      <span class="promo-banner__text">{{ settings.promo_banner_text }}</span>
+    </div>
+  {%- endif -%}
+
+  <style>
+    .promo-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 10px 16px;
+      background-color: var(--promo-bg);
+      color: var(--promo-text);
+      text-align: center;
+      text-decoration: none;
+      font-size: 14px;
+      line-height: 1.3;
+      box-sizing: border-box;
+    }
+
+    .promo-banner__text {
+      display: inline-block;
+    }
+
+    a.promo-banner:hover {
+      opacity: 0.92;
+    }
+
+    .promo-banner--sidecart {
+      padding: 10px 20px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 640px) {
+      .promo-banner {
+        font-size: 13px;
+        padding: 8px 14px;
+      }
+    }
+  </style>
+{%- endif -%}

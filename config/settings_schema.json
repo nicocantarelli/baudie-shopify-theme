@@ -81,6 +81,94 @@
     ]
   },
   {
+    "name": "t:general.promo_banner",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "promo_banner_enabled",
+        "label": "t:promo_banner.settings.enabled",
+        "default": false,
+        "info": "t:promo_banner.settings.enabled_info"
+      },
+      {
+        "type": "text",
+        "id": "promo_banner_text",
+        "label": "t:promo_banner.settings.text",
+        "default": "Free shipping on orders over $50"
+      },
+      {
+        "type": "url",
+        "id": "promo_banner_url",
+        "label": "t:promo_banner.settings.url",
+        "info": "t:promo_banner.settings.url_info"
+      },
+      {
+        "type": "color",
+        "id": "promo_banner_bg",
+        "label": "t:promo_banner.settings.bg",
+        "default": "#E53935"
+      },
+      {
+        "type": "color",
+        "id": "promo_banner_text_color",
+        "label": "t:promo_banner.settings.text_color",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "header",
+        "content": "t:promo_banner.settings.visibility_header"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_banner_show_index",
+        "label": "t:promo_banner.settings.show_index",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_banner_show_product",
+        "label": "t:promo_banner.settings.show_product",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_banner_show_collection",
+        "label": "t:promo_banner.settings.show_collection",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_banner_show_page",
+        "label": "t:promo_banner.settings.show_page",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_banner_show_blog",
+        "label": "t:promo_banner.settings.show_blog",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_banner_show_cart",
+        "label": "t:promo_banner.settings.show_cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_banner_show_search",
+        "label": "t:promo_banner.settings.show_search",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_banner_show_404",
+        "label": "t:promo_banner.settings.show_404",
+        "default": false
+      }
+    ]
+  },
+  {
     "name": "t:general.cart",
     "settings": [
       {
