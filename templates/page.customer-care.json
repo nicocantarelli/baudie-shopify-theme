@@ -94,6 +94,7 @@
         },
         "payment": {
           "type": "category",
+          "disabled": true,
           "settings": {
             "tab_label": "Payment",
             "url_slug": "payment",
@@ -135,13 +136,13 @@
         "faq": {
           "type": "category",
           "settings": {
-            "tab_label": "FAQ",
-            "url_slug": "faq",
+            "tab_label": "General FAQ",
+            "url_slug": "General FAQ",
             "icon": "faq",
-            "section_heading": "Frequently Asked Questions",
+            "section_heading": "General FAQ",
             "section_description": "",
-            "question_1": "",
-            "answer_1": "",
+            "question_1": "Do you offer a Military Discount?",
+            "answer_1": "<p>Yes we do! We are so happy to be able to offer a 10% OFF Military Discount. Please send an email to help@baudie.com for further instructions.</p>",
             "question_2": "",
             "answer_2": "",
             "question_3": "",
