@@ -116,7 +116,7 @@
               {% endif %}
     </div>
   </div>
-</div>{% endif %}<div class="sidecart__content" data-sidecart-content>
+</div>{% render 'promo-banner', location: 'sidecart-top' %}{% endif %}<div class="sidecart__content" data-sidecart-content>
 <ul
   class="sidecart__items{% unless has_items %} sidecart__items--hidden{% endunless %}"
   role="list"
@@ -159,9 +159,8 @@
       </div>
     </div>
   </div>
+  {% render 'promo-banner', location: 'sidecart-bottom' %}
 {% endif %}
-
-{% render 'promo-banner', location: 'sidecart' %}
 
 <div class="sidecart__subtotal-row">
   <span class="sidecart__subtotal-label">{{ 'sidecart.subtotal' | t }}</span>

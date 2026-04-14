@@ -3,8 +3,9 @@
   Reads from theme settings (config/settings_schema.json) so the same content
   can appear below the site header and inside the sidecart.
 
-  @param {string} [location] - 'site' (default) or 'sidecart'. 'site' respects
-    per-template visibility toggles; 'sidecart' always renders when enabled.
+  @param {string} [location] - 'site' (default), 'sidecart-top' or 'sidecart-bottom'.
+    'site' respects per-template visibility toggles; sidecart variants always render
+    when enabled.
 {% enddoc %}
 
 {%- liquid
@@ -71,23 +72,12 @@
 
 {%- if render_banner -%}
   {%- assign promo_url = settings.promo_banner_url -%}
-  {%- capture promo_style -%}
-    --promo-bg: {{ settings.promo_banner_bg }}; --promo-text: {{ settings.promo_banner_text_color }};
-  {%- endcapture -%}
+  {%- capture promo_style -%}--promo-bg: {{ settings.promo_banner_bg }}; --promo-text: {{ settings.promo_banner_text_color }};{%- endcapture -%}
 
   {%- if promo_url != blank -%}
-    <a
-      href="{{ promo_url }}"
-      class="promo-banner promo-banner--{{ location }}"
-      style="{{ promo_style }}">
-      <span class="promo-banner__text">{{ settings.promo_banner_text }}</span>
-    </a>
+    <a href="{{ promo_url }}" class="promo-banner promo-banner--{{ location }}" style="{{ promo_style }}"><span class="promo-banner__text">{{ settings.promo_banner_text }}</span></a>
   {%- else -%}
-    <div
-      class="promo-banner promo-banner--{{ location }}"
-      style="{{ promo_style }}">
-      <span class="promo-banner__text">{{ settings.promo_banner_text }}</span>
-    </div>
+    <div class="promo-banner promo-banner--{{ location }}" style="{{ promo_style }}"><span class="promo-banner__text">{{ settings.promo_banner_text }}</span></div>
   {%- endif -%}
 
   <style>
@@ -96,34 +86,24 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      padding: 10px 16px;
-      background-color: var(--promo-bg);
-      color: var(--promo-text);
+      padding: 10px 20px;
+      background-color: var(--promo-bg, #E53935);
+      color: var(--promo-text, #FFFFFF);
       text-align: center;
       text-decoration: none;
-      font-size: 14px;
+      font-family: var(--font-sweet-sans, inherit);
+      font-size: 13px;
+      font-weight: 500;
       line-height: 1.3;
+      letter-spacing: -0.13px;
       box-sizing: border-box;
     }
-
-    .promo-banner__text {
-      display: inline-block;
-    }
-
-    a.promo-banner:hover {
-      opacity: 0.92;
-    }
-
-    .promo-banner--sidecart {
-      padding: 10px 20px;
-      font-size: 13px;
-    }
-
+    a.promo-banner:hover { opacity: 0.92; }
+    .promo-banner--site { border-top: 1px solid rgba(0, 0, 0, 0.06); }
+    .promo-banner--sidecart-top { margin-top: -1px; }
+    .promo-banner--sidecart-bottom { margin: 14px -20px 14px; width: auto; }
     @media (max-width: 640px) {
-      .promo-banner {
-        font-size: 13px;
-        padding: 8px 14px;
-      }
+      .promo-banner { font-size: 12px; padding: 9px 16px; }
     }
   </style>
 {%- endif -%}
