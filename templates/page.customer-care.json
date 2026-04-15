@@ -133,6 +133,46 @@
             "answer_15": ""
           }
         },
+        "category_nGQzhn": {
+          "type": "category",
+          "settings": {
+            "tab_label": "Order Information",
+            "url_slug": "Order Information",
+            "icon": "faq",
+            "section_heading": "Frequently Asked Questions",
+            "section_description": "",
+            "question_1": "Can I edit my order after it has already been placed?",
+            "answer_1": "<p>We want to be sure you receive your order as soon as possible. Since we're committed to speed, we start processing your order right away, which means we can't always make changes like address updates, item changes, or cancellations. Please send us an email to help@baudie.com and we will do our best to assist you.</p>",
+            "question_2": "I am missing an item from my order.",
+            "answer_2": "<p>We're so sorry to hear that an item is missing from your order—please email help@baudie.com within 48 hours of order receipt with a photo of everything you received and the packaging it came in. Don't worry, we'll make sure you receive everything that you ordered.</p>",
+            "question_3": "",
+            "answer_3": "",
+            "question_4": "",
+            "answer_4": "",
+            "question_5": "",
+            "answer_5": "",
+            "question_6": "",
+            "answer_6": "",
+            "question_7": "",
+            "answer_7": "",
+            "question_8": "",
+            "answer_8": "",
+            "question_9": "",
+            "answer_9": "",
+            "question_10": "",
+            "answer_10": "",
+            "question_11": "",
+            "answer_11": "",
+            "question_12": "",
+            "answer_12": "",
+            "question_13": "",
+            "answer_13": "",
+            "question_14": "",
+            "answer_14": "",
+            "question_15": "",
+            "answer_15": ""
+          }
+        },
         "faq": {
           "type": "category",
           "settings": {
@@ -258,6 +298,7 @@
         "delivery",
         "returns",
         "payment",
+        "category_nGQzhn",
         "faq",
         "terms",
         "privacy"
