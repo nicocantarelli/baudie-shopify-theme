@@ -1,0 +1,159 @@
+{%- liquid
+  assign bg_color = section.settings.background_color | default: '#FFF7EA'
+  assign text_color = section.settings.text_color | default: '#3E2027'
+-%}
+
+<section
+  class="legal-page full-width"
+  style="--lp-bg: {{ bg_color }}; --lp-text: {{ text_color }};">
+  <div class="legal-page__container">
+    {%- if section.settings.heading != blank -%}
+      <h1 class="legal-page__title">{{ section.settings.heading }}</h1>
+    {%- endif -%}
+
+    {%- if section.settings.body != blank -%}
+      <div class="legal-page__body rte">
+        {{ section.settings.body }}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+.legal-page {
+  background-color: var(--lp-bg);
+  padding: calc(var(--total-header-height, 110px) + 60px) 0 120px;
+}
+
+.legal-page__container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.legal-page__title {
+  font-family: var(--font-alyona);
+  font-size: 70px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--lp-text);
+  margin: 0 0 60px;
+}
+
+.legal-page__body {
+  font-family: var(--font-jokker);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--lp-text);
+}
+
+.legal-page__body p {
+  margin: 0 0 16px;
+}
+
+.legal-page__body p:last-child {
+  margin-bottom: 0;
+}
+
+.legal-page__body strong {
+  font-weight: 600;
+}
+
+.legal-page__body a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: opacity 0.2s ease;
+}
+
+.legal-page__body a:hover {
+  opacity: 0.7;
+}
+
+.legal-page__body ul,
+.legal-page__body ol {
+  margin: 0 0 16px;
+  padding-left: 24px;
+}
+
+.legal-page__body li {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1024px) {
+  .legal-page__container {
+    padding: 0 24px;
+  }
+
+  .legal-page__title {
+    font-size: 50px;
+    margin-bottom: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .legal-page {
+    padding: calc(var(--total-header-height, 100px) + 40px) 0 80px;
+  }
+
+  .legal-page__container {
+    padding: 0 16px;
+  }
+
+  .legal-page__title {
+    font-size: 40px;
+    margin-bottom: 30px;
+  }
+
+  .legal-page__body {
+    font-size: 14px;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.legal_page.name",
+  "tag": "section",
+  "class": "legal-page-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.legal_page.settings.content_header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Page title"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "t:sections.legal_page.settings.body"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.legal_page.settings.colors_header"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFF7EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.legal_page.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": {
+      "type": "legal-page",
+      "settings": {
+        "heading": "Terms and Conditions",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

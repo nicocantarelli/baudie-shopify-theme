@@ -424,6 +424,14 @@
         "colors_header": "Colors"
       }
     },
+    "legal_page": {
+      "name": "Legal page",
+      "settings": {
+        "content_header": "Content",
+        "colors_header": "Colors",
+        "body": "Body"
+      }
+    },
     "customer_care": {
       "name": "Customer Care",
       "navigation_label": "Customer care categories",
