@@ -45,11 +45,12 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: calc(var(--ah-min-mobile) + var(--total-header-height, 100px));
+  min-height: var(--ah-min-mobile);
+  margin-top: var(--total-header-height, 100px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--total-header-height, 100px) + 40px) 24px 60px;
+  padding: 40px 24px 60px;
   color: var(--ah-text);
   overflow: hidden;
 }
@@ -112,8 +113,9 @@
 @media (min-width: 769px) {
   .about-hero {
     background-image: var(--ah-image, var(--ah-image-mobile, none));
-    min-height: calc(var(--ah-min-desktop) + var(--total-header-height, 110px));
-    padding: calc(var(--total-header-height, 110px) + 60px) 40px 80px;
+    min-height: var(--ah-min-desktop);
+    margin-top: var(--total-header-height, 110px);
+    padding: 60px 40px 80px;
   }
 
   .about-hero__eyebrow {
