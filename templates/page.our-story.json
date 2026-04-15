@@ -72,6 +72,7 @@
     "mission": {
       "type": "about-mission",
       "settings": {
+        "eyebrow": "",
         "statement": "We believe bodycare is skincare.",
         "image": "shopify://shop_images/explore-our-sets-background.png",
         "layout": "background",
@@ -119,8 +120,8 @@
         "image_position": "left",
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
-        "background_color": "#FFF7EA",
-        "text_color": "#3E2027"
+        "background_color": "#e8ddd0",
+        "text_color": "#3e2027"
       }
     }
   },
