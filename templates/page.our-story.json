@@ -16,6 +16,7 @@
         "heading": "Welcome to Baudie",
         "subheading": "",
         "image": "shopify://shop_images/explore-our-sets-background_3a24be6f-5c93-4c77-b6ee-9d5633ec779a.png",
+        "image_mobile": "shopify://shop_images/freepik_keep-all-the-details-of-t_2737937364.png",
         "overlay_opacity": 30,
         "min_height_desktop": 80,
         "min_height_mobile": 70,
@@ -26,44 +27,44 @@
     "philosophy": {
       "type": "about-philosophy",
       "blocks": {
-        "pillar_1": {
-          "type": "pillar",
-          "settings": {
-            "heading": "",
-            "text": ""
-          }
-        },
         "pillar_2": {
           "type": "pillar",
           "settings": {
-            "heading": "",
-            "text": ""
+            "heading": "Another test",
+            "text": "<p>We believe in crafting products that stand the test of time. Quality isn't just a promise—it's woven into every detail, from the materials we source to the care we take in every step of creation. Our mission is to build things that matter, that last, and that bring genuine value to your life.</p>"
           }
         },
         "pillar_3": {
           "type": "pillar",
           "settings": {
-            "heading": "",
-            "text": ""
+            "heading": "Another test",
+            "text": "<p>We believe in crafting products that stand the test of time. Quality isn't just a promise—it's woven into every detail, from the materials we source to the care we take in every step of creation. Our mission is to build things that matter, that last, and that bring genuine value to your life.</p>"
           }
         },
         "pillar_4": {
           "type": "pillar",
           "settings": {
-            "heading": "",
-            "text": ""
+            "heading": "Another Test",
+            "text": "<p>We believe in crafting products that stand the test of time. Quality isn't just a promise—it's woven into every detail, from the materials we source to the care we take in every step of creation. Our mission is to build things that matter, that last, and that bring genuine value to your life.</p>"
+          }
+        },
+        "pillar_zxmxrJ": {
+          "type": "pillar",
+          "settings": {
+            "heading": "Another Test",
+            "text": "<p>We believe in crafting products that stand the test of time. Quality isn't just a promise—it's woven into every detail, from the materials we source to the care we take in every step of creation. Our mission is to build things that matter, that last, and that bring genuine value to your life.</p>"
           }
         }
       },
       "block_order": [
-        "pillar_1",
         "pillar_2",
         "pillar_3",
-        "pillar_4"
+        "pillar_4",
+        "pillar_zxmxrJ"
       ],
       "settings": {
         "heading": "Our Philosophy",
-        "intro": "",
+        "intro": "<p>We believe in crafting products that stand the test of time. Quality isn't just a promise—it's woven into every detail, from the materials we source to the care we take in every step of creation. Our mission is to build things that matter, that last, and that bring genuine value to your life.</p>",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
