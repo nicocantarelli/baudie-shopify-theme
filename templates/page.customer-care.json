@@ -182,7 +182,7 @@
             "section_heading": "Promotions",
             "section_description": "",
             "question_1": "Can I apply a promo code to any product on the website?",
-            "answer_1": "<p>The validity of a promo code depends on the item. Please contact <strong>help@baudie.com</strong> to verify whether a promo code can be applied to a specific product.</p>",
+            "answer_1": "<p>The validity of a promo code depends on the item. Please contact <a href=\"mailto:help@baudie.com\" title=\"mailto:help@baudie.com\"><strong>help@baudie.com</strong></a> to verify whether a promo code can be applied to a specific product.</p>",
             "question_2": "Can I price match a promotion from a Baudie retailer partner?",
             "answer_2": "<p>Sorry, but we're unable to match promotional offers from any of our retail partners.</p>",
             "question_3": "Can I receive a price match on a recent promotion that I missed?",
