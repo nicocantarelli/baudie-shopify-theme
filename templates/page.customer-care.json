@@ -12,46 +12,6 @@
     "customer-care": {
       "type": "customer-care",
       "blocks": {
-        "category_8GmnqX": {
-          "type": "category",
-          "settings": {
-            "tab_label": "Promotions",
-            "url_slug": "Promotions",
-            "icon": "faq",
-            "section_heading": "Promotions",
-            "section_description": "",
-            "question_1": "Can I apply a promo code to any product on the website?",
-            "answer_1": "<p>The validity of a promo code depends on the item. Please contact help@baudie.com to verify whether a promo code can be applied to a specific product.</p>",
-            "question_2": "Can I price match a promotion from a Baudie retailer partner?",
-            "answer_2": "<p>Sorry, but we're unable to match promotional offers from any of our retail partners.</p>",
-            "question_3": "Can I receive a price match on a recent promotion that I missed?",
-            "answer_3": "<p>Unfortunately, we are unable to accommodate price matches for recent promotions.</p>",
-            "question_4": "I received a promo code. May I apply it to an order that I've already placed?",
-            "answer_4": "<p>Sorry, but we're unable to retroactively apply promo codes at this time.</p>",
-            "question_5": "Can I use multiple promo codes on one order?",
-            "answer_5": "<p>At this time we only accept one promo code per order.</p>",
-            "question_6": "",
-            "answer_6": "",
-            "question_7": "",
-            "answer_7": "",
-            "question_8": "",
-            "answer_8": "",
-            "question_9": "",
-            "answer_9": "",
-            "question_10": "",
-            "answer_10": "",
-            "question_11": "",
-            "answer_11": "",
-            "question_12": "",
-            "answer_12": "",
-            "question_13": "",
-            "answer_13": "",
-            "question_14": "",
-            "answer_14": "",
-            "question_15": "",
-            "answer_15": ""
-          }
-        },
         "delivery": {
           "type": "category",
           "settings": {
@@ -213,6 +173,46 @@
             "answer_15": ""
           }
         },
+        "category_8GmnqX": {
+          "type": "category",
+          "settings": {
+            "tab_label": "Promotions",
+            "url_slug": "Promotions",
+            "icon": "faq",
+            "section_heading": "Promotions",
+            "section_description": "",
+            "question_1": "Can I apply a promo code to any product on the website?",
+            "answer_1": "<p>The validity of a promo code depends on the item. Please contact help@baudie.com to verify whether a promo code can be applied to a specific product.</p>",
+            "question_2": "Can I price match a promotion from a Baudie retailer partner?",
+            "answer_2": "<p>Sorry, but we're unable to match promotional offers from any of our retail partners.</p>",
+            "question_3": "Can I receive a price match on a recent promotion that I missed?",
+            "answer_3": "<p>Unfortunately, we are unable to accommodate price matches for recent promotions.</p>",
+            "question_4": "I received a promo code. May I apply it to an order that I've already placed?",
+            "answer_4": "<p>Sorry, but we're unable to retroactively apply promo codes at this time.</p>",
+            "question_5": "Can I use multiple promo codes on one order?",
+            "answer_5": "<p>At this time we only accept one promo code per order.</p>",
+            "question_6": "",
+            "answer_6": "",
+            "question_7": "",
+            "answer_7": "",
+            "question_8": "",
+            "answer_8": "",
+            "question_9": "",
+            "answer_9": "",
+            "question_10": "",
+            "answer_10": "",
+            "question_11": "",
+            "answer_11": "",
+            "question_12": "",
+            "answer_12": "",
+            "question_13": "",
+            "answer_13": "",
+            "question_14": "",
+            "answer_14": "",
+            "question_15": "",
+            "answer_15": ""
+          }
+        },
         "faq": {
           "type": "category",
           "settings": {
@@ -231,8 +231,8 @@
             "answer_4": "<p>Our products are vegan friendly. If you have any specific questions, please email help@baudie.com</p>",
             "question_5": "Can I use your products while I am pregnant?",
             "answer_5": "<p>Our products are used by many pregnant + breastfeeding moms. However, as with any product, if you are pregnant or nursing, please check with you doctor first before using.</p>",
-            "question_6": "",
-            "answer_6": "",
+            "question_6": "Are Baudie products Phthalate and Paraben free?",
+            "answer_6": "<p>Yes, all of our products are phthalate and paraben-free. </p>",
             "question_7": "",
             "answer_7": "",
             "question_8": "",
@@ -335,11 +335,11 @@
         }
       },
       "block_order": [
-        "category_8GmnqX",
         "delivery",
         "returns",
         "payment",
         "category_nGQzhn",
+        "category_8GmnqX",
         "faq",
         "terms",
         "privacy"
