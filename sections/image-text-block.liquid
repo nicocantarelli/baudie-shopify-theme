@@ -44,7 +44,7 @@
 {% stylesheet %}
 .image-text-block {
   color: var(--itb-text);
-  padding: 80px 0;
+  padding: 0 0 40px;
 }
 
 .image-text-block__text-col {
@@ -163,17 +163,17 @@
 }
 
 @media (min-width: 769px) {
-  .image-text-block {
-    padding: 120px 0;
-  }
-
   .image-text-block__text-col {
     padding: 64px 56px;
   }
 
   .image-text-block__grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 60fr 40fr;
     gap: 0;
+  }
+
+  .image-text-block--image-right .image-text-block__grid {
+    grid-template-columns: 40fr 60fr;
   }
 
   .image-text-block--image-right .image-text-block__image-col {
