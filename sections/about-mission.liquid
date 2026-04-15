@@ -1,0 +1,211 @@
+{%- liquid
+  assign bg_color = section.settings.background_color | default: '#3E2027'
+  assign text_color = section.settings.text_color | default: '#FFFFFF'
+  assign layout = section.settings.layout | default: 'background'
+  assign overlay = section.settings.overlay_opacity | default: 30
+-%}
+
+<section
+  class="about-mission about-mission--{{ layout }} full-width"
+  style="
+    --am-bg: {{ bg_color }};
+    --am-text: {{ text_color }};
+    --am-overlay: {{ overlay | divided_by: 100.0 }};
+    {%- if section.settings.image != blank and layout == 'background' -%}
+      --am-image: url('{{ section.settings.image | image_url: width: 2400 }}');
+    {%- endif -%}
+  ">
+  {%- if layout == 'background' -%}
+    <div class="about-mission__overlay" aria-hidden="true"></div>
+    <div class="about-mission__content">
+      {%- if section.settings.statement != blank -%}
+        <h2 class="about-mission__statement">{{ section.settings.statement }}</h2>
+      {%- endif -%}
+    </div>
+  {%- else -%}
+    <div class="about-mission__grid">
+      {%- if section.settings.image != blank -%}
+        <div class="about-mission__image-wrapper">
+          {{ section.settings.image | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'about-mission__image' }}
+        </div>
+      {%- endif -%}
+      <div class="about-mission__text">
+        {%- if section.settings.statement != blank -%}
+          <h2 class="about-mission__statement">{{ section.settings.statement }}</h2>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+.about-mission {
+  background-color: var(--am-bg);
+  color: var(--am-text);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-mission--background {
+  background-image: var(--am-image, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px;
+}
+
+.about-mission__overlay {
+  position: absolute;
+  inset: 0;
+  background-color: #000;
+  opacity: var(--am-overlay);
+  pointer-events: none;
+}
+
+.about-mission__content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  text-align: center;
+}
+
+.about-mission__statement {
+  font-family: var(--font-alyona);
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 400;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--am-text);
+}
+
+.about-mission__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.about-mission__image-wrapper {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.about-mission__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.about-mission__text {
+  padding: 60px 24px;
+  text-align: center;
+}
+
+@media (min-width: 769px) {
+  .about-mission--side-right .about-mission__grid,
+  .about-mission--side-left .about-mission__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: 70vh;
+  }
+
+  .about-mission--side-left .about-mission__image-wrapper {
+    order: 1;
+  }
+
+  .about-mission--side-left .about-mission__text {
+    order: 2;
+  }
+
+  .about-mission--side-right .about-mission__image-wrapper {
+    order: 2;
+  }
+
+  .about-mission--side-right .about-mission__text {
+    order: 1;
+  }
+
+  .about-mission__image-wrapper {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .about-mission__text {
+    padding: 60px 80px;
+    text-align: left;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.about_mission.name",
+  "tag": "section",
+  "class": "about-mission-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.about_mission.settings.content_header"
+    },
+    {
+      "type": "text",
+      "id": "statement",
+      "label": "t:sections.about_mission.settings.statement"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:labels.image"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.about_mission.settings.layout",
+      "options": [
+        { "value": "background", "label": "t:sections.about_mission.settings.layout_background" },
+        { "value": "side-left", "label": "t:sections.about_mission.settings.layout_side_left" },
+        { "value": "side-right", "label": "t:sections.about_mission.settings.layout_side_right" }
+      ],
+      "default": "background"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:sections.about_mission.settings.overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 30,
+      "info": "t:sections.about_mission.settings.overlay_opacity_info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.about_mission.settings.colors_header"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#FFFFFF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.about_mission.name"
+    }
+  ]
+}
+{% endschema %}

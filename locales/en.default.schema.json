@@ -406,15 +406,83 @@
         "max_products": "Maximum products"
       }
     },
-    "our_story": {
-      "name": "Our story",
+    "about_hero": {
+      "name": "About hero",
       "settings": {
-        "intro_text": "Intro text",
+        "content_header": "Content",
+        "image_header": "Background image",
+        "layout_header": "Layout",
+        "colors_header": "Colors",
+        "eyebrow": "Eyebrow text",
         "subheading": "Subheading",
-        "body_text": "Body text",
-        "attribution_header": "Attribution",
-        "attribution_line_1": "Attribution line 1",
-        "attribution_line_2": "Attribution line 2"
+        "image_desktop": "Desktop image",
+        "image_mobile": "Mobile image",
+        "overlay_opacity": "Image overlay opacity",
+        "min_height_desktop": "Minimum height (desktop)",
+        "min_height_mobile": "Minimum height (mobile)"
+      }
+    },
+    "about_philosophy": {
+      "name": "About philosophy",
+      "settings": {
+        "content_header": "Content",
+        "colors_header": "Colors",
+        "intro": "Intro text"
+      },
+      "blocks": {
+        "pillar": {
+          "name": "Pillar",
+          "text": "Text"
+        }
+      }
+    },
+    "about_mission": {
+      "name": "About mission",
+      "settings": {
+        "content_header": "Content",
+        "colors_header": "Colors",
+        "statement": "Statement",
+        "layout": "Layout",
+        "layout_background": "Full-width background image",
+        "layout_side_left": "Image on left",
+        "layout_side_right": "Image on right",
+        "overlay_opacity": "Image overlay opacity",
+        "overlay_opacity_info": "Only used with the background image layout."
+      }
+    },
+    "image_text_block": {
+      "name": "Image + text",
+      "settings": {
+        "content_header": "Content",
+        "layout_header": "Layout",
+        "colors_header": "Colors",
+        "eyebrow": "Eyebrow text",
+        "body": "Body",
+        "image_position": "Image position",
+        "image_left": "Left",
+        "image_right": "Right",
+        "image_aspect_ratio": "Image aspect ratio",
+        "ratio_square": "Square",
+        "ratio_portrait": "Portrait",
+        "ratio_landscape": "Landscape",
+        "container_width": "Container width",
+        "width_standard": "Standard",
+        "width_wide": "Wide"
+      }
+    },
+    "about_partnerships": {
+      "name": "About partnerships",
+      "settings": {
+        "content_header": "Content",
+        "colors_header": "Colors",
+        "intro": "Intro text"
+      },
+      "blocks": {
+        "partner": {
+          "name": "Partner",
+          "text": "Description",
+          "link": "Link"
+        }
       }
     },
     "contact": {

@@ -9,22 +9,93 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "our-story",
+    "hero": {
+      "type": "about-hero",
       "settings": {
-        "heading": "Our story",
-        "intro_text": "<p>Hey, we're Diana and Alexandra, a mother-daughter duo and once upon a time, we were… well, a little stinky.</p><p>Baudie was born from a simple but overlooked truth: <strong>deodorant alone just doesn’t work.</strong></p><p>We know this because we experienced it ourselves. For years we kept asking the same question so many people quietly wonder: Why doesn’t my deodorant work? We tried everything - natural deodorants, clinical formulas, switching brands, home remedies, armpit masks. Yet, the problem did not go away. It was frustrating, embarrassing, and oddly never talked about openly.</p>",
-        "subheading": "That’s when the idea for our brand was born",
-        "body_text": "<p>The more we spoke to friends, family, and even strangers, the more we realized something surprising: <strong>millions of people experience the exact same issue. </strong>Deodorant alone just isn’t enough. </p><p></p><p>Odor is universal, emotionally loaded, and scientifically misunderstood. Most deodorants simply mask smell, leaving the real culprit untouched: the odor-causing bacteria that break down sweat and create odor molecules. The category had been stuck solving the symptom, not the source. That’s when we had a moment of clarity: If this problem affects so many people, why hasn’t anyone solved it properly and effectively? So we decided we would.</p><p></p><p>Together we formulated the Deodorant Enhancer®. A completely new product category. The world’s first patented intricately engineered spray designed to address odor at the source by optimizing the underarm microbiome. Instead of replacing deodorant BAUDIE works with it, creating an environment where deodorant can perform better, longer, and more consistently.</p><p></p><p>BAUDIE was built to solve a real, persistent issue that millions of people - ages 8 to 88 - experience every day but rarely talk about openly. BAUDIE is positioned to redefine how people approach odor and personal confidence.</p><p></p><p>Because the truth is simple:</p><p><strong>This industry doesn’t need another deodorant brand - it needs an effective solution</strong></p>",
-        "image": "shopify://shop_images/5B9301A1-5F5C-422F-BF4B-72EA47568F7E.jpg",
-        "attribution_line_1": "Diana + Alexandra",
-        "attribution_line_2": "(Mother/Daughter Duo)",
+        "eyebrow": "",
+        "heading": "Welcome to Baudie",
+        "subheading": "",
+        "overlay_opacity": 30,
+        "min_height_desktop": 80,
+        "min_height_mobile": 70,
+        "background_color": "#3e2027",
+        "text_color": "#ffffff"
+      }
+    },
+    "philosophy": {
+      "type": "about-philosophy",
+      "blocks": {
+        "pillar_1": { "type": "pillar", "settings": { "heading": "", "text": "" } },
+        "pillar_2": { "type": "pillar", "settings": { "heading": "", "text": "" } },
+        "pillar_3": { "type": "pillar", "settings": { "heading": "", "text": "" } },
+        "pillar_4": { "type": "pillar", "settings": { "heading": "", "text": "" } }
+      },
+      "block_order": ["pillar_1", "pillar_2", "pillar_3", "pillar_4"],
+      "settings": {
+        "heading": "Our Philosophy",
+        "intro": "",
         "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "mission": {
+      "type": "about-mission",
+      "settings": {
+        "statement": "",
+        "layout": "background",
+        "overlay_opacity": 30,
+        "background_color": "#3e2027",
+        "text_color": "#ffffff"
+      }
+    },
+    "founder": {
+      "type": "image-text-block",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Meet Our Founders",
+        "body": "",
+        "image_position": "left",
+        "image_aspect_ratio": "portrait",
+        "container_width": "standard",
+        "background_color": "#fff7ea",
+        "text_color": "#3e2027"
+      }
+    },
+    "science": {
+      "type": "image-text-block",
+      "settings": {
+        "eyebrow": "",
+        "heading": "",
+        "body": "",
+        "image_position": "right",
+        "image_aspect_ratio": "portrait",
+        "container_width": "standard",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "partnerships": {
+      "type": "about-partnerships",
+      "blocks": {
+        "partner_1": { "type": "partner", "settings": { "heading": "", "text": "", "link": "" } },
+        "partner_2": { "type": "partner", "settings": { "heading": "", "text": "", "link": "" } },
+        "partner_3": { "type": "partner", "settings": { "heading": "", "text": "", "link": "" } }
+      },
+      "block_order": ["partner_1", "partner_2", "partner_3"],
+      "settings": {
+        "heading": "",
+        "intro": "",
+        "background_color": "#fff7ea",
         "text_color": "#3e2027"
       }
     }
   },
   "order": [
-    "main"
+    "hero",
+    "philosophy",
+    "mission",
+    "founder",
+    "science",
+    "partnerships"
   ]
 }

@@ -1,0 +1,218 @@
+{%- liquid
+  assign bg_color = section.settings.background_color | default: '#3E2027'
+  assign text_color = section.settings.text_color | default: '#FFFFFF'
+  assign overlay = section.settings.overlay_opacity | default: 30
+  assign min_h_desktop = section.settings.min_height_desktop | default: 80
+  assign min_h_mobile = section.settings.min_height_mobile | default: 70
+-%}
+
+<section
+  class="about-hero full-width"
+  style="
+    --ah-bg: {{ bg_color }};
+    --ah-text: {{ text_color }};
+    --ah-overlay: {{ overlay | divided_by: 100.0 }};
+    --ah-min-desktop: {{ min_h_desktop }}vh;
+    --ah-min-mobile: {{ min_h_mobile }}vh;
+    {%- if section.settings.image != blank -%}
+      --ah-image: url('{{ section.settings.image | image_url: width: 2400 }}');
+    {%- endif -%}
+    {%- if section.settings.image_mobile != blank -%}
+      --ah-image-mobile: url('{{ section.settings.image_mobile | image_url: width: 1200 }}');
+    {%- elsif section.settings.image != blank -%}
+      --ah-image-mobile: url('{{ section.settings.image | image_url: width: 1200 }}');
+    {%- endif -%}
+  ">
+  <div class="about-hero__overlay" aria-hidden="true"></div>
+  <div class="about-hero__content">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="about-hero__eyebrow">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+    {%- if section.settings.heading != blank -%}
+      <h1 class="about-hero__heading">{{ section.settings.heading }}</h1>
+    {%- endif -%}
+    {%- if section.settings.subheading != blank -%}
+      <p class="about-hero__subheading">{{ section.settings.subheading }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+.about-hero {
+  position: relative;
+  background-color: var(--ah-bg);
+  background-image: var(--ah-image-mobile, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: var(--ah-min-mobile);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--total-header-height, 100px) + 40px) 24px 60px;
+  color: var(--ah-text);
+  overflow: hidden;
+}
+
+.about-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background-color: #000;
+  opacity: var(--ah-overlay);
+  pointer-events: none;
+}
+
+.about-hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.about-hero__eyebrow {
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--ah-text);
+}
+
+.about-hero__heading {
+  font-family: var(--font-alyona);
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 400;
+  line-height: 1;
+  margin: 0;
+  color: var(--ah-text);
+}
+
+.about-hero__subheading {
+  font-family: var(--font-jokker);
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 600px;
+  color: var(--ah-text);
+}
+
+@media (min-width: 769px) {
+  .about-hero {
+    background-image: var(--ah-image, var(--ah-image-mobile, none));
+    min-height: var(--ah-min-desktop);
+    padding: calc(var(--total-header-height, 110px) + 60px) 40px 80px;
+  }
+
+  .about-hero__eyebrow {
+    font-size: 13px;
+  }
+
+  .about-hero__subheading {
+    font-size: 18px;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.about_hero.name",
+  "tag": "section",
+  "class": "about-hero-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.about_hero.settings.content_header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.about_hero.settings.eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:sections.about_hero.settings.subheading"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.about_hero.settings.image_header"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.about_hero.settings.image_desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "t:sections.about_hero.settings.image_mobile"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:sections.about_hero.settings.overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "t:sections.about_hero.settings.layout_header"
+    },
+    {
+      "type": "range",
+      "id": "min_height_desktop",
+      "label": "t:sections.about_hero.settings.min_height_desktop",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "min_height_mobile",
+      "label": "t:sections.about_hero.settings.min_height_mobile",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 70
+    },
+    {
+      "type": "header",
+      "content": "t:sections.about_hero.settings.colors_header"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#FFFFFF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.about_hero.name"
+    }
+  ]
+}
+{% endschema %}

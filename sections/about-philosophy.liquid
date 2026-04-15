@@ -1,0 +1,210 @@
+{%- liquid
+  assign bg_color = section.settings.background_color | default: '#FFF7EA'
+  assign text_color = section.settings.text_color | default: '#3E2027'
+-%}
+
+<section
+  class="about-philosophy full-width"
+  style="--ap-bg: {{ bg_color }}; --ap-text: {{ text_color }};">
+  <div class="about-philosophy__container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="about-philosophy__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.intro != blank -%}
+      <div class="about-philosophy__intro rte">
+        {{ section.settings.intro }}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="about-philosophy__grid">
+        {%- for block in section.blocks -%}
+          <div class="about-philosophy__pillar" {{ block.shopify_attributes }}>
+            {%- if block.settings.heading != blank -%}
+              <h3 class="about-philosophy__pillar-heading">{{ block.settings.heading }}</h3>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <div class="about-philosophy__pillar-text rte">
+                {{ block.settings.text }}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+.about-philosophy {
+  background-color: var(--ap-bg);
+  color: var(--ap-text);
+  padding: 80px 0;
+}
+
+.about-philosophy__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.about-philosophy__heading {
+  font-family: var(--font-alyona);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.1;
+  text-align: center;
+  margin: 0 0 24px;
+  color: var(--ap-text);
+}
+
+.about-philosophy__intro {
+  font-family: var(--font-jokker);
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 60px;
+  color: var(--ap-text);
+}
+
+.about-philosophy__intro p {
+  margin: 0 0 12px;
+}
+
+.about-philosophy__intro p:last-child {
+  margin-bottom: 0;
+}
+
+.about-philosophy__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px 32px;
+}
+
+.about-philosophy__pillar {
+  text-align: left;
+}
+
+.about-philosophy__pillar-heading {
+  font-family: var(--font-jokker);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+  color: var(--ap-text);
+}
+
+.about-philosophy__pillar-text {
+  font-family: var(--font-jokker);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ap-text);
+}
+
+.about-philosophy__pillar-text p {
+  margin: 0 0 10px;
+}
+
+.about-philosophy__pillar-text p:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 769px) {
+  .about-philosophy {
+    padding: 100px 0;
+  }
+
+  .about-philosophy__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .about-philosophy__intro {
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .about-philosophy {
+    padding: 120px 0;
+  }
+
+  .about-philosophy__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 48px 40px;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.about_philosophy.name",
+  "tag": "section",
+  "class": "about-philosophy-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.about_philosophy.settings.content_header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Our Philosophy"
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "t:sections.about_philosophy.settings.intro"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.about_philosophy.settings.colors_header"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFF7EA"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "pillar",
+      "name": "t:sections.about_philosophy.blocks.pillar.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:labels.heading"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:sections.about_philosophy.blocks.pillar.text"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "t:sections.about_philosophy.name",
+      "blocks": [
+        { "type": "pillar" },
+        { "type": "pillar" },
+        { "type": "pillar" },
+        { "type": "pillar" }
+      ]
+    }
+  ]
+}
+{% endschema %}
