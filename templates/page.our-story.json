@@ -107,6 +107,21 @@
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
+    },
+    "image_text_block_4PNkyG": {
+      "type": "image-text-block",
+      "name": "t:sections.image_text_block.name",
+      "settings": {
+        "eyebrow": "",
+        "heading": "This one is just text",
+        "body": "<p>We believe in crafting products that stand the test of time. Quality isn't just a promise—it's woven into every detail, from the materials we source to the care we take in every step of creation. Our mission is to build things that matter, that last, and that bring genuine value to your life.</p>",
+        "image": "shopify://shop_images/st-tropez-hero.png",
+        "image_position": "left",
+        "image_aspect_ratio": "portrait",
+        "container_width": "standard",
+        "background_color": "#FFF7EA",
+        "text_color": "#3E2027"
+      }
     }
   },
   "order": [
@@ -114,6 +129,7 @@
     "philosophy",
     "mission",
     "founder",
-    "science"
+    "science",
+    "image_text_block_4PNkyG"
   ]
 }
