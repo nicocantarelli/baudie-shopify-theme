@@ -43,9 +43,22 @@
 
 {% stylesheet %}
 .image-text-block {
-  background-color: var(--itb-bg);
   color: var(--itb-text);
   padding: 80px 0;
+}
+
+.image-text-block__text-col {
+  background-color: var(--itb-bg);
+  padding: 40px 28px;
+}
+
+.image-text-block--full {
+  background-color: var(--itb-bg);
+}
+
+.image-text-block--full .image-text-block__text-col {
+  background-color: transparent;
+  padding: 0;
 }
 
 .image-text-block__container {
@@ -143,6 +156,10 @@
 @media (min-width: 769px) {
   .image-text-block {
     padding: 120px 0;
+  }
+
+  .image-text-block__text-col {
+    padding: 64px 56px;
   }
 
   .image-text-block__grid {
