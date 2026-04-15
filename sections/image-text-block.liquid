@@ -50,6 +50,9 @@
 .image-text-block__text-col {
   background-color: var(--itb-bg);
   padding: 40px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .image-text-block--full {
@@ -84,14 +87,20 @@
 .image-text-block__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 40px;
-  align-items: center;
+  gap: 0;
+  align-items: stretch;
+}
+
+.image-text-block__image-col {
+  display: flex;
 }
 
 .image-text-block__image-wrapper {
   width: 100%;
+  height: 100%;
   overflow: hidden;
   background-color: color-mix(in srgb, var(--itb-text) 8%, var(--itb-bg));
+  min-height: 360px;
 }
 
 .image-text-block--ratio-square .image-text-block__image-wrapper {
@@ -164,7 +173,7 @@
 
   .image-text-block__grid {
     grid-template-columns: 1fr 1fr;
-    gap: 80px;
+    gap: 0;
   }
 
   .image-text-block--image-right .image-text-block__image-col {
