@@ -466,8 +466,10 @@
         "ratio_portrait": "Portrait",
         "ratio_landscape": "Landscape",
         "container_width": "Container width",
+        "container_width_info": "Full width fills the viewport edge to edge with a 50/50 split and no margins. Image aspect ratio is ignored in this mode.",
         "width_standard": "Standard",
-        "width_wide": "Wide"
+        "width_wide": "Wide",
+        "width_full": "Full width (50/50, no margins)"
       }
     },
     "about_partnerships": {
