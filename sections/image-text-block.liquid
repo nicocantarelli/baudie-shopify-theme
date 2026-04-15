@@ -76,7 +76,7 @@
 .image-text-block__container {
   max-width: 1600px;
   margin: 0 auto;
-  padding: 0 40px;
+  padding: 0;
 }
 
 .image-text-block--wide .image-text-block__container {
@@ -177,6 +177,10 @@
 }
 
 @media (min-width: 769px) {
+  .image-text-block__container {
+    padding: 0 40px;
+  }
+
   .image-text-block__text-col {
     padding: 64px 56px;
   }
