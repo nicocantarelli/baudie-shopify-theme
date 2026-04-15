@@ -45,7 +45,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: var(--ah-min-mobile);
+  min-height: calc(var(--ah-min-mobile) + var(--total-header-height, 100px));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -105,7 +105,7 @@
 @media (min-width: 769px) {
   .about-hero {
     background-image: var(--ah-image, var(--ah-image-mobile, none));
-    min-height: var(--ah-min-desktop);
+    min-height: calc(var(--ah-min-desktop) + var(--total-header-height, 110px));
     padding: calc(var(--total-header-height, 110px) + 60px) 40px 80px;
   }
 
