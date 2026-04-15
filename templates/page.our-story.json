@@ -90,7 +90,7 @@
         "image_position": "left",
         "image_aspect_ratio": "portrait",
         "container_width": "full",
-        "background_color": "#fce9ec",
+        "background_color": "#e8ddd0",
         "text_color": "#3e2027"
       }
     },
@@ -98,11 +98,12 @@
       "type": "image-text-block",
       "settings": {
         "eyebrow": "",
-        "heading": "",
-        "body": "",
+        "heading": "This one is just text",
+        "body": "<p>We believe in crafting products that stand the test of time. Quality isn't just a promise—it's woven into every detail, from the materials we source to the care we take in every step of creation. Our mission is to build things that matter, that last, and that bring genuine value to your life.</p>",
+        "image": "shopify://shop_images/Screen_Shot_2026-04-13_at_12.29.29_PM.png",
         "image_position": "right",
         "image_aspect_ratio": "portrait",
-        "container_width": "standard",
+        "container_width": "wide",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
