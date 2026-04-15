@@ -91,6 +91,7 @@
         "image_position": "left",
         "image_aspect_ratio": "portrait",
         "container_width": "full",
+        "text_vertical_align": "center",
         "background_color": "#e8ddd0",
         "text_color": "#3e2027"
       }
@@ -105,6 +106,7 @@
         "image_position": "right",
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
+        "text_vertical_align": "center",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
@@ -120,6 +122,7 @@
         "image_position": "left",
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
+        "text_vertical_align": "top",
         "background_color": "#e8ddd0",
         "text_color": "#3e2027"
       }
