@@ -344,25 +344,41 @@
         "review_gdK39L": {
           "type": "review",
           "settings": {
-            "reviewer_name": "Lucas M.",
-            "review_date": "06/2025",
-            "review_text": "I've tried every natural deo out there — this is the first thing that actually works."
+            "reviewer_name": "Patrice M.",
+            "review_date": "Verified Buyer",
+            "review_text": "They used to call me onion pits before I found this enhancer. I showed them..."
           }
         },
         "review_XVBWBi": {
           "type": "review",
           "settings": {
             "reviewer_name": "Mia T.",
-            "review_date": "06/2025",
-            "review_text": "Didn't expect a pre-deodorant to change my life, but here we are."
+            "review_date": "Verified Buyer",
+            "review_text": "Imagine never going in for a hug because you're that self-conscious. This saved my life."
           }
         },
         "review_DY7Nz8": {
           "type": "review",
           "settings": {
             "reviewer_name": "Sarah K.",
-            "review_date": "06/2025",
-            "review_text": "This product exceeded my expectations!"
+            "review_date": "Verified Buyer",
+            "review_text": "If you are in perimenopause or menopause, add this to your routine and thank me later"
+          }
+        },
+        "review_TAYYY7": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Stacy T.",
+            "review_date": "Verified Buyer",
+            "review_text": "My sweaty son who plays a lot of soccer actually smells good after practice now."
+          }
+        },
+        "review_PkXwU8": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Laura R.",
+            "review_date": "Verified Buyer",
+            "review_text": "Can you believe my 80 year old dad uses this...neither can I LOL!"
           }
         }
       },
@@ -370,7 +386,9 @@
         "review_ALLATw",
         "review_gdK39L",
         "review_XVBWBi",
-        "review_DY7Nz8"
+        "review_DY7Nz8",
+        "review_TAYYY7",
+        "review_PkXwU8"
       ],
       "name": "t:general.reviews",
       "settings": {
