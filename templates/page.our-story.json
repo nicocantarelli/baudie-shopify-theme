@@ -14,7 +14,7 @@
       "settings": {
         "eyebrow": "",
         "heading": "Welcome to Baudie",
-        "subheading": "",
+        "subheading": "Advanced skincare. Full-body rituals.",
         "image": "shopify://shop_images/explore-our-sets-background_3a24be6f-5c93-4c77-b6ee-9d5633ec779a.png",
         "image_mobile": "shopify://shop_images/freepik_keep-all-the-details-of-t_2737937364.png",
         "overlay_opacity": 30,
@@ -72,7 +72,8 @@
     "mission": {
       "type": "about-mission",
       "settings": {
-        "statement": "",
+        "statement": "We believe bodycare is skincare.",
+        "image": "shopify://shop_images/explore-our-sets-background.png",
         "layout": "background",
         "overlay_opacity": 30,
         "background_color": "#3e2027",
