@@ -441,6 +441,7 @@
       "settings": {
         "content_header": "Content",
         "colors_header": "Colors",
+        "eyebrow": "Eyebrow text",
         "statement": "Statement",
         "layout": "Layout",
         "layout_background": "Full-width background image",
