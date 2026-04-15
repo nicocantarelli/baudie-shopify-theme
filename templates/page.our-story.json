@@ -86,9 +86,10 @@
         "eyebrow": "",
         "heading": "Meet Our Founders",
         "body": "",
+        "image": "shopify://shop_images/5B9301A1-5F5C-422F-BF4B-72EA47568F7E.jpg",
         "image_position": "left",
         "image_aspect_ratio": "portrait",
-        "container_width": "standard",
+        "container_width": "full",
         "background_color": "#fff7ea",
         "text_color": "#3e2027"
       }
