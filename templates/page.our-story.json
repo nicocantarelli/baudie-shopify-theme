@@ -15,6 +15,7 @@
         "eyebrow": "",
         "heading": "Welcome to Baudie",
         "subheading": "",
+        "image": "shopify://shop_images/explore-our-sets-background_3a24be6f-5c93-4c77-b6ee-9d5633ec779a.png",
         "overlay_opacity": 30,
         "min_height_desktop": 80,
         "min_height_mobile": 70,
@@ -25,12 +26,41 @@
     "philosophy": {
       "type": "about-philosophy",
       "blocks": {
-        "pillar_1": { "type": "pillar", "settings": { "heading": "", "text": "" } },
-        "pillar_2": { "type": "pillar", "settings": { "heading": "", "text": "" } },
-        "pillar_3": { "type": "pillar", "settings": { "heading": "", "text": "" } },
-        "pillar_4": { "type": "pillar", "settings": { "heading": "", "text": "" } }
+        "pillar_1": {
+          "type": "pillar",
+          "settings": {
+            "heading": "",
+            "text": ""
+          }
+        },
+        "pillar_2": {
+          "type": "pillar",
+          "settings": {
+            "heading": "",
+            "text": ""
+          }
+        },
+        "pillar_3": {
+          "type": "pillar",
+          "settings": {
+            "heading": "",
+            "text": ""
+          }
+        },
+        "pillar_4": {
+          "type": "pillar",
+          "settings": {
+            "heading": "",
+            "text": ""
+          }
+        }
       },
-      "block_order": ["pillar_1", "pillar_2", "pillar_3", "pillar_4"],
+      "block_order": [
+        "pillar_1",
+        "pillar_2",
+        "pillar_3",
+        "pillar_4"
+      ],
       "settings": {
         "heading": "Our Philosophy",
         "intro": "",
@@ -73,21 +103,6 @@
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
-    },
-    "partnerships": {
-      "type": "about-partnerships",
-      "blocks": {
-        "partner_1": { "type": "partner", "settings": { "heading": "", "text": "", "link": "" } },
-        "partner_2": { "type": "partner", "settings": { "heading": "", "text": "", "link": "" } },
-        "partner_3": { "type": "partner", "settings": { "heading": "", "text": "", "link": "" } }
-      },
-      "block_order": ["partner_1", "partner_2", "partner_3"],
-      "settings": {
-        "heading": "",
-        "intro": "",
-        "background_color": "#fff7ea",
-        "text_color": "#3e2027"
-      }
     }
   },
   "order": [
@@ -95,7 +110,6 @@
     "philosophy",
     "mission",
     "founder",
-    "science",
-    "partnerships"
+    "science"
   ]
 }
