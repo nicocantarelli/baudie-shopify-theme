@@ -18,8 +18,8 @@
         "image": "shopify://shop_images/explore-our-sets-background_3a24be6f-5c93-4c77-b6ee-9d5633ec779a.png",
         "image_mobile": "shopify://shop_images/freepik_keep-all-the-details-of-t_2737937364.png",
         "overlay_opacity": 30,
-        "min_height_desktop": 80,
-        "min_height_mobile": 70,
+        "min_height_desktop": 450,
+        "min_height_mobile": 380,
         "background_color": "#3e2027",
         "text_color": "#ffffff"
       }

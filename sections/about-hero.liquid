@@ -2,8 +2,8 @@
   assign bg_color = section.settings.background_color | default: '#3E2027'
   assign text_color = section.settings.text_color | default: '#FFFFFF'
   assign overlay = section.settings.overlay_opacity | default: 30
-  assign min_h_desktop = section.settings.min_height_desktop | default: 80
-  assign min_h_mobile = section.settings.min_height_mobile | default: 70
+  assign min_h_desktop = section.settings.min_height_desktop | default: 450
+  assign min_h_mobile = section.settings.min_height_mobile | default: 380
 -%}
 
 <section
@@ -12,8 +12,8 @@
     --ah-bg: {{ bg_color }};
     --ah-text: {{ text_color }};
     --ah-overlay: {{ overlay | divided_by: 100.0 }};
-    --ah-min-desktop: {{ min_h_desktop }}vh;
-    --ah-min-mobile: {{ min_h_mobile }}vh;
+    --ah-min-desktop: {{ min_h_desktop }}px;
+    --ah-min-mobile: {{ min_h_mobile }}px;
     {%- if section.settings.image != blank -%}
       --ah-image: url('{{ section.settings.image | image_url: width: 2400 }}');
     {%- endif -%}
@@ -176,21 +176,21 @@
       "type": "range",
       "id": "min_height_desktop",
       "label": "t:sections.about_hero.settings.min_height_desktop",
-      "min": 40,
-      "max": 100,
-      "step": 5,
-      "unit": "vh",
-      "default": 80
+      "min": 200,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 450
     },
     {
       "type": "range",
       "id": "min_height_mobile",
       "label": "t:sections.about_hero.settings.min_height_mobile",
-      "min": 40,
-      "max": 100,
-      "step": 5,
-      "unit": "vh",
-      "default": 70
+      "min": 200,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 380
     },
     {
       "type": "header",
