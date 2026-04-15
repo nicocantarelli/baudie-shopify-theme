@@ -4,10 +4,11 @@
   assign image_position = section.settings.image_position | default: 'left'
   assign image_ratio = section.settings.image_aspect_ratio | default: 'portrait'
   assign container_width = section.settings.container_width | default: 'standard'
+  assign text_vertical_align = section.settings.text_vertical_align | default: 'center'
 -%}
 
 <section
-  class="image-text-block image-text-block--image-{{ image_position }} image-text-block--ratio-{{ image_ratio }} image-text-block--{{ container_width }} full-width"
+  class="image-text-block image-text-block--image-{{ image_position }} image-text-block--ratio-{{ image_ratio }} image-text-block--{{ container_width }} image-text-block--text-{{ text_vertical_align }} full-width"
   style="--itb-bg: {{ bg_color }}; --itb-text: {{ text_color }};">
   <div class="image-text-block__container">
     <div class="image-text-block__grid">
@@ -53,6 +54,14 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.image-text-block--text-top .image-text-block__text-col {
+  justify-content: flex-start;
+}
+
+.image-text-block--text-bottom .image-text-block__text-col {
+  justify-content: flex-end;
 }
 
 .image-text-block--full {
@@ -292,6 +301,17 @@
       ],
       "default": "standard",
       "info": "t:sections.image_text_block.settings.container_width_info"
+    },
+    {
+      "type": "select",
+      "id": "text_vertical_align",
+      "label": "t:sections.image_text_block.settings.text_vertical_align",
+      "options": [
+        { "value": "top", "label": "t:sections.image_text_block.settings.align_top" },
+        { "value": "center", "label": "t:sections.image_text_block.settings.align_center" },
+        { "value": "bottom", "label": "t:sections.image_text_block.settings.align_bottom" }
+      ],
+      "default": "center"
     },
     {
       "type": "header",

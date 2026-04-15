@@ -470,7 +470,11 @@
         "container_width_info": "Full width fills the viewport edge to edge with a 50/50 split and no margins. Image aspect ratio is ignored in this mode.",
         "width_standard": "Standard",
         "width_wide": "Wide",
-        "width_full": "Full width (50/50, no margins)"
+        "width_full": "Full width (50/50, no margins)",
+        "text_vertical_align": "Text vertical alignment",
+        "align_top": "Top",
+        "align_center": "Center",
+        "align_bottom": "Bottom"
       }
     },
     "about_partnerships": {
