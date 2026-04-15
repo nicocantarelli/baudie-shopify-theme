@@ -34,5 +34,65 @@
     {% sections 'footer-group' %}
 
     {% sections 'overlay-group' %}
+
+    <style>
+      .reg-mark {
+        font-size: 0.5em;
+        vertical-align: 0.55em;
+        font-weight: inherit;
+      }
+    </style>
+    <script>
+      (function () {
+        var SKIP = { SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEXTAREA: 1, CODE: 1, PRE: 1 };
+
+        function wrap(root) {
+          if (!root || root.nodeType === 1 && SKIP[root.tagName]) return;
+          var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode: function (node) {
+              if (!node.nodeValue || node.nodeValue.indexOf('\u00AE') === -1) return NodeFilter.FILTER_REJECT;
+              var p = node.parentNode;
+              if (!p || SKIP[p.tagName] || (p.classList && p.classList.contains('reg-mark'))) return NodeFilter.FILTER_REJECT;
+              return NodeFilter.FILTER_ACCEPT;
+            }
+          });
+          var nodes = [];
+          var n;
+          while ((n = walker.nextNode())) nodes.push(n);
+          nodes.forEach(function (node) {
+            var parts = node.nodeValue.split('\u00AE');
+            var frag = document.createDocumentFragment();
+            parts.forEach(function (part, i) {
+              if (part) frag.appendChild(document.createTextNode(part));
+              if (i < parts.length - 1) {
+                var span = document.createElement('span');
+                span.className = 'reg-mark';
+                span.textContent = '\u00AE';
+                frag.appendChild(span);
+              }
+            });
+            node.parentNode.replaceChild(frag, node);
+          });
+        }
+
+        function init() {
+          wrap(document.body);
+          new MutationObserver(function (mutations) {
+            mutations.forEach(function (m) {
+              m.addedNodes.forEach(function (node) {
+                if (node.nodeType === 1) wrap(node);
+                else if (node.nodeType === 3 && node.nodeValue.indexOf('\u00AE') !== -1) wrap(node.parentNode);
+              });
+            });
+          }).observe(document.body, { childList: true, subtree: true });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
+        } else {
+          init();
+        }
+      })();
+    </script>
   </body>
 </html>
