@@ -12,46 +12,6 @@
     "customer-care": {
       "type": "customer-care",
       "blocks": {
-        "category_9AAC44": {
-          "type": "category",
-          "settings": {
-            "tab_label": "Partnerships + Wholesale",
-            "url_slug": "partnerships/wholesale",
-            "icon": "contact",
-            "section_heading": "Partnerships + Wholesale",
-            "section_description": "",
-            "question_1": "I am an influencer and would love to partner with Salt & Stone. Who do I contact?",
-            "answer_1": "<p>Thank you for your interest in working with Baudie. Please reach out with more information at partnerships@baudie.com</p>",
-            "question_2": "I am looking to become a Baudie wholesale partner. Who do I contact?",
-            "answer_2": "<p>Thank you for your interest in partnering with Baudie. Please reach out with more information at wholesale@baudie.com</p>",
-            "question_3": "I would love to become an affiliate and share your products. Who do I contact?",
-            "answer_3": "<p>Thank you for your interest in working with Baudie. Please reach out with more information at partnerships@baudie.com</p>",
-            "question_4": "",
-            "answer_4": "",
-            "question_5": "",
-            "answer_5": "",
-            "question_6": "",
-            "answer_6": "",
-            "question_7": "",
-            "answer_7": "",
-            "question_8": "",
-            "answer_8": "",
-            "question_9": "",
-            "answer_9": "",
-            "question_10": "",
-            "answer_10": "",
-            "question_11": "",
-            "answer_11": "",
-            "question_12": "",
-            "answer_12": "",
-            "question_13": "",
-            "answer_13": "",
-            "question_14": "",
-            "answer_14": "",
-            "question_15": "",
-            "answer_15": ""
-          }
-        },
         "delivery": {
           "type": "category",
           "settings": {
@@ -293,8 +253,49 @@
             "answer_15": ""
           }
         },
+        "category_9AAC44": {
+          "type": "category",
+          "settings": {
+            "tab_label": "Partnerships + Wholesale",
+            "url_slug": "partnerships/wholesale",
+            "icon": "contact",
+            "section_heading": "Partnerships + Wholesale",
+            "section_description": "",
+            "question_1": "I am an influencer and would love to partner with Salt & Stone. Who do I contact?",
+            "answer_1": "<p>Thank you for your interest in working with Baudie. Please reach out with more information at partnerships@baudie.com</p>",
+            "question_2": "I am looking to become a Baudie wholesale partner. Who do I contact?",
+            "answer_2": "<p>Thank you for your interest in partnering with Baudie. Please reach out with more information at wholesale@baudie.com</p>",
+            "question_3": "I would love to become an affiliate and share your products. Who do I contact?",
+            "answer_3": "<p>Thank you for your interest in working with Baudie. Please reach out with more information at partnerships@baudie.com</p>",
+            "question_4": "",
+            "answer_4": "",
+            "question_5": "",
+            "answer_5": "",
+            "question_6": "",
+            "answer_6": "",
+            "question_7": "",
+            "answer_7": "",
+            "question_8": "",
+            "answer_8": "",
+            "question_9": "",
+            "answer_9": "",
+            "question_10": "",
+            "answer_10": "",
+            "question_11": "",
+            "answer_11": "",
+            "question_12": "",
+            "answer_12": "",
+            "question_13": "",
+            "answer_13": "",
+            "question_14": "",
+            "answer_14": "",
+            "question_15": "",
+            "answer_15": ""
+          }
+        },
         "terms": {
           "type": "category",
+          "disabled": true,
           "settings": {
             "tab_label": "Terms and Conditions",
             "url_slug": "terms",
@@ -335,6 +336,7 @@
         },
         "privacy": {
           "type": "category",
+          "disabled": true,
           "settings": {
             "tab_label": "Privacy Policy",
             "url_slug": "privacy",
@@ -375,13 +377,13 @@
         }
       },
       "block_order": [
-        "category_9AAC44",
         "delivery",
         "returns",
         "payment",
         "category_nGQzhn",
         "category_8GmnqX",
         "faq",
+        "category_9AAC44",
         "terms",
         "privacy"
       ],
