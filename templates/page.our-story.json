@@ -103,7 +103,7 @@
         "image": "shopify://shop_images/Screen_Shot_2026-04-13_at_12.29.29_PM.png",
         "image_position": "right",
         "image_aspect_ratio": "portrait",
-        "container_width": "wide",
+        "container_width": "standard",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
