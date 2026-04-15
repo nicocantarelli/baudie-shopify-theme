@@ -1,9 +1,19 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "legal-page",
       "settings": {
         "heading": "Privacy Policy",
+        "body": "<p>Privacy Policy<br/><br/>Last Updated: April 15, 2026<br/><br/>At Baudie, we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.<br/><br/>Information We Collect<br/><br/>We may collect information about you in a variety of ways. The information we may collect on the site includes:<br/><br/>Personal Data: Personally identifiable information, such as your name, shipping address, email address, and telephone number, that you voluntarily give to us when you register with the site or when you choose to participate in various activities related to the site.<br/><br/>Financial Data: Financial information, such as data related to your payment method (e.g., valid credit card number, card brand, expiration date) that we may collect when you purchase, order, return, exchange, or request information about our services from the site.<br/><br/>Data From Social Networks: User information from social networks, including your name, your social network username, location, gender, birth date, email address, profile picture, and public data for contacts, if you connect your account to such social networks.<br/><br/>Mobile Device Data: Device information, such as your mobile device ID, model, and manufacturer, and information about the operating system, when you access our site from a mobile device.<br/><br/>How We Use Your Information<br/><br/>Having accurate information about you permits us to provide you with a smooth, efficient, and customized experience. Specifically, we may use information collected about you via the site to:<br/><br/>Generate a personal profile about you so that future visits to the site will be personalized as possible.<br/>Increase the efficiency and operation of the site.<br/>Monitor and analyze usage and trends to improve your experience with the site.<br/>Notify you of updates to the site.<br/>Process your transactions and send you related information.<br/><br/>Disclosure of Your Information<br/><br/>We may share information we have collected about you in certain situations:<br/><br/>By Law or to Protect Rights: If we believe the release of information about you is necessary to comply with the law, enforce our site policies, or protect ours or others' rights, property, and safety.<br/><br/>Third-Party Service Providers: We may share your information with parties who perform services for us, including payment processing, data analysis, email delivery, hosting services, customer service, and marketing assistance.<br/><br/>Contact Us<br/><br/>If you have questions or comments about this Privacy Policy, please contact us at:<br/><br/>Baudie<br/>www.baudie.com</p>",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
