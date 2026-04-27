@@ -99,9 +99,9 @@
     "science": {
       "type": "image-text-block",
       "settings": {
-        "eyebrow": "",
-        "heading": "This one is just text",
-        "body": "<p>We believe in crafting products that stand the test of time. Quality isn't just a promise—it's woven into every detail, from the materials we source to the care we take in every step of creation. Our mission is to build things that matter, that last, and that bring genuine value to your life.</p>",
+        "eyebrow": "Powered by nature",
+        "heading": "Plants & Botanicals",
+        "body": "<p>We believe the best results start with the best ingredients. That’s why our formulas are powered by plants and thoughtfully selected botanicals, chosen for their natural ability to support balance and keep you feeling fresh. Every ingredient is carefully sourced and intentionally used. Nothing unnecessary, nothing overlooked. The result is a formula that feels clean, effective, and rooted in quality you can trust.</p>",
         "image": "shopify://shop_images/Petal_Kiss_5.png",
         "image_position": "right",
         "image_aspect_ratio": "portrait",
@@ -117,7 +117,7 @@
       "settings": {
         "eyebrow": "BAUDIE GIVES BACK",
         "heading": "St. Jude Children's Research Hospital",
-        "body": "<p>We believe in crafting products that stand the test of time. Quality isn't just a promise—it's woven into every detail, from the materials we source to the care we take in every step of creation. Our mission is to build things that matter, that last, and that bring genuine value to your life.</p>",
+        "body": "<p>Giving back is at the heart of what we do. That’s why we donate <strong>1% of every purchase</strong> to St. Jude Children's Research Hospital. Supporting their mission to provide life-saving care to children and families in need. It’s our way of making every order mean a little more, turning everyday routines into something that creates real impact beyond our community.</p>",
         "image": "shopify://shop_images/Banana_Leaves_against_Blue_Sky.png",
         "image_position": "left",
         "image_aspect_ratio": "portrait",
