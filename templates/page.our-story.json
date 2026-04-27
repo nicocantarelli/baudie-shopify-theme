@@ -72,8 +72,8 @@
     "mission": {
       "type": "about-mission",
       "settings": {
-        "eyebrow": "",
-        "statement": "We believe bodycare is skincare.",
+        "eyebrow": "OUR MISSION",
+        "statement": "It's your Baudie, smell good in it.",
         "image": "shopify://shop_images/explore-our-sets-background.png",
         "layout": "background",
         "overlay_opacity": 30,
