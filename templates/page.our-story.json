@@ -17,7 +17,7 @@
         "subheading": "YOUR DEODORANT'S SECRET WEAPON",
         "image": "shopify://shop_images/magnific_highend-beauty-flat-lay-t_2885705758_1__upscayl_2x_remacri-4x.png",
         "image_mobile": "shopify://shop_images/magnific_highend-beauty-flat-lay-t_2885705758_1__upscayl_2x_remacri-4x.png",
-        "overlay_opacity": 20,
+        "overlay_opacity": 10,
         "min_height_desktop": 450,
         "min_height_mobile": 380,
         "background_color": "#3e2027",
