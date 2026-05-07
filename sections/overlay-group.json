@@ -19,7 +19,7 @@
         "continue_button_text": "Continue shopping",
         "enable_shipping_bar": true,
         "shipping_bar_position": "top",
-        "shipping_threshold": "50",
+        "shipping_threshold": "65",
         "shipping_progress_message": "You're only [amount] away from FREE shipping!",
         "shipping_success_message": "You've unlocked FREE shipping!",
         "shipping_bar_fill_color": "#3e2027",
