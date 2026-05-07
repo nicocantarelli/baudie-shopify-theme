@@ -85,11 +85,12 @@
   content="{{ og_description | escape }}"
 >
 
+{%- assign title_text = page_title | default: shop.name -%}
 <title>
-  {{ page_title }}
+  {{ title_text }}
   {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
   {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-  {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+  {%- unless title_text contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
 </title>
 
 <link
