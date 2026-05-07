@@ -1,0 +1,5 @@
+.env
+node_modules
+*.log
+phase1-results.csv
+phase2-results.csv
