@@ -1,160 +1,178 @@
-<h1 align="center" style="position: relative;">
-  <br>
-    <img src="./assets/shoppy-x-ray.svg" alt="logo" width="200">
-  <br>
-  Shopify Skeleton Theme
-</h1>
+# Baudie — Shopify theme
 
-A minimal, carefully structured Shopify theme designed to help you quickly get started. Designed with modularity, maintainability, and Shopify's best practices in mind.
+Custom Shopify theme for [Baudie](https://baudie.com), built and maintained by [Lumios Digital](https://lumios.digital).
 
-<p align="center">
-  <a href="./LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
-  <a href="./actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Shopify/skeleton-theme/actions/workflows/ci.yml/badge.svg"></a>
-</p>
+Designed around Baudie's Deodorant Enhancer® product line, with custom sections for the storefront, product pages, about/our-story, and a configurable password page used during private launch and on the legacy Bella Skin Beauty store.
 
-## Getting started
+## Quick start
 
 ### Prerequisites
 
-Before starting, ensure you have the latest Shopify CLI installed:
+- [Shopify CLI](https://shopify.dev/docs/api/shopify-cli) (latest)
+- Access to the Baudie Shopify store (ask the team for an invite)
+- Recommended: [Shopify Liquid VS Code extension](https://shopify.dev/docs/storefronts/themes/tools/shopify-liquid-vscode) for syntax + linting
 
-- [Shopify CLI](https://shopify.dev/docs/api/shopify-cli) – helps you download, upload, preview themes, and streamline your workflows
-
-If you use VS Code:
-
-- [Shopify Liquid VS Code Extension](https://shopify.dev/docs/storefronts/themes/tools/shopify-liquid-vscode) – provides syntax highlighting, linting, inline documentation, and auto-completion specifically designed for Liquid templates
-
-### Clone
-
-Clone this repository using Git or Shopify CLI:
+### Local dev
 
 ```bash
-git clone git@github.com:Shopify/skeleton-theme.git
-# or
-shopify theme init
+git clone git@github.com:lumiosdigital/baudie-shopify-theme.git
+cd baudie-shopify-theme
+shopify theme dev --store baudie.myshopify.com
 ```
 
-### Preview
+This boots a local server with hot reload pointed at your dev theme on Shopify. First run will prompt you to authenticate and select a theme.
 
-Preview this theme using Shopify CLI:
+### Useful commands
 
 ```bash
-shopify theme dev
+shopify theme pull         # pull latest from a remote theme
+shopify theme push         # push local to a remote theme
+shopify theme list         # list themes on the connected store
+shopify theme check        # lint Liquid + theme structure
 ```
 
-## Theme architecture
+## Architecture
 
-```bash
+Standard Shopify theme structure — see [shopify.dev/docs/storefronts/themes/architecture](https://shopify.dev/docs/storefronts/themes/architecture) for full reference.
+
+```
 .
-├── assets          # Stores static assets (CSS, JS, images, fonts, etc.)
-├── blocks          # Reusable, nestable, customizable UI components
-├── config          # Global theme settings and customization options
-├── layout          # Top-level wrappers for pages (layout templates)
-├── locales         # Translation files for theme internationalization
-├── sections        # Modular full-width page components
-├── snippets        # Reusable Liquid code or HTML fragments
-└── templates       # Templates combining sections to define page structures
+├── assets/         # Fonts, critical.css, JS, static images
+├── blocks/         # Reusable theme blocks (group, text)
+├── config/         # Global theme settings + data
+├── layout/         # theme.liquid, password.liquid
+├── locales/        # Translations + schema translations
+├── sections/       # 40 sections — the bulk of the work lives here
+├── snippets/       # Reusable Liquid fragments (css-variables, meta-tags, prelude, etc.)
+└── templates/      # JSON templates that compose sections into pages
 ```
 
-To learn more, refer to the [theme architecture documentation](https://shopify.dev/docs/storefronts/themes/architecture).
+### Key custom sections
+
+| Section | Purpose |
+|---|---|
+| `hero-product.liquid` | Homepage hero with product CTA |
+| `product-bundle.liquid` | Bundle product template (variants + pricing logic) |
+| `product-details.liquid` / `-features.liquid` / `-faq.liquid` / `-benefits.liquid` | PDP composition |
+| `meet-your-scents.liquid` | Scent showcase with media |
+| `what-makes-different.liquid` | Pillar grid |
+| `explore-sets.liquid` | Set/bundle showcase with editable badges |
+| `image-text-block.liquid` | Flexible image + copy section, supports full-bleed and standard widths |
+| `about-hero.liquid` / `about-philosophy.liquid` / `about-mission.liquid` / `about-partnerships.liquid` | Our Story page composition |
+| `password.liquid` | Dual-mode password page (form to unlock OR link redirect) — used on Baudie during private launch and on the legacy Bella Skin Beauty store |
 
 ### Templates
 
-[Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) control what's rendered on each type of page in a theme.
+Custom JSON templates live in [templates/](./templates):
 
-The Skeleton Theme scaffolds [JSON templates](https://shopify.dev/docs/storefronts/themes/architecture/templates/json-templates) to make it easy for merchants to customize their store.
+- `index.json` — homepage
+- `product.json` / `product.bundle.json` / `product.wipes.json` — PDPs (product-type-specific)
+- `page.our-story.json` / `page.contact.json` / `page.customer-care.json` / `page.privacy.json` / `page.terms.json`
+- `password.json` — coming-soon / private gate
 
-None of the template types are required, and not all of them are included in the Skeleton Theme. Refer to the [template types reference](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) for a full list.
+## Conventions
 
-### Sections
+Follow these patterns. They're enforced informally — match the surrounding code.
 
-[Sections](https://shopify.dev/docs/storefronts/themes/architecture/sections) are Liquid files that allow you to create reusable modules of content that can be customized by merchants. They can also include blocks which allow merchants to add, remove, and reorder content within a section.
+### File + class naming
 
-Sections are made customizable by including a `{% schema %}` in the body. For more information, refer to the [section schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/sections/section-schema).
+- **Liquid files**: kebab-case (`image-text-block.liquid`, `about-hero.liquid`)
+- **CSS classes**: BEM (`image-text-block__heading--mobile-top`)
+- **Liquid variables**: snake_case (`has_content`, `image_position`)
+- **Settings IDs**: snake_case with prefixes (`prelude_heading_text_size`, `image_aspect_ratio`)
+- **Translation keys**: hierarchical, max 3 levels (`t:sections.about_hero.name`)
 
-### Blocks
+### Section structure
 
-[Blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks) let developers create flexible layouts by breaking down sections into smaller, reusable pieces of Liquid. Each block has its own set of settings, and can be added, removed, and reordered within a section.
+```liquid
+{%- liquid
+  # 1. Logic block at top — assigns, defaults
+-%}
 
-Blocks are made customizable by including a `{% schema %}` in the body. For more information, refer to the [block schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/schema).
+{# 2. HTML markup #}
+<section class="component-name full-width" style="--var: ...">
+  ...
+</section>
 
-## Schemas
+{% stylesheet %}
+  /* 3. Scoped CSS using BEM + custom properties */
+{% endstylesheet %}
 
-When developing components defined by schema settings, we recommend these guidelines to simplify your code:
+{% javascript %}
+  /* 4. Optional JS (for non-trivial behavior, prefer web components) */
+{% endjavascript %}
 
-- **Single property settings**: For settings that correspond to a single CSS property, use CSS variables:
+{% schema %}
+{
+  /* 5. Schema at bottom */
+}
+{% endschema %}
+```
 
-  ```liquid
-  <div class="collection" style="--gap: {{ block.settings.gap }}px">
-    ...
-  </div>
+### Full-width sections
 
-  {% stylesheet %}
-    .collection {
-      gap: var(--gap);
-    }
-  {% endstylesheet %}
+Shopify wraps every section in a 3-column grid (`[margin][content][margin]`) defined in [assets/critical.css](./assets/critical.css). By default, sections render in the middle column with capped width.
 
-  {% schema %}
-  {
-    "settings": [{
-      "type": "range",
-      "label": "gap",
-      "id": "gap",
-      "min": 0,
-      "max": 100,
-      "unit": "px",
-      "default": 0,
-    }]
-  }
-  {% endschema %}
-  ```
+To make a section span the full viewport, add the `full-width` class to its root element:
 
-- **Multiple property settings**: For settings that control multiple CSS properties, use CSS classes:
+```liquid
+<section class="my-section full-width">
+```
 
-  ```liquid
-  <div class="collection {{ block.settings.layout }}">
-    ...
-  </div>
+This is required for hero-style sections, full-bleed image-text blocks, and the password page.
 
-  {% stylesheet %}
-    .collection--full-width {
-      /* multiple styles */
-    }
-    .collection--narrow {
-      /* multiple styles */
-    }
-  {% endstylesheet %}
+### Translations
 
-  {% schema %}
-  {
-    "settings": [{
-      "type": "select",
-      "id": "layout",
-      "label": "layout",
-      "values": [
-        { "value": "collection--full-width", "label": "t:options.full" },
-        { "value": "collection--narrow", "label": "t:options.narrow" }
-      ]
-    }]
-  }
-  {% endschema %}
-  ```
+All user-facing strings go through `{{ 'key' | t }}`. Add new strings to:
 
-## CSS & JavaScript
+- [locales/en.default.json](./locales/en.default.json) — storefront-facing strings
+- [locales/en.default.schema.json](./locales/en.default.schema.json) — theme editor labels (when using `t:` in schema)
 
-For CSS and JavaScript, we recommend using the [`{% stylesheet %}`](https://shopify.dev/docs/api/liquid/tags#stylesheet) and [`{% javascript %}`](https://shopify.dev/docs/api/liquid/tags/javascript) tags. They can be included multiple times, but the code will only appear once.
+Sentence case (only proper nouns capitalized).
 
-### `critical.css`
+### CSS
 
-The Skeleton Theme explicitly separates essential CSS necessary for every page into a dedicated `critical.css` file.
+- Mobile-first — base styles for mobile, `@media (min-width: 769px)` to enhance for desktop
+- Use `clamp()` for fluid typography
+- BEM modifiers: `.component--state` for state, `.component__element` for parts
+- CSS custom properties for dynamic values via inline `style="--var: {{ setting }}"`
 
-## Contributing
+### Typography
 
-We're excited for your contributions to the Skeleton Theme! This repository aims to remain as lean, lightweight, and fundamental as possible, and we kindly ask your contributions to align with this intention.
+Custom fonts live in [assets/](./assets). Reference via CSS variables defined in [snippets/css-variables.liquid](./snippets/css-variables.liquid):
 
-Visit our [CONTRIBUTING.md](./CONTRIBUTING.md) for a detailed overview of our process, guidelines, and recommendations.
+- `--font-alyona` — display headings (Alyona Regular/Bold)
+- `--font-jokker` — body copy (Jokker Regular/Semibold/Bold)
+- `--font-sweet-sans` — buttons + small caps (Sweet Sans Pro Medium/Bold)
+
+### Accessibility
+
+- Semantic HTML (`<button>`, `<nav>`, `<section>`)
+- ARIA on interactive components (`aria-expanded`, `aria-controls`)
+- Custom Web Components for enhanced behavior over inline JS where possible
+
+### Animations
+
+Driven by data attributes — see existing `data-animate-elements-on-scroll` and `data-animate-delay="125"` usage in sections like `about-hero` and `meet-your-scents`.
+
+## Deploy
+
+This repo is connected to the production Shopify store via Shopify's GitHub integration. **Pushes to `main` automatically sync to the live theme** — there is no separate deploy step.
+
+That means:
+
+- Commits land in the theme almost immediately
+- Edits made in the Shopify theme editor will create commits on `main` (look for `Update from Shopify for theme baudie-shopify-theme/main` in the log)
+- Always pull before starting work to avoid clobbering merchant edits
+
+For testing changes without going live, push to a separate branch and connect it to a non-production theme via Shopify admin → Online Store → Themes.
+
+## Notes
+
+- **Section settings** — when adding new schema settings, defaults will populate on the next admin load, but existing template JSON files in `/templates/` may have stale settings cached. Edit them in the theme editor or update the JSON directly.
+- **Password page** — has two modes (`password` form vs `link` redirect) controlled by a section setting. Used identically on Baudie (during private launch) and on the legacy Bella Skin Beauty store (set to link mode, redirecting to baudie.com).
+- **Web components** — the project favors lightweight custom elements over framework JS. Keep behavior local to the section via `{% javascript %}` when possible.
 
 ## License
 
-Skeleton Theme is open-sourced under the [MIT](./LICENSE.md) License.
+Proprietary — Lumios Digital + Baudie. See [LICENSE.md](./LICENSE.md).
