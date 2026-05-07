@@ -12,6 +12,9 @@
   style="--itb-bg: {{ bg_color }}; --itb-text: {{ text_color }};">
   <div class="image-text-block__container">
     <div class="image-text-block__grid">
+      {%- if container_width == 'full' and section.settings.heading != blank -%}
+        <h2 class="image-text-block__heading image-text-block__heading--mobile-top">{{ section.settings.heading }}</h2>
+      {%- endif -%}
       <div class="image-text-block__image-col">
         {%- if section.settings.image != blank -%}
           <div class="image-text-block__image-wrapper">
@@ -50,10 +53,26 @@
 
 .image-text-block__text-col {
   background-color: var(--itb-bg);
-  padding: 40px 0;
+  padding: 40px 28px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.image-text-block__heading--mobile-top {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .image-text-block--full .image-text-block__heading--mobile-top {
+    display: block;
+    padding: 0 28px;
+    margin: 0 0 24px;
+  }
+
+  .image-text-block--full .image-text-block__text-col .image-text-block__heading:not(.image-text-block__heading--mobile-top) {
+    display: none;
+  }
 }
 
 .image-text-block--text-top .image-text-block__text-col {
