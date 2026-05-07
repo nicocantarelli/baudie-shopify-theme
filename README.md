@@ -155,23 +155,130 @@ Custom fonts live in [assets/](./assets). Reference via CSS variables defined in
 
 Driven by data attributes — see existing `data-animate-elements-on-scroll` and `data-animate-delay="125"` usage in sections like `about-hero` and `meet-your-scents`.
 
+## Web components
+
+The project favors lightweight custom elements scoped per-section over framework JS. Each lives inside a `{% javascript %}` block in its parent section file.
+
+| Custom element | Defined in | What it does |
+|---|---|---|
+| `<meet-scents-section>` | [sections/meet-your-scents.liquid](./sections/meet-your-scents.liquid) | Scent picker — handles selection state, image swap, and active-card sync |
+| `<related-products>` | [sections/related-products.liquid](./sections/related-products.liquid) | Related-products carousel/grid behavior |
+
+When adding new interactive sections, follow the same pattern: define the class inside `{% javascript %}`, register with `customElements.define`, and tag the section root with the matching element name.
+
+## Metafields
+
+Custom product metafields used throughout the theme. All live under the `custom` namespace (`product.metafields.custom.*`). When migrating stores or duplicating products, these need to come along — see the matching definitions in Shopify admin → Settings → Custom data → Products.
+
+### Image references
+
+| Key | Purpose | Used in |
+|---|---|---|
+| `card_image` | Default product card image (landscape/wide) | [snippets/product-card.liquid](./snippets/product-card.liquid), `explore-sets`, `product-bundle` |
+| `card_image_portrait` | Portrait variant of the card image | `product-card` |
+| `card_hover_image` | Hover-state image swap on cards | `product-card`, `explore-sets` |
+| `meet_scents_image` | Hero image for the scent picker | `meet-your-scents` |
+
+### Colors
+
+| Key | Purpose |
+|---|---|
+| `product_card_background` | Card background color (defaults to `#FCF0D2`) |
+| `card_background_color` | Background in `meet-your-scents` (defaults to `#FFCAD2`) |
+| `product_text_color` | Text color override on PDP |
+
+### Copy + content
+
+| Key | Purpose |
+|---|---|
+| `short_description` | Truncated product blurb for cards + scent picker |
+| `bottle_size` | Bottle size string shown on PDP |
+| `product_details` | Rich text — accordion content |
+| `scent_notes` | Rich text — scent breakdown |
+| `key_ingredients` | Rich text — featured ingredients |
+| `full_ingredient_list` | Rich text — full INCI list |
+| `scent_name` | Display name for the scent picker (separate from product title) |
+
 ## Deploy
 
 This repo is connected to the production Shopify store via Shopify's GitHub integration. **Pushes to `main` automatically sync to the live theme** — there is no separate deploy step.
 
-That means:
+### Branch strategy
 
-- Commits land in the theme almost immediately
-- Edits made in the Shopify theme editor will create commits on `main` (look for `Update from Shopify for theme baudie-shopify-theme/main` in the log)
-- Always pull before starting work to avoid clobbering merchant edits
+Currently the project uses a **single-branch (`main` only)** workflow. This works because the team is small and the scope is contained, but it has tradeoffs:
 
-For testing changes without going live, push to a separate branch and connect it to a non-production theme via Shopify admin → Online Store → Themes.
+- **Pro**: simple, no merge dance, theme editor edits land in version control immediately
+- **Con**: every commit goes live; no preview environment isolated from production
+
+If you need to test substantial changes without exposing them to customers:
+
+1. Create a feature branch (`feat/some-change`)
+2. In Shopify admin → **Online Store → Themes**, duplicate the live theme into an unpublished "Preview" theme
+3. Connect the feature branch to that preview theme via the GitHub integration (Shopify admin → Theme actions → Connect to GitHub)
+4. Push to the feature branch to test in isolation
+5. Merge to `main` when ready, which auto-deploys to live
+
+When this happens often enough to be annoying, formalize a `staging` branch wired to a permanent preview theme.
+
+### Theme editor commits
+
+Edits made in the Shopify admin theme editor are auto-committed to `main` by Shopify (look for `Update from Shopify for theme baudie-shopify-theme/main` in the git log). **Always pull before starting work** to avoid clobbering merchant edits:
+
+```bash
+git pull --rebase
+```
+
+## Runbook
+
+Common gotchas and where to look first.
+
+### Horizontal scroll on a section
+
+Likely cause: a section is using `width: 100vw` instead of the `full-width` class. `100vw` includes the scrollbar width and overflows the viewport.
+
+**Fix**: remove `width: 100vw` from the section's CSS, add `full-width` to the section's root class list. See [assets/critical.css](./assets/critical.css) for the underlying grid pattern (`.shopify-section > .full-width { grid-column: 1 / -1; }`).
+
+### Section background not reaching the screen edges
+
+Cause: missing `full-width` class — the section is rendering inside the constrained middle column of the section grid, so the body background (`#FFF7EA`) shows on either side.
+
+**Fix**: add `full-width` to the section's root.
+
+### Browser tab shows " – Baudie" with empty prefix
+
+Cause: the page has no `page_title` and the `<title>` template appended " – Baudie" anyway.
+
+**Fix**: already handled in [snippets/meta-tags.liquid](./snippets/meta-tags.liquid) — falls back to `shop.name` when `page_title` is blank. If this regresses, check that snippet.
+
+### Centering a hero or banner looks "off"
+
+Cause: asymmetric padding (e.g., `padding: 120px 24px 40px`). Even though the flex container is centering, the asymmetric padding shifts the visual center.
+
+**Fix**: equalize top/bottom padding when the section relies on flex centering.
+
+### Theme editor edits appear as commits on `main`
+
+This is expected — Shopify's GitHub integration auto-commits theme editor changes. They show up as `Update from Shopify for theme baudie-shopify-theme/main`. Don't force-push over them; pull first.
+
+### A new schema setting isn't showing up in the editor
+
+Schema changes only take effect after Shopify re-validates the section. If a setting doesn't show:
+
+1. Hard-refresh the theme editor
+2. Check the section's `{% schema %}` JSON for syntax errors (`shopify theme check` will catch most)
+3. Existing template JSON files in `/templates/` may have stale data — settings with new IDs will pick up defaults; renamed IDs become orphans
+
+### Mobile renders desktop styles (or vice versa)
+
+The breakpoint convention is **mobile-first** with `@media (min-width: 769px)` to enhance for desktop. If styles aren't applying:
+
+1. Check the breakpoint direction matches the section convention
+2. Confirm there's no later rule overriding due to specificity (`.section--full .section__heading` beats `.section__heading`)
 
 ## Notes
 
 - **Section settings** — when adding new schema settings, defaults will populate on the next admin load, but existing template JSON files in `/templates/` may have stale settings cached. Edit them in the theme editor or update the JSON directly.
 - **Password page** — has two modes (`password` form vs `link` redirect) controlled by a section setting. Used identically on Baudie (during private launch) and on the legacy Bella Skin Beauty store (set to link mode, redirecting to baudie.com).
-- **Web components** — the project favors lightweight custom elements over framework JS. Keep behavior local to the section via `{% javascript %}` when possible.
 
 ## License
 
