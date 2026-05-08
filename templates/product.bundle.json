@@ -72,6 +72,7 @@
         "trust_badge_eyweTh"
       ],
       "settings": {
+        "show_watch_in_action": false,
         "scent_collection": "shop",
         "bundle_size": 3,
         "gradient_color_1": "#f4d2a4",

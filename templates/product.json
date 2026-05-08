@@ -72,6 +72,7 @@
         "trust_badge_fcKKBw"
       ],
       "settings": {
+        "show_watch_in_action": false,
         "popup_text_color": "#3e2027",
         "bundle_upsell_bg_color": "#ffffff",
         "bundle_upsell_text_color": "#3e2027"
