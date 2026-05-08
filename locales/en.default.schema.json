@@ -315,6 +315,7 @@
       "ingredients_popup_title": "Full ingredient list",
       "close": "Close",
       "settings": {
+        "show_watch_in_action": "Show \"Watch it in action\" section",
         "scent_collection": "Scent collection",
         "bundle_size": "Bundle size",
         "colors_header": "Colors",
@@ -366,6 +367,7 @@
     },
     "product": {
       "name": "Product",
+      "show_watch_in_action": "Show \"Watch it in action\" section",
       "popup_text_color": "Popup text color",
       "bundle_upsell_header": "Bundle upsell",
       "bundle_upsell_bg_color": "Button background color",

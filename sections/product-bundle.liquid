@@ -130,21 +130,43 @@
       </div>
     </div>
 
-    {%- comment -%} Watch It In Action {%- endcomment -%}
-    <div class="bundle-main__video-section">
-      <p class="bundle-main__video-heading">{{ 'sections.product_bundle.watch_in_action' | t }}</p>
-      <div class="bundle-main__video-grid" data-tolstoy-container>
-        <div class="bundle-main__video-placeholder"></div>
-        <div class="bundle-main__video-placeholder"></div>
-        <div class="bundle-main__video-placeholder"></div>
-        <div class="bundle-main__video-placeholder"></div>
-        <div class="bundle-main__video-placeholder"></div>
-      </div>
-    </div>
-
     {%- comment -%} Accordions {%- endcomment -%}
     <div class="bundle-main__accordions" data-bundle-accordions>
       <hr class="bundle-main__divider">
+
+      {%- comment -%} Watch It In Action {%- endcomment -%}
+      {% if section.settings.show_watch_in_action %}
+        <div class="bundle-main__accordion is-open" data-accordion>
+          <button
+            type="button"
+            id="accordion-video-trigger-{{ section.id }}"
+            class="bundle-main__accordion-trigger"
+            aria-expanded="true"
+            aria-controls="accordion-video-{{ section.id }}">
+            <span>{{ 'sections.product_bundle.watch_in_action' | t }}</span>
+            <svg class="bundle-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            class="bundle-main__accordion-content"
+            id="accordion-video-{{ section.id }}"
+            role="region"
+            aria-labelledby="accordion-video-trigger-{{ section.id }}"
+            aria-hidden="false">
+            <div class="bundle-main__accordion-body">
+              <div class="bundle-main__video-grid" data-tolstoy-container>
+                <div class="bundle-main__video-placeholder"></div>
+                <div class="bundle-main__video-placeholder"></div>
+                <div class="bundle-main__video-placeholder"></div>
+                <div class="bundle-main__video-placeholder"></div>
+                <div class="bundle-main__video-placeholder"></div>
+              </div>
+            </div>
+          </div>
+          <hr class="bundle-main__divider">
+        </div>
+      {% endif %}
 
       {% if product_details %}
         <div class="bundle-main__accordion" data-accordion>
@@ -648,22 +670,6 @@
   }
 
   /* --- Watch It In Action --- */
-
-  .bundle-main__video-section {
-    display: flex;
-    flex-direction: column;
-    gap: 13px;
-  }
-
-  .bundle-main__video-heading {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.14px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-  }
 
   .bundle-main__video-grid {
     display: flex;
@@ -1275,6 +1281,12 @@
   "name": "t:sections.product_bundle.name",
   "class": "bundle-main-section",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_watch_in_action",
+      "label": "t:sections.product_bundle.settings.show_watch_in_action",
+      "default": true
+    },
     {
       "type": "collection",
       "id": "scent_collection",
