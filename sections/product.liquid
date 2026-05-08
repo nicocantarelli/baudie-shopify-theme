@@ -174,11 +174,11 @@
 
     {%- comment -%} Accordions {%- endcomment -%}
     <div class="product-main__accordions" data-product-accordions>
+      <hr class="product-main__divider">
 
       {%- comment -%} Watch It In Action {%- endcomment -%}
       {% if section.settings.show_watch_in_action %}
         <div class="product-main__accordion is-open" data-accordion>
-          <hr class="product-main__divider">
           <button
             type="button"
             id="accordion-video-trigger-{{ section.id }}"
