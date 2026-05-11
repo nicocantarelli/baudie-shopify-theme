@@ -11,6 +11,7 @@
   "sections": {
     "main": {
       "type": "blog",
+      "disabled": true,
       "settings": {
         "seo_heading": "",
         "seo_text": "",
