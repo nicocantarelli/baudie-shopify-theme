@@ -393,7 +393,7 @@
     "subscribe": "Subscribe",
     "facebook": "Facebook",
     "instagram": "Instagram",
-    "copyright": "© {{ shop_name }} {{ year }}. All rights reserved."
+    "copyright": "{{ shop_name }} {{ year }}. All rights reserved."
   },
   "sidecart": {
     "title": "Shopping cart",
