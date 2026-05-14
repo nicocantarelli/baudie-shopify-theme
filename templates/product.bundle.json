@@ -280,7 +280,7 @@
           "type": "faq_item",
           "settings": {
             "question": "Will every scent work the same?",
-            "answer": "<p>This product works off of body chemistry. Therefore you may experience different results with different scents. If you notice one scent doesn’t work as well for you, do not get discouraged as we have plenty of scents for you to try and experience great results. We recommend trying our Discovery Set to start.</p>"
+            "answer": "<p>This product works off of body chemistry. Therefore you may experience different results with different scents. If you notice one scent doesn’t work as well for you, do not get discouraged as we have plenty of scents for you to try and experience great results. We recommend trying our <a href=\"/products/discovery-set\" target=\"_blank\" title=\"Discovery Set\">Discovery Set</a> to start.</p>"
           }
         },
         "faq_item_UxgLEU": {
