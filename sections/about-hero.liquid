@@ -4,6 +4,11 @@
   assign overlay = section.settings.overlay_opacity | default: 30
   assign min_h_desktop = section.settings.min_height_desktop | default: 450
   assign min_h_mobile = section.settings.min_height_mobile | default: 380
+  assign subheading_size = section.settings.subheading_size | default: 18
+  assign subheading_weight = 400
+  if section.settings.subheading_bold
+    assign subheading_weight = 700
+  endif
 -%}
 
 <section
@@ -14,6 +19,8 @@
     --ah-overlay: {{ overlay | divided_by: 100.0 }};
     --ah-min-desktop: {{ min_h_desktop }}px;
     --ah-min-mobile: {{ min_h_mobile }}px;
+    --ah-subheading-size: {{ subheading_size }}px;
+    --ah-subheading-weight: {{ subheading_weight }};
     {%- if section.settings.image != blank -%}
       --ah-image: url('{{ section.settings.image | image_url: width: 2400 }}');
     {%- endif -%}
@@ -103,7 +110,8 @@
 
 .about-hero__subheading {
   font-family: var(--font-jokker);
-  font-size: 16px;
+  font-size: calc(var(--ah-subheading-size, 18px) - 2px);
+  font-weight: var(--ah-subheading-weight, 400);
   line-height: 1.5;
   margin: 0;
   max-width: 600px;
@@ -123,7 +131,7 @@
   }
 
   .about-hero__subheading {
-    font-size: 18px;
+    font-size: var(--ah-subheading-size, 18px);
   }
 }
 {% endstylesheet %}
@@ -152,6 +160,22 @@
       "type": "text",
       "id": "subheading",
       "label": "t:sections.about_hero.settings.subheading"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "t:sections.about_hero.settings.subheading_size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "checkbox",
+      "id": "subheading_bold",
+      "label": "t:sections.about_hero.settings.subheading_bold",
+      "default": false
     },
     {
       "type": "header",

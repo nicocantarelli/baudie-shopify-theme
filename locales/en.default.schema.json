@@ -417,6 +417,8 @@
         "colors_header": "Colors",
         "eyebrow": "Eyebrow text",
         "subheading": "Subheading",
+        "subheading_size": "Subheading size",
+        "subheading_bold": "Bold subheading",
         "image_desktop": "Desktop image",
         "image_mobile": "Mobile image",
         "overlay_opacity": "Image overlay opacity",
