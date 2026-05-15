@@ -245,9 +245,9 @@
         "heading": "What Makes Baudie Different",
         "description": "",
         "desktop_base": "shopify://shop_images/test.png",
-        "desktop_overlay": "shopify://shop_images/new-desktop-molecule-text.png",
+        "desktop_overlay": "shopify://shop_images/molecule-desktop-text.png",
         "mobile_base": "shopify://shop_images/molecule-m.png",
-        "mobile_overlay": "shopify://shop_images/next-mobile-molecule-text.png",
+        "mobile_overlay": "shopify://shop_images/molecule-mobile-text.png",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
