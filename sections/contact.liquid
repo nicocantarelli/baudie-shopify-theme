@@ -19,7 +19,14 @@
     {%- form 'contact' -%}
       {%- if form.posted_successfully? -%}
         <div class="contact__success" role="status">
-          <p>{{ 'sections.contact.success_message' | t }}</p>
+          <span class="contact__success-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="15" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 16.5L14.5 21L22 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <h2 class="contact__success-heading">{{ 'sections.contact.success_heading' | t }}</h2>
+          <p class="contact__success-message">{{ 'sections.contact.success_message' | t }}</p>
         </div>
       {%- endif -%}
 
@@ -238,18 +245,52 @@
 
   .contact__success {
     width: 100%;
-    padding: 16px 24px;
-    background-color: rgba(62, 32, 39, 0.08);
+    padding: 48px 32px;
+    background-color: rgba(255, 250, 230, 0.5);
     border: 1px solid var(--text-color, #3E2027);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+    animation: contact-success-in 0.4s ease-out;
   }
 
-  .contact__success p {
+  .contact__success-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color, #3E2027);
+    margin-bottom: 4px;
+  }
+
+  .contact__success-heading {
+    font-family: var(--font-alyona);
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--text-color, #3E2027);
+    margin: 0;
+  }
+
+  .contact__success-message {
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
     color: var(--text-color, #3E2027);
-    text-align: center;
     margin: 0;
+    max-width: 480px;
+  }
+
+  @keyframes contact-success-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .contact__errors {
@@ -289,6 +330,10 @@
 
     .contact__heading {
       font-size: 56px;
+    }
+
+    .contact__success-heading {
+      font-size: 32px;
     }
   }
 
@@ -330,6 +375,19 @@
 
     .contact__button {
       height: 48px;
+    }
+
+    .contact__success {
+      padding: 36px 20px;
+      gap: 12px;
+    }
+
+    .contact__success-heading {
+      font-size: 28px;
+    }
+
+    .contact__success-message {
+      font-size: 14px;
     }
   }
 {% endstylesheet %}
