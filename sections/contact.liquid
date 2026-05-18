@@ -31,6 +31,14 @@
             {{ 'sections.contact.success_back_button' | t }}
           </a>
         </div>
+        <script>
+          (function () {
+            window.scrollTo(0, 0);
+            window.addEventListener('load', function () {
+              window.scrollTo(0, 0);
+            });
+          })();
+        </script>
       {%- else -%}
         {%- if form.errors -%}
           <div class="contact__errors" role="alert">
