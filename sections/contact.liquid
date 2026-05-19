@@ -174,136 +174,15 @@
     width: 100%;
     max-width: 720px;
     margin-top: 16px;
-    font-family: var(--font-jokker);
-    color: var(--text-color, #3E2027);
   }
 
-  .contact__form > *,
-  .contact__form > * > *,
-  .contact__form iframe,
-  .contact__form [class*="contact-form" i],
-  .contact__form [class*="ContactForm"],
-  .contact__form [class*="gorgias" i] {
+  /* Gorgias renders the form inside an iframe — its contents cannot be
+     styled from here. Configure colors, fonts, and visible fields inside
+     the Gorgias dashboard (Contact Forms → Branding/Appearance). */
+  .contact__form iframe {
     width: 100% !important;
     max-width: 100% !important;
-    box-sizing: border-box;
-  }
-
-  /* Strip the Gorgias card chrome — transparent so the section pink shows through */
-  .contact__form > div,
-  .contact__form > div > div,
-  .contact__form [class*="card" i],
-  .contact__form [class*="container" i],
-  .contact__form [class*="wrapper" i] {
-    background-color: transparent !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    border: none !important;
-  }
-
-  /* Hide the redundant "Contact us" heading — page already says "Get In Touch" */
-  .contact__form h1,
-  .contact__form h2,
-  .contact__form h3,
-  .contact__form h4 {
-    display: none !important;
-  }
-
-  /* Labels in Baudie typography */
-  .contact__form label {
-    font-family: var(--font-jokker) !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    line-height: 1.4 !important;
-    color: var(--text-color, #3E2027) !important;
-    text-transform: none !important;
-    letter-spacing: 0 !important;
-  }
-
-  /* Inputs, selects, textareas — match the original brown-bordered look */
-  .contact__form input:not([type='submit']):not([type='button']):not([type='checkbox']):not([type='radio']),
-  .contact__form select,
-  .contact__form textarea {
-    width: 100% !important;
-    height: 50px !important;
-    padding: 10px 25px !important;
-    background-color: transparent !important;
-    border: 1px solid var(--text-color, #3E2027) !important;
-    border-radius: 0 !important;
-    font-family: var(--font-jokker) !important;
-    font-size: 16px !important;
-    line-height: 1.5 !important;
-    color: var(--text-color, #3E2027) !important;
-    box-sizing: border-box !important;
-    box-shadow: none !important;
-    appearance: none !important;
-    -webkit-appearance: none !important;
-  }
-
-  .contact__form textarea {
-    height: auto !important;
-    min-height: 150px !important;
-    resize: vertical !important;
-    padding-top: 14px !important;
-  }
-
-  .contact__form select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%233E2027' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 20px center !important;
-    padding-right: 50px !important;
-    cursor: pointer !important;
-  }
-
-  .contact__form input::placeholder,
-  .contact__form textarea::placeholder {
-    color: var(--text-color, #3E2027) !important;
-    opacity: 0.5 !important;
-  }
-
-  .contact__form input:focus,
-  .contact__form select:focus,
-  .contact__form textarea:focus {
-    border-color: var(--text-color, #3E2027) !important;
-    outline: 2px solid rgba(62, 32, 39, 0.1) !important;
-    outline-offset: 0 !important;
-  }
-
-  /* Required asterisk — brown instead of bright red */
-  .contact__form abbr,
-  .contact__form abbr[title],
-  .contact__form [class*="required" i] {
-    color: var(--text-color, #3E2027) !important;
-    text-decoration: none !important;
-  }
-
-  /* Submit button — match the Baudie brown-on-cream pill */
-  .contact__form button[type='submit'],
-  .contact__form input[type='submit'],
-  .contact__form [class*='submit' i] button,
-  .contact__form button[class*='submit' i] {
-    width: 100% !important;
-    height: 50px !important;
-    padding: 10px 20px !important;
-    font-family: var(--font-sweet-sans) !important;
-    font-weight: 500 !important;
-    font-size: 14px !important;
-    line-height: normal !important;
-    letter-spacing: -0.14px !important;
-    text-transform: uppercase !important;
-    color: var(--button-text, #FFFAE6) !important;
-    background-color: var(--button-bg, #3E2027) !important;
-    border: none !important;
-    border-radius: 0 !important;
-    cursor: pointer !important;
-    transition: opacity 0.2s ease, transform 0.2s ease !important;
-  }
-
-  .contact__form button[type='submit']:hover,
-  .contact__form input[type='submit']:hover {
-    opacity: 0.9 !important;
-    transform: translateY(-1px) !important;
+    border: 0 !important;
   }
 
   .contact__fields {
