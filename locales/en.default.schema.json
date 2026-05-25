@@ -127,7 +127,6 @@
     "heading": "Heading",
     "description": "Description",
     "product_image": "Product image",
-    "second_heading": "Second Line for Heading",
     "video": "Video",
     "placeholder_image": "Placeholder image",
     "horizontal_position": "Horizontal position",
@@ -194,7 +193,8 @@
     },
     "product_details": {
       "content_header": "Content",
-      "image_header": "Image"
+      "image_header": "Image",
+      "heading_info": "Each line or paragraph becomes a new heading line. Press enter to add more lines."
     },
     "meet_scents": {
       "name": "Meet Your Scents",

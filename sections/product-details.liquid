@@ -7,10 +7,7 @@
     {%- comment -%} Left Column - Content {%- endcomment -%}
     <div class="product-details__content">
       {% if section.settings.heading != blank %}
-        <div>
-          <h2 class="product-details__heading">{{ section.settings.heading }}</h2>
-          <h2 class="product-details__second-heading">{{ section.settings.second_heading }}</h2>
-        </div>
+        <div class="product-details__heading">{{ section.settings.heading }}</div>
       {% endif %}
 
       {% if section.settings.description != blank %}
@@ -167,18 +164,16 @@
     font-weight: 400;
     line-height: 1;
     color: var(--text-color, #3E2027);
-    margin: 0;
     max-width: 601px;
   }
 
-  .product-details__second-heading {
-    font-family: var(--font-alyona);
-    font-size: 40px;
-    font-weight: 400;
-    line-height: 1;
-    color: var(--text-color, #3E2027);
+  .product-details__heading > * {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
     margin: 0;
-    max-width: 601px;
   }
 
   .product-details__description {
@@ -297,12 +292,6 @@
       line-height: 1.1;
     }
 
-    .product-details__second-heading {
-      font-size: 30px;
-      max-width: 100%;
-      line-height: 1.1;
-    }
-
     .product-details__description {
       font-size: 14px;
       max-width: 100%;
@@ -365,16 +354,11 @@
         "content": "t:sections.product_details.content_header"
       },
       {
-        "type": "textarea",
+        "type": "richtext",
         "id": "heading",
         "label": "t:labels.heading",
-        "default": "Not a deodorant."
-      },
-      {
-        "type": "textarea",
-        "id": "second_heading",
-        "label": "t:labels.second_heading",
-        "default": "The step your deodorant's been missing."
+        "info": "t:sections.product_details.heading_info",
+        "default": "<p>Not a deodorant.</p><p>The step your deodorant's been missing.</p>"
       },
       {
         "type": "richtext",
