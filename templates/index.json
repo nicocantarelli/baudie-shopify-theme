@@ -117,7 +117,7 @@
     "product_details_XyZ123": {
       "type": "product-details",
       "settings": {
-        "heading": "<p>Does your deodorant fail mid-day?</p><p>Body odor making you self-conscious?</p>",
+        "heading": "<p>Does your deodorant fail mid-day?<br/>Body odor making you self-conscious?<br/>Tired of doing the sniff check?<br/></p>",
         "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer®️ powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
         "product_image": "shopify://shop_images/magnific_keep-this-photo-as-refere_2971210458.png",
         "background_color": "#fce9ec",
