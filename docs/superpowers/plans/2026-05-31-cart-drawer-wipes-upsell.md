@@ -21,6 +21,39 @@ Do not fabricate automated tests for Liquid output. Use the lint + manual checks
 
 ---
 
+## Prerequisites (Shopify admin — no code, must exist before manual verification)
+
+The theme reads these; it does not create them. Without them the upsell either
+won't render or will show the wrong price. Set them up (or confirm they exist)
+before Task 6.
+
+1. **Wipes collection** — a collection containing every wipe product. Drives the
+   "don't upsell to a wipes-only cart" exclusion. Its handle is selected in the
+   `upsell_exclude_collection` setting (Task 1).
+
+2. **`custom.upsell_price` metafield definition** — Settings → Custom data →
+   Products → Add definition. Name "Upsell price", namespace.key `custom.upsell_price`,
+   type **Decimal**. Then set the value on each wipe product:
+   - Single Cotton Wipes → `8.00`
+   - 3 Pack Cotton Wipes → `19.00`
+   This is the price shown on the upsell card.
+
+3. **Two "Buy X Get Y" automatic discounts** — Discounts → Create → Buy X Get Y,
+   set to *Automatic*:
+   - **Discount A:** Customer buys 1+ item from [qualifying non-wipe products or
+     collections] → gets **Single Cotton Wipes**, discount amount set so the price
+     becomes **$8.00**.
+   - **Discount B:** same trigger → gets **3 Pack Cotton Wipes** at **$19.00**.
+   - For "X" pick the store's main product collection(s) excluding wipes (Buy X
+     Get Y has no "exclude" option, so choose the collections that should qualify).
+   - Set the "Get" quantity to 1 if you don't want the discount to scale.
+
+   **Coordination rule:** the discount result must equal the `custom.upsell_price`
+   metafield value. If a price changes, update **both** the discount and the
+   metafield, or the card and the charged price will disagree.
+
+---
+
 ## File Structure
 
 | File | Responsibility | Action |
@@ -164,7 +197,9 @@ Create `snippets/sidecart-upsell-item.liquid` with exactly this content:
 ```liquid
 {% doc %}
   Renders a single upsell offer card in the sidecart. Renders nothing when the
-  product has no available variant.
+  product has no available variant. Shows the discounted upsell price from the
+  product's `custom.upsell_price` metafield (the matching Buy X Get Y discount
+  applies the real reduction once the item is added to the cart).
 
   @param {product} product - The product to offer as an upsell
 {% enddoc %}
@@ -176,9 +211,15 @@ Create `snippets/sidecart-upsell-item.liquid` with exactly this content:
     assign render_card = false
   endif
   assign card_image = product.metafields.custom.card_image_portrait | default: product.metafields.custom.card_image | default: product.featured_image
-  assign has_compare = false
-  if variant.compare_at_price > variant.price
-    assign has_compare = true
+
+  assign upsell_price = variant.price
+  assign has_deal = false
+  assign upsell_meta = product.metafields.custom.upsell_price
+  if upsell_meta != blank and upsell_meta.value != blank
+    assign upsell_price = upsell_meta.value | times: 100 | round
+    if upsell_price < variant.price
+      assign has_deal = true
+    endif
   endif
 -%}
 
@@ -201,10 +242,10 @@ Create `snippets/sidecart-upsell-item.liquid` with exactly this content:
     <div class="sidecart-upsell__info">
       <p class="sidecart-upsell__title">{{ product.title }}</p>
       <p class="sidecart-upsell__price">
-        {%- if has_compare -%}
-          <span class="sidecart-upsell__compare">{{ variant.compare_at_price | money }}</span>
+        {%- if has_deal -%}
+          <span class="sidecart-upsell__compare">{{ variant.price | money }}</span>
         {%- endif -%}
-        <span class="sidecart-upsell__current">{{ variant.price | money }}</span>
+        <span class="sidecart-upsell__current">{{ upsell_price | money }}</span>
       </p>
     </div>
 
@@ -597,7 +638,10 @@ In the preview's theme editor: Overlay group → Side cart section → Upsell. E
 Verify each (drawer opens via the cart toggle / after add-to-cart):
 
 - [ ] Add a **non-wipe** product → both offers appear below the line items, above the checkout button.
-- [ ] Click **Add** on the 1-pack → it appears as a line item; the 1-pack offer disappears; the 3-pack offer remains; the drawer stays open and refreshes **without a page reload**.
+- [ ] Each card shows the **normal price struck through and the deal price** ($8 / $19) pulled from the `custom.upsell_price` metafield.
+- [ ] Click **Add** on the 1-pack → it appears as a line item **at the discounted $8** (Buy X Get Y applied); the 1-pack offer disappears; the 3-pack offer remains; the drawer stays open and refreshes **without a page reload**. The card price and the added line price match.
+- [ ] **Remove the only non-wipe item** from the cart → the Buy X Get Y discount no longer qualifies and the wipe reverts to full price (expected behavior of a cart-condition discount).
+- [ ] **Blank the metafield** on one product (temporarily) → its card shows the plain full price with no strikethrough (graceful fallback). Restore the value after.
 - [ ] Cart contains **only wipes** (add a wipe product to an empty cart) → no upsell block renders.
 - [ ] Set one offer product to **sold out** (or unpublish it) and reload → that offer is hidden; the other still shows.
 - [ ] **Disable** the upsell in the editor → no block renders.
@@ -620,4 +664,4 @@ git commit -m "Fix wipes upsell issues found in manual verification"
 
 - **Variants:** offers use `product.selected_or_first_available_variant` (matching the theme's `related-products` pattern). If a configured wipe product turns out to have multiple sellable variants that matter, a variant `<select>` would be a follow-up — not in this plan.
 - **Checkout upsell:** intentionally not built here. An in-checkout upsell requires Shopify Plus (Checkout UI Extensions); the non-Plus options are post-purchase or thank-you-page apps. Handled separately via an app, per client direction.
-- **Pricing:** offers use each product's normal Shopify price. To change an upsell price, edit the product price in Shopify admin — no theme change.
+- **Pricing:** wipes keep their normal price on their own pages and are discounted **only as an upsell** via a native Buy X Get Y automatic discount. The card's display price comes from the `custom.upsell_price` metafield. The metafield (display) and the discount (actual charge) both encode the deal price and must be kept in sync — change both if a price changes. See Prerequisites.

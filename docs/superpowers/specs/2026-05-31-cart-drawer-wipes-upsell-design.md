@@ -12,8 +12,11 @@ contains a non-wipe product. Two offers are shown together:
 - **3 Pack Cotton Wipes** — $19 (3-pack)
 
 Adding an offer drops it into the cart and refreshes the drawer using the
-existing AJAX flow. Prices are the products' normal Shopify prices — no discount
-logic.
+existing AJAX flow. The wipes are **discounted only when bought as an upsell**:
+each wipe product sells at its normal (higher) price on its own product page, but
+costs $8 / $19 when added from the cart. The reduction is applied by a native
+Shopify "Buy X Get Y" automatic discount; the price shown on the upsell card
+comes from a `custom.upsell_price` metafield on each wipe product.
 
 ## Context
 
@@ -28,9 +31,11 @@ monthly fee, so the upsell is built **natively into the existing drawer**.
 Research into UpCart's own implementation (docs.aftersell.com) confirmed our
 approach matches its proven patterns: in-cart only, hide-if-already-in-cart by
 default, hide unavailable products, bottom placement below line items, a stacked
-block layout for 1–2 offers, real product prices (no custom price injection), and
-"Complete your order"-style copy. UpCart's carousel, rule-strategy engine, and
-custom-price features are unnecessary for two fixed offers.
+block layout for 1–2 offers, and "Complete your order"-style copy. UpCart's
+carousel and rule-strategy engine are unnecessary for two fixed offers. UpCart
+does not inject custom prices and relies on Shopify-level discounting for upsell
+deals — we do the same, using a native "Buy X Get Y" automatic discount (see
+Pricing below).
 
 ## Decisions
 
@@ -40,7 +45,7 @@ custom-price features are unnecessary for two fixed offers.
 | Offers shown | Both 1-pack ($8) and 3-pack ($19) together |
 | Offer products | Two `product` pickers in section settings |
 | Exclusion ("except wipes") | A "Wipes" `collection` picker — suppress block when every cart item is in it |
-| Pricing | Normal product prices, no discounts |
+| Pricing | Discounted **only as an upsell** via a native "Buy X Get Y" automatic discount; card display price from a `custom.upsell_price` metafield |
 | Placement | Below line items, above the checkout button |
 | Layout | Stacked block (no carousel) |
 | Default heading | "Complete your order" |
@@ -57,6 +62,11 @@ rows (image, title, price, Add button). Each Add is a minimal product
 **No new JavaScript.** The drawer's existing `initAjaxAddToCart` handler already
 intercepts any `/cart/add` form submit, adds the item, and re-renders the drawer
 content. The upsell form rides that path for free.
+
+The price shown on each card is the **upsell (deal) price** from the product's
+`custom.upsell_price` metafield, with the product's normal price struck through
+beside it. The Add button still adds the normal variant — the actual reduction is
+applied by the Buy X Get Y discount once the item is in the cart (see Pricing).
 
 Documented with a LiquidDoc (`{% doc %}`) header listing its params.
 
@@ -118,6 +128,44 @@ product's first available variant. If a configured offer product turns out to
 have multiple sellable variants, add a small variant `<select>` to that offer's
 form; otherwise omit it. Decided per-product at render time.
 
+### 7. Discounted upsell pricing
+
+The wipes must cost less **only** when bought as an upsell, while keeping their
+normal price on their own product pages. Theme code cannot set an arbitrary line
+price (Shopify always charges the variant's real price), so the reduction is done
+with Shopify's native discounting and the theme only handles display:
+
+- **Actual reduction:** a native **"Buy X Get Y" automatic discount** (Shopify
+  admin → Discounts). "Buy 1+ from [qualifying non-wipe products] → get [the wipe
+  product] at the deal price." Two discounts (one per wipe product) since the two
+  targets land at different prices. The discount applies in the cart, so
+  `cart.items[].final_line_price` reflects it immediately — and the existing
+  `sidecart-item.liquid` already renders `final_line_price` with a strikethrough,
+  so an added wipe shows its discounted price in the drawer with no extra work.
+- **Display before adding:** the upsell card can't read a discount config, so the
+  deal price it shows comes from a **`custom.upsell_price` metafield** (Decimal,
+  dollars) on each wipe product. Card shows `variant.price` struck through and the
+  metafield value as the current price. Falls back to the plain `variant.price`
+  (no deal styling) if the metafield is empty.
+
+**Single coordination point:** the metafield value (display) and the Buy X Get Y
+discount (actual charge) both encode the deal price and must agree. If a price
+changes, update both. This is the accepted trade-off of the no-app approach.
+
+## Prerequisites (Shopify admin — no code)
+
+These must exist for prices to display and charge correctly. They are admin
+configuration, not theme code, but the theme depends on them:
+
+1. **Wipes collection** — holds every wipe product; drives the "don't upsell to a
+   wipes-only cart" exclusion.
+2. **`custom.upsell_price` metafield** — a Decimal product metafield definition;
+   set to `8.00` on Single Cotton Wipes and `19.00` on 3 Pack Cotton Wipes (the
+   prices shown on the upsell cards).
+3. **Two "Buy X Get Y" automatic discounts** — buy any qualifying non-wipe
+   product, get the wipe at the deal price; configured so the charged price equals
+   the metafield value ($8 / $19).
+
 ## Out of scope
 
 **In-checkout upsell.** Shopify's checkout cannot be modified from theme code.
@@ -130,8 +178,14 @@ of the options and requirements — no theme code.
 ## Testing
 
 - Cart with a non-wipe product → both offers visible below items, above checkout.
-- Add the 1-pack → it appears as a line item; the 1-pack offer disappears; the
-  3-pack offer remains; drawer refreshes without a page load.
+- Each card shows the normal price struck through and the deal price ($8 / $19)
+  from the metafield.
+- Add the 1-pack → it appears as a line item **at the discounted $8** (Buy X Get Y
+  applied); the 1-pack offer disappears; the 3-pack offer remains; drawer
+  refreshes without a page load. Card price matches the added line price.
+- Remove the only non-wipe item → the discount no longer qualifies and the wipe
+  reverts to full price (expected behavior of a cart-condition discount).
+- Metafield empty → card shows the plain full price (no deal styling).
 - Cart containing only wipes → no upsell block.
 - An offer product set to sold out (deny policy) → that offer hidden.
 - Feature disabled in theme editor → no block.
