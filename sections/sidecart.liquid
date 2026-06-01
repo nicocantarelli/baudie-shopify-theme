@@ -1569,7 +1569,7 @@ class Sidecart {
           this.clearStockWarning(itemEl);
         }
 
-        if (this.pendingMutations <= 1) {
+        if (this.pendingUpdates.size === 0 && this.pendingMutations <= 1) {
           if (this.countElement) this.countElement.textContent = cart.item_count;
           this.updateItemsLabel(cart.item_count);
           document.querySelectorAll('[data-cart-count]').forEach(el => {
@@ -1594,7 +1594,7 @@ class Sidecart {
     }
   } catch (error) {
     this.inFlightRequests --;
-    if (this.pendingMutations <= 1) {
+    if (this.pendingUpdates.size === 0 && this.pendingMutations <= 1) {
       this.refreshFromServer();
     }
   }
