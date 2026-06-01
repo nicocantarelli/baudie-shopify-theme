@@ -1,0 +1,66 @@
+{% doc %}
+  Renders a single upsell offer card in the sidecart. Renders nothing when the
+  product has no available variant. Shows the discounted upsell price from the
+  product's `custom.upsell_price` metafield (the matching Buy X Get Y discount
+  applies the real reduction once the item is added to the cart).
+
+  @param {product} product - The product to offer as an upsell
+{% enddoc %}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign render_card = true
+  if product == blank or variant == blank or variant.available == false
+    assign render_card = false
+  endif
+  assign card_image = product.metafields.custom.card_image_portrait | default: product.metafields.custom.card_image | default: product.featured_image
+
+  assign upsell_price = variant.price
+  assign has_deal = false
+  assign upsell_meta = product.metafields.custom.upsell_price
+  if upsell_meta != blank and upsell_meta.value != blank
+    assign upsell_price = upsell_meta.value | times: 100 | round
+    if upsell_price < variant.price
+      assign has_deal = true
+    endif
+  endif
+-%}
+
+{%- if render_card -%}
+  <li class="sidecart-upsell__item">
+    <div class="sidecart-upsell__image-wrap">
+      {%- if card_image -%}
+        {{ card_image | image_url: width: 160 | image_tag:
+          loading: 'lazy',
+          class: 'sidecart-upsell__image',
+          alt: product.title,
+          width: 80,
+          height: 80
+        }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'sidecart-upsell__placeholder' }}
+      {%- endif -%}
+    </div>
+
+    <div class="sidecart-upsell__info">
+      <p class="sidecart-upsell__title">{{ product.title }}</p>
+      <p class="sidecart-upsell__price">
+        {%- if has_deal -%}
+          <span class="sidecart-upsell__compare">{{ variant.price | money }}</span>
+        {%- endif -%}
+        <span class="sidecart-upsell__current">{{ upsell_price | money }}</span>
+      </p>
+    </div>
+
+    {%- form 'product', product, class: 'sidecart-upsell__form' -%}
+      <input type="hidden" name="id" value="{{ variant.id }}">
+      <button
+        type="submit"
+        name="add"
+        class="sidecart-upsell__add"
+        aria-label="{{ 'products.add_to_cart' | t }}: {{ product.title }}">
+        {{ 'products.add_to_cart' | t }}
+      </button>
+    {%- endform -%}
+  </li>
+{%- endif -%}
