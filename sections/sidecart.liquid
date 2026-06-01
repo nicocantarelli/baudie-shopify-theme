@@ -132,7 +132,7 @@
   <a href="{{ routes.all_products_collection_url }}" class="sidecart__continue-btn">
     {{ section.settings.continue_button_text }}
   </a>
-</div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading, product_1: section.settings.upsell_product_1, product_2: section.settings.upsell_product_2, exclude_collection: section.settings.upsell_exclude_collection %}</div><div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
+</div></div><div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading, product_1: section.settings.upsell_product_1, product_2: section.settings.upsell_product_2, exclude_collection: section.settings.upsell_exclude_collection %}
 {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
   <div
     class="sidecart__shipping-bar"
@@ -827,9 +827,9 @@
 }
 
 .sidecart-upsell {
-  border-top: 1px solid var(--sidecart-border);
-  padding-top: 15px;
-  margin-top: 15px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--sidecart-border);
 }
 
 .sidecart-upsell__heading {
@@ -1486,7 +1486,7 @@ class Sidecart {
 
 async refreshFromServer() {
   try {
-    const response = await fetch('/?section_id=sidecart');
+    const response = await fetch('/?section_id=sidecart', { cache: 'no-store' });
     const html = await response.text();
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
@@ -1652,7 +1652,7 @@ document.addEventListener('submit', async (e) => {
       throw new Error(errorMsg);
     }
 
-    const [cartResponse, sectionResponse] = await Promise.all([fetch('/cart.js'), fetch('/?section_id=sidecart')]);
+    const [cartResponse, sectionResponse] = await Promise.all([fetch('/cart.js'), fetch('/?section_id=sidecart', { cache: 'no-store' })]);
 
     const cart = await cartResponse.json();
     const sectionHtml = await sectionResponse.text();
@@ -1728,7 +1728,7 @@ document.addEventListener('submit', async (e) => {
           )
         });
 
-        const [fixedCartRes, fixedSectionRes] = await Promise.all([fetch('/cart.js'), fetch('/?section_id=sidecart')]);
+        const [fixedCartRes, fixedSectionRes] = await Promise.all([fetch('/cart.js'), fetch('/?section_id=sidecart', { cache: 'no-store' })]);
         const fixedCart = await fixedCartRes.json();
         const fixedHtml = await fixedSectionRes.text();
 
