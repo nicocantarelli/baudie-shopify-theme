@@ -672,6 +672,23 @@
       "shipping_bar_icon_color": {
         "label": "Bar icon color"
       },
+      "upsell_header": "Upsell",
+      "enable_upsell": {
+        "label": "Enable cart upsell"
+      },
+      "upsell_heading": {
+        "label": "Upsell heading"
+      },
+      "upsell_product_1": {
+        "label": "Upsell product 1"
+      },
+      "upsell_product_2": {
+        "label": "Upsell product 2"
+      },
+      "upsell_exclude_collection": {
+        "label": "Exclude collection",
+        "info": "Carts containing only products from this collection won't see the upsell (e.g. your Wipes collection)."
+      },
       "colors_header": "Colors",
       "background_color": "Background color",
       "text_color": "Text color"
