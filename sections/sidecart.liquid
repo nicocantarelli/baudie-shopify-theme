@@ -1284,9 +1284,12 @@ class Sidecart {
     if (this.footer) 
       this.footer.classList.add('sidecart__footer--hidden');
     
-    if (this.shippingBar) 
+    if (this.shippingBar)
       this.shippingBar.classList.add('sidecart__shipping-bar--hidden');
-    
+
+    const upsellRegion = this.sidecart?.querySelector('[data-sidecart-upsell]');
+    if (upsellRegion)
+      upsellRegion.hidden = true;
   }
 
   hideEmptyState() {
