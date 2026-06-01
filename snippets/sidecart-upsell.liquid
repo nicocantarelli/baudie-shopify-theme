@@ -1,0 +1,98 @@
+{% doc %}
+  Renders the sidecart upsell block. Shows the configured offer products only
+  when the cart contains at least one product outside the excluded ("wipes")
+  collection. Each offer is hidden when its product is already in the cart or
+  has no available variant. Renders nothing when no offers qualify.
+
+  @param {boolean} enabled - Whether the upsell feature is turned on
+  @param {string} heading - Heading text shown above the offers
+  @param {product} [product_1] - First upsell product
+  @param {product} [product_2] - Second upsell product
+  @param {collection} [exclude_collection] - A cart of only these products shows no upsell
+{% enddoc %}
+
+{%- liquid
+  assign show_block = true
+  if enabled == false or cart.item_count == 0
+    assign show_block = false
+  endif
+
+  # Exclusion: hide the block when every cart item is in the excluded collection
+  if show_block
+    assign has_non_excluded = false
+    if exclude_collection == blank
+      assign has_non_excluded = true
+    else
+      for line in cart.items
+        assign line_excluded = false
+        for col in line.product.collections
+          if col.handle == exclude_collection.handle
+            assign line_excluded = true
+            break
+          endif
+        endfor
+        unless line_excluded
+          assign has_non_excluded = true
+          break
+        endunless
+      endfor
+    endif
+    unless has_non_excluded
+      assign show_block = false
+    endunless
+  endif
+
+  # Build a comma-delimited lookup of product ids already in the cart
+  assign cart_product_ids = ','
+  for line in cart.items
+    assign cart_product_ids = cart_product_ids | append: line.product.id | append: ','
+  endfor
+
+  # Decide visibility for offer 1
+  assign show_1 = false
+  if product_1 != blank
+    assign variant_1 = product_1.selected_or_first_available_variant
+    assign token_1 = ',' | append: product_1.id | append: ','
+    assign in_cart_1 = false
+    if cart_product_ids contains token_1
+      assign in_cart_1 = true
+    endif
+    if variant_1 != blank and variant_1.available and in_cart_1 == false
+      assign show_1 = true
+    endif
+  endif
+
+  # Decide visibility for offer 2
+  assign show_2 = false
+  if product_2 != blank
+    assign variant_2 = product_2.selected_or_first_available_variant
+    assign token_2 = ',' | append: product_2.id | append: ','
+    assign in_cart_2 = false
+    if cart_product_ids contains token_2
+      assign in_cart_2 = true
+    endif
+    if variant_2 != blank and variant_2.available and in_cart_2 == false
+      assign show_2 = true
+    endif
+  endif
+
+  if show_1 == false and show_2 == false
+    assign show_block = false
+  endif
+-%}
+
+{%- if show_block -%}
+  <div class="sidecart-upsell" data-sidecart-upsell>
+    {%- if heading != blank -%}
+      <p class="sidecart-upsell__heading">{{ heading }}</p>
+    {%- endif -%}
+    <ul class="sidecart-upsell__list" role="list">
+      {%- if show_1 -%}
+        {% render 'sidecart-upsell-item', product: product_1 %}
+      {%- endif -%}
+      {%- if show_2 -%}
+        {% render 'sidecart-upsell-item', product: product_2 %}
+      {%- endif -%}
+    </ul>
+  </div>
+{%- endif -%}
