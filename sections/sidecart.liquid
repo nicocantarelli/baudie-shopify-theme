@@ -1254,6 +1254,8 @@ class Sidecart {
     if (newCount === 0) {
       this.showEmptyState();
     }
+
+    this.updateUpsellFromDOM();
   }
 
   updateShippingBar(cartTotalCents) {
@@ -1328,23 +1330,15 @@ class Sidecart {
     this.updateUpsell();
   }
 
-  async updateUpsell() {
+  applyUpsellVisibility(productIds) {
     const region = this.sidecart?.querySelector('[data-sidecart-upsell]');
     if (!region) return;
 
-    let cart;
-    try {
-      cart = await fetch('/cart.js', { cache: 'no-store' }).then((r) => r.json());
-    } catch (e) {
-      return;
-    }
-
-    if (!cart || cart.item_count === 0) {
+    if (productIds.length === 0) {
       region.hidden = true;
       return;
     }
 
-    const productIds = cart.items.map((i) => String(i.product_id));
     const excludeIds = (region.dataset.excludeIds || '')
       .split(',')
       .map((s) => s.trim())
@@ -1364,6 +1358,27 @@ class Sidecart {
     });
 
     region.hidden = !anyVisible;
+  }
+
+  // Instant: reads the cart line items already in the drawer DOM (no fetch).
+  updateUpsellFromDOM() {
+    const items = this.sidecart?.querySelectorAll('[data-sidecart-item]') || [];
+    const productIds = Array.from(items)
+      .map((el) => String(el.dataset.productId))
+      .filter((id) => id && id !== 'undefined');
+    this.applyUpsellVisibility(productIds);
+  }
+
+  // Authoritative: reconciles against the live cart from the server.
+  async updateUpsell() {
+    if (!this.sidecart?.querySelector('[data-sidecart-upsell]')) return;
+    let cart;
+    try {
+      cart = await fetch('/cart.js', { cache: 'no-store' }).then((r) => r.json());
+    } catch (e) {
+      return;
+    }
+    this.applyUpsellVisibility((cart?.items || []).map((i) => String(i.product_id)));
   }
 
   open(trigger = null) {
