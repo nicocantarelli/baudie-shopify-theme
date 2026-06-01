@@ -132,7 +132,7 @@
   <a href="{{ routes.all_products_collection_url }}" class="sidecart__continue-btn">
     {{ section.settings.continue_button_text }}
   </a>
-</div></div><div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading, product_1: section.settings.upsell_product_1, product_2: section.settings.upsell_product_2, exclude_collection: section.settings.upsell_exclude_collection %}
+</div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading, product_1: section.settings.upsell_product_1, product_2: section.settings.upsell_product_2, exclude_collection: section.settings.upsell_exclude_collection %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
 {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
   <div
     class="sidecart__shipping-bar"
@@ -827,9 +827,17 @@
 }
 
 .sidecart-upsell {
-  padding-bottom: 16px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--sidecart-border);
+  flex-shrink: 0;
+  padding: 16px 20px;
+  border-top: 1px solid var(--sidecart-border);
+}
+
+.sidecart-upsell[hidden] {
+  display: none;
+}
+
+.sidecart-upsell__item[hidden] {
+  display: none;
 }
 
 .sidecart-upsell__heading {
@@ -1312,8 +1320,47 @@ class Sidecart {
 
   initCartListeners() {
     document.addEventListener('cart:open', () => this.open());
-    document.addEventListener('cart:updated', (e) => this.refresh(e.detail));
-    document.addEventListener('cart:dom-updated', () => this.refreshElementRefs());
+    document.addEventListener('cart:updated', (e) => { this.refresh(e.detail); this.updateUpsell(); });
+    document.addEventListener('cart:dom-updated', () => { this.refreshElementRefs(); this.updateUpsell(); });
+    this.updateUpsell();
+  }
+
+  async updateUpsell() {
+    const region = this.sidecart?.querySelector('[data-sidecart-upsell]');
+    if (!region) return;
+
+    let cart;
+    try {
+      cart = await fetch('/cart.js', { cache: 'no-store' }).then((r) => r.json());
+    } catch (e) {
+      return;
+    }
+
+    if (!cart || cart.item_count === 0) {
+      region.hidden = true;
+      return;
+    }
+
+    const productIds = cart.items.map((i) => String(i.product_id));
+    const excludeIds = (region.dataset.excludeIds || '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const allExcluded = excludeIds.length > 0 && productIds.every((id) => excludeIds.includes(id));
+    if (allExcluded) {
+      region.hidden = true;
+      return;
+    }
+
+    let anyVisible = false;
+    region.querySelectorAll('[data-sidecart-upsell-offer]').forEach((offer) => {
+      const inCart = productIds.includes(String(offer.dataset.productId));
+      offer.hidden = inCart;
+      if (!inCart) anyVisible = true;
+    });
+
+    region.hidden = !anyVisible;
   }
 
   open(trigger = null) {
@@ -1322,6 +1369,7 @@ class Sidecart {
     this.sidecart.setAttribute('aria-hidden', 'false');
     document.getElementById('cart-toggle')?.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
+    this.updateUpsell();
     setTimeout(() => this.closeButton?.focus(), 100);
   }
 
