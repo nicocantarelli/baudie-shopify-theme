@@ -1082,13 +1082,13 @@ class Sidecart {
 
     this.triggerElement = null;
     this.pendingUpdates = new Map();
-    this.updateTimeouts = new Map();
-    this.inFlightRequests = 0;
     this.reconcileInFlight = false;
-    // Serialize cart mutations: Shopify's cart API is not concurrency-safe, so
-    // overlapping /cart/change.js requests can drop updates. Chain them.
-    this.mutationChain = Promise.resolve();
-    this.pendingMutations = 0;
+    // Batch every cart write into a single atomic /cart/update.js. Shopify's
+    // cart API is not concurrency-safe, so firing one request per changed line
+    // (even serialized) is fragile under rapid input. One request can't race.
+    this.flushTimeout = null;
+    this.flushChain = Promise.resolve();
+    this.flushInFlight = false;
 
     if (!this.sidecart) return;
     
@@ -1215,23 +1215,18 @@ class Sidecart {
 
   queueUpdate(key, quantity) {
     this.pendingUpdates.set(key, quantity);
+    if (this.flushTimeout) clearTimeout(this.flushTimeout);
+    this.flushTimeout = setTimeout(() => this.flushUpdates(), 300);
+  }
 
-    if (this.updateTimeouts.has(key)) {
-      clearTimeout(this.updateTimeouts.get(key));
-    }
-
-    const timeout = setTimeout(() => {
-      const finalQty = this.pendingUpdates.get(key);
-      this.pendingUpdates.delete(key);
-      this.updateTimeouts.delete(key);
-      this.pendingMutations++;
-      this.mutationChain = this.mutationChain
-        .then(() => this.updateQuantity(key, finalQty))
-        .catch(() => {})
-        .finally(() => { this.pendingMutations--; });
-    }, 300);
-
-    this.updateTimeouts.set(key, timeout);
+  flushUpdates() {
+    if (this.pendingUpdates.size === 0) return;
+    const updates = {};
+    this.pendingUpdates.forEach((qty, k) => { updates[k] = qty; });
+    this.pendingUpdates.clear();
+    // Serialize flushes so two batches never hit the cart at the same time.
+    this.flushChain = this.flushChain.then(() => this.sendCartUpdate(updates)).catch(() => {});
+    return this.flushChain;
   }
 
   updateCountsOptimistic(oldQty, newQty, unitPrice) {
@@ -1397,7 +1392,7 @@ class Sidecart {
     // Skip while a cart mutation is still settling (is-loading add, or a
     // serialized remove/change chain) so we never reconcile against an
     // intermediate server state and re-render ghost items.
-    if (this.sidecart?.classList.contains('is-loading') || this.reconcileInFlight || this.pendingMutations > 0) return;
+    if (this.sidecart?.classList.contains('is-loading') || this.reconcileInFlight || this.pendingUpdates.size > 0 || this.flushInFlight) return;
     this.reconcileInFlight = true;
     try {
       let cart;
@@ -1523,34 +1518,31 @@ class Sidecart {
     }, 4000);
   }
 
-  async updateQuantity(key, quantity) {
-    this.inFlightRequests ++;
+  async sendCartUpdate(updates) {
+    this.flushInFlight = true;
     try {
-      const response = await fetch('/cart/change.js', {
+      const response = await fetch('/cart/update.js', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(
-          {id: key, quantity}
-        )
+        body: JSON.stringify({ updates })
       });
 
       const cart = await response.json();
-      this.inFlightRequests --;
 
       if (! response.ok) {
         await this.refreshFromServer();
-        const itemEl = this.sidecart?.querySelector(`[data-sidecart-item][data-key="${key}"]`);
-        const actualQty = parseInt(itemEl?.querySelector('[data-quantity]')?.value || '1', 10);
-        this.showStockWarning(itemEl, actualQty);
         return;
       }
 
-      const updatedItem = cart.items.find(i => i.key === key);
-      const itemEl = this.sidecart?.querySelector(`[data-sidecart-item][data-key="${key}"]`);
-
-      if (updatedItem && updatedItem.quantity<quantity) {
+      // Stock warnings: a requested increase the server couldn't fully honour.
+      Object.keys(updates).forEach((key) => {
+        const requested = updates[key];
+        const itemEl = this.sidecart?.querySelector(`[data-sidecart-item][data-key="${key}"]`);
+        if (requested <= 0) return;
+        const actual = cart.items.find(i => i.key === key);
+        if (actual && actual.quantity < requested) {
           const qtyEl = itemEl?.querySelector('[data-quantity]');
           const priceEl = itemEl?.querySelector('[data-price]');
           const comparePriceEl = itemEl?.querySelector('[data-compare-price]');
@@ -1558,47 +1550,50 @@ class Sidecart {
           const compareUnitPrice = itemEl?.dataset.compareUnitPrice ? parseInt(itemEl.dataset.compareUnitPrice, 10) : 0;
 
           if (qtyEl) {
-            qtyEl.value = updatedItem.quantity;
-            qtyEl.defaultValue = updatedItem.quantity;
+            qtyEl.value = actual.quantity;
+            qtyEl.defaultValue = actual.quantity;
           }
-          if (priceEl && unitPrice) priceEl.textContent = this.formatMoney(unitPrice * updatedItem.quantity);
-          if (comparePriceEl && compareUnitPrice) comparePriceEl.textContent = this.formatMoney(compareUnitPrice * updatedItem.quantity);
+          if (priceEl && unitPrice) priceEl.textContent = this.formatMoney(unitPrice * actual.quantity);
+          if (comparePriceEl && compareUnitPrice) comparePriceEl.textContent = this.formatMoney(compareUnitPrice * actual.quantity);
 
-          this.showStockWarning(itemEl, updatedItem.quantity);
+          this.showStockWarning(itemEl, actual.quantity);
         } else if (itemEl) {
           this.clearStockWarning(itemEl);
         }
+      });
 
-        if (this.pendingUpdates.size === 0 && this.pendingMutations <= 1) {
-          if (this.countElement) this.countElement.textContent = cart.item_count;
-          this.updateItemsLabel(cart.item_count);
-          document.querySelectorAll('[data-cart-count]').forEach(el => {
-        el.textContent = cart.item_count;
-        el.style.display = cart.item_count > 0
-          ? ''
-          : 'none';
-      }) 
-      
-      if (this.subtotalElement) {
-        this.subtotalElement.textContent = this.formatMoney(cart.total_price);
+      // Reconcile to the authoritative cart only when nothing else is queued.
+      if (this.pendingUpdates.size === 0) {
+        if (this.countElement) this.countElement.textContent = cart.item_count;
+        this.updateItemsLabel(cart.item_count);
+        document.querySelectorAll('[data-cart-count]').forEach(el => {
+          el.textContent = cart.item_count;
+          el.style.display = cart.item_count > 0
+            ? ''
+            : 'none';
+        });
+
+        if (this.subtotalElement) {
+          this.subtotalElement.textContent = this.formatMoney(cart.total_price);
+        }
+        this.updateShippingBar(cart.total_price);
+
+        if (cart.item_count === 0) {
+          this.showEmptyState();
+        }
+
+        document.dispatchEvent(new CustomEvent('cart:updated', {detail: {
+            cart
+          }}));
       }
-      this.updateShippingBar(cart.total_price);
-
-      if (cart.item_count === 0) {
-        this.showEmptyState();
+    } catch (error) {
+      if (this.pendingUpdates.size === 0) {
+        this.refreshFromServer();
       }
-
-      document.dispatchEvent(new CustomEvent('cart:updated', {detail: {
-          cart
-        }}));
-    }
-  } catch (error) {
-    this.inFlightRequests --;
-    if (this.pendingUpdates.size === 0 && this.pendingMutations <= 1) {
-      this.refreshFromServer();
+    } finally {
+      this.flushInFlight = false;
     }
   }
-}
 
 async refreshFromServer() {
   try {
