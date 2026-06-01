@@ -25,7 +25,7 @@
             "question_2": "Do you ship internationally?",
             "answer_2": "<p><span style=\"text-decoration:underline\">Yes we do (certain countries may be excluded).</span></p><p>We ship within 1-2 business days from the order date. We offer international shipping through PASSPORT. Shipping times will depend on the country.</p>",
             "question_3": "Do you offer free shipping?",
-            "answer_3": "<p>Yes we offer free shipping in the USA on orders over $65<br/><br/>*Please note this is subject to change based on promotional periods. </p>",
+            "answer_3": "<p>Yes, we offer free shipping on orders over $65 (USA ONLY)</p>",
             "question_4": "Do you ship to hotels or PO boxes?",
             "answer_4": "<p>For the best delivery experience, we do not ship to hotel addresses. Unfortunately, packages sent to hotels are often returned or lost, and in these cases we’re unable to offer refunds or replacements.<br/><br/>We do ship to PO boxes. Please make sure your box is large enough to receive a package.</p>",
             "question_5": "What happens to 'returned to sender' and/or unclaimed packages?",
