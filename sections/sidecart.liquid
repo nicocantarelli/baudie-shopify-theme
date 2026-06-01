@@ -1084,6 +1084,7 @@ class Sidecart {
     this.pendingUpdates = new Map();
     this.updateTimeouts = new Map();
     this.inFlightRequests = 0;
+    this.reconcileInFlight = false;
 
     if (!this.sidecart) return;
     
@@ -1277,9 +1278,9 @@ class Sidecart {
 
   showEmptyState() {
     this.refreshElementRefs();
-    if (this.itemsContainer) 
+    if (this.itemsContainer)
       this.itemsContainer.classList.add('sidecart__items--hidden');
-    
+
     if (this.emptyElement) 
       this.emptyElement.classList.remove('sidecart__empty--hidden');
     
@@ -1381,13 +1382,51 @@ class Sidecart {
     this.applyUpsellVisibility((cart?.items || []).map((i) => String(i.product_id)));
   }
 
+  // Reconcile the drawer against the authoritative cart when it opens, so a
+  // stale/ghost line item can never be shown. Skipped while an add is in
+  // flight (is-loading) so it never clobbers an in-progress add.
+  async reconcileOnOpen() {
+    if (this.sidecart?.classList.contains('is-loading') || this.reconcileInFlight) return;
+    this.reconcileInFlight = true;
+    try {
+      let cart;
+      try {
+        cart = await fetch('/cart.js', { cache: 'no-store' }).then((r) => r.json());
+      } catch (e) {
+        return;
+      }
+      if (!cart || this.sidecart?.classList.contains('is-loading')) return;
+
+      const domItemCount = this.sidecart?.querySelectorAll('[data-sidecart-item]').length || 0;
+
+      if (cart.item_count === 0) {
+        this.showEmptyState();
+        // Authoritative empty: drop any stale ghost line items from the DOM.
+        if (this.itemsContainer) this.itemsContainer.innerHTML = '';
+        if (this.countElement) this.countElement.textContent = '0';
+        this.updateItemsLabel(0);
+        document.querySelectorAll('[data-cart-count]').forEach((el) => {
+          el.textContent = '0';
+          el.style.display = 'none';
+        });
+      } else if (domItemCount !== cart.items.length) {
+        this.hideEmptyState();
+        await this.refreshFromServer();
+      }
+
+      this.updateUpsellFromDOM();
+    } finally {
+      this.reconcileInFlight = false;
+    }
+  }
+
   open(trigger = null) {
     this.triggerElement = trigger || document.activeElement;
     this.sidecart.classList.add('is-open');
     this.sidecart.setAttribute('aria-hidden', 'false');
     document.getElementById('cart-toggle')?.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
-    this.updateUpsell();
+    this.reconcileOnOpen();
     setTimeout(() => this.closeButton?.focus(), 100);
   }
 
