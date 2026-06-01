@@ -1085,6 +1085,10 @@ class Sidecart {
     this.updateTimeouts = new Map();
     this.inFlightRequests = 0;
     this.reconcileInFlight = false;
+    // Serialize cart mutations: Shopify's cart API is not concurrency-safe, so
+    // overlapping /cart/change.js requests can drop updates. Chain them.
+    this.mutationChain = Promise.resolve();
+    this.pendingMutations = 0;
 
     if (!this.sidecart) return;
     
@@ -1220,7 +1224,11 @@ class Sidecart {
       const finalQty = this.pendingUpdates.get(key);
       this.pendingUpdates.delete(key);
       this.updateTimeouts.delete(key);
-      this.updateQuantity(key, finalQty);
+      this.pendingMutations++;
+      this.mutationChain = this.mutationChain
+        .then(() => this.updateQuantity(key, finalQty))
+        .catch(() => {})
+        .finally(() => { this.pendingMutations--; });
     }, 300);
 
     this.updateTimeouts.set(key, timeout);
@@ -1386,7 +1394,10 @@ class Sidecart {
   // stale/ghost line item can never be shown. Skipped while an add is in
   // flight (is-loading) so it never clobbers an in-progress add.
   async reconcileOnOpen() {
-    if (this.sidecart?.classList.contains('is-loading') || this.reconcileInFlight) return;
+    // Skip while a cart mutation is still settling (is-loading add, or a
+    // serialized remove/change chain) so we never reconcile against an
+    // intermediate server state and re-render ghost items.
+    if (this.sidecart?.classList.contains('is-loading') || this.reconcileInFlight || this.pendingMutations > 0) return;
     this.reconcileInFlight = true;
     try {
       let cart;
@@ -1558,7 +1569,7 @@ class Sidecart {
           this.clearStockWarning(itemEl);
         }
 
-        if (this.pendingUpdates.size === 0 && this.inFlightRequests === 0) {
+        if (this.pendingMutations <= 1) {
           if (this.countElement) this.countElement.textContent = cart.item_count;
           this.updateItemsLabel(cart.item_count);
           document.querySelectorAll('[data-cart-count]').forEach(el => {
@@ -1583,7 +1594,7 @@ class Sidecart {
     }
   } catch (error) {
     this.inFlightRequests --;
-    if (this.pendingUpdates.size === 0 && this.inFlightRequests === 0) {
+    if (this.pendingMutations <= 1) {
       this.refreshFromServer();
     }
   }
