@@ -30,8 +30,10 @@
   assign item_price = group_final_line_price | default: item.final_line_price
   assign item_original = group_original_line_price | default: item.original_line_price
   assign item_unit_price = item.final_price
+  assign item_original_unit = item.original_price | default: item.final_price
   if item_quantity > 0
     assign item_unit_price = item_price | divided_by: item_quantity
+    assign item_original_unit = item_original | divided_by: item_quantity
   endif
 
   assign bundle_titles_str = ''
@@ -64,7 +66,7 @@
   endif
 -%}
 
-<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ item.variant.compare_at_price | default: 0 }}" data-unit-price="{{ item_unit_price }}">
+<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ item.variant.compare_at_price | default: 0 }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if has_bundle_scents and bundle_handles.size > 0 -%}
       <div class="sidecart-item__bundle-bottles">

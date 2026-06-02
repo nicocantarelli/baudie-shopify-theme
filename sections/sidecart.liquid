@@ -331,7 +331,12 @@
 
 .sidecart__items {
   list-style: none;
-  margin: 0;
+  /* Pull the list up by one item's top padding so the first VISIBLE card sits
+     the right distance below the content top WITHOUT relying on :first-child —
+     an optimistically-hidden (display:none) item still counts as :first-child,
+     which would otherwise leave the first visible card with extra top padding
+     until the reconcile removes the hidden node (a visible layout snap). */
+  margin: -15px 0 0;
   padding: 0;
 }
 
@@ -347,10 +352,6 @@
   border-bottom: 1px solid var(--sidecart-border);
 }
 
-.sidecart-item:first-child {
-  padding-top: 0;
-}
-
 .sidecart-item__remove {
   position: absolute;
   top: 15px;
@@ -363,10 +364,6 @@
   color: var(--sidecart-text);
   text-decoration: none;
   transition: text-decoration 0.15s ease;
-}
-
-.sidecart-item:first-child .sidecart-item__remove {
-  top: 0;
 }
 
 .sidecart-item__remove:hover {
@@ -1275,8 +1272,12 @@ class Sidecart {
         input.value = newQty;
         input.defaultValue = String(newQty);
       }
-      const priceAmount = item.querySelector('[data-price-amount]');
-      if (priceAmount && unitPrice) priceAmount.textContent = this.formatMoney(unitPrice * newQty);
+      // Scale BOTH the current and the strike-through price together so a
+      // discounted line never shows a nonsensical pair. Exact for full-price /
+      // regular-sale lines; a close estimate for Buy-X-Get-Y, corrected by the
+      // reconcile a moment later.
+      const originalUnit = parseInt(item.dataset.originalUnit || String(unitPrice), 10);
+      if (unitPrice) this.renderCardPrice(item, newQty, unitPrice * newQty, originalUnit * newQty);
       this.adjustCountBadge(newQty - oldQty);
       this.adjustSubtotalOptimistic(unitPrice * (newQty - oldQty));
       this.pendingTargets.set(signature, newQty);
@@ -1611,8 +1612,11 @@ class Sidecart {
       compare = compareAtUnit * qty;
     }
 
-    // Keep the per-unit price fresh so the next optimistic estimate is accurate.
-    card.dataset.unitPrice = qty > 0 ? Math.round(final / qty) : card.dataset.unitPrice;
+    // Keep the per-unit prices fresh so the next optimistic estimate is accurate.
+    if (qty > 0) {
+      card.dataset.unitPrice = Math.round(final / qty);
+      card.dataset.originalUnit = Math.round(original / qty);
+    }
 
     const currentEl = card.querySelector('[data-price]');
     const priceAmount = card.querySelector('[data-price-amount]');
