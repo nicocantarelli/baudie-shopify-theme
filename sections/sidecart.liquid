@@ -1790,7 +1790,13 @@ class Sidecart {
     }
 
     this.open();
-    this.markContentBusy(true);
+
+    // For an in-drawer upsell add, drop the item in optimistically so it shows
+    // instantly instead of after the add + section-render round-trip. Other adds
+    // (e.g. from a product page) keep the loading state while the drawer renders.
+    const offer = form.closest('[data-sidecart-upsell-offer]');
+    const pending = offer ? this.insertPendingUpsellCard(offer) : null;
+    if (!pending) this.markContentBusy(true);
 
     const fd = new FormData(form);
     const body = new URLSearchParams();
@@ -1813,6 +1819,81 @@ class Sidecart {
           submitBtn.classList.remove('is-loading');
         }
       });
+  }
+
+  // Optimistically drop an upsell offer into the cart list so it appears
+  // instantly. Clones an existing card for exact markup (SVG controls, classes,
+  // translated remove label), then swaps in the offer's image/title/price. The
+  // authoritative reconcile (reconcileRender) replaces it a moment later.
+  // Returns the inserted card, or null if it couldn't build one (caller then
+  // falls back to the loading spinner).
+  insertPendingUpsellCard(offer) {
+    const container = this.itemsContainer;
+    const template = this.sidecart.querySelector('[data-sidecart-item]:not([aria-hidden="true"])');
+    if (!container || !template) return null;
+
+    const form = offer.querySelector('form');
+    const variantInput = form && form.querySelector('input[name="id"]');
+    const variantId = variantInput && variantInput.value;
+    if (!variantId) return null;
+
+    const title = (offer.querySelector('.sidecart-upsell__title')?.textContent || '').trim();
+    const currentCents = this.parseMoney(offer.querySelector('.sidecart-upsell__current')?.textContent);
+    const compareEl = offer.querySelector('.sidecart-upsell__compare');
+    const compareCents = compareEl ? this.parseMoney(compareEl.textContent) : 0;
+    if (!currentCents) return null;
+    const originalCents = compareCents > currentCents ? compareCents : currentCents;
+
+    const card = template.cloneNode(true);
+    card.dataset.productId = offer.dataset.productId || '';
+    card.dataset.variantId = String(variantId);
+    card.dataset.propertiesSignature = String(variantId);
+    card.dataset.lineCount = '1';
+    card.dataset.inventory = '99999';
+    card.dataset.inventoryPolicy = 'deny';
+    card.dataset.compareAtUnit = '0';
+    card.dataset.unitPrice = String(currentCents);
+    card.dataset.originalUnit = String(originalCents);
+    card.removeAttribute('aria-hidden');
+    card.style.display = '';
+
+    // Replace the image area (handles both single-image and bundle templates).
+    const imgLink = card.querySelector('.sidecart-item__image-link');
+    const offerImg = offer.querySelector('.sidecart-upsell__image');
+    if (imgLink) {
+      imgLink.removeAttribute('href');
+      imgLink.removeAttribute('style');
+      imgLink.innerHTML = '';
+      if (offerImg) {
+        const img = document.createElement('img');
+        img.className = 'sidecart-item__image';
+        img.src = offerImg.getAttribute('src') || '';
+        if (offerImg.getAttribute('srcset')) img.srcset = offerImg.getAttribute('srcset');
+        img.alt = title;
+        img.loading = 'lazy';
+        imgLink.appendChild(img);
+      }
+    }
+
+    const titleEl = card.querySelector('.sidecart-item__title');
+    if (titleEl) titleEl.textContent = title;
+    ['.sidecart-item__variant', '.sidecart-item__bundle-list', '.sidecart-item__properties', '.sidecart-item__bundle-bottles']
+      .forEach((sel) => { const el = card.querySelector(sel); if (el) el.remove(); });
+
+    const input = card.querySelector('[data-quantity]');
+    if (input) { input.value = 1; input.defaultValue = '1'; }
+
+    const warn = card.querySelector('[data-stock-warning]');
+    if (warn) { warn.hidden = true; warn.textContent = ''; }
+
+    this.renderCardPrice(card, 1, currentCents, originalCents);
+
+    container.appendChild(card);
+    this.hideEmptyState();
+    this.adjustCountBadge(1);
+    this.adjustSubtotalOptimistic(currentCents);
+    this.updateUpsellFromDOM();
+    return card;
   }
 
   addToCart(body) {
