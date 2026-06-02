@@ -119,9 +119,6 @@
 
     {%- comment -%} Purchase group: price, button, and upsell share the same width {%- endcomment -%}
     <div class="product-main__purchase-group">
-      {%- if is_coming_soon -%}
-        <span class="product-main__coming-soon">{{ 'products.coming_soon' | t }}</span>
-      {%- endif -%}
       <p class="product-main__price">{{ current_variant.price | money }}</p>
       {% form 'product', product, class: 'product-main__form' %}
         <input type="hidden" name="id" value="{{ current_variant.id }}">
@@ -691,20 +688,6 @@
     color: var(--product-text);
     margin: 0;
     white-space: nowrap;
-  }
-
-  .product-main__coming-soon {
-    display: inline-block;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 12px;
-    letter-spacing: -0.12px;
-    text-transform: uppercase;
-    color: var(--product-text);
-    border: 1px solid var(--product-text);
-    border-radius: 100px;
-    padding: 4px 12px;
-    margin-bottom: 12px;
   }
 
   .product-main__actions {
