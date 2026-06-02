@@ -121,10 +121,55 @@
   class="sidecart__items{% unless has_items %} sidecart__items--hidden{% endunless %}"
   role="list"
   data-sidecart-items>
-  {% for item in cart.items %}
-    {% render 'sidecart-item'
-      , item: item %}
-  {% endfor %}
+  {%- comment -%}
+    A Buy-X-Get-Y discount splits one variant into several line items at
+    different prices. Group cart.items by variant_id + properties so the same
+    product is shown as ONE merged card. The signature MUST match the JS
+    signatureOf() in this section's script: variant_id then `@first=last` per
+    property, in cart order. A bracket wrapper guards against prefix collisions.
+  {%- endcomment -%}
+  {%- assign rendered_sigs = '' -%}
+  {%- for item in cart.items -%}
+    {%- capture raw_sig -%}{{ item.variant_id }}{%- for p in item.properties -%}@{{ p.first }}={{ p.last }}{%- endfor -%}{%- if item.selling_plan_allocation -%}~sp{{ item.selling_plan_allocation.selling_plan.id }}{%- endif -%}{%- endcapture -%}
+    {%- assign sig_token = '[' | append: raw_sig | append: ']' -%}
+    {%- unless rendered_sigs contains sig_token -%}
+      {%- assign rendered_sigs = rendered_sigs | append: sig_token -%}
+      {%- liquid
+        assign group_qty = 0
+        assign group_final = 0
+        assign group_original = 0
+        assign group_lines = 0
+        for it in cart.items
+          capture it_sig
+            echo it.variant_id
+            for p in it.properties
+              echo '@'
+              echo p.first
+              echo '='
+              echo p.last
+            endfor
+            if it.selling_plan_allocation
+              echo '~sp'
+              echo it.selling_plan_allocation.selling_plan.id
+            endif
+          endcapture
+          if it_sig == raw_sig
+            assign group_qty = group_qty | plus: it.quantity
+            assign group_final = group_final | plus: it.final_line_price
+            assign group_original = group_original | plus: it.original_line_price
+            assign group_lines = group_lines | plus: 1
+          endif
+        endfor
+      -%}
+      {%- render 'sidecart-item',
+        item: item,
+        group_quantity: group_qty,
+        group_final_line_price: group_final,
+        group_original_line_price: group_original,
+        group_line_count: group_lines,
+        group_signature: raw_sig -%}
+    {%- endunless -%}
+  {%- endfor -%}
 </ul>
 <div class="sidecart__empty{% if has_items %} sidecart__empty--hidden{% endif %}" data-sidecart-empty>
   <h3 class="sidecart__empty-title">{{ section.settings.empty_title }}</h3>
@@ -1059,57 +1104,92 @@
 class Sidecart {
   constructor() {
     this.sidecart = document.getElementById('sidecart');
+    if (!this.sidecart) return;
+
     this.overlay = document.getElementById('sidecart-overlay');
     this.closeButton = document.getElementById('sidecart-close');
-    this.drawer = this.sidecart?.querySelector('.sidecart__drawer');
-    this.content = this.sidecart?.querySelector('[data-sidecart-content]');
-    this.itemsContainer = this.sidecart?.querySelector('[data-sidecart-items]');
-    this.footer = this.sidecart?.querySelector('[data-sidecart-footer]');
-    this.countElement = this.sidecart?.querySelector('[data-sidecart-count]');
-    this.itemsLabelElement = this.sidecart?.querySelector('[data-sidecart-items-label]');
-    this.subtotalElement = this.sidecart?.querySelector('[data-sidecart-subtotal]');
-    this.emptyElement = this.sidecart?.querySelector('[data-sidecart-empty]');
-    this.itemSingular = this.sidecart?.dataset.itemSingular || 'item';
-    this.itemPlural = this.sidecart?.dataset.itemPlural || 'items';
+    this.drawer = this.sidecart.querySelector('.sidecart__drawer');
 
-    this.shippingBarEnabled = this.sidecart?.hasAttribute('data-shipping-bar-enabled') || false;
-    this.shippingThreshold = parseInt(this.sidecart?.dataset.shippingThreshold || '0', 10);
-    this.shippingProgressMsg = this.sidecart?.dataset.shippingProgressMsg || '';
-    this.shippingSuccessMsg = this.sidecart?.dataset.shippingSuccessMsg || '';
-    this.shippingBarText = this.sidecart?.querySelector('[data-shipping-bar-text]');
-    this.shippingBarFill = this.sidecart?.querySelector('[data-shipping-bar-fill]');
-    this.shippingBar = this.sidecart?.querySelector('[data-shipping-bar]');
+    this.itemSingular = this.sidecart.dataset.itemSingular || 'item';
+    this.itemPlural = this.sidecart.dataset.itemPlural || 'items';
+
+    this.shippingBarEnabled = this.sidecart.hasAttribute('data-shipping-bar-enabled');
+    this.shippingThreshold = parseInt(this.sidecart.dataset.shippingThreshold || '0', 10);
+    this.shippingProgressMsg = this.sidecart.dataset.shippingProgressMsg || '';
+    this.shippingSuccessMsg = this.sidecart.dataset.shippingSuccessMsg || '';
 
     this.triggerElement = null;
-    this.pendingUpdates = new Map();
-    this.reconcileInFlight = false;
-    // Batch every cart write into a single atomic /cart/update.js. Shopify's
-    // cart API is not concurrency-safe, so firing one request per changed line
-    // (even serialized) is fragile under rapid input. One request can't race.
-    this.flushTimeout = null;
-    this.flushChain = Promise.resolve();
-    this.flushInFlight = false;
+    this.stockWarningTimeouts = new Map();
 
-    if (!this.sidecart) return;
-    
+    // --- Cart mutation model -------------------------------------------------
+    // Shopify's cart API is not concurrency-safe, and the conditional Buy-X-Get-Y
+    // upsell discount (a) splits one variant across several line items at
+    // different prices, (b) re-keys every line on any cart change, and (c) makes
+    // line prices non-linear. So we never trust line keys or unit*qty math:
+    //   - every cart write runs through ONE serialized FIFO chain (no concurrency),
+    //   - each write re-reads /cart.js and targets lines by their LIVE 1-based
+    //     `line` index, resolved via a variant+properties signature, and
+    //   - once the chain drains we re-render the whole drawer from the server.
+    // Quantity changes optimistically (instant), but money always reconciles
+    // from the authoritative cart because a discount makes it non-linear.
+    this.chain = Promise.resolve();
+    this.pendingTargets = new Map(); // signature -> desired total quantity
+    this.flushTimer = null;
+    this.busy = 0; // >0 while any queued job is running
+    this.dirty = false; // a real mutation happened since the last render
+    this.generation = 0; // bumped on every optimistic change; lets a slow
+    // reconcile detect that newer input arrived and skip clobbering it
+    this.clamped = new Map(); // signature -> achieved qty when an increase was stock-capped
 
+    this.cacheRefs();
     this.bindEvents();
     this.initCartListeners();
   }
 
-  refreshElementRefs() {
-    this.content = this.sidecart?.querySelector('[data-sidecart-content]');
-    this.itemsContainer = this.sidecart?.querySelector('[data-sidecart-items]');
-    this.footer = this.sidecart?.querySelector('[data-sidecart-footer]');
-    this.countElement = this.sidecart?.querySelector('[data-sidecart-count]');
-    this.itemsLabelElement = this.sidecart?.querySelector('[data-sidecart-items-label]');
-    this.subtotalElement = this.sidecart?.querySelector('[data-sidecart-subtotal]');
-    this.emptyElement = this.sidecart?.querySelector('[data-sidecart-empty]');
-    this.shippingBarText = this.sidecart?.querySelector('[data-shipping-bar-text]');
-    this.shippingBarFill = this.sidecart?.querySelector('[data-shipping-bar-fill]');
-    this.shippingBar = this.sidecart?.querySelector('[data-shipping-bar]');
+  cacheRefs() {
+    this.content = this.sidecart.querySelector('[data-sidecart-content]');
+    this.itemsContainer = this.sidecart.querySelector('[data-sidecart-items]');
+    this.footer = this.sidecart.querySelector('[data-sidecart-footer]');
+    this.countElement = this.sidecart.querySelector('[data-sidecart-count]');
+    this.itemsLabelElement = this.sidecart.querySelector('[data-sidecart-items-label]');
+    this.subtotalElement = this.sidecart.querySelector('[data-sidecart-subtotal]');
+    this.emptyElement = this.sidecart.querySelector('[data-sidecart-empty]');
+    this.shippingBar = this.sidecart.querySelector('[data-shipping-bar]');
+    this.shippingBarText = this.sidecart.querySelector('[data-shipping-bar-text]');
+    this.shippingBarFill = this.sidecart.querySelector('[data-shipping-bar-fill]');
   }
 
+  // Kept for backwards-compatibility with any external callers.
+  refreshElementRefs() {
+    this.cacheRefs();
+  }
+
+  // ---- Signature + discount helpers --------------------------------------
+  // signatureOfLine MUST match the Liquid grouping in this section:
+  // variant_id, then `@first=last` for each property, in cart order.
+  signatureOfLine(line) {
+    let sig = String(line.variant_id);
+    const props = line.properties;
+    if (props && typeof props === 'object') {
+      Object.keys(props).forEach((k) => {
+        sig += '@' + k + '=' + props[k];
+      });
+    }
+    if (line.selling_plan_allocation && line.selling_plan_allocation.selling_plan) {
+      sig += '~sp' + line.selling_plan_allocation.selling_plan.id;
+    }
+    return sig;
+  }
+
+  isDiscountedLine(line) {
+    if (line.total_discount && line.total_discount > 0) return true;
+    if (Array.isArray(line.line_level_discount_allocations) && line.line_level_discount_allocations.length > 0) return true;
+    const final = typeof line.final_price === 'number' ? line.final_price : line.price;
+    const original = typeof line.original_price === 'number' ? line.original_price : line.price;
+    return final < original;
+  }
+
+  // ---- Event wiring -------------------------------------------------------
   bindEvents() {
     this.closeButton?.addEventListener('click', () => this.close());
     this.overlay?.addEventListener('click', () => this.close());
@@ -1117,158 +1197,309 @@ class Sidecart {
 
     this.sidecart.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-action]');
-      if (! btn) return;
-      
-
-      const action = btn.dataset.action;
-      const key = btn.dataset.key;
+      if (!btn) return;
       const item = btn.closest('[data-sidecart-item]');
-      const qtyEl = item?.querySelector('[data-quantity]');
-      const priceEl = item?.querySelector('[data-price]');
-      const comparePriceEl = item?.querySelector('[data-compare-price]');
-      const currentQty = parseInt(qtyEl?.value || '1', 10);
-      const unitPrice = item?.dataset.unitPrice
-        ? parseInt(item.dataset.unitPrice, 10)
-        : 0;
-      const compareUnitPrice = item?.dataset.compareUnitPrice
-        ? parseInt(item.dataset.compareUnitPrice, 10)
-        : 0;
-
-      let newQty = currentQty;
-
-      const inventory = parseInt(item?.dataset.inventory || '99999', 10);
-      const inventoryPolicy = item?.dataset.inventoryPolicy || 'deny';
-
-      if (action === 'increase') {
-        if (inventoryPolicy === 'deny' && currentQty >= inventory) {
-          this.showStockWarning(item, inventory);
-          return;
-        }
-        newQty = currentQty + 1;
-      } else if (action === 'decrease') {
-        newQty = currentQty > 1
-          ? currentQty - 1
-          : 0;
-      } else if (action === 'remove') {
-        newQty = 0;
-      }
-
-      if (newQty === 0) {
-        item?.remove();
-      } else {
-        if (qtyEl) {
-          qtyEl.value = newQty;
-          qtyEl.defaultValue = newQty;
-        }
-        if (priceEl && unitPrice) 
-          priceEl.textContent = this.formatMoney(unitPrice * newQty);
-        
-        if (comparePriceEl && compareUnitPrice) 
-          comparePriceEl.textContent = this.formatMoney(compareUnitPrice * newQty);
-        
-      }
-
-      this.updateCountsOptimistic(currentQty, newQty, unitPrice);
-      this.queueUpdate(key, newQty);
+      if (!item) return;
+      this.handleAction(btn.dataset.action, item);
     });
 
     this.sidecart.addEventListener('change', (e) => {
       const input = e.target.closest('[data-quantity]');
-      if (! input) return;
-      
-
-      const key = input.dataset.key;
+      if (!input) return;
       const item = input.closest('[data-sidecart-item]');
-      const priceEl = item?.querySelector('[data-price]');
-      const comparePriceEl = item?.querySelector('[data-compare-price]');
-      const unitPrice = item?.dataset.unitPrice
-        ? parseInt(item.dataset.unitPrice, 10)
-        : 0;
-      const compareUnitPrice = item?.dataset.compareUnitPrice
-        ? parseInt(item.dataset.compareUnitPrice, 10)
-        : 0;
+      if (!item) return;
+      let value = parseInt(input.value || '0', 10);
+      if (isNaN(value) || value < 0) value = 0;
+      this.setItemQuantity(item, value);
+    });
+  }
 
-      const oldQty = parseInt(input.defaultValue || '1', 10);
-      let newQty = parseInt(input.value || '0', 10);
+  handleAction(action, item) {
+    const input = item.querySelector('[data-quantity]');
+    const currentQty = parseInt(input?.value || '1', 10);
+    const inventory = parseInt(item.dataset.inventory || '99999', 10);
+    const inventoryPolicy = item.dataset.inventoryPolicy || 'deny';
 
-      if (newQty < 0) 
-        newQty = 0;
-      
-      input.value = newQty;
+    if (action === 'increase') {
+      if (inventoryPolicy === 'deny' && currentQty >= inventory) {
+        this.showStockWarning(item, inventory);
+        return;
+      }
+      this.setItemQuantity(item, currentQty + 1);
+    } else if (action === 'decrease') {
+      this.setItemQuantity(item, currentQty > 1 ? currentQty - 1 : 0);
+    } else if (action === 'remove') {
+      this.setItemQuantity(item, 0);
+    }
+  }
 
-      if (newQty === 0) {
-        item?.remove();
-      } else {
-        if (priceEl && unitPrice) 
-          priceEl.textContent = this.formatMoney(unitPrice * newQty);
-        
-        if (comparePriceEl && compareUnitPrice) 
-          comparePriceEl.textContent = this.formatMoney(compareUnitPrice * newQty);
-        
+  // Optimistic: reflect the new quantity instantly and queue the authoritative
+  // write. Per-line price + subtotal are intentionally NOT recomputed here
+  // (a Buy-X-Get-Y discount makes them non-linear); they reconcile from the
+  // server when the queue drains.
+  setItemQuantity(item, newQty) {
+    const signature = item.dataset.propertiesSignature || '';
+    const input = item.querySelector('[data-quantity]');
+    // defaultValue tracks the last known quantity; input.value may already hold
+    // the freshly typed value by the time a `change` event fires.
+    const oldQty = parseInt((input && (input.defaultValue || input.value)) || '1', 10);
+
+    this.dirty = true;
+    this.generation++;
+
+    if (newQty <= 0) {
+      // Move focus out before hiding, so a keyboard/screen-reader user who
+      // activated Remove isn't dumped onto document.body.
+      if (item.contains(document.activeElement)) {
+        const others = Array.from(
+          this.sidecart.querySelectorAll('[data-sidecart-item]:not([aria-hidden="true"])')
+        ).filter((el) => el !== item);
+        const focusTarget = (others[0] && others[0].querySelector('[data-action="remove"]')) || this.closeButton;
+        focusTarget?.focus();
+      }
+      item.setAttribute('aria-hidden', 'true');
+      item.style.display = 'none';
+      this.adjustCountBadge(-oldQty);
+      this.pendingTargets.set(signature, 0);
+    } else {
+      if (input) {
+        input.value = newQty;
+        input.defaultValue = String(newQty);
+      }
+      this.adjustCountBadge(newQty - oldQty);
+      this.pendingTargets.set(signature, newQty);
+    }
+
+    this.scheduleFlush();
+    this.updateUpsellFromDOM();
+  }
+
+  scheduleFlush() {
+    if (this.flushTimer) clearTimeout(this.flushTimer);
+    this.flushTimer = setTimeout(() => this.flush(), 250);
+  }
+
+  flush() {
+    if (this.pendingTargets.size === 0) return;
+    const targets = new Map(this.pendingTargets);
+    this.pendingTargets.clear();
+    this.enqueue(async () => {
+      for (const [signature, qty] of targets) {
+        // A newer action for this signature has already been re-queued; skip
+        // this stale one and let the newer target win.
+        if (this.pendingTargets.has(signature)) continue;
+        try {
+          await this.reconcileGroupTo(signature, qty);
+        } catch (err) {
+          console.error('Sidecart group reconcile failed:', err);
+        }
+      }
+    });
+  }
+
+  // Run a job on the serialized chain. The chain itself is kept alive even if a
+  // job rejects, but the returned promise rejects so callers (e.g. add-to-cart)
+  // can surface errors. A single authoritative re-render runs once the queue
+  // fully drains.
+  enqueue(job) {
+    this.busy++;
+    const run = this.chain.then(() => job());
+    this.chain = run
+      .catch((err) => {
+        console.error('Sidecart mutation failed:', err);
+      })
+      .finally(() => {
+        this.busy--;
+        if (this.busy === 0 && this.pendingTargets.size === 0) {
+          return this.reconcileRender();
+        }
+      });
+    return run;
+  }
+
+  async fetchCart() {
+    const res = await fetch('/cart.js', { cache: 'no-store' });
+    return res.json();
+  }
+
+  async changeLine(line, quantity) {
+    const res = await fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ line, quantity })
+    });
+    if (!res.ok) throw new Error('cart/change failed: ' + res.status);
+    return res.json();
+  }
+
+  // Drive a variant+properties group to a target TOTAL quantity. Re-reads the
+  // cart each step so it always uses fresh line indices (which shift as the
+  // discount re-allocates). Reducing prefers full-price lines so the customer
+  // keeps the discounted unit as long as possible.
+  //
+  // The travel is DIRECTION-LOCKED (only ever increase, or only ever decrease)
+  // so a discount that re-allocates on a step can never push us into an
+  // increase/decrease oscillation. If the discount makes the exact target
+  // unreachable (e.g. a "buy 2 get 1" deal where the in-between total is forced
+  // by the rule) or stock caps an increase, we stop at the nearest achievable
+  // total instead of thrashing, and flag a stock clamp so the UI can warn.
+  async reconcileGroupTo(signature, target) {
+    let direction = 0; // -1 decreasing, +1 increasing (set on first read)
+    const seen = new Set();
+    for (let guard = 0; guard < 30; guard++) {
+      const cart = await this.fetchCart();
+      const lines = (cart.items || [])
+        .map((line, idx) => ({ line, index: idx + 1 }))
+        .filter((x) => this.signatureOfLine(x.line) === signature);
+
+      if (lines.length === 0) return;
+      const total = lines.reduce((s, x) => s + x.line.quantity, 0);
+      if (total === target) return;
+
+      if (direction === 0) direction = target > total ? 1 : -1;
+
+      // Moved past the target in our travel direction, or revisited a total
+      // (no further progress possible) -> accept the nearest achievable total.
+      if (direction > 0 && total > target) return;
+      if (direction < 0 && total < target) return;
+      if (seen.has(total)) {
+        if (direction > 0 && total < target) this.clamped.set(signature, total);
+        return;
+      }
+      seen.add(total);
+
+      if (target <= 0) {
+        await this.changeLine(lines[0].index, 0);
+        continue;
       }
 
-      this.updateCountsOptimistic(oldQty, newQty, unitPrice);
-      this.queueUpdate(key, newQty);
-      input.defaultValue = newQty;
-    });
+      if (direction > 0) {
+        const full = lines.find((x) => !this.isDiscountedLine(x.line)) || lines[0];
+        await this.changeLine(full.index, full.line.quantity + (target - total));
+      } else {
+        const ordered = [
+          ...lines.filter((x) => !this.isDiscountedLine(x.line)),
+          ...lines.filter((x) => this.isDiscountedLine(x.line))
+        ];
+        const tgt = ordered[0];
+        const reduce = Math.min(total - target, tgt.line.quantity);
+        await this.changeLine(tgt.index, tgt.line.quantity - reduce);
+      }
+    }
   }
 
-  queueUpdate(key, quantity) {
-    this.pendingUpdates.set(key, quantity);
-    if (this.flushTimeout) clearTimeout(this.flushTimeout);
-    this.flushTimeout = setTimeout(() => this.flushUpdates(), 300);
-  }
-
-  flushUpdates() {
-    if (this.pendingUpdates.size === 0) return;
-    const updates = {};
-    this.pendingUpdates.forEach((qty, k) => { updates[k] = qty; });
-    this.pendingUpdates.clear();
-    // Serialize flushes so two batches never hit the cart at the same time.
-    this.flushChain = this.flushChain.then(() => this.sendCartUpdate(updates)).catch(() => {});
-    return this.flushChain;
-  }
-
-  updateCountsOptimistic(oldQty, newQty, unitPrice) {
-    const diff = newQty - oldQty;
-    const priceDiff = unitPrice * diff;
-
-    const currentCount = parseInt(this.countElement?.textContent || '0', 10);
-    const newCount = currentCount + diff;
-
-    if (this.countElement) 
-      this.countElement.textContent = newCount;
-    
-    this.updateItemsLabel(newCount);
-
-    document.querySelectorAll('[data-cart-count]').forEach(el => {
-      el.textContent = newCount;
-      el.style.display = newCount > 0
-        ? ''
-        : 'none';
-    });
-
-    if (this.subtotalElement) {
-      const currentSubtotal = this.parseMoneyToNumber(this.subtotalElement.textContent);
-      const newSubtotal = currentSubtotal + priceDiff;
-      this.subtotalElement.textContent = this.formatMoney(newSubtotal);
-      this.updateShippingBar(newSubtotal);
+  // ---- Authoritative re-render -------------------------------------------
+  async reconcileRender() {
+    // Snapshot the optimistic-change counter. If the user interacts again
+    // during our (network-latency) fetch window, a newer change has been made
+    // optimistically and queued; replacing innerHTML now would clobber it back
+    // to pre-click state. Bail and let the queued change's own reconcile render.
+    const gen = this.generation;
+    let cart;
+    let html;
+    try {
+      [cart, html] = await Promise.all([
+        this.fetchCart(),
+        fetch('/?section_id=sidecart', { cache: 'no-store' }).then((r) => r.text())
+      ]);
+    } catch (e) {
+      this.markContentBusy(false);
+      return;
     }
 
-    if (newCount === 0) {
+    if (this.generation !== gen) {
+      // Newer optimistic input arrived; its flush will trigger a fresh render.
+      this.markContentBusy(false);
+      return;
+    }
+
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const newContent = doc.querySelector('[data-sidecart-content]');
+    const newFooter = doc.querySelector('[data-sidecart-footer]');
+    if (newContent && this.content) this.content.innerHTML = newContent.innerHTML;
+    if (newFooter && this.footer) this.footer.innerHTML = newFooter.innerHTML;
+
+    const topBar = this.sidecart.querySelector('.sidecart__drawer > [data-shipping-bar]');
+    const newTopBar = doc.querySelector('.sidecart__drawer > [data-shipping-bar]');
+    if (topBar && newTopBar) {
+      topBar.innerHTML = newTopBar.innerHTML;
+      topBar.className = newTopBar.className;
+    }
+
+    this.cacheRefs();
+    this.applyCartTotals(cart);
+    this.applyUpsellVisibility((cart.items || []).map((i) => String(i.product_id)));
+    this.surfaceClamps();
+    this.markContentBusy(false);
+
+    // Notify other components (e.g. the main cart page) of real cart changes.
+    // Tagged fromSidecart so our own listener ignores it, and only fired when a
+    // mutation actually happened (never on a plain open/reconcile).
+    if (this.dirty) {
+      this.dirty = false;
+      document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart, fromSidecart: true } }));
+    }
+  }
+
+  // Warn on any group whose increase the server could not fully honour (stock
+  // capped), recorded by reconcileGroupTo. Runs after the cards are re-rendered.
+  surfaceClamps() {
+    if (this.clamped.size === 0) return;
+    const esc = (s) => (window.CSS && CSS.escape ? CSS.escape(s) : s);
+    this.clamped.forEach((qty, signature) => {
+      let card = null;
+      try {
+        card = this.sidecart.querySelector('[data-sidecart-item][data-properties-signature="' + esc(signature) + '"]');
+      } catch (e) {
+        card = null;
+      }
+      if (card) this.showStockWarning(card, qty);
+    });
+    this.clamped.clear();
+  }
+
+  applyCartTotals(cart) {
+    const count = cart.item_count || 0;
+    if (this.countElement) this.countElement.textContent = count;
+    this.updateItemsLabel(count);
+    document.querySelectorAll('[data-cart-count]').forEach((el) => {
+      el.textContent = count;
+      el.style.display = count > 0 ? '' : 'none';
+    });
+    if (this.subtotalElement && typeof cart.total_price === 'number') {
+      this.subtotalElement.textContent = this.formatMoney(cart.total_price);
+    }
+    if (typeof cart.total_price === 'number') this.updateShippingBar(cart.total_price);
+    if (count === 0) {
       this.showEmptyState();
+    } else {
+      this.hideEmptyState();
     }
+  }
 
-    this.updateUpsellFromDOM();
+  adjustCountBadge(diff) {
+    if (!diff) return;
+    const current = parseInt(this.countElement?.textContent || '0', 10);
+    const next = Math.max(0, current + diff);
+    if (this.countElement) this.countElement.textContent = next;
+    this.updateItemsLabel(next);
+    document.querySelectorAll('[data-cart-count]').forEach((el) => {
+      el.textContent = next;
+      el.style.display = next > 0 ? '' : 'none';
+    });
+    if (next === 0) this.showEmptyState();
+  }
+
+  markContentBusy(isBusy) {
+    this.sidecart.classList.toggle('is-loading', !!isBusy);
   }
 
   updateShippingBar(cartTotalCents) {
     if (!this.shippingBarEnabled || !this.shippingBarText || !this.shippingBarFill) return;
-    
 
     const threshold = this.shippingThreshold;
     const remaining = Math.max(0, threshold - cartTotalCents);
-    const progress = Math.min(100, (cartTotalCents / threshold) * 100);
+    const progress = threshold > 0 ? Math.min(100, (cartTotalCents / threshold) * 100) : 0;
 
     this.shippingBarFill.style.width = progress + '%';
 
@@ -1280,62 +1511,44 @@ class Sidecart {
   }
 
   showEmptyState() {
-    this.refreshElementRefs();
-    if (this.itemsContainer)
-      this.itemsContainer.classList.add('sidecart__items--hidden');
-
-    if (this.emptyElement) 
-      this.emptyElement.classList.remove('sidecart__empty--hidden');
-    
-    if (this.footer) 
-      this.footer.classList.add('sidecart__footer--hidden');
-    
-    if (this.shippingBar)
-      this.shippingBar.classList.add('sidecart__shipping-bar--hidden');
-
-    const upsellRegion = this.sidecart?.querySelector('[data-sidecart-upsell]');
-    if (upsellRegion)
-      upsellRegion.hidden = true;
+    this.cacheRefs();
+    if (this.itemsContainer) this.itemsContainer.classList.add('sidecart__items--hidden');
+    if (this.emptyElement) this.emptyElement.classList.remove('sidecart__empty--hidden');
+    if (this.footer) this.footer.classList.add('sidecart__footer--hidden');
+    if (this.shippingBar) this.shippingBar.classList.add('sidecart__shipping-bar--hidden');
+    const upsellRegion = this.sidecart.querySelector('[data-sidecart-upsell]');
+    if (upsellRegion) upsellRegion.hidden = true;
   }
 
   hideEmptyState() {
-    this.refreshElementRefs();
-    if (this.itemsContainer) 
-      this.itemsContainer.classList.remove('sidecart__items--hidden');
-    
-    if (this.emptyElement) 
-      this.emptyElement.classList.add('sidecart__empty--hidden');
-    
-    if (this.footer) 
-      this.footer.classList.remove('sidecart__footer--hidden');
-    
-    if (this.shippingBar) 
-      this.shippingBar.classList.remove('sidecart__shipping-bar--hidden');
-    
+    this.cacheRefs();
+    if (this.itemsContainer) this.itemsContainer.classList.remove('sidecart__items--hidden');
+    if (this.emptyElement) this.emptyElement.classList.add('sidecart__empty--hidden');
+    if (this.footer) this.footer.classList.remove('sidecart__footer--hidden');
+    if (this.shippingBar) this.shippingBar.classList.remove('sidecart__shipping-bar--hidden');
   }
 
   updateItemsLabel(count) {
     if (this.itemsLabelElement) {
-      this.itemsLabelElement.textContent = count === 1
-        ? this.itemSingular
-        : this.itemPlural;
+      this.itemsLabelElement.textContent = count === 1 ? this.itemSingular : this.itemPlural;
     }
   }
 
-  parseMoneyToNumber(moneyString) {
-    const cleaned = moneyString.replace(/[^0-9.,]/g, '').replace(',', '.');
-    return Math.round(parseFloat(cleaned) * 100) || 0;
-  }
-
+  // ---- Cart event listeners ----------------------------------------------
   initCartListeners() {
     document.addEventListener('cart:open', () => this.open());
-    document.addEventListener('cart:updated', (e) => { this.refresh(e.detail); this.updateUpsell(); });
-    document.addEventListener('cart:dom-updated', () => { this.refreshElementRefs(); this.updateUpsell(); });
+    document.addEventListener('cart:updated', (e) => {
+      // Ignore the events we dispatch ourselves; reconcile for external ones
+      // (e.g. the product-bundle add path).
+      if (e.detail && e.detail.fromSidecart) return;
+      this.enqueue(async () => {});
+    });
     this.updateUpsell();
   }
 
+  // ---- Upsell visibility --------------------------------------------------
   applyUpsellVisibility(productIds) {
-    const region = this.sidecart?.querySelector('[data-sidecart-upsell]');
+    const region = this.sidecart.querySelector('[data-sidecart-upsell]');
     if (!region) return;
 
     if (productIds.length === 0) {
@@ -1364,75 +1577,88 @@ class Sidecart {
     region.hidden = !anyVisible;
   }
 
-  // Instant: reads the cart line items already in the drawer DOM (no fetch).
+  // Instant: reads the cart line cards already in the drawer DOM (ignores cards
+  // optimistically removed). Final truth comes from reconcileRender.
   updateUpsellFromDOM() {
-    const items = this.sidecart?.querySelectorAll('[data-sidecart-item]') || [];
+    const items = this.sidecart.querySelectorAll('[data-sidecart-item]:not([aria-hidden="true"])');
     const productIds = Array.from(items)
       .map((el) => String(el.dataset.productId))
       .filter((id) => id && id !== 'undefined');
     this.applyUpsellVisibility(productIds);
   }
 
-  // Authoritative: reconciles against the live cart from the server.
+  // Authoritative: reconciles upsell visibility against the live cart.
   async updateUpsell() {
-    if (!this.sidecart?.querySelector('[data-sidecart-upsell]')) return;
+    if (!this.sidecart.querySelector('[data-sidecart-upsell]')) return;
     let cart;
     try {
-      cart = await fetch('/cart.js', { cache: 'no-store' }).then((r) => r.json());
+      cart = await this.fetchCart();
     } catch (e) {
       return;
     }
-    this.applyUpsellVisibility((cart?.items || []).map((i) => String(i.product_id)));
+    this.applyUpsellVisibility((cart.items || []).map((i) => String(i.product_id)));
   }
 
-  // Reconcile the drawer against the authoritative cart when it opens, so a
-  // stale/ghost line item can never be shown. Skipped while an add is in
-  // flight (is-loading) so it never clobbers an in-progress add.
-  async reconcileOnOpen() {
-    // Skip while a cart mutation is still settling (is-loading add, or a
-    // serialized remove/change chain) so we never reconcile against an
-    // intermediate server state and re-render ghost items.
-    if (this.sidecart?.classList.contains('is-loading') || this.reconcileInFlight || this.pendingUpdates.size > 0 || this.flushInFlight) return;
-    this.reconcileInFlight = true;
-    try {
-      let cart;
-      try {
-        cart = await fetch('/cart.js', { cache: 'no-store' }).then((r) => r.json());
-      } catch (e) {
-        return;
-      }
-      if (!cart || this.sidecart?.classList.contains('is-loading')) return;
-
-      const domItemCount = this.sidecart?.querySelectorAll('[data-sidecart-item]').length || 0;
-
-      if (cart.item_count === 0) {
-        this.showEmptyState();
-        // Authoritative empty: drop any stale ghost line items from the DOM.
-        if (this.itemsContainer) this.itemsContainer.innerHTML = '';
-        if (this.countElement) this.countElement.textContent = '0';
-        this.updateItemsLabel(0);
-        document.querySelectorAll('[data-cart-count]').forEach((el) => {
-          el.textContent = '0';
-          el.style.display = 'none';
-        });
-      } else if (domItemCount !== cart.items.length) {
-        this.hideEmptyState();
-        await this.refreshFromServer();
-      }
-
-      this.updateUpsellFromDOM();
-    } finally {
-      this.reconcileInFlight = false;
+  // ---- Add to cart (routed through the same serialized chain) -------------
+  handleAddSubmit(form) {
+    const submitBtn = form.querySelector('[type="submit"], button[name="add"]');
+    const originalDisabled = submitBtn ? submitBtn.disabled : false;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('is-loading');
     }
+
+    this.open();
+    this.markContentBusy(true);
+
+    const fd = new FormData(form);
+    const body = new URLSearchParams();
+    const id = fd.get('id');
+    if (id) body.append('id', id);
+    body.append('quantity', fd.get('quantity') || '1');
+    const sellingPlan = fd.get('selling_plan');
+    if (sellingPlan) body.append('selling_plan', sellingPlan);
+    for (const [k, v] of fd.entries()) {
+      if (k.indexOf('properties[') === 0) body.append(k, v);
+    }
+
+    return this.addToCart(body)
+      .catch((err) => {
+        this.showToast((err && err.message) || 'Could not add item to cart. Please try again.');
+      })
+      .finally(() => {
+        if (submitBtn) {
+          submitBtn.disabled = originalDisabled || false;
+          submitBtn.classList.remove('is-loading');
+        }
+      });
   }
 
+  addToCart(body) {
+    return this.enqueue(async () => {
+      const res = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+        body
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.description || data.message || 'Could not add item to cart');
+      }
+      this.dirty = true;
+    });
+  }
+
+  // ---- Open / close -------------------------------------------------------
   open(trigger = null) {
     this.triggerElement = trigger || document.activeElement;
     this.sidecart.classList.add('is-open');
     this.sidecart.setAttribute('aria-hidden', 'false');
     document.getElementById('cart-toggle')?.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
-    this.reconcileOnOpen();
+    // Reconcile against the server whenever the drawer opens so a stale/ghost
+    // line can never be shown.
+    this.enqueue(async () => {});
     setTimeout(() => this.closeButton?.focus(), 100);
   }
 
@@ -1446,13 +1672,10 @@ class Sidecart {
 
   handleKeydown(e) {
     if (!this.sidecart.classList.contains('is-open')) return;
-    
-
     if (e.key === 'Escape') {
       this.close();
       return;
     }
-
     if (e.key === 'Tab') {
       this.handleTabTrap(e);
     }
@@ -1460,9 +1683,7 @@ class Sidecart {
 
   handleTabTrap(e) {
     const focusableElements = this.drawer.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-
     if (focusableElements.length === 0) return;
-    
 
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
@@ -1476,34 +1697,23 @@ class Sidecart {
     }
   }
 
+  // ---- Stock warning + toast ---------------------------------------------
   showStockWarning(itemEl, actualQty) {
     const warning = itemEl?.querySelector('[data-stock-warning]');
-    if (! warning) return;
-    
+    if (!warning) return;
 
-    const msg = this.sidecart?.dataset.stockWarning || 'Only COUNT available';
+    const msg = this.sidecart.dataset.stockWarning || 'Only COUNT available';
     warning.textContent = msg.replace('COUNT', actualQty);
     warning.hidden = false;
 
-    if (this.stockWarningTimeouts?.has(itemEl)) {
+    if (this.stockWarningTimeouts.has(itemEl)) {
       clearTimeout(this.stockWarningTimeouts.get(itemEl));
     }
-    if (!this.stockWarningTimeouts) 
-      this.stockWarningTimeouts = new Map();
-    
-
     const timeout = setTimeout(() => {
       warning.hidden = true;
       this.stockWarningTimeouts.delete(itemEl);
     }, 8000);
     this.stockWarningTimeouts.set(itemEl, timeout);
-  }
-
-  clearStockWarning(itemEl) {
-    const warning = itemEl?.querySelector('[data-stock-warning]');
-    if (warning) 
-      warning.hidden = true;
-    
   }
 
   showToast(msg) {
@@ -1518,408 +1728,80 @@ class Sidecart {
     }, 4000);
   }
 
-  async sendCartUpdate(updates) {
-    this.flushInFlight = true;
-    try {
-      const response = await fetch('/cart/update.js', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ updates })
-      });
+  formatMoney(cents) {
+    const b = '{' + '{';
+    const e = '}' + '}';
+    const moneyFormat = this.sidecart?.dataset.moneyFormat || ('$' + b + 'amount' + e);
+    const amount = (cents / 100).toFixed(2);
+    const amountNoDecimals = Math.floor(cents / 100).toString();
+    const amountWithCommas = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const amountNoDecimalsWithCommas = amountNoDecimals.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-      const cart = await response.json();
-
-      if (! response.ok) {
-        await this.refreshFromServer();
-        return;
-      }
-
-      // Stock warnings: a requested increase the server couldn't fully honour.
-      Object.keys(updates).forEach((key) => {
-        const requested = updates[key];
-        const itemEl = this.sidecart?.querySelector(`[data-sidecart-item][data-key="${key}"]`);
-        if (requested <= 0) return;
-        const actual = cart.items.find(i => i.key === key);
-        if (actual && actual.quantity < requested) {
-          const qtyEl = itemEl?.querySelector('[data-quantity]');
-          const priceEl = itemEl?.querySelector('[data-price]');
-          const comparePriceEl = itemEl?.querySelector('[data-compare-price]');
-          const unitPrice = itemEl?.dataset.unitPrice ? parseInt(itemEl.dataset.unitPrice, 10) : 0;
-          const compareUnitPrice = itemEl?.dataset.compareUnitPrice ? parseInt(itemEl.dataset.compareUnitPrice, 10) : 0;
-
-          if (qtyEl) {
-            qtyEl.value = actual.quantity;
-            qtyEl.defaultValue = actual.quantity;
-          }
-          if (priceEl && unitPrice) priceEl.textContent = this.formatMoney(unitPrice * actual.quantity);
-          if (comparePriceEl && compareUnitPrice) comparePriceEl.textContent = this.formatMoney(compareUnitPrice * actual.quantity);
-
-          this.showStockWarning(itemEl, actual.quantity);
-        } else if (itemEl) {
-          this.clearStockWarning(itemEl);
-        }
-      });
-
-      // Reconcile to the authoritative cart only when nothing else is queued.
-      if (this.pendingUpdates.size === 0) {
-        if (this.countElement) this.countElement.textContent = cart.item_count;
-        this.updateItemsLabel(cart.item_count);
-        document.querySelectorAll('[data-cart-count]').forEach(el => {
-          el.textContent = cart.item_count;
-          el.style.display = cart.item_count > 0
-            ? ''
-            : 'none';
-        });
-
-        if (this.subtotalElement) {
-          this.subtotalElement.textContent = this.formatMoney(cart.total_price);
-        }
-        this.updateShippingBar(cart.total_price);
-
-        if (cart.item_count === 0) {
-          this.showEmptyState();
-        }
-
-        document.dispatchEvent(new CustomEvent('cart:updated', {detail: {
-            cart
-          }}));
-      }
-    } catch (error) {
-      if (this.pendingUpdates.size === 0) {
-        this.refreshFromServer();
-      }
-    } finally {
-      this.flushInFlight = false;
-    }
-  }
-
-async refreshFromServer() {
-  try {
-    const response = await fetch('/?section_id=sidecart', { cache: 'no-store' });
-    const html = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const newContent = doc.querySelector('[data-sidecart-content]');
-    const newFooter = doc.querySelector('[data-sidecart-footer]');
-    if (newContent && this.content) {
-      this.content.innerHTML = newContent.innerHTML;
-    }
-    if (newFooter && this.footer) {
-      this.footer.innerHTML = newFooter.innerHTML;
-    }
-    const topShippingBar = this.sidecart?.querySelector('.sidecart__drawer > [data-shipping-bar]');
-    const newTopShippingBar = doc.querySelector('.sidecart__drawer > [data-shipping-bar]');
-    if (topShippingBar && newTopShippingBar) {
-      topShippingBar.innerHTML = newTopShippingBar.innerHTML;
-      topShippingBar.className = newTopShippingBar.className;
-    }
-    this.refreshElementRefs();
-  } catch (e) {
-    console.error('Failed to refresh sidecart:', e);
+    return moneyFormat
+      .replace(b + 'amount_with_comma_separator' + e, amountWithCommas.replace('.', ','))
+      .replace(b + 'amount_no_decimals_with_comma_separator' + e, amountNoDecimalsWithCommas.replace(/,/g, '.'))
+      .replace(b + 'amount_with_apostrophe_separator' + e, amountWithCommas.replace(/,/g, "'"))
+      .replace(b + 'amount_no_decimals' + e, amountNoDecimals)
+      .replace(b + 'amount' + e, amount);
   }
 }
 
-async refresh(cartData) {
-  const cart = cartData.cart || cartData;
-  if (this.countElement) {
-    this.countElement.textContent = cart.item_count;
-  }
-  this.updateItemsLabel(cart.item_count);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.__sidecartInstance = new Sidecart();
+  });
+} else {
+  window.__sidecartInstance = new Sidecart();
+}
 
-  document.querySelectorAll('[data-cart-count]').forEach(el => {
-    el.textContent = cart.item_count;
-    el.style.display = cart.item_count > 0
-      ? ''
-      : 'none';
+(function initAjaxAddToCart() {
+  function isProductForm(form) {
+    if (!form || form.tagName !== 'FORM') return false;
+    const action = form.getAttribute('action') || '';
+    if (action.includes('/cart/add')) return true;
+    if (form.querySelector('input[name="form_type"][value="product"]')) return true;
+    return false;
+  }
+
+  document.addEventListener('submit', (e) => {
+    const form = e.target.tagName === 'FORM' ? e.target : e.target.closest('form');
+    if (!isProductForm(form)) return;
+    // Forms that explicitly want a full-page redirect opt out of AJAX.
+    if (form.querySelector('input[name="return_to"]')) return;
+
+    e.preventDefault();
+
+    const instance = window.__sidecartInstance;
+    if (!instance) {
+      form.submit();
+      return;
+    }
+    instance.handleAddSubmit(form);
+  });
+})();
+
+if (Shopify.designMode) {
+  document.addEventListener('shopify:section:select', (e) => {
+    if (e.target.querySelector('[data-sidecart]')) {
+      const sidecart = document.getElementById('sidecart');
+      if (sidecart) {
+        sidecart.classList.add('is-open');
+        sidecart.setAttribute('aria-hidden', 'false');
+      }
+    }
   });
 
-  if (cart.item_count === 0) {
-    this.showEmptyState();
-  } else {
-    this.hideEmptyState();
-    await this.refreshFromServer();
-    this.refreshElementRefs();
-    if (this.shippingBar) {
-      this.shippingBar.classList.remove('sidecart__shipping-bar--hidden');
+  document.addEventListener('shopify:section:deselect', (e) => {
+    if (e.target.querySelector('[data-sidecart]')) {
+      const sidecart = document.getElementById('sidecart');
+      if (sidecart) {
+        sidecart.classList.remove('is-open');
+        sidecart.setAttribute('aria-hidden', 'true');
+      }
     }
-    if (typeof cart.total_price === 'number') {
-      this.updateShippingBar(cart.total_price);
-    }
-  }
+  });
 }
-
-formatMoney(cents) {
-  const b = '{' + '{';
-  const e = '}' + '}';
-  const moneyFormat = this.sidecart?.dataset.moneyFormat || ('$' + b + 'amount' + e);
-  const amount = (cents / 100).toFixed(2);
-  const amountNoDecimals = Math.floor(cents / 100).toString();
-  const amountWithCommas = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  const amountNoDecimalsWithCommas = amountNoDecimals.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-  return moneyFormat
-    .replace(b + 'amount_with_comma_separator' + e, amountWithCommas.replace('.', ','))
-    .replace(b + 'amount_no_decimals_with_comma_separator' + e, amountNoDecimalsWithCommas.replace(/,/g, '.'))
-    .replace(b + 'amount_with_apostrophe_separator' + e, amountWithCommas.replace(/,/g, "'"))
-    .replace(b + 'amount_no_decimals' + e, amountNoDecimals)
-    .replace(b + 'amount' + e, amount);
-}}if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', () => { window.__sidecartInstance = new Sidecart(); });} else {
-window.__sidecartInstance = new Sidecart();}(function initAjaxAddToCart () {
-function isProductForm(form) {
-  if (! form || form.tagName !== 'FORM') return false;
-  
-
-  const action = form.getAttribute('action') || '';
-  if (action.includes('/cart/add')) return true;
-  
-
-  const formTypeInput = form.querySelector('input[name="form_type"][value="product"]');
-  if (formTypeInput) return true;
-  
-
-  return false;
-}
-
-document.addEventListener('submit', async (e) => {
-  const form = e.target.tagName === 'FORM'
-    ? e.target
-    : e.target.closest('form');
-  if (! isProductForm(form)) return;
-  
-
-  if (form.querySelector('input[name="return_to"]')) return;
-  
-
-  e.preventDefault();
-
-  const submitBtn = form.querySelector('[type="submit"], button[name="add"]');
-  const originalText = submitBtn?.innerHTML;
-  const originalDisabled = submitBtn?.disabled;
-
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.classList.add('is-loading');
-  }
-
-  const sidecart = document.getElementById('sidecart');
-  sidecart?.classList.add('is-loading');
-  document.dispatchEvent(new CustomEvent('cart:open'));
-
-  try {
-    const variantId = form.querySelector('input[name="id"]')?.value;
-    const quantityInput = form.querySelector('input[name="quantity"]');
-    const quantity = quantityInput
-      ? quantityInput.value
-      : '1';
-
-    if (! variantId) {
-      throw new Error('No variant ID found');
-    }
-
-    const preCart = await fetch('/cart.js').then(r => r.json());
-    const existingItem = preCart.items.find(i => String(i.variant_id) === String(variantId));
-    const existingQty = existingItem
-      ? existingItem.quantity
-      : 0;
-
-    if (existingItem) {
-      const existingEl = sidecart?.querySelector(`[data-sidecart-item][data-key="${
-        existingItem.key
-      }"]`);
-      const maxStock = parseInt(existingEl?.dataset.inventory || '99999', 10);
-      const policy = existingEl?.dataset.inventoryPolicy || 'deny';
-      if (policy === 'deny' && existingQty >= maxStock) {
-        const stockWarningMsg = sidecart?.dataset.stockWarning || 'Only COUNT available';
-        const warning = existingEl?.querySelector('[data-stock-warning]');
-        if (warning) {
-          warning.textContent = stockWarningMsg.replace('COUNT', maxStock);
-          warning.hidden = false;
-          setTimeout(() => {
-            warning.hidden = true;
-          }, 8000);
-        }
-        return;
-      }
-    }
-
-    const addResponse = await fetch('/cart/add.js', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json'
-      },
-      body: new URLSearchParams(
-        {id: variantId, quantity: quantity}
-      )
-    });
-
-    const responseData = await addResponse.json().catch(() => ({}));
-
-    if (! addResponse.ok) {
-      const errorMsg = responseData.description || responseData.message || 'Could not add item to cart';
-      throw new Error(errorMsg);
-    }
-
-    const [cartResponse, sectionResponse] = await Promise.all([fetch('/cart.js'), fetch('/?section_id=sidecart', { cache: 'no-store' })]);
-
-    const cart = await cartResponse.json();
-    const sectionHtml = await sectionResponse.text();
-
-    document.querySelectorAll('[data-cart-count]').forEach(el => {
-      el.textContent = cart.item_count;
-      el.style.display = cart.item_count > 0
-        ? ''
-        : 'none';
-    });
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(sectionHtml, 'text/html');
-    const newContent = doc.querySelector('[data-sidecart-content]');
-    const newFooter = doc.querySelector('[data-sidecart-footer]');
-    const content = sidecart?.querySelector('[data-sidecart-content]');
-    const footer = sidecart?.querySelector('[data-sidecart-footer]');
-
-    if (newContent && content)
-      content.innerHTML = newContent.innerHTML;
-
-    if (newFooter && footer)
-      footer.innerHTML = newFooter.innerHTML;
-
-    if (footer)
-      footer.classList.remove('sidecart__footer--hidden');
-
-    const topShippingBar = sidecart?.querySelector('.sidecart__drawer > [data-shipping-bar]');
-    const newTopShippingBar = doc.querySelector('.sidecart__drawer > [data-shipping-bar]');
-    if (topShippingBar && newTopShippingBar) {
-      topShippingBar.innerHTML = newTopShippingBar.innerHTML;
-      topShippingBar.className = newTopShippingBar.className;
-    }
-
-    document.dispatchEvent(new CustomEvent('cart:dom-updated'));
-
-    const sidecartInstance = window.__sidecartInstance;
-    if (sidecartInstance) {
-      sidecartInstance.refreshElementRefs();
-      if (sidecartInstance.shippingBar) {
-        sidecartInstance.shippingBar.classList.remove('sidecart__shipping-bar--hidden');
-      }
-      sidecartInstance.updateShippingBar(cart.total_price);
-    }
-
-    const countEl = sidecart?.querySelector('[data-sidecart-count]');
-    const labelEl = sidecart?.querySelector('[data-sidecart-items-label]');
-    if (countEl) 
-      countEl.textContent = cart.item_count;
-    
-    if (labelEl) 
-      labelEl.textContent = cart.item_count === 1
-        ? (sidecart?.dataset.itemSingular || 'item')
-        : (sidecart?.dataset.itemPlural || 'items');
-    
-
-    const postItem = cart.items.find(i => String(i.variant_id) === String(variantId));
-    if (postItem) {
-      const itemEl = sidecart?.querySelector(`[data-sidecart-item][data-key="${
-        postItem.key
-      }"]`);
-      const maxStock = parseInt(itemEl?.dataset.inventory || '99999', 10);
-      const policy = itemEl?.dataset.inventoryPolicy || 'deny';
-
-      if (policy === 'deny' && postItem.quantity > maxStock) {
-        await fetch('/cart/change.js', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(
-            {id: postItem.key, quantity: maxStock}
-          )
-        });
-
-        const [fixedCartRes, fixedSectionRes] = await Promise.all([fetch('/cart.js'), fetch('/?section_id=sidecart', { cache: 'no-store' })]);
-        const fixedCart = await fixedCartRes.json();
-        const fixedHtml = await fixedSectionRes.text();
-
-        const fixedDoc = new DOMParser().parseFromString(fixedHtml, 'text/html');
-        const fixedContent = fixedDoc.querySelector('[data-sidecart-content]');
-        const fixedFooter = fixedDoc.querySelector('[data-sidecart-footer]');
-        if (fixedContent && content) 
-          content.innerHTML = fixedContent.innerHTML;
-        
-        if (fixedFooter && footer) 
-          footer.innerHTML = fixedFooter.innerHTML;
-        
-
-        document.querySelectorAll('[data-cart-count]').forEach(el => {
-          el.textContent = fixedCart.item_count;
-          el.style.display = fixedCart.item_count > 0
-            ? ''
-            : 'none';
-        });
-        if (countEl) 
-          countEl.textContent = fixedCart.item_count;
-        
-
-        document.dispatchEvent(new CustomEvent('cart:dom-updated'));
-
-        const fixedItemEl = sidecart?.querySelector(`[data-sidecart-item][data-key="${
-          postItem.key
-        }"]`);
-        const warning = fixedItemEl?.querySelector('[data-stock-warning]');
-        const stockWarningMsg = sidecart?.dataset.stockWarning || 'Only COUNT available';
-        if (warning) {
-          warning.textContent = stockWarningMsg.replace('COUNT', maxStock);
-          warning.hidden = false;
-          setTimeout(() => {
-            warning.hidden = true;
-          }, 8000);
-        }
-      }
-    }
-  } catch (error) {
-    const msg = error.message || 'Could not add item to cart. Please try again.';
-    const toastEl = document.createElement('div');
-    toastEl.className = 'sidecart__toast';
-    toastEl.textContent = msg;
-    sidecart?.querySelector('.sidecart__drawer')?.appendChild(toastEl);
-    requestAnimationFrame(() => toastEl.classList.add('sidecart__toast--visible'));
-    setTimeout(() => {
-      toastEl.classList.remove('sidecart__toast--visible');
-      setTimeout(() => toastEl.remove(), 300);
-    }, 4000);
-  } finally {
-    sidecart?.classList.remove('is-loading');
-    if (submitBtn) {
-      submitBtn.disabled = originalDisabled || false;
-      submitBtn.classList.remove('is-loading');
-    }
-    if (submitBtn && originalText) {
-      submitBtn.innerHTML = originalText;
-    }
-  }
-});})();if (Shopify.designMode) {
-document.addEventListener('shopify:section:select', (e) => {
-  if (e.target.querySelector('[data-sidecart]')) {
-    const sidecart = document.getElementById('sidecart');
-    if (sidecart) {
-      sidecart.classList.add('is-open');
-      sidecart.setAttribute('aria-hidden', 'false');
-    }
-  }
-});
-
-document.addEventListener('shopify:section:deselect', (e) => {
-  if (e.target.querySelector('[data-sidecart]')) {
-    const sidecart = document.getElementById('sidecart');
-    if (sidecart) {
-      sidecart.classList.remove('is-open');
-      sidecart.setAttribute('aria-hidden', 'true');
-    }
-  }
-});}{% endjavascript %}{% schema %}
+{% endjavascript %}{% schema %}
 {
   "name": "t:general.sidecart",
   "settings": [

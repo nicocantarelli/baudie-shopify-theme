@@ -1,7 +1,23 @@
 {% doc %}
-  Renders a single cart item in the sidecart.
+  Renders a single MERGED cart row in the sidecart.
 
-  @param {line_item} item - The cart line item to render
+  A Buy-X-Get-Y automatic discount splits one variant into several Shopify line
+  items (e.g. 2 wipes at full price + 1 wipe at the deal price). To avoid showing
+  the same product as two cards, the parent section (sections/sidecart.liquid)
+  groups cart.items by variant + line-item properties and renders ONE card per
+  group, passing the group totals here. The representative `item` supplies the
+  image/title/variant/bundle visuals; quantity and prices come from the group.
+
+  Targeting is done by `data-properties-signature` (+ `data-variant-id`), NOT by
+  line item key — keys mutate whenever the discount re-allocates, so the JS
+  re-resolves the live line(s) from /cart.js on every mutation.
+
+  @param {line_item} item - Representative (first) line item of the group
+  @param {number} group_quantity - Combined quantity across the group's lines
+  @param {number} group_final_line_price - Combined charged price (cents)
+  @param {number} group_original_line_price - Combined pre-discount price (cents)
+  @param {number} group_line_count - How many Shopify lines this card represents
+  @param {string} group_signature - variant_id + properties signature (targeting key)
 {% enddoc %}
 
 {%- liquid
@@ -10,11 +26,9 @@
   assign card_bg = item.product.metafields.custom.product_card_background | default: '#FCF0D2'
   assign item_title = item.product.title
   assign item_variant = item.variant.title
-  assign item_price = item.final_line_price
-  assign item_unit_price = item.final_price
-  assign item_quantity = item.quantity
-  assign item_key = item.key
-  assign short_description = item.product.metafields.custom.short_description | default: ''
+  assign item_quantity = group_quantity | default: item.quantity
+  assign item_price = group_final_line_price | default: item.final_line_price
+  assign item_original = group_original_line_price | default: item.original_line_price
 
   assign bundle_titles_str = ''
   assign bundle_handles_str = ''
@@ -37,16 +51,16 @@
 
   assign has_compare_price = false
   assign compare_price = 0
-  if item.variant.compare_at_price > item.variant.price
+  if item_original > item_price
+    assign has_compare_price = true
+    assign compare_price = item_original
+  elsif item.variant.compare_at_price > item.variant.price
     assign has_compare_price = true
     assign compare_price = item.variant.compare_at_price | times: item_quantity
-  elsif item.original_line_price > item.final_line_price
-    assign has_compare_price = true
-    assign compare_price = item.original_line_price
   endif
 -%}
 
-<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-key="{{ item_key }}" data-unit-price="{{ item_unit_price }}" data-compare-unit-price="{{ item.variant.compare_at_price | default: 0 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}">
+<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if has_bundle_scents and bundle_handles.size > 0 -%}
       <div class="sidecart-item__bundle-bottles">
@@ -107,14 +121,13 @@
     </div>
 
     <div class="sidecart-item__controls">
-      <p class="sidecart-item__stock-warning" data-stock-warning hidden></p>
+      <p class="sidecart-item__stock-warning" data-stock-warning role="status" aria-live="polite" hidden></p>
       <div class="sidecart-item__quantity">
         <button
           type="button"
           class="sidecart-item__qty-btn"
           aria-label="{{ 'sidecart.decrease_quantity' | t }}"
-          data-action="decrease"
-          data-key="{{ item_key }}">
+          data-action="decrease">
           <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
@@ -123,7 +136,6 @@
           type="number"
           class="sidecart-item__qty-input"
           data-quantity
-          data-key="{{ item_key }}"
           value="{{ item_quantity }}"
           min="0"
           aria-label="{{ 'sidecart.quantity' | t }}">
@@ -131,8 +143,7 @@
           type="button"
           class="sidecart-item__qty-btn"
           aria-label="{{ 'sidecart.increase_quantity' | t }}"
-          data-action="increase"
-          data-key="{{ item_key }}">
+          data-action="increase">
           <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
@@ -159,7 +170,6 @@
       type="button"
       class="sidecart-item__remove"
       data-action="remove"
-      data-key="{{ item_key }}"
       aria-label="{{ 'sidecart.remove_item' | t }}: {{ item_title }}">
       {{ 'sidecart.remove_item' | t }}
     </button>
