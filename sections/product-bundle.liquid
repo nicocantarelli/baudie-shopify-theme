@@ -90,7 +90,12 @@
             aria-label="{{ i }}. {{ 'sections.product_bundle.choose_scent' | t }}">
             {% if scent_collection %}
               {% for scent_product in scent_collection.products %}
-                {% if scent_product.metafields.custom.scent_name != blank %}
+                {%- comment -%} Skip scents that are sold out or tagged coming soon so they can't be picked in the bundle. {%- endcomment -%}
+                {%- assign scent_coming_soon = false -%}
+                {%- if scent_product.tags contains 'coming-soon' or scent_product.tags contains 'Coming soon' or scent_product.tags contains 'coming soon' or scent_product.tags contains 'Coming Soon' -%}
+                  {%- assign scent_coming_soon = true -%}
+                {%- endif -%}
+                {% if scent_product.metafields.custom.scent_name != blank and scent_product.available and scent_coming_soon == false %}
                   <li
                     role="option"
                     aria-selected="false"
@@ -318,7 +323,11 @@
         "scents": {
           {%- assign scent_comma = '' -%}
           {% for scent_product in scent_collection.products %}
-            {% if scent_product.metafields.custom.scent_name != blank %}
+            {%- assign scent_coming_soon = false -%}
+            {%- if scent_product.tags contains 'coming-soon' or scent_product.tags contains 'Coming soon' or scent_product.tags contains 'coming soon' or scent_product.tags contains 'Coming Soon' -%}
+              {%- assign scent_coming_soon = true -%}
+            {%- endif -%}
+            {% if scent_product.metafields.custom.scent_name != blank and scent_product.available and scent_coming_soon == false %}
               {{ scent_comma }}
               "{{ scent_product.handle }}": {
                 "title": {{ scent_product.title | json }},
