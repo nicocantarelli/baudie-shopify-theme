@@ -9,8 +9,12 @@
 
 {%- liquid
   assign variant = product.selected_or_first_available_variant
+  assign is_coming_soon = false
+  if product.tags contains 'coming-soon' or product.tags contains 'Coming soon' or product.tags contains 'coming soon' or product.tags contains 'Coming Soon'
+    assign is_coming_soon = true
+  endif
   assign render_card = true
-  if product == blank or variant == blank or variant.available == false
+  if product == blank or variant == blank or variant.available == false or is_coming_soon
     assign render_card = false
   endif
   assign card_image = product.metafields.custom.card_image_portrait | default: product.metafields.custom.card_image | default: product.featured_image

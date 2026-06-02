@@ -29,6 +29,16 @@
   endif
 
   assign collection_products = product.collections.first.products
+
+  comment
+    "Coming soon": tag a product `coming-soon` to show a Coming soon badge and
+    disable purchasing (also hides it from the cart upsell). Accepts a few common
+    spellings of the tag.
+  endcomment
+  assign is_coming_soon = false
+  if product.tags contains 'coming-soon' or product.tags contains 'Coming soon' or product.tags contains 'coming soon' or product.tags contains 'Coming Soon'
+    assign is_coming_soon = true
+  endif
 -%}
 
 <section
@@ -109,6 +119,9 @@
 
     {%- comment -%} Purchase group: price, button, and upsell share the same width {%- endcomment -%}
     <div class="product-main__purchase-group">
+      {%- if is_coming_soon -%}
+        <span class="product-main__coming-soon">{{ 'products.coming_soon' | t }}</span>
+      {%- endif -%}
       <p class="product-main__price">{{ current_variant.price | money }}</p>
       {% form 'product', product, class: 'product-main__form' %}
         <input type="hidden" name="id" value="{{ current_variant.id }}">
@@ -116,14 +129,18 @@
           type="submit"
           name="add"
           class="product-main__button product-main__button--add"
-          {% unless current_variant.available %}
+          {% if is_coming_soon or current_variant.available == false %}
             disabled
-          {% endunless %}>
-          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          {% endif %}>
+          {%- unless is_coming_soon -%}
+            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {%- endunless -%}
           <span>
-            {% if current_variant.available %}
+            {% if is_coming_soon %}
+              {{ 'products.coming_soon' | t }}
+            {% elsif current_variant.available %}
               {{ 'sections.product.add_to_cart' | t }}
             {% else %}
               {{ 'products.sold_out' | t }}
@@ -674,6 +691,20 @@
     color: var(--product-text);
     margin: 0;
     white-space: nowrap;
+  }
+
+  .product-main__coming-soon {
+    display: inline-block;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+    color: var(--product-text);
+    border: 1px solid var(--product-text);
+    border-radius: 100px;
+    padding: 4px 12px;
+    margin-bottom: 12px;
   }
 
   .product-main__actions {

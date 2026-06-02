@@ -239,6 +239,12 @@
             {% form 'product'
               , product %}
               {%- assign selected_variant = product.selected_or_first_available_variant -%}
+              {%- liquid
+                assign is_coming_soon = false
+                if product.tags contains 'coming-soon' or product.tags contains 'Coming soon' or product.tags contains 'coming soon' or product.tags contains 'Coming Soon'
+                  assign is_coming_soon = true
+                endif
+              -%}
               <input
                 type="hidden"
                 name="id"
@@ -247,11 +253,16 @@
                 type="submit"
                 name="add"
                 class="hero-product__button hero-product__button--add"
-                {% unless selected_variant.available %}
+                {% if is_coming_soon %}
+                  disabled
+                  aria-disabled="true"
+                  aria-label="{{ 'products.add_to_cart' | t }} - {{ 'products.coming_soon' | t }}"
+                {% elsif selected_variant.available == false %}
                   disabled
                   aria-disabled="true"
                   aria-label="{{ 'products.add_to_cart' | t }} - {{ 'products.sold_out' | t }}"
-                {% endunless %}>
+                {% endif %}>
+                {%- unless is_coming_soon -%}
                 <svg
                   aria-hidden="true"
                   focusable="false"
@@ -267,7 +278,8 @@
                     stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
-                <span>{{ 'products.add_to_cart' | t }}</span>
+                {%- endunless -%}
+                <span>{% if is_coming_soon %}{{ 'products.coming_soon' | t }}{% else %}{{ 'products.add_to_cart' | t }}{% endif %}</span>
               </button>
             {% endform %}
             <a href="{{ product.url }}" class="hero-product__button hero-product__button--buy">{{ 'products.view_product' | t }}</a>

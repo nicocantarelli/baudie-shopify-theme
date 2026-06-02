@@ -22,13 +22,26 @@
   assign variant_1 = product_1.selected_or_first_available_variant
   assign variant_2 = product_2.selected_or_first_available_variant
 
+  comment
+    Don't upsell a product that's tagged "coming soon" (matches the storefront
+    coming-soon state), even if it still has stock.
+  endcomment
+  assign cs_1 = false
+  if product_1.tags contains 'coming-soon' or product_1.tags contains 'Coming soon' or product_1.tags contains 'coming soon' or product_1.tags contains 'Coming Soon'
+    assign cs_1 = true
+  endif
+  assign cs_2 = false
+  if product_2.tags contains 'coming-soon' or product_2.tags contains 'Coming soon' or product_2.tags contains 'coming soon' or product_2.tags contains 'Coming Soon'
+    assign cs_2 = true
+  endif
+
   assign has_1 = false
-  if product_1 != blank and variant_1 != blank and variant_1.available
+  if product_1 != blank and variant_1 != blank and variant_1.available and cs_1 == false
     assign has_1 = true
   endif
 
   assign has_2 = false
-  if product_2 != blank and variant_2 != blank and variant_2.available
+  if product_2 != blank and variant_2 != blank and variant_2.available and cs_2 == false
     assign has_2 = true
   endif
 
