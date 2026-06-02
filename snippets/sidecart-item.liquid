@@ -60,7 +60,7 @@
   endif
 -%}
 
-<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}">
+<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ item.variant.compare_at_price | default: 0 }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if has_bundle_scents and bundle_handles.size > 0 -%}
       <div class="sidecart-item__bundle-bottles">
@@ -151,17 +151,14 @@
       </div>
 
       <div class="sidecart-item__price">
-        {%- if has_compare_price -%}
-          <s class="sidecart-item__compare-price" data-compare-price>
-            <span class="visually-hidden">{{ 'products.regular_price' | t }}:</span>
-            {{ compare_price | money }}
-          </s>
-        {%- endif -%}
+        {%- comment -%} Stable structure: JS updates the amount spans / toggles in place on qty change (see renderCardPrice). {%- endcomment -%}
+        <s class="sidecart-item__compare-price" data-compare-price{% unless has_compare_price %} hidden{% endunless %}>
+          <span class="visually-hidden">{{ 'products.regular_price' | t }}:</span>
+          <span data-compare-amount>{{ compare_price | money }}</span>
+        </s>
         <span class="sidecart-item__current-price{% if has_compare_price %} sidecart-item__current-price--sale{% endif %}" data-price>
-          {%- if has_compare_price -%}
-            <span class="visually-hidden">{{ 'products.sale_price' | t }}:</span>
-          {%- endif -%}
-          {{ item_price | money }}
+          <span class="visually-hidden" data-sale-label{% unless has_compare_price %} hidden{% endunless %}>{{ 'products.sale_price' | t }}:</span>
+          <span data-price-amount>{{ item_price | money }}</span>
         </span>
       </div>
     </div>

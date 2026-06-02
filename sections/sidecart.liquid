@@ -1140,6 +1140,11 @@ class Sidecart {
     this.generation = 0; // bumped on every optimistic change; lets a slow
     // reconcile detect that newer input arrived and skip clobbering it
     this.clamped = new Map(); // signature -> achieved qty when an increase was stock-capped
+    this.lastCart = null; // most recent authoritative cart (from a mutation/fetch)
+    this.needsStructureRender = false; // a queued op changes the set of cards
+    // (add / external update / open) and needs the Liquid section re-render;
+    // plain qty/remove only needs a fast in-place money update.
+    this.renderRetries = 0; // bounded retries when a structure render's fetch fails
 
     this.cacheRefs();
     this.bindEvents();
@@ -1276,7 +1281,9 @@ class Sidecart {
 
   scheduleFlush() {
     if (this.flushTimer) clearTimeout(this.flushTimer);
-    this.flushTimer = setTimeout(() => this.flush(), 250);
+    // Short debounce: long enough to coalesce a burst of rapid +/- clicks into
+    // one server write, short enough that prices feel responsive.
+    this.flushTimer = setTimeout(() => this.flush(), 120);
   }
 
   flush() {
@@ -1297,6 +1304,16 @@ class Sidecart {
     });
   }
 
+  // Mark that the set of cards may have changed (add / external update / open),
+  // so the next drain does a full Liquid re-render. Bumping the generation also
+  // invalidates any reconcileRender already in flight (which never bumps it
+  // itself), so it bails instead of finishing against the stale pre-change cart
+  // and clearing this flag out from under us.
+  requestStructureRender() {
+    this.needsStructureRender = true;
+    this.generation++;
+  }
+
   // Run a job on the serialized chain. The chain itself is kept alive even if a
   // job rejects, but the returned promise rejects so callers (e.g. add-to-cart)
   // can surface errors. A single authoritative re-render runs once the queue
@@ -1311,7 +1328,11 @@ class Sidecart {
       .finally(() => {
         this.busy--;
         if (this.busy === 0 && this.pendingTargets.size === 0) {
-          return this.reconcileRender();
+          // Add / external update / open changes the set of cards -> full Liquid
+          // re-render. Plain qty/remove -> fast in-place money update (no extra
+          // network: the change.js response cart is already cached in lastCart).
+          if (this.needsStructureRender) return this.reconcileRender();
+          return this.applyCartMoney(this.lastCart);
         }
       });
     return run;
@@ -1319,7 +1340,9 @@ class Sidecart {
 
   async fetchCart() {
     const res = await fetch('/cart.js', { cache: 'no-store' });
-    return res.json();
+    const cart = await res.json();
+    this.lastCart = cart;
+    return cart;
   }
 
   async changeLine(line, quantity) {
@@ -1329,7 +1352,11 @@ class Sidecart {
       body: JSON.stringify({ line, quantity })
     });
     if (!res.ok) throw new Error('cart/change failed: ' + res.status);
-    return res.json();
+    // change.js returns the full authoritative cart — cache it so we can render
+    // money in place without another /cart.js round-trip.
+    const cart = await res.json();
+    this.lastCart = cart;
+    return cart;
   }
 
   // Drive a variant+properties group to a target TOTAL quantity. Re-reads the
@@ -1398,17 +1425,33 @@ class Sidecart {
     let cart;
     let html;
     try {
-      [cart, html] = await Promise.all([
-        this.fetchCart(),
-        fetch('/?section_id=sidecart', { cache: 'no-store' }).then((r) => r.text())
-      ]);
+      const cartPromise = this.fetchCart();
+      const htmlPromise = fetch('/?section_id=sidecart', { cache: 'no-store' }).then((r) => r.text());
+      cart = await cartPromise;
+      // Update only the count badge early (it lives in the header, which the
+      // section render does NOT replace) so it responds the moment the cart
+      // lands. Subtotal/shipping/cards all come from the section markup below,
+      // so writing them here would be wasted and could show a one-frame
+      // count/cards mismatch.
+      if (this.generation === gen) this.applyCartCount(cart);
+      html = await htmlPromise;
     } catch (e) {
       this.markContentBusy(false);
+      // Leave needsStructureRender set and retry shortly (bounded) so a transient
+      // fetch failure can't strand a just-added card in the open drawer.
+      if (this.needsStructureRender && this.renderRetries < 3) {
+        this.renderRetries++;
+        setTimeout(() => {
+          if (this.needsStructureRender) this.enqueue(async () => {});
+        }, 800);
+      }
       return;
     }
 
     if (this.generation !== gen) {
-      // Newer optimistic input arrived; its flush will trigger a fresh render.
+      // Newer optimistic input arrived; leave needsStructureRender set so the
+      // queued change's drain retries this render and a newly-added card still
+      // appears once interaction settles.
       this.markContentBusy(false);
       return;
     }
@@ -1430,6 +1473,8 @@ class Sidecart {
     this.applyCartTotals(cart);
     this.applyUpsellVisibility((cart.items || []).map((i) => String(i.product_id)));
     this.surfaceClamps();
+    this.needsStructureRender = false;
+    this.renderRetries = 0;
     this.markContentBusy(false);
 
     // Notify other components (e.g. the main cart page) of real cart changes.
@@ -1458,7 +1503,102 @@ class Sidecart {
     this.clamped.clear();
   }
 
-  applyCartTotals(cart) {
+  // Fast path for qty/remove: update money + quantities in place from the
+  // authoritative cart the mutation already returned — no /cart.js fetch and no
+  // Liquid section re-render. A qty change never creates a NEW card (a discount
+  // split merges into the same signature group), so only updates and removals
+  // are needed here; new cards go through reconcileRender instead.
+  applyCartMoney(cart) {
+    if (!cart || !Array.isArray(cart.items)) {
+      // No cached cart to render from — fall back to an authoritative render.
+      this.needsStructureRender = true;
+      return this.reconcileRender();
+    }
+
+    const groups = new Map();
+    cart.items.forEach((line) => {
+      const sig = this.signatureOfLine(line);
+      const g = groups.get(sig) || { qty: 0, final: 0, original: 0 };
+      g.qty += line.quantity;
+      g.final += line.final_line_price;
+      g.original += line.original_line_price;
+      groups.set(sig, g);
+    });
+
+    // Safety: if the cart gained a group that has no card (unexpected for a
+    // qty/remove, e.g. a discount auto-added a product), the card set changed —
+    // fall back to a full Liquid render so the new card is shown.
+    const cardSigs = new Set(
+      Array.from(this.sidecart.querySelectorAll('[data-sidecart-item]')).map((c) => c.dataset.propertiesSignature)
+    );
+    for (const sig of groups.keys()) {
+      if (!cardSigs.has(sig)) {
+        this.needsStructureRender = true;
+        return this.reconcileRender();
+      }
+    }
+
+    this.sidecart.querySelectorAll('[data-sidecart-item]').forEach((card) => {
+      const g = groups.get(card.dataset.propertiesSignature);
+      if (!g) {
+        card.remove();
+        return;
+      }
+      // Re-show if a card was optimistically hidden by a remove that the server
+      // ultimately kept (its group still exists).
+      card.style.display = '';
+      card.removeAttribute('aria-hidden');
+      const input = card.querySelector('[data-quantity]');
+      if (input) {
+        input.value = g.qty;
+        input.defaultValue = String(g.qty);
+      }
+      this.renderCardPrice(card, g.qty, g.final, g.original);
+    });
+
+    this.cacheRefs();
+    this.applyCartTotals(cart);
+    this.applyUpsellVisibility(cart.items.map((i) => String(i.product_id)));
+    this.surfaceClamps();
+    this.markContentBusy(false);
+
+    if (this.dirty) {
+      this.dirty = false;
+      document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart, fromSidecart: true } }));
+    }
+  }
+
+  // Update one merged card's price display. Mirrors the price logic in
+  // snippets/sidecart-item.liquid exactly, toggling the pre-rendered stable
+  // markup rather than rebuilding it.
+  renderCardPrice(card, qty, final, original) {
+    const compareAtUnit = parseInt(card.dataset.compareAtUnit || '0', 10);
+    let hasCompare = false;
+    let compare = 0;
+    if (original > final) {
+      hasCompare = true;
+      compare = original;
+    } else if (compareAtUnit > 0 && compareAtUnit * qty > final) {
+      hasCompare = true;
+      compare = compareAtUnit * qty;
+    }
+
+    const currentEl = card.querySelector('[data-price]');
+    const priceAmount = card.querySelector('[data-price-amount]');
+    const saleLabel = card.querySelector('[data-sale-label]');
+    const compareEl = card.querySelector('[data-compare-price]');
+    const compareAmount = card.querySelector('[data-compare-amount]');
+
+    if (priceAmount) priceAmount.textContent = this.formatMoney(final);
+    if (currentEl) currentEl.classList.toggle('sidecart-item__current-price--sale', hasCompare);
+    if (saleLabel) saleLabel.hidden = !hasCompare;
+    if (compareEl) compareEl.hidden = !hasCompare;
+    if (hasCompare && compareAmount) compareAmount.textContent = this.formatMoney(compare);
+  }
+
+  // Count badge only (header + any [data-cart-count] outside the drawer). These
+  // survive the section innerHTML replace, so they're safe to update early.
+  applyCartCount(cart) {
     const count = cart.item_count || 0;
     if (this.countElement) this.countElement.textContent = count;
     this.updateItemsLabel(count);
@@ -1466,11 +1606,15 @@ class Sidecart {
       el.textContent = count;
       el.style.display = count > 0 ? '' : 'none';
     });
+  }
+
+  applyCartTotals(cart) {
+    this.applyCartCount(cart);
     if (this.subtotalElement && typeof cart.total_price === 'number') {
       this.subtotalElement.textContent = this.formatMoney(cart.total_price);
     }
     if (typeof cart.total_price === 'number') this.updateShippingBar(cart.total_price);
-    if (count === 0) {
+    if ((cart.item_count || 0) === 0) {
       this.showEmptyState();
     } else {
       this.hideEmptyState();
@@ -1539,8 +1683,9 @@ class Sidecart {
     document.addEventListener('cart:open', () => this.open());
     document.addEventListener('cart:updated', (e) => {
       // Ignore the events we dispatch ourselves; reconcile for external ones
-      // (e.g. the product-bundle add path).
+      // (e.g. the product-bundle add path), which may add a card -> full render.
       if (e.detail && e.detail.fromSidecart) return;
+      this.requestStructureRender();
       this.enqueue(async () => {});
     });
     this.updateUpsell();
@@ -1635,6 +1780,8 @@ class Sidecart {
   }
 
   addToCart(body) {
+    // An add introduces a new card -> needs the Liquid section re-render.
+    this.requestStructureRender();
     return this.enqueue(async () => {
       const res = await fetch('/cart/add.js', {
         method: 'POST',
@@ -1657,7 +1804,8 @@ class Sidecart {
     document.getElementById('cart-toggle')?.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
     // Reconcile against the server whenever the drawer opens so a stale/ghost
-    // line can never be shown.
+    // line can never be shown (full render: the card set may have changed).
+    this.requestStructureRender();
     this.enqueue(async () => {});
     setTimeout(() => this.closeButton?.focus(), 100);
   }
