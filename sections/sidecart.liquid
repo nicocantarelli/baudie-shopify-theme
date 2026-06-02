@@ -1241,13 +1241,16 @@ class Sidecart {
   // Optimistic: reflect the new quantity instantly and queue the authoritative
   // write. Per-line price + subtotal are intentionally NOT recomputed here
   // (a Buy-X-Get-Y discount makes them non-linear); they reconcile from the
-  // server when the queue drains.
+  // server when the queue drains. The optimistic line price + subtotal use a
+  // simple unit*qty estimate (exact when no discount touches the line); the
+  // authoritative reconcile corrects any non-linear discount case a moment later.
   setItemQuantity(item, newQty) {
     const signature = item.dataset.propertiesSignature || '';
     const input = item.querySelector('[data-quantity]');
     // defaultValue tracks the last known quantity; input.value may already hold
     // the freshly typed value by the time a `change` event fires.
     const oldQty = parseInt((input && (input.defaultValue || input.value)) || '1', 10);
+    const unitPrice = parseInt(item.dataset.unitPrice || '0', 10);
 
     this.dirty = true;
     this.generation++;
@@ -1265,18 +1268,40 @@ class Sidecart {
       item.setAttribute('aria-hidden', 'true');
       item.style.display = 'none';
       this.adjustCountBadge(-oldQty);
+      this.adjustSubtotalOptimistic(-unitPrice * oldQty);
       this.pendingTargets.set(signature, 0);
     } else {
       if (input) {
         input.value = newQty;
         input.defaultValue = String(newQty);
       }
+      const priceAmount = item.querySelector('[data-price-amount]');
+      if (priceAmount && unitPrice) priceAmount.textContent = this.formatMoney(unitPrice * newQty);
       this.adjustCountBadge(newQty - oldQty);
+      this.adjustSubtotalOptimistic(unitPrice * (newQty - oldQty));
       this.pendingTargets.set(signature, newQty);
     }
 
     this.scheduleFlush();
     this.updateUpsellFromDOM();
+  }
+
+  // Optimistically nudge the subtotal + shipping bar by a cent delta, tracking
+  // the value in cents to avoid money-string parse/format drift across rapid
+  // clicks. The authoritative cart total resets this on the next reconcile.
+  adjustSubtotalOptimistic(deltaCents) {
+    if (!deltaCents) return;
+    if (typeof this.subtotalCents !== 'number') {
+      this.subtotalCents = this.parseMoney(this.subtotalElement && this.subtotalElement.textContent);
+    }
+    this.subtotalCents = Math.max(0, this.subtotalCents + deltaCents);
+    if (this.subtotalElement) this.subtotalElement.textContent = this.formatMoney(this.subtotalCents);
+    this.updateShippingBar(this.subtotalCents);
+  }
+
+  parseMoney(str) {
+    const cleaned = (str || '').replace(/[^0-9.,]/g, '').replace(',', '.');
+    return Math.round(parseFloat(cleaned) * 100) || 0;
   }
 
   scheduleFlush() {
@@ -1373,8 +1398,11 @@ class Sidecart {
   async reconcileGroupTo(signature, target) {
     let direction = 0; // -1 decreasing, +1 increasing (set on first read)
     const seen = new Set();
+    // Fetch the authoritative cart once to resolve the live line index. After
+    // that, each /cart/change.js response IS the next authoritative cart, so we
+    // reuse it instead of re-fetching — saving a round-trip on every step.
+    let cart = await this.fetchCart();
     for (let guard = 0; guard < 30; guard++) {
-      const cart = await this.fetchCart();
       const lines = (cart.items || [])
         .map((line, idx) => ({ line, index: idx + 1 }))
         .filter((x) => this.signatureOfLine(x.line) === signature);
@@ -1396,13 +1424,13 @@ class Sidecart {
       seen.add(total);
 
       if (target <= 0) {
-        await this.changeLine(lines[0].index, 0);
+        cart = await this.changeLine(lines[0].index, 0);
         continue;
       }
 
       if (direction > 0) {
         const full = lines.find((x) => !this.isDiscountedLine(x.line)) || lines[0];
-        await this.changeLine(full.index, full.line.quantity + (target - total));
+        cart = await this.changeLine(full.index, full.line.quantity + (target - total));
       } else {
         const ordered = [
           ...lines.filter((x) => !this.isDiscountedLine(x.line)),
@@ -1410,7 +1438,7 @@ class Sidecart {
         ];
         const tgt = ordered[0];
         const reduce = Math.min(total - target, tgt.line.quantity);
-        await this.changeLine(tgt.index, tgt.line.quantity - reduce);
+        cart = await this.changeLine(tgt.index, tgt.line.quantity - reduce);
       }
     }
   }
@@ -1583,6 +1611,9 @@ class Sidecart {
       compare = compareAtUnit * qty;
     }
 
+    // Keep the per-unit price fresh so the next optimistic estimate is accurate.
+    card.dataset.unitPrice = qty > 0 ? Math.round(final / qty) : card.dataset.unitPrice;
+
     const currentEl = card.querySelector('[data-price]');
     const priceAmount = card.querySelector('[data-price-amount]');
     const saleLabel = card.querySelector('[data-sale-label]');
@@ -1610,10 +1641,11 @@ class Sidecart {
 
   applyCartTotals(cart) {
     this.applyCartCount(cart);
-    if (this.subtotalElement && typeof cart.total_price === 'number') {
-      this.subtotalElement.textContent = this.formatMoney(cart.total_price);
+    if (typeof cart.total_price === 'number') {
+      this.subtotalCents = cart.total_price; // authoritative; resets optimistic drift
+      if (this.subtotalElement) this.subtotalElement.textContent = this.formatMoney(cart.total_price);
+      this.updateShippingBar(cart.total_price);
     }
-    if (typeof cart.total_price === 'number') this.updateShippingBar(cart.total_price);
     if ((cart.item_count || 0) === 0) {
       this.showEmptyState();
     } else {
