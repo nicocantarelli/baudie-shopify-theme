@@ -1169,12 +1169,29 @@ class Sidecart {
   // ---- Signature + discount helpers --------------------------------------
   // signatureOfLine MUST match the Liquid grouping in this section:
   // variant_id, then `@first=last` for each property, in cart order.
+  //
+  // Liquid exposes line-item property keys/values HTML-escaped (e.g. a bundle's
+  // "_bundle_selection" value "A <> B" comes through as "A &lt;&gt; B"), and the
+  // section writes them into data-properties-signature. /cart.js returns the
+  // SAME values raw ("A <> B"). To make both signatures identical we escape the
+  // raw API values here the same way Liquid does — otherwise bundle lines (the
+  // only ones with <,>,& in a property) never match their card and can't be
+  // removed or have their price updated in place.
+  htmlEscape(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   signatureOfLine(line) {
     let sig = String(line.variant_id);
     const props = line.properties;
     if (props && typeof props === 'object') {
       Object.keys(props).forEach((k) => {
-        sig += '@' + k + '=' + props[k];
+        sig += '@' + this.htmlEscape(k) + '=' + this.htmlEscape(props[k]);
       });
     }
     if (line.selling_plan_allocation && line.selling_plan_allocation.selling_plan) {
