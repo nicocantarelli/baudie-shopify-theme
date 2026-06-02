@@ -1245,8 +1245,6 @@
           selected.forEach((p, i) => {
             const groupName = (ordinals[i] || ('Scent ' + (i + 1))) + ' Scent';
             formBody.append(`properties[${groupName}]`, p.title);
-            // Hidden handle, read only by the cart UI to show each scent's bottle.
-            formBody.append(`properties[_handle_${i + 1}]`, p.handle);
           });
           formBody.append('properties[_bundle_selection]', titles.join(' <> '));
 

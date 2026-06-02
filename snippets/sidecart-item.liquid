@@ -38,28 +38,29 @@
 
   comment
     Simple Bundles & Kits bundle lines carry each picked scent as an
-    option-group property ("First Scent", "Second Scent", ...) plus hidden
-    "_handle_N" props (added by the custom picker) used here for each scent's
-    bottle image. Read names from the "Scent" props (clean titles, no escaping)
-    rather than the "_bundle_selection" summary, whose "<>" gets HTML-escaped.
+    option-group property ("First Scent", "Second Scent", ...). Read the scent
+    names from those (clean titles, no escaping) and resolve each scent's bottle
+    image by handleizing its name (which matches the scent product's handle), so
+    the order line items don't need extra "_handle_N" props just for cart art.
   endcomment
   assign bundle_scents_str = ''
-  assign bundle_handles_str = ''
   for property in item.properties
     assign scent_first_char = property.first | slice: 0
     if property.first contains 'Scent' and scent_first_char != '_' and property.last != blank
       assign bundle_scents_str = bundle_scents_str | append: property.last | append: '||'
     endif
-    assign key_prefix_handle = property.first | slice: 0, 8
-    if key_prefix_handle == '_handle_' and property.last != blank
-      assign bundle_handles_str = bundle_handles_str | append: property.last | append: '||'
-    endif
   endfor
   assign bundle_scents = bundle_scents_str | split: '||'
-  assign bundle_handles = bundle_handles_str | split: '||'
   assign has_bundle_scents = false
   if bundle_scents.size > 0
     assign has_bundle_scents = true
+  endif
+  assign bundle_has_bottles = false
+  if has_bundle_scents
+    assign first_scent_handle = bundle_scents.first | handleize
+    if all_products[first_scent_handle] != blank
+      assign bundle_has_bottles = true
+    endif
   endif
 
   assign has_compare_price = false
@@ -75,10 +76,10 @@
 
 <li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ item.variant.compare_at_price | default: 0 }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
-    {%- if has_bundle_scents and bundle_handles.size > 0 -%}
+    {%- if bundle_has_bottles -%}
       <div class="sidecart-item__bundle-bottles">
-        {%- for handle in bundle_handles -%}
-          {%- assign scent_product = all_products[handle] -%}
+        {%- for scent_title in bundle_scents -%}
+          {%- assign scent_product = all_products[scent_title | handleize] -%}
           {%- if scent_product != blank -%}
             {%- assign bottle_image = scent_product.metafields.custom.card_image | default: scent_product.featured_image -%}
             {%- if bottle_image -%}
