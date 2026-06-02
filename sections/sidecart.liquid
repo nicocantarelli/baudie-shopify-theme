@@ -1888,7 +1888,10 @@ class Sidecart {
 
     this.renderCardPrice(card, 1, currentCents, originalCents);
 
-    container.appendChild(card);
+    // Insert at the TOP: Shopify returns a newly added (discounted) line first
+    // in cart.items, so the authoritative reconcile renders it at the top. We
+    // place the optimistic card there too so it doesn't visibly jump.
+    container.prepend(card);
     this.hideEmptyState();
     this.adjustCountBadge(1);
     this.adjustSubtotalOptimistic(currentCents);
