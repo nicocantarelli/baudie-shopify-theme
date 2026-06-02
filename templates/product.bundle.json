@@ -348,6 +348,26 @@
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
+    },
+    "17804401000fc54605": {
+      "type": "apps",
+      "blocks": {
+        "simple_bundles_kits_infinite_options_selector_cy443j": {
+          "type": "shopify://apps/simple-bundles-kits/blocks/infinite-options-selector/e553276b-36b2-446d-b80a-aa47fe5f96ac",
+          "settings": {
+            "select_placeholder": "Please select an option",
+            "disable_oos_options": true,
+            "show_price_variance": true,
+            "rank_options_by_price_diff": true,
+            "custom_css": "",
+            "custom_js": ""
+          }
+        }
+      },
+      "block_order": [
+        "simple_bundles_kits_infinite_options_selector_cy443j"
+      ],
+      "settings": {}
     }
   },
   "order": [
@@ -357,6 +377,7 @@
     "in_press_VFHyTx",
     "what_makes_different_LWNLJB",
     "product_faq_dDjEXh",
-    "related_products_adCLpM"
+    "related_products_adCLpM",
+    "17804401000fc54605"
   ]
 }
