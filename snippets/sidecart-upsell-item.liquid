@@ -27,7 +27,7 @@
 -%}
 
 {%- if render_card -%}
-  <li class="sidecart-upsell__item" data-sidecart-upsell-offer data-product-id="{{ product.id }}">
+  <li class="sidecart-upsell__item" data-sidecart-upsell-offer data-product-id="{{ product.id }}" data-card-bg="{{ product.metafields.custom.product_card_background | default: '#FCF0D2' }}">
     <div class="sidecart-upsell__image-wrap">
       {%- if card_image -%}
         {{ card_image | image_url: width: 160 | image_tag:

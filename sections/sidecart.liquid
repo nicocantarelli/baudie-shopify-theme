@@ -1865,7 +1865,8 @@ class Sidecart {
     const offerImg = offer.querySelector('.sidecart-upsell__image');
     if (imgLink && offerImg) {
       imgLink.removeAttribute('href');
-      imgLink.removeAttribute('style');
+      // Match the real card's image background (product_card_background metafield).
+      imgLink.style.backgroundColor = offer.dataset.cardBg || '#FCF0D2';
       let img = imgLink.querySelector('img');
       if (!img) {
         imgLink.innerHTML = '';
