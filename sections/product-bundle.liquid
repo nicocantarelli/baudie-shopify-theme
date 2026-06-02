@@ -1217,7 +1217,7 @@
       }
 
       async addToCart(goToCart) {
-        const selected = this.getSelectedProducts();
+        const selected = this.getSelectedProducts().sort((a, b) => Number(a.index) - Number(b.index));
         if (selected.length < this.bundleSize) return;
         if (!this.bundleVariantId) {
           console.error('Bundle: no bundle variant ID found');
@@ -1233,10 +1233,22 @@
           const formBody = new URLSearchParams();
           formBody.append('id', this.bundleVariantId);
           formBody.append('quantity', '1');
+
+          // Simple Bundles & Kits expands this line into its component scents
+          // (and decrements each scent's stock) server-side via its Cart
+          // Transform. It keys off the option-group properties ("First Scent",
+          // "Second Scent", ...) plus a "_bundle_selection" summary, exactly as
+          // its own widget submits them. We replicate that format here so the
+          // custom picker drives the same mechanism without the widget.
+          const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth'];
+          const titles = selected.map(p => p.title);
           selected.forEach((p, i) => {
-            formBody.append(`properties[Scent ${i + 1}]`, p.title);
+            const groupName = (ordinals[i] || ('Scent ' + (i + 1))) + ' Scent';
+            formBody.append(`properties[${groupName}]`, p.title);
+            // Hidden handle, read only by the cart UI to show each scent's bottle.
             formBody.append(`properties[_handle_${i + 1}]`, p.handle);
           });
+          formBody.append('properties[_bundle_selection]', titles.join(' <> '));
 
           const response = await fetch('/cart/add.js', {
             method: 'POST',

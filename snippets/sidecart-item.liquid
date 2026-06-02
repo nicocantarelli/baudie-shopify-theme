@@ -36,22 +36,27 @@
     assign item_original_unit = item_original | divided_by: item_quantity
   endif
 
-  assign bundle_titles_str = ''
+  comment
+    Simple Bundles & Kits bundle lines carry the picked scents as a
+    "_bundle_selection" summary ("Scent A <> Scent B <> Scent C"), plus hidden
+    "_handle_N" properties (added by the custom picker) used here for each
+    scent's bottle image. Show the scent list + bottles, never the raw props.
+  endcomment
+  assign bundle_selection_str = ''
   assign bundle_handles_str = ''
   for property in item.properties
-    assign key_prefix_scent = property.first | slice: 0, 6
-    assign key_prefix_handle = property.first | slice: 0, 8
-    if key_prefix_scent == 'Scent ' and property.last != blank
-      assign bundle_titles_str = bundle_titles_str | append: property.last | append: '||'
+    if property.first == '_bundle_selection' and property.last != blank
+      assign bundle_selection_str = property.last
     endif
+    assign key_prefix_handle = property.first | slice: 0, 8
     if key_prefix_handle == '_handle_' and property.last != blank
       assign bundle_handles_str = bundle_handles_str | append: property.last | append: '||'
     endif
   endfor
-  assign bundle_scents = bundle_titles_str | split: '||'
+  assign bundle_scents = bundle_selection_str | split: ' <> '
   assign bundle_handles = bundle_handles_str | split: '||'
   assign has_bundle_scents = false
-  if bundle_scents.size > 0
+  if bundle_selection_str != blank
     assign has_bundle_scents = true
   endif
 
