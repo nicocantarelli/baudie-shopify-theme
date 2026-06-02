@@ -32,7 +32,7 @@
         "desktop_overlay_enable": true,
         "desktop_overlay_color": "#000000",
         "desktop_overlay_opacity": 10,
-        "mobile_heading": "The world's first and only patented Deodorant Enhancer",
+        "mobile_heading": "This helps deo last longer + helps keep sweat odorless.",
         "mobile_hero_image": "shopify://shop_images/Screen_Shot_2026-04-13_at_12.29.29_PM.png",
         "mobile_hero_image_alt": "",
         "mobile_content_position": "center",
@@ -41,7 +41,7 @@
         "mobile_overlay_color": "#3e2027",
         "mobile_overlay_opacity": 25,
         "mobile_title": "",
-        "mobile_subtitle": "Not a deodorant — the step that helps it last longer.",
+        "mobile_subtitle": "Not deodorant. Your deodorant’s wingwoman.",
         "mobile_button_text": "SHOP OUR SCENTS",
         "mobile_button_url": "shopify://collections/shop"
       }
