@@ -79,7 +79,8 @@
     {%- if bundle_has_bottles -%}
       <div class="sidecart-item__bundle-bottles">
         {%- for scent_title in bundle_scents -%}
-          {%- assign scent_product = all_products[scent_title | handleize] -%}
+          {%- assign scent_handle = scent_title | handleize -%}
+          {%- assign scent_product = all_products[scent_handle] -%}
           {%- if scent_product != blank -%}
             {%- assign bottle_image = scent_product.metafields.custom.card_image | default: scent_product.featured_image -%}
             {%- if bottle_image -%}
