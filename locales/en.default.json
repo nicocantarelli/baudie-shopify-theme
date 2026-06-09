@@ -7,7 +7,6 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-
 {
   "404": {
     "title": "404",
@@ -434,5 +433,12 @@
     "terms": "Terms and Conditions",
     "privacy": "Privacy Policy",
     "contact": "Contact Us"
+  },
+  "shopify": {
+    "checkout": {
+      "marketing": {
+        "accept_marketing_checkbox_label": "Email me special offers + discounts"
+      }
+    }
   }
 }
