@@ -35,9 +35,16 @@
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
+    },
+    "cookie-banner": {
+      "type": "cookie-banner",
+      "settings": {
+        "enabled": true
+      }
     }
   },
   "order": [
-    "sidecart"
+    "sidecart",
+    "cookie-banner"
   ]
 }

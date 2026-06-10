@@ -395,7 +395,22 @@
     "subscribe": "Subscribe",
     "facebook": "Facebook",
     "instagram": "Instagram",
-    "copyright": "{{ shop_name }} {{ year }}. All rights reserved."
+    "copyright": "{{ shop_name }} {{ year }}. All rights reserved.",
+    "cookie_settings": "Cookie settings"
+  },
+  "cookie_banner": {
+    "heading": "We value your privacy",
+    "body_html": "We use cookies to improve your experience, analyse traffic, and for marketing. Read our <a href=\"{{ url }}\">Privacy Policy</a>.",
+    "necessary": "Necessary",
+    "necessary_info": "Always on",
+    "analytics": "Analytics",
+    "marketing": "Marketing",
+    "accept": "Accept all",
+    "reject": "Reject all",
+    "manage": "Manage preferences",
+    "save": "Save preferences",
+    "dialog_label": "Cookie consent",
+    "close": "Close"
   },
   "sidecart": {
     "title": "Shopping cart",
