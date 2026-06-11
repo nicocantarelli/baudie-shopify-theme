@@ -76,7 +76,7 @@
         "popup_text_color": "#3e2027",
         "bundle_upsell_bg_color": "#ffffff",
         "bundle_upsell_text_color": "#3e2027",
-        "final_sale_placement": "title"
+        "final_sale_placement": "price"
       }
     },
     "1772843462a5334ed3": {
