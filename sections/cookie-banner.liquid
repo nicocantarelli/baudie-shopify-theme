@@ -13,7 +13,7 @@
   assign s = section.settings
   assign privacy_url = ''
   if s.privacy_page != blank
-    assign privacy_url = s.privacy_page
+    assign privacy_url = s.privacy_page.url
   else
     assign privacy_url = shop.privacy_policy.url
   endif
