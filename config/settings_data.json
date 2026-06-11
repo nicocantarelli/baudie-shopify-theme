@@ -9,6 +9,7 @@
  */
 {
   "current": {
+    "favicon": "shopify://shop_images/favicon.png",
     "promo_banner_enabled": false,
     "promo_banner_text": "<p>Packaging Re-brand Sale<br/>35% OFF SITE WIDE<br/>Code: REFRESH35</p>",
     "promo_banner_bg": "#e15374",
