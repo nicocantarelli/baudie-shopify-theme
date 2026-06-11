@@ -39,7 +39,24 @@
     "cookie-banner": {
       "type": "cookie-banner",
       "settings": {
-        "enabled": true
+        "enabled": true,
+        "heading": "We value your privacy",
+        "body": "",
+        "privacy_page": "privacy-policy",
+        "label_accept": "Accept all",
+        "label_reject": "Reject all",
+        "label_manage": "Manage preferences",
+        "label_save": "Save preferences",
+        "show_analytics": true,
+        "show_marketing": true,
+        "position": "bottom-left",
+        "border_radius": 8,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027",
+        "accept_bg_color": "#3e2027",
+        "accept_text_color": "#fffae6",
+        "reject_bg_color": "#fce9ec",
+        "reject_text_color": "#3e2027"
       }
     }
   },
