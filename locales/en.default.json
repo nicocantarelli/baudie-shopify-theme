@@ -237,7 +237,14 @@
       "close": "Close",
       "trust_badge": "Trust badge",
       "trust_badge_icon": "Badge icon",
-      "trust_badge_label": "Badge label"
+      "trust_badge_label": "Badge label",
+      "final_sale_label": "Final Sale",
+      "final_sale_header": "Final sale",
+      "final_sale_placement": "Mark placement",
+      "final_sale_info": "Only shows on products tagged \"final-sale\". Add the tag in the product's admin page.",
+      "final_sale_placement_price": "Next to price",
+      "final_sale_placement_button": "Below add-to-cart button",
+      "final_sale_placement_title": "By the title"
     },
     "customer_care": {
       "name": "Customer Care",
