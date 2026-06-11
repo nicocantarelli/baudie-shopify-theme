@@ -1,6 +1,6 @@
 # Checkout Upsell Extension Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build a custom Shopify Checkout UI Extension (new `baudie-checkout-upsell` app) that shows a configurable in-checkout upsell (default: the wipes), reusing the existing `baudie-discounts` automatic discount for pricing.
 
@@ -22,7 +22,7 @@
 - Create: the `baudie-checkout-upsell/` app project (CLI-generated)
 - Create: `extensions/checkout-upsell/` extension (CLI-generated)
 
-- [ ] **Step 1: Create the app project**
+- [x] **Step 1: Create the app project**
 
 Run from `/Users/nicolascantarelli/Developer/lumios-digital`:
 
@@ -32,7 +32,7 @@ shopify app init --name baudie-checkout-upsell
 
 Choose: build from scratch / "none" template (extension-only app, like `baudie-discounts`). When prompted, connect to the same Partner org and the Baudie Plus dev store used by `baudie-discounts`.
 
-- [ ] **Step 2: Generate the checkout UI extension**
+- [x] **Step 2: Generate the checkout UI extension**
 
 Run from `baudie-checkout-upsell/`:
 
@@ -42,11 +42,11 @@ shopify app generate extension --template checkout_ui --name checkout-upsell
 
 This creates `extensions/checkout-upsell/` with `shopify.extension.toml`, `src/`, `package.json`, `locales/`.
 
-- [ ] **Step 3: Inspect the generated entry file and record the API surface**
+- [x] **Step 3: Inspect the generated entry file and record the API surface**
 
 Open the generated `extensions/checkout-upsell/src/` entry (e.g. `Checkout.jsx`). Note the exact import path and hook names this CLI version generates (`reactExtension`, `useApi`, `useCartLines`, `useApplyCartLinesChange`, `useSettings`, `useAppMetafields`, `Banner`, `BlockStack`, `InlineLayout`, `Image`, `Text`, `Button`). These exact names are reused in Tasks 4–5; if any differ in this version, use the generated names.
 
-- [ ] **Step 4: Add vitest to the extension**
+- [x] **Step 4: Add vitest to the extension**
 
 Run from `extensions/checkout-upsell/`:
 
@@ -62,7 +62,7 @@ Edit `extensions/checkout-upsell/package.json` to add a test script:
 }
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd /Users/nicolascantarelli/Developer/lumios-digital/baudie-checkout-upsell
@@ -77,7 +77,7 @@ git commit -m "Scaffold checkout-upsell app and extension"
 **Files:**
 - Modify: `extensions/checkout-upsell/shopify.extension.toml`
 
-- [ ] **Step 1: Set the target, settings, and declared metafield**
+- [x] **Step 1: Set the target, settings, and declared metafield**
 
 Replace the generated `[[extensions.targeting]]`, `[extensions.settings]`, and metafield blocks so the file contains (keep the generated `api_version`, `name`, `type`, `handle`, `uid` values already present):
 
@@ -118,7 +118,7 @@ key = "upsell_price"
 
 If `default_placement` syntax is rejected by `shopify app build` for this API version, remove that block (placement is then chosen entirely in the editor) and continue.
 
-- [ ] **Step 2: Verify the config builds**
+- [x] **Step 2: Verify the config builds**
 
 Run from `baudie-checkout-upsell/`:
 
@@ -128,7 +128,7 @@ shopify app build
 
 Expected: build succeeds with no TOML schema errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add extensions/checkout-upsell/shopify.extension.toml
@@ -143,7 +143,7 @@ git commit -m "Configure checkout-upsell target, settings, and metafield"
 - Create: `extensions/checkout-upsell/src/lib/upsell.js`
 - Test: `extensions/checkout-upsell/src/lib/upsell.test.js`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `extensions/checkout-upsell/src/lib/upsell.test.js`:
 
@@ -211,7 +211,7 @@ describe('isOfferEligible', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run from `extensions/checkout-upsell/`:
 
@@ -221,7 +221,7 @@ npm test
 
 Expected: FAIL — `Cannot find module './upsell.js'`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `extensions/checkout-upsell/src/lib/upsell.js`:
 
@@ -254,7 +254,7 @@ export function isOfferEligible(offer, cartProductIds) {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run from `extensions/checkout-upsell/`:
 
@@ -264,7 +264,7 @@ npm test
 
 Expected: PASS — all 4 suites green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add extensions/checkout-upsell/src/lib/upsell.js extensions/checkout-upsell/src/lib/upsell.test.js
@@ -279,7 +279,7 @@ git commit -m "Add upsell helper functions with tests"
 - Create: `extensions/checkout-upsell/src/lib/offers.js`
 - Test: `extensions/checkout-upsell/src/lib/offers.test.js`
 
-- [ ] **Step 1: Write the failing test for the mapper**
+- [x] **Step 1: Write the failing test for the mapper**
 
 Create `extensions/checkout-upsell/src/lib/offers.test.js`:
 
@@ -345,7 +345,7 @@ describe('mapVariantNode', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run from `extensions/checkout-upsell/`:
 
@@ -355,7 +355,7 @@ npm test src/lib/offers.test.js
 
 Expected: FAIL — `Cannot find module './offers.js'`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `extensions/checkout-upsell/src/lib/offers.js`:
 
@@ -407,7 +407,7 @@ export function mapVariantNode(node) {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run from `extensions/checkout-upsell/`:
 
@@ -417,7 +417,7 @@ npm test
 
 Expected: PASS — `offers.test.js` and `upsell.test.js` all green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add extensions/checkout-upsell/src/lib/offers.js extensions/checkout-upsell/src/lib/offers.test.js
@@ -431,7 +431,7 @@ git commit -m "Add Storefront offer query and variant mapper with tests"
 **Files:**
 - Modify: `extensions/checkout-upsell/src/<generated entry>.jsx` (from Task 1, Step 3)
 
-- [ ] **Step 1: Replace the entry component**
+- [x] **Step 1: Replace the entry component**
 
 Using the exact import names recorded in Task 1 Step 3, replace the entry file body with the following. Reconcile any hook/component name differences against the generated scaffold before saving (e.g. if this version exposes `query` via `useApi()` rather than a `useApplyCartLinesChange` hook, adapt the two marked lines):
 
@@ -555,7 +555,7 @@ function OfferCard({ offer, onAdd }) {
 }
 ```
 
-- [ ] **Step 2: Verify the build and unit tests still pass**
+- [x] **Step 2: Verify the build and unit tests still pass**
 
 Run from `baudie-checkout-upsell/`:
 
@@ -565,7 +565,7 @@ shopify app build && (cd extensions/checkout-upsell && npm test)
 
 Expected: build succeeds; vitest suites all PASS.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add extensions/checkout-upsell/src
@@ -622,3 +622,28 @@ git commit -m "Checkout upsell extension verified and deployed" --allow-empty
 - **Spec coverage:** project/app (Task 1), target + settings + metafield (Task 2), qualifier + eligibility + price-display helpers (Task 3), Storefront offer data (Task 4), render + add action + qualifier gate (Task 5), discount re-evaluation + deploy (Task 6). All spec sections covered.
 - **Type consistency:** offer shape `{ variantId, productId, title, available, comingSoon, imageUrl, variantPriceCents, upsellPrice }` is produced by `mapVariantNode` (Task 4) and consumed by `isOfferEligible` / `computePriceDisplay` / `OfferCard` (Tasks 3, 5). `hasQualifier` consumes `{ productId, upsellPrice }` produced in Task 5. Names match across tasks.
 - **Known reconciliation point (not a placeholder):** Task 1 Step 3 records the generated hook/component names; Task 5 Step 1 adapts the two marked lines if this API version differs. This is the spec's documented validation checkpoint, executed against real scaffolding rather than guessed.
+
+---
+
+## Execution notes (2026-06-11) — Tasks 1–5 complete
+
+Implemented at `/Users/nicolascantarelli/Developer/lumios-digital/baudie-checkout-upsell` (9 commits on `main`, local only — no remote yet). 25/25 vitest tests green; esbuild bundle check clean. Every task went through spec-compliance + code-quality subagent review; all findings applied.
+
+### Deviations from plan (all reviewed and approved)
+
+1. **Preact, not React.** Shopify CLI 3.88 generates only the Preact flavor for `checkout_ui` (api_version 2026-04): global `shopify` signals API + `<s-*>` web components. The plan's React imports (`@shopify/ui-extensions-react/checkout`, `useCartLines`, `BlockStack`, …) no longer exist. Task 5 was rewritten against the installed typings (every API name verified at file:line in `node_modules/@shopify/ui-extensions`). This was the plan's sanctioned reconciliation point (Task 1 Step 3).
+2. **Manual scaffold.** `shopify app init` requires interactive Partner-org auth, so the app skeleton was cloned from `baudie-discounts` and the extension from the official `Shopify/extensions-templates` checkout-extension template (byte-fidelity verified by review). App linking is deferred to Task 6.
+3. **`default_placement = "ORDER_SUMMARY1"`** (string, docs-verified) instead of the plan's `[extensions.targeting.default_placement]` table syntax, which is not valid TOML for this schema.
+4. **Interface hardening beyond plan** (from review findings): `parseUpsellPrice` exported as the single canonical parser (the plan's component re-implemented it incorrectly — `"0"`/non-numeric would have broken qualifier parity with the discount function); `currencyCode` passed through `mapVariantNode` and formatted with `shopify.i18n.formatCurrency` (plan hardcoded `en-US`/USD); `UPSELL_NAMESPACE`/`UPSELL_KEY` constants; `computePriceDisplay` clamps to the variant price so the displayed price always equals the charged price even when `upsell_price` is misconfigured above the variant price; a11y: `accessibilityLabel` on Add buttons, visually-hidden "Sale price"/"Regular price" labels for the strikethrough; locale keys (`locales/en.default.json`) instead of hardcoded strings; template `fr.json` deleted.
+5. **Known accepted transient:** `appMetafields` load async with no loaded-flag, so an upsell-only cart can briefly pass the qualifier gate before entries arrive (documented in a comment at the gate; usually masked by the offer-fetch round-trip). Verify live in Task 6.
+
+### Task 6 runbook (requires interactive auth — user in the loop)
+
+From `/Users/nicolascantarelli/Developer/lumios-digital/baudie-checkout-upsell`:
+
+1. `shopify app config link` — create the new app on the Partner org (same org as `baudie-discounts`). This writes `client_id` (and possibly rewrites `application_url`/`redirect_urls`); first dev/deploy also writes the extension `uid` into `shopify.extension.toml`. **Commit those rewrites.**
+2. **Admin prerequisite:** the `custom.upsell_price` product metafield definition must have **Storefront API access** enabled (Settings → Custom data → Products → upsell_price), or `OFFER_QUERY` returns null metafields and offers show full price.
+3. `shopify app dev` against the Baudie Plus dev store → in the checkout editor add the "checkout-upsell" block (should default into the order summary), set `offer_variant_1` to the wipes variant, optional heading.
+4. Verify per plan Task 6 Step 2, plus the review additions: discount applies to the extension-added line (**blocking if not — discount-side fix needed**); upsell-only cart hides the block (also throttle network to observe the transient from note 5); wipes-already-in-cart hides the card; Add button visual weight (set `variant="secondary"` on the `s-button` if it competes with Pay); confirm single-currency store (the `upsell_price` scalar is currency-less by design, same as the discount function).
+5. `shopify app deploy`, then enable + configure in the live checkout editor.
+6. Create a GitHub repo + `git remote add origin … && git push -u origin main` (gh CLI is not authenticated on this machine, so this needs the user).
