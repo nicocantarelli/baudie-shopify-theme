@@ -590,27 +590,29 @@
     }
 
     maybeShowBanner() {
+      // If the visitor already chose, never re-show — regardless of region.
+      if (this.hasDecided()) return;
+
       try {
         if (window.Shopify.customerPrivacy.shouldShowBanner()) {
           this.showBanner();
           return;
         }
-        // "Show until the visitor chooses": region-independent fallback —
-        // show whenever no consent decision has been recorded yet.
-        if (this.dataset.alwaysShow === 'true' && !this.hasDecided()) {
-          this.showBanner();
-        }
       } catch (e) {
-        /* API unavailable — fail safe, never block the page */
+        /* API unavailable — fall through to the region-independent rule */
       }
+
+      // "Show until the visitor chooses": show everywhere until a choice is made.
+      if (this.dataset.alwaysShow === 'true') this.showBanner();
     }
 
     hasDecided() {
       try {
         if (localStorage.getItem('baudie_cookie_choice') === '1') return true;
       } catch (e) {
-        /* localStorage unavailable — fall back to the consent API below */
+        /* localStorage unavailable — fall back to the cookie/API below */
       }
+      if (document.cookie.indexOf('baudie_cookie_choice=1') !== -1) return true;
       try {
         const c = this.consent().currentVisitorConsent() || {};
         return Boolean(c.marketing || c.analytics || c.preferences || c.sale_of_data);
@@ -625,6 +627,7 @@
       } catch (e) {
         /* ignore */
       }
+      document.cookie = 'baudie_cookie_choice=1; path=/; max-age=31536000; samesite=lax';
     }
 
     disconnectedCallback() {
