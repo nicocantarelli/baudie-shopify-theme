@@ -27,6 +27,7 @@
 {%- if s.enabled -%}
   <cookie-consent
     class="cookie-consent"
+    data-editor-preview="{{ s.editor_preview }}"
     data-always-show="{{ s.always_show }}"
     data-show-personalization="{{ s.show_personalization }}"
     data-show-marketing="{{ s.show_marketing }}"
@@ -526,7 +527,26 @@
       document.addEventListener('click', this.reopenHandler);
       document.addEventListener('cookie-consent:open', () => this.openModal());
 
-      this.withPrivacyApi(() => this.maybeShowBanner());
+      if (window.Shopify && window.Shopify.designMode) {
+        this.setupEditorPreview();
+      } else {
+        this.withPrivacyApi(() => this.maybeShowBanner());
+      }
+    }
+
+    setupEditorPreview() {
+      this.renderEditorPreview();
+      document.addEventListener('shopify:section:select', () => this.renderEditorPreview());
+    }
+
+    renderEditorPreview() {
+      if (this.dataset.editorPreview === 'modal') {
+        this.hideBanner();
+        this.openModal();
+      } else {
+        this.closeModal();
+        this.showBanner();
+      }
     }
 
     maybeShowBanner() {
@@ -709,6 +729,17 @@
       "label": "t:sections.cookie_banner.always_show",
       "info": "t:sections.cookie_banner.always_show_info",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "editor_preview",
+      "label": "t:sections.cookie_banner.editor_preview",
+      "info": "t:sections.cookie_banner.editor_preview_info",
+      "options": [
+        { "value": "banner", "label": "t:sections.cookie_banner.editor_preview_banner" },
+        { "value": "modal", "label": "t:sections.cookie_banner.editor_preview_modal" }
+      ],
+      "default": "banner"
     },
     {
       "type": "header",

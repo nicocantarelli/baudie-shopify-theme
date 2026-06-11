@@ -227,7 +227,11 @@
       "enabled": "Enable banner",
       "enabled_info": "Remember to turn off Shopify's native cookie banner under Settings → Customer privacy to avoid showing two banners.",
       "always_show": "Show until the visitor chooses",
-      "always_show_info": "Show the banner to everyone who hasn't accepted or declined yet, regardless of region. Turn off to only show where Shopify says consent is legally required."
+      "always_show_info": "Show the banner to everyone who hasn't accepted or declined yet, regardless of region. Turn off to only show where Shopify says consent is legally required.",
+      "editor_preview": "Editor preview",
+      "editor_preview_info": "Only affects the theme editor — choose which surface to preview here. Has no effect on the live store.",
+      "editor_preview_banner": "Banner",
+      "editor_preview_modal": "Preferences modal"
     },
     "product_details": {
       "content_header": "Content",
