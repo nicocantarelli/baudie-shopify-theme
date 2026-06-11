@@ -392,7 +392,6 @@
       this.cardsToShow = this.getCardsToShow();
 
       if (!this.cardsContainer || this.cards.length === 0) {
-        console.log('No review cards found');
         return;
       }
 
@@ -410,9 +409,8 @@
       
       if (this.prevBtn) {
         this.prevBtn.addEventListener('click', () => {
-        console.log('Prev clicked, current index:', this.currentIndex);
         this.prev();
-      }) 
+      })
 
 
       
@@ -422,7 +420,6 @@
 
     if (this.nextBtn) {
       this.nextBtn.addEventListener('click', () => {
-        console.log('Next clicked, current index:', this.currentIndex);
         this.next();
       });
     }
@@ -458,15 +455,6 @@
     const cardWidth = this.cards[0].offsetWidth;
     const gap = parseFloat(getComputedStyle(this.cardsContainer).gap) || 35;
     const offset = -(this.currentIndex * (cardWidth + gap));
-
-    console.log('Updating carousel:', {
-      currentIndex: this.currentIndex,
-      cardWidth,
-      gap,
-      offset,
-      totalCards: this.cards.length,
-      cardsToShow: this.cardsToShow
-    });
 
     this.cardsContainer.style.transform = `translateX(${offset}px)`;
 
