@@ -453,7 +453,7 @@
       "name": "t:general.newsletter",
       "settings": {
         "heading": "Stay Fresh. Stay in the Loop.",
-        "description": "Be the first to know when new scents drop, bundles launch, and good pit news happens. No spam — just good vibes and better deodorant days.",
+        "description": "Be the first to know when new scents drop, bundles launch, and good pit news happens.",
         "placeholder": "Enter your email",
         "button_text": "SUBSCRIBE",
         "fine_print": "<p>We'll only email you when it's worth it — new scents, early access, or something good for your pits.<br/>See our <a href=\"https://lumiosdigital.myshopify.com/pages/customer-care#privacy\" target=\"_blank\" title=\"https://lumiosdigital.myshopify.com/pages/customer-care#privacy\">Privacy Policy</a> and <a href=\"https://lumiosdigital.myshopify.com/pages/customer-care#terms\" target=\"_blank\" title=\"https://lumiosdigital.myshopify.com/pages/customer-care#terms\">Terms</a>.</p>",
