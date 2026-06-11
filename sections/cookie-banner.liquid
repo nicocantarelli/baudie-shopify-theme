@@ -27,6 +27,7 @@
 {%- if s.enabled -%}
   <cookie-consent
     class="cookie-consent"
+    data-always-show="{{ s.always_show }}"
     data-show-personalization="{{ s.show_personalization }}"
     data-show-marketing="{{ s.show_marketing }}"
     data-show-analytics="{{ s.show_analytics }}"
@@ -525,13 +526,32 @@
       document.addEventListener('click', this.reopenHandler);
       document.addEventListener('cookie-consent:open', () => this.openModal());
 
-      this.withPrivacyApi(() => {
-        try {
-          if (window.Shopify.customerPrivacy.shouldShowBanner()) this.showBanner();
-        } catch (e) {
-          /* API unavailable — fail safe, never block the page */
+      this.withPrivacyApi(() => this.maybeShowBanner());
+    }
+
+    maybeShowBanner() {
+      try {
+        if (window.Shopify.customerPrivacy.shouldShowBanner()) {
+          this.showBanner();
+          return;
         }
-      });
+        // "Show until the visitor chooses": region-independent fallback —
+        // show whenever no consent decision has been recorded yet.
+        if (this.dataset.alwaysShow === 'true' && !this.hasDecided()) {
+          this.showBanner();
+        }
+      } catch (e) {
+        /* API unavailable — fail safe, never block the page */
+      }
+    }
+
+    hasDecided() {
+      try {
+        const c = this.consent().currentVisitorConsent() || {};
+        return Boolean(c.marketing || c.analytics || c.preferences || c.sale_of_data);
+      } catch (e) {
+        return false;
+      }
     }
 
     disconnectedCallback() {
@@ -681,6 +701,13 @@
       "id": "enabled",
       "label": "t:sections.cookie_banner.enabled",
       "info": "t:sections.cookie_banner.enabled_info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "always_show",
+      "label": "t:sections.cookie_banner.always_show",
+      "info": "t:sections.cookie_banner.always_show_info",
       "default": true
     },
     {

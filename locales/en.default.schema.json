@@ -225,7 +225,9 @@
       "reject_bg_color": "Outline button background",
       "reject_text_color": "Outline button text",
       "enabled": "Enable banner",
-      "enabled_info": "Remember to turn off Shopify's native cookie banner under Settings → Customer privacy to avoid showing two banners."
+      "enabled_info": "Remember to turn off Shopify's native cookie banner under Settings → Customer privacy to avoid showing two banners.",
+      "always_show": "Show until the visitor chooses",
+      "always_show_info": "Show the banner to everyone who hasn't accepted or declined yet, regardless of region. Turn off to only show where Shopify says consent is legally required."
     },
     "product_details": {
       "content_header": "Content",
