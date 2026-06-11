@@ -607,10 +607,23 @@
 
     hasDecided() {
       try {
+        if (localStorage.getItem('baudie_cookie_choice') === '1') return true;
+      } catch (e) {
+        /* localStorage unavailable — fall back to the consent API below */
+      }
+      try {
         const c = this.consent().currentVisitorConsent() || {};
         return Boolean(c.marketing || c.analytics || c.preferences || c.sale_of_data);
       } catch (e) {
         return false;
+      }
+    }
+
+    rememberChoice() {
+      try {
+        localStorage.setItem('baudie_cookie_choice', '1');
+      } catch (e) {
+        /* ignore */
       }
     }
 
@@ -701,6 +714,7 @@
     }
 
     dismiss() {
+      this.rememberChoice();
       this.hideBanner();
       this.closeModal();
     }
