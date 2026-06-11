@@ -421,7 +421,7 @@
       "final_sale_placement": "Mark placement",
       "final_sale_info": "Only shows on products tagged \"final-sale\". Add the tag in the product's admin page.",
       "final_sale_placement_price": "Next to price",
-      "final_sale_placement_button": "Below add-to-cart button",
+      "final_sale_placement_button": "Bottom of buy area",
       "final_sale_placement_title": "By the title"
     },
     "how_to_use": {
