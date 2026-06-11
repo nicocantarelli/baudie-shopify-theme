@@ -51,11 +51,11 @@
         "show_marketing": true,
         "position": "bottom-left",
         "border_radius": 8,
-        "background_color": "#fce9ec",
+        "background_color": "#ffcad2",
         "text_color": "#3e2027",
         "accept_bg_color": "#3e2027",
         "accept_text_color": "#fffae6",
-        "reject_bg_color": "#fce9ec",
+        "reject_bg_color": "#ffcad2",
         "reject_text_color": "#3e2027"
       }
     }
