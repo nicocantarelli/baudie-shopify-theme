@@ -50,7 +50,7 @@
         "show_analytics": true,
         "show_marketing": true,
         "position": "bottom-left",
-        "border_radius": 8,
+        "border_radius": 0,
         "background_color": "#ffcad2",
         "text_color": "#3e2027",
         "accept_bg_color": "#3e2027",
