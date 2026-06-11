@@ -23,6 +23,7 @@
     "column": "Column",
     "content": "Content",
     "custom_section": "Custom section",
+    "favicon": "Favicon",
     "fonts": "Fonts",
     "footer": "Footer",
     "group": "Group",
@@ -109,6 +110,8 @@
   "labels": {
     "alignment": "Alignment",
     "background": "Background",
+    "favicon_image": "Favicon image",
+    "favicon_image_info": "Will be scaled down to 32 x 32px",
     "foreground": "Foreground",
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",

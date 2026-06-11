@@ -81,6 +81,17 @@
     ]
   },
   {
+    "name": "t:general.favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "t:labels.favicon_image",
+        "info": "t:labels.favicon_image_info"
+      }
+    ]
+  },
+  {
     "name": "Promo banner",
     "settings": [
       {
