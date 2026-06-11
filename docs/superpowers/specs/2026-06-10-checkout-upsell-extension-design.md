@@ -73,16 +73,23 @@ checkout extension only displays the price and adds the line.
 
 ### Components (each independently testable)
 
-- **Eligibility helper** (pure function): given a cart line set + an offer's
-  product data, returns whether the offer should render (not in cart, available,
-  not coming-soon) and whether the whole block should render (cart has a
-  qualifier / is not excluded-only). Mirrors sidecart rules. Unit-tested.
+- **Qualifier helper** (pure function): given the cart-line products' upsell
+  prices, returns whether the cart contains ≥1 "qualifier" (a product with no
+  `custom.upsell_price`). Mirrors the discount function's gate exactly.
+  Unit-tested.
+- **Eligibility helper** (pure function): given the cart lines + an offer's
+  fetched data, returns whether that offer should render (not already in cart,
+  available, not `coming-soon`). Unit-tested.
 - **Price-display helper** (pure function): given `variant.price` and
   `custom.upsell_price`, returns `{ currentPrice, compareAtPrice | null }`.
   Mirrors `sidecart-upsell-item.liquid` logic. Unit-tested.
-- **Data layer**: queries the Storefront API (available in-checkout) for each
-  offer product — variant price, `availableForSale`, image, title, tags (for
-  coming-soon), and `metafield(custom, upsell_price)`.
+- **Data layer**:
+  - Cart qualifier detection: declare `custom.upsell_price` in the extension
+    TOML and read it on cart-line products via `useAppMetafields`.
+  - Offer data: query the in-checkout **Storefront API** (`query` from the
+    extension API) for each configured offer *variant* — price,
+    `availableForSale`, image, product title, product tags (coming-soon), and
+    `metafield(custom, upsell_price)`.
 - **Render component**: the offer card(s) UI + heading, using checkout UI
   components, styled to read consistently with checkout and the sidecart card.
 - **Add action**: `applyCartLinesChange` add-line on button click; surfaces
@@ -91,22 +98,29 @@ checkout extension only displays the price and adds the line.
 ### Data flow (per render)
 
 1. Read live cart lines from checkout APIs.
-2. Read merchant settings (enabled, heading, offer products, exclude collection).
-3. For each offer, fetch product data via Storefront API.
-4. Run eligibility + price-display helpers.
-5. Render eligible cards; hide block if no eligible offers or cart is
-   excluded-only.
-6. On "Add", apply the cart-line change; the existing automatic discount reduces
+2. Read merchant settings (enabled, heading, offer variants).
+3. Detect qualifier presence from cart-line product metafields
+   (`useAppMetafields`). If no qualifier, render nothing.
+4. For each configured offer variant, fetch data via the Storefront API `query`.
+5. Run eligibility + price-display helpers.
+6. Render eligible cards; hide the block if no eligible offers.
+7. On "Add", apply the cart-line change; the existing automatic discount reduces
    the line price in checkout.
 
 ### Merchant settings (checkout editor — approach A)
 
-- `enabled` (boolean)
-- `heading` (text)
-- `offer_product_1`, `offer_product_2` (product references; default offer_1 = wipes)
-- `exclude_collection` (collection reference)
+Checkout settings support only `variant_reference` among reference types (no
+product or collection references), so offers are configured per-variant and the
+"excluded-only" guard is replaced by the metafield-based qualifier rule above:
 
-Mirrors the sidecart snippet's params one-to-one.
+- `enabled` (boolean)
+- `heading` (single_line_text_field)
+- `offer_variant_1`, `offer_variant_2` (`variant_reference`; default
+  `offer_variant_1` = the wipes variant)
+
+The qualifier rule (cart must contain a non-upsell product) reproduces the
+sidecart's exclude-collection intent without a collection setting, and stays
+perfectly aligned with the discount function.
 
 ## Error handling
 
@@ -127,16 +141,25 @@ Mirrors the sidecart snippet's params one-to-one.
 
 ## Risks / validation checkpoints
 
-These are verified during implementation, not assumed:
+Resolved during design research (Shopify docs, 2026-06-10):
 
-1. **Checkout settings field types** — confirm checkout-editor settings support
-   product and collection references. If not, fall back to variant references or
-   a metafield-driven config, keeping the same behavior.
-2. **Discount re-evaluation** — confirm the automatic discount re-applies to a
-   line added by the extension (expected; verify in a real checkout).
-3. **Metafield access in checkout** — confirm `custom.upsell_price` is readable
-   via the in-checkout Storefront API query (vs. needing a metafield declaration
-   in the extension TOML).
+- **Settings field types** — only `variant_reference` is supported among
+  reference types; no product/collection references. Design updated: offers are
+  variant references; the exclude-collection guard is replaced by the
+  metafield-based qualifier rule.
+- **Metafield access in checkout** — cart-line product metafields are read by
+  declaring `custom.upsell_price` in the extension TOML and using
+  `useAppMetafields`; arbitrary offer-variant data comes from the Storefront API
+  `query`.
+
+Still verified during implementation, not assumed:
+
+1. **Discount re-evaluation** — confirm the automatic discount re-applies to a
+   line added by the extension (expected; verify in a real checkout via
+   `shopify app dev`).
+2. **Storefront `query` shape** — confirm the exact field path for a variant's
+   product metafield and image in the current API version against the generated
+   scaffold before wiring the data layer.
 
 ## Rollout
 
