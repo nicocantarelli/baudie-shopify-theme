@@ -399,17 +399,16 @@
     "cookie_settings": "Cookie settings"
   },
   "cookie_banner": {
-    "heading": "We value your privacy",
-    "body_html": "We use cookies to improve your experience, analyse traffic, and for marketing. Read our <a href=\"{{ url }}\">Privacy Policy</a>.",
-    "necessary": "Necessary",
-    "necessary_info": "Always on",
-    "analytics": "Analytics",
-    "marketing": "Marketing",
-    "accept": "Accept all",
-    "reject": "Reject all",
-    "manage": "Manage preferences",
-    "save": "Save preferences",
     "dialog_label": "Cookie consent",
+    "body_html": "We and our partners, including Shopify, use cookies and other technologies to personalize your experience, show you ads, and perform analytics, and we will not use cookies or other technologies for these purposes unless you accept them. Learn more in our <a href=\"{{ url }}\">Privacy Policy</a>.",
+    "required": "Required",
+    "required_desc": "These cookies are necessary for the site to function properly, including capabilities like logging in and adding items to the cart.",
+    "personalization": "Personalization",
+    "personalization_desc": "These cookies store details about your actions to personalize your next visit to the website.",
+    "marketing": "Marketing",
+    "marketing_desc": "These cookies are used by us and our partners, including Shopify, to optimize marketing communications and show you ads on other websites.",
+    "analytics": "Analytics",
+    "analytics_desc": "These cookies help us understand how you interact with the site. We use this data to identify areas to improve.",
     "close": "Close"
   },
   "sidecart": {
