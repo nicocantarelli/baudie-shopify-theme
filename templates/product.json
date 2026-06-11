@@ -75,7 +75,8 @@
         "show_watch_in_action": false,
         "popup_text_color": "#3e2027",
         "bundle_upsell_bg_color": "#ffffff",
-        "bundle_upsell_text_color": "#3e2027"
+        "bundle_upsell_text_color": "#3e2027",
+        "final_sale_placement": "title"
       }
     },
     "1772843462a5334ed3": {
