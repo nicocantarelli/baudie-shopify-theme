@@ -17,7 +17,6 @@
   else
     assign privacy_url = shop.privacy_policy.url
   endif
-  assign radius = s.border_radius | default: settings.input_corner_radius
 -%}
 
 {%- if s.enabled -%}
@@ -35,7 +34,6 @@
       --cb-accept-text: {{ s.accept_text_color }};
       --cb-reject-bg: {{ s.reject_bg_color }};
       --cb-reject-text: {{ s.reject_text_color }};
-      --cb-radius: {{ radius }}px;
     "
     hidden
   >
@@ -126,7 +124,7 @@
     pointer-events: auto;
     background: var(--cb-bg, #FCE9EC);
     color: var(--cb-text, #3E2027);
-    border-radius: var(--cb-radius, 8px);
+    border-radius: 0;
     padding: 22px;
     box-shadow: 0 12px 40px rgba(62, 32, 39, 0.18);
     font-family: var(--font-sweet-sans);
@@ -525,16 +523,6 @@
         { "value": "bottom-center", "label": "t:sections.cookie_banner.position_bottom_center" }
       ],
       "default": "bottom-left"
-    },
-    {
-      "type": "range",
-      "id": "border_radius",
-      "min": 0,
-      "max": 40,
-      "step": 1,
-      "unit": "px",
-      "label": "t:sections.cookie_banner.border_radius",
-      "default": 8
     },
     {
       "type": "header",
