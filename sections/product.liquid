@@ -136,8 +136,10 @@
 
     {%- comment -%} Purchase group: price, button, and upsell share the same width {%- endcomment -%}
     <div class="product-main__purchase-group">
-      <p class="product-main__price">{{ current_variant.price | money }}</p>
-      {%- if is_final_sale and final_sale_placement == 'price' -%}{{ final_sale_mark }}{%- endif -%}
+      <div class="product-main__price-block">
+        <p class="product-main__price">{{ current_variant.price | money }}</p>
+        {%- if is_final_sale and final_sale_placement == 'price' -%}{{ final_sale_mark }}{%- endif -%}
+      </div>
       {% form 'product', product, class: 'product-main__form' %}
         <input type="hidden" name="id" value="{{ current_variant.id }}">
         <button
@@ -695,6 +697,16 @@
 
   .product-main__purchase-group .product-main__button {
     width: 100%;
+  }
+
+  .product-main__price-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .product-main__price-block .product-main__final-sale {
+    margin-top: 0;
   }
 
   .product-main__price {
