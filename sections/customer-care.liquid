@@ -7,7 +7,7 @@
     assign active_category = first_block.settings.url_slug | default: first_block.id
   endif
 
-  assign bg_color = section.settings.background_color | default: '#FFF7EA'
+  assign bg_color = section.settings.background_color | default: '#FCE9EC'
   assign text_color = section.settings.text_color | default: '#3E2027'
 -%}
 
@@ -246,7 +246,7 @@
 
 {% stylesheet %}
 .customer-care {
-  --cc-cream: color-mix(in srgb, var(--cc-text, #3E2027) 5%, var(--cc-bg, #FFF7EA));
+  --cc-cream: color-mix(in srgb, var(--cc-text, #3E2027) 5%, var(--cc-bg, #FCE9EC));
   --cc-border: rgba(62, 32, 39, 0.1);
   background-color: var(--cc-bg);
   padding: calc(var(--total-header-height, 110px) + 60px) 0 120px;
@@ -875,7 +875,7 @@ if (Shopify.designMode) {
       "type": "color",
       "id": "background_color",
       "label": "t:labels.background_color",
-      "default": "#FFF7EA"
+      "default": "#FCE9EC"
     },
     {
       "type": "color",

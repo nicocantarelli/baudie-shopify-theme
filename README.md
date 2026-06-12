@@ -240,7 +240,7 @@ Likely cause: a section is using `width: 100vw` instead of the `full-width` clas
 
 ### Section background not reaching the screen edges
 
-Cause: missing `full-width` class — the section is rendering inside the constrained middle column of the section grid, so the body background (`#FFF7EA`) shows on either side.
+Cause: missing `full-width` class — the section is rendering inside the constrained middle column of the section grid, so the body background (theme setting, currently `#FCE9EC`) shows on either side.
 
 **Fix**: add `full-width` to the section's root.
 
