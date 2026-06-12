@@ -62,13 +62,12 @@
     <script>
       (function () {
         var SKIP = { SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEXTAREA: 1, CODE: 1, PRE: 1 };
-        var REG_RE = /\u00AE|\uFE5F|\uFE5B|\(R\)/g;
+        // U+FE0F (emoji variation selector) is consumed so the symbol never renders as emoji
+        var REG_RE = /\u00AE\uFE0F?|\(R\)/g;
 
         function hasMatch(text) {
           return text && (
             text.indexOf('\u00AE') !== -1 ||
-            text.indexOf('\uFE5F') !== -1 ||
-            text.indexOf('\uFE5B') !== -1 ||
             text.indexOf('(R)') !== -1
           );
         }

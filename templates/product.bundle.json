@@ -149,7 +149,7 @@
       "settings": {
         "title": "How to use",
         "mobile_description": "",
-        "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer®️ powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
+        "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
         "sprays_title": "How many sprays do i need?",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
@@ -238,7 +238,7 @@
           "type": "faq_item",
           "settings": {
             "question": "Is Baudie a deodorant?",
-            "answer": "<p>No. Baudie is not a deodorant and does not replace one. It is a Deodorant Enhancer®️ that works before deodorant to stop odor at the source and create the perfect base for your deo to last longer.</p>"
+            "answer": "<p>No. Baudie is not a deodorant and does not replace one. It is a Deodorant Enhancer® that works before deodorant to stop odor at the source and create the perfect base for your deo to last longer.</p>"
           }
         },
         "faq_item_UpwmVD": {
@@ -294,7 +294,7 @@
           "type": "faq_item",
           "settings": {
             "question": "Who can use this product?",
-            "answer": "<p>The Deodorant Enhancer®️ is unisex and can be used for pre-teens and up. Please make sure to patch-test before use.</p>"
+            "answer": "<p>The Deodorant Enhancer® is unisex and can be used for pre-teens and up. Please make sure to patch-test before use.</p>"
           }
         }
       },
