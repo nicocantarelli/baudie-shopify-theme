@@ -184,6 +184,14 @@
     color: var(--text-color, #3E2027);
   }
 
+  /* The global .reg-mark utility (layout/theme.liquid) defaults to 0.4em for
+     large headings. This trigger is small text in a <span>, not a <p>/<li>, so
+     it needs the same body treatment paragraphs get or the ® renders too small. */
+  .product-faq__question .reg-mark {
+    font-size: 0.8em;
+    vertical-align: 0.35em;
+  }
+
   /* --- Icons --- */
 
   .product-faq__icon {
