@@ -9,6 +9,21 @@
  */
 {
   "sections": {
+    "1781645562b78e840e": {
+      "type": "apps",
+      "blocks": {
+        "klaviyo_reviews_average_rating_Nh8kCg": {
+          "type": "shopify://apps/klaviyo-reviews/blocks/average-rating/db20e365-d984-4ac4-9655-e1588d951ca9",
+          "settings": {
+            "product": "{{product}}"
+          }
+        }
+      },
+      "block_order": [
+        "klaviyo_reviews_average_rating_Nh8kCg"
+      ],
+      "settings": {}
+    },
     "main": {
       "type": "product",
       "blocks": {
@@ -340,24 +355,10 @@
         "klaviyo_reviews_product_reviews_w98tre"
       ],
       "settings": {}
-    },
-    "1781645562b78e840e": {
-      "type": "apps",
-      "blocks": {
-        "klaviyo_reviews_average_rating_Nh8kCg": {
-          "type": "shopify://apps/klaviyo-reviews/blocks/average-rating/db20e365-d984-4ac4-9655-e1588d951ca9",
-          "settings": {
-            "product": "{{product}}"
-          }
-        }
-      },
-      "block_order": [
-        "klaviyo_reviews_average_rating_Nh8kCg"
-      ],
-      "settings": {}
     }
   },
   "order": [
+    "1781645562b78e840e",
     "main",
     "1772843462a5334ed3",
     "how-to-use",
@@ -365,7 +366,6 @@
     "what_makes_different_HFC6bE",
     "product-faq",
     "related-products",
-    "178164549175380437",
-    "1781645562b78e840e"
+    "178164549175380437"
   ]
 }
