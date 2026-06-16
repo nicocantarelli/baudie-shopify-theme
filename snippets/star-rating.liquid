@@ -51,7 +51,7 @@
       document.addEventListener('click', function (e) {
         var trigger = e.target.closest('[data-scroll-to-reviews]');
         if (!trigger) return;
-        var target = document.querySelector('#reviews, [id*="klaviyo-reviews"], [class*="klaviyo-reviews"], .reviews-section');
+        var target = document.querySelector('#reviews, #fulfilled-reviews-all, #klaviyo-product-reviews-wrapper, [id*="klaviyo"][id*="reviews"], [class*="kl_reviews"], .reviews-section');
         if (!target) return;
         e.preventDefault();
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
