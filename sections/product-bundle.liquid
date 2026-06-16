@@ -17,6 +17,14 @@
   assign full_ingredient_list = product.metafields.custom.full_ingredient_list
   assign scent_collection = section.settings.scent_collection
   assign bundle_size = section.settings.bundle_size | default: 3
+
+  comment
+    Aggregate rating is synced from Klaviyo Reviews into the standard
+    `reviews.rating` / `reviews.rating_count` Shopify metafields.
+  endcomment
+  assign rating = product.metafields.reviews.rating.value.rating | default: 0 | round: 1
+  assign rating_scale = product.metafields.reviews.rating.value.scale_max | default: 5
+  assign review_count = product.metafields.reviews.rating_count.value | default: 0
 -%}
 
 <section
@@ -67,6 +75,17 @@
         <p class="bundle-main__size-line">{{ bundle_size }} x {{ bottle_size }}</p>
       {% endif %}
     </div>
+
+    {%- comment -%} Rating (synced from Klaviyo Reviews metafields) {%- endcomment -%}
+    {% if review_count > 0 %}
+      {% render 'star-rating',
+        rating: rating,
+        count: review_count,
+        scale_max: rating_scale,
+        class: 'bundle-main__rating',
+        scroll_to_reviews: true
+      %}
+    {% endif %}
 
     {%- comment -%} Scent Selectors {%- endcomment -%}
     <div class="bundle-main__selectors" data-bundle-selectors>
@@ -453,6 +472,27 @@
     flex-direction: column;
     gap: 30px;
     padding: 0 12px 40px;
+    position: relative;
+  }
+
+  /* --- Rating --- */
+
+  .bundle-main__rating {
+    gap: 8px;
+    color: var(--product-text);
+  }
+
+  .bundle-main__rating .star-rating__layer {
+    gap: 6px;
+  }
+
+  .bundle-main__rating .star-rating__layer svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .bundle-main__rating .star-rating__count {
+    font-size: 13px;
   }
 
   /* --- Header Typography --- */
@@ -957,6 +997,28 @@
     .bundle-main__desktop-header {
       display: flex;
       gap: 16px;
+    }
+
+    /* Desktop: rating pinned to top-right of the info column */
+    .bundle-main__rating {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .bundle-main__rating .star-rating__layer {
+      gap: 4px;
+    }
+
+    .bundle-main__rating .star-rating__layer svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .bundle-main__rating .star-rating__count {
+      font-size: 14px;
     }
 
     .bundle-main__image-column {

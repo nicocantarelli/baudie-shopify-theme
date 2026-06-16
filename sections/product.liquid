@@ -1171,6 +1171,28 @@
       gap: 16px;
     }
 
+    /* Desktop: rating pinned to top-right of the info column */
+    .product-main__rating {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .product-main__rating .star-rating__layer {
+      gap: 4px;
+    }
+
+    .product-main__rating .star-rating__layer svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .product-main__rating .star-rating__count {
+      font-size: 14px;
+    }
+
     .product-main__title {
       font-size: 74px;
     }
