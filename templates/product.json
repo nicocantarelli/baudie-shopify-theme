@@ -327,6 +327,19 @@
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
+    },
+    "178164549175380437": {
+      "type": "apps",
+      "blocks": {
+        "klaviyo_reviews_product_reviews_w98tre": {
+          "type": "shopify://apps/klaviyo-reviews/blocks/product-reviews/db20e365-d984-4ac4-9655-e1588d951ca9",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "klaviyo_reviews_product_reviews_w98tre"
+      ],
+      "settings": {}
     }
   },
   "order": [
@@ -336,6 +349,7 @@
     "in_press_TBfPET",
     "what_makes_different_HFC6bE",
     "product-faq",
-    "related-products"
+    "related-products",
+    "178164549175380437"
   ]
 }
