@@ -115,3 +115,60 @@ body {
 .shopify-section > .full-width {
   grid-column: 1 / -1;
 }
+
+/* --- Star rating (synced from Klaviyo Reviews metafields) --- */
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+
+button.star-rating {
+  cursor: pointer;
+}
+
+.star-rating__stars {
+  position: relative;
+  display: inline-flex;
+  line-height: 0;
+}
+
+.star-rating__layer {
+  display: inline-flex;
+  gap: 4px;
+  color: currentColor;
+}
+
+.star-rating__layer--filled {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--star-fill, 0%);
+  overflow: hidden;
+}
+
+.star-rating__layer--empty {
+  opacity: 0.25;
+}
+
+.star-rating__layer svg {
+  display: block;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+.star-rating__count {
+  font-family: var(--font-jokker);
+  font-size: 14px;
+  line-height: 1.5;
+  color: currentColor;
+  white-space: nowrap;
+}
