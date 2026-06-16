@@ -346,6 +346,7 @@
       "blocks": {
         "klaviyo_reviews_average_rating_Nh8kCg": {
           "type": "shopify://apps/klaviyo-reviews/blocks/average-rating/db20e365-d984-4ac4-9655-e1588d951ca9",
+          "disabled": true,
           "settings": {
             "product": "{{product}}"
           }
