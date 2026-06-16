@@ -348,6 +348,19 @@
       ],
       "disabled": true,
       "settings": {}
+    },
+    "178164679076b445fe": {
+      "type": "apps",
+      "blocks": {
+        "klaviyo_reviews_product_reviews_J6wfLH": {
+          "type": "shopify://apps/klaviyo-reviews/blocks/product-reviews/db20e365-d984-4ac4-9655-e1588d951ca9",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "klaviyo_reviews_product_reviews_J6wfLH"
+      ],
+      "settings": {}
     }
   },
   "order": [
@@ -357,6 +370,7 @@
     "what_makes_different_LWNLJB",
     "product_faq_dDjEXh",
     "related_products_adCLpM",
-    "17804401000fc54605"
+    "17804401000fc54605",
+    "178164679076b445fe"
   ]
 }
