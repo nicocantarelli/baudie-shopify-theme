@@ -104,17 +104,6 @@
   {%- comment -%} Info Column {%- endcomment -%}
   <div class="product-main__info-column">
 
-    {%- comment -%} Rating (synced from Klaviyo Reviews metafields) {%- endcomment -%}
-    {% if review_count > 0 %}
-      {% render 'star-rating',
-        rating: rating,
-        count: review_count,
-        scale_max: rating_scale,
-        class: 'product-main__rating',
-        scroll_to_reviews: true
-      %}
-    {% endif %}
-
     {%- comment -%} Product Header (desktop only — mobile header is above image) {%- endcomment -%}
     <div class="product-main__header--desktop">
       <p class="product-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
@@ -130,6 +119,17 @@
       {% endif %}
       {%- if is_final_sale and final_sale_placement == 'title' -%}{{ final_sale_mark }}{%- endif -%}
     </div>
+
+    {%- comment -%} Rating (synced from Klaviyo Reviews metafields) {%- endcomment -%}
+    {% if review_count > 0 %}
+      {% render 'star-rating',
+        rating: rating,
+        count: review_count,
+        scale_max: rating_scale,
+        class: 'product-main__rating',
+        scroll_to_reviews: true
+      %}
+    {% endif %}
 
     {%- comment -%} Purchase group: price, button, and upsell share the same width {%- endcomment -%}
     <div class="product-main__purchase-group">
@@ -508,16 +508,21 @@
   /* --- Rating --- */
 
   .product-main__rating {
-    position: absolute;
-    top: -44px;
-    right: 12px;
-    gap: 4px;
-    z-index: 2;
+    gap: 8px;
     color: var(--product-text);
   }
 
+  .product-main__rating .star-rating__layer {
+    gap: 6px;
+  }
+
+  .product-main__rating .star-rating__layer svg {
+    width: 14px;
+    height: 14px;
+  }
+
   .product-main__rating .star-rating__count {
-    font-size: 10px;
+    font-size: 13px;
   }
 
   /* --- Header Typography --- */
@@ -1141,18 +1146,7 @@
       padding: 120px 40px 60px;
     }
 
-    /* Rating positioned at top-right of info column */
-    .product-main__rating {
-      position: absolute;
-      top: 30px;
-      right: 40px;
-      gap: 8px;
-    }
-
-    .product-main__rating .star-rating__layer {
-      gap: 8px;
-    }
-
+    /* Rating sits below the scent title */
     .product-main__rating .star-rating__layer svg {
       width: 13px;
       height: 13px;
