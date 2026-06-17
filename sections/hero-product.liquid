@@ -97,7 +97,7 @@
 
     {%- comment -%} Color Block - separate from images so it doesn't fade {%- endcomment -%}
     {%- assign first_hero_product = section.settings.hero_products.first -%}
-    {%- assign first_card_bg = first_hero_product.metafields.custom.card_background_color | default: '#FCD8B3' -%}
+    {%- assign first_card_bg = first_hero_product.metafields.custom.hero_card_background_color | default: first_hero_product.metafields.custom.card_background_color | default: first_hero_product.metafields.custom.product_card_background | default: '#FCD8B3' -%}
     <div class="hero-product__color-block" data-color-block style="background-color: {{ first_card_bg }};"></div>
 
     {%- comment -%} Main Heading {%- endcomment -%}
@@ -180,7 +180,7 @@
       aria-label="{{ 'sections.hero_product.product_carousel' | t }}"
       data-hero-cards>
       {% for product in section.settings.hero_products %}
-        {% assign card_bg = product.metafields.custom.card_background_color | default: '#FCD8B3' %}
+        {% assign card_bg = product.metafields.custom.hero_card_background_color | default: product.metafields.custom.card_background_color | default: product.metafields.custom.product_card_background | default: '#FCD8B3' %}
         {%- if section.settings.use_default_colors -%}
           {%- assign card_text = section.settings.default_card_text_color | default: '#3E2027' -%}
           {%- assign card_button_color = section.settings.default_card_button_color | default: '#3E2027' -%}
