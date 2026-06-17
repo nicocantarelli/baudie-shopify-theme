@@ -96,8 +96,12 @@
     </div>
 
     {%- comment -%} Color Block - separate from images so it doesn't fade {%- endcomment -%}
-    {%- assign first_hero_product = section.settings.hero_products.first -%}
-    {%- assign first_card_bg = first_hero_product.metafields.custom.hero_card_background_color | default: first_hero_product.metafields.custom.card_background_color | default: first_hero_product.metafields.custom.product_card_background | default: '#FCD8B3' -%}
+    {%- liquid
+      assign first_card_bg = '#FCD8B3'
+      for hero_product in section.settings.hero_products limit: 1
+        assign first_card_bg = hero_product.metafields.custom.hero_card_background_color | default: hero_product.metafields.custom.card_background_color | default: hero_product.metafields.custom.product_card_background | default: '#FCD8B3'
+      endfor
+    -%}
     <div class="hero-product__color-block" data-color-block style="background-color: {{ first_card_bg }};"></div>
 
     {%- comment -%} Main Heading {%- endcomment -%}
