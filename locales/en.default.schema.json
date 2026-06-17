@@ -28,6 +28,7 @@
     "footer": "Footer",
     "group": "Group",
     "header": "Header",
+    "klaviyo": "Klaviyo",
     "layout": "Layout",
     "main": "Main",
     "overlay": "Overlay",
@@ -110,6 +111,10 @@
   },
   "labels": {
     "alignment": "Alignment",
+    "klaviyo_public_key": "Klaviyo public API key",
+    "klaviyo_public_key_info": "Your 6-character public key (Site ID) from Klaviyo: Settings → API keys. Connects the newsletter signup forms.",
+    "klaviyo_list_id": "Klaviyo list ID",
+    "klaviyo_list_id_info": "The list new subscribers are added to. Find it in Klaviyo: Audience → Lists & Segments → your list → Settings.",
     "background": "Background",
     "favicon_image": "Favicon image",
     "favicon_image_info": "Will be scaled down to 32 x 32px",

@@ -13,15 +13,29 @@
       {{ section.settings.description }}
     </p>
 
-    <div class="newsletter-section__form">
-      <input
-        type="email"
-        class="newsletter-section__input"
-        placeholder="{{ section.settings.placeholder }}"
-        aria-label="{{ 'newsletter.email_placeholder' | t }}">
-      <button type="button" class="newsletter-section__button">
-        {{ section.settings.button_text }}
-      </button>
+    <div class="newsletter-section__form-group">
+      <form
+        class="newsletter-section__form"
+        data-klaviyo-subscribe
+        data-klaviyo-company="{{ settings.klaviyo_public_key }}"
+        data-klaviyo-list="{{ section.settings.klaviyo_list_id }}"
+        data-klaviyo-source="newsletter_section"
+        data-msg-success="{{ 'newsletter.success' | t | escape }}"
+        data-msg-error="{{ 'newsletter.error' | t | escape }}"
+        data-msg-invalid="{{ 'newsletter.invalid_email' | t | escape }}"
+        novalidate>
+        <input
+          type="email"
+          name="email"
+          class="newsletter-section__input"
+          placeholder="{{ section.settings.placeholder }}"
+          aria-label="{{ 'newsletter.email_placeholder' | t }}"
+          required>
+        <button type="submit" class="newsletter-section__button">
+          {{ section.settings.button_text }}
+        </button>
+      </form>
+      <p class="newsletter-section__status" data-klaviyo-status role="status" aria-live="polite"></p>
     </div>
 
     {% if section.settings.fine_print != blank %}
@@ -69,12 +83,38 @@
     width: 100%;
   }
 
+  .newsletter-section__form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
   .newsletter-section__form {
     display: flex;
     gap: 8px;
     align-items: center;
     width: 100%;
     justify-content: center;
+  }
+
+  .newsletter-section__status {
+    font-family: var(--font-jokker);
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+    margin: 0;
+    min-height: 1em;
+    color: var(--text-color, #3E2027);
+  }
+
+  .newsletter-section__status[data-state="error"] {
+    color: #B00020;
+  }
+
+  .newsletter-section__status:empty {
+    min-height: 0;
   }
 
   .newsletter-section__input {
@@ -209,6 +249,17 @@
     "name": "t:general.newsletter",
     "class": "newsletter-section-wrapper",
     "settings": [
+      {
+        "type": "header",
+        "content": "t:general.klaviyo"
+      },
+      {
+        "type": "text",
+        "id": "klaviyo_list_id",
+        "label": "t:labels.klaviyo_list_id",
+        "info": "t:labels.klaviyo_list_id_info",
+        "default": "U6y4hf"
+      },
       {
         "type": "header",
         "content": "t:sections.newsletter.content_header"

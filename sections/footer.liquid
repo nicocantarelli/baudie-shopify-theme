@@ -132,11 +132,17 @@
           </div>
         </div>
 
-        {%- comment -%} Newsletter Form - Placeholder {%- endcomment -%}
+        {%- comment -%} Newsletter Form - wired to Klaviyo {%- endcomment -%}
         <form
           class="footer__newsletter-form"
-          action="#"
-          method="post">
+          data-klaviyo-subscribe
+          data-klaviyo-company="{{ settings.klaviyo_public_key }}"
+          data-klaviyo-list="{{ section.settings.klaviyo_list_id }}"
+          data-klaviyo-source="footer"
+          data-msg-success="{{ 'newsletter.success' | t | escape }}"
+          data-msg-error="{{ 'newsletter.error' | t | escape }}"
+          data-msg-invalid="{{ 'newsletter.invalid_email' | t | escape }}"
+          novalidate>
           <input
             type="email"
             name="email"
@@ -147,6 +153,7 @@
             {{ 'footer.subscribe' | t }}
           </button>
         </form>
+        <p class="footer__newsletter-status" data-klaviyo-status role="status" aria-live="polite"></p>
       </div>
     </div>
 
@@ -349,6 +356,22 @@
     transform: translateY(0);
   }
 
+  .footer__newsletter-status {
+    font-family: var(--font-jokker);
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 10px 0 0;
+    color: var(--text-color, #3E2027);
+  }
+
+  .footer__newsletter-status[data-state="error"] {
+    color: #E57373;
+  }
+
+  .footer__newsletter-status:empty {
+    display: none;
+  }
+
   /* Social Media Links */
   .footer__social {
     display: flex;
@@ -546,6 +569,125 @@
   }
 {% endstylesheet %}
 
+{% javascript %}
+  // Wires every [data-klaviyo-subscribe] form on the page (footer + newsletter
+  // section) to Klaviyo's client subscribe API, keeping the custom markup.
+  class KlaviyoSubscribe {
+    constructor(form) {
+      this.form = form;
+      this.company = form.getAttribute('data-klaviyo-company');
+      this.list = form.getAttribute('data-klaviyo-list');
+      this.source = form.getAttribute('data-klaviyo-source') || '';
+      this.input = form.querySelector('input[type="email"]');
+      this.button = form.querySelector('[type="submit"]');
+      this.status = form.parentElement.querySelector('[data-klaviyo-status]');
+      this.messages = {
+        success: form.getAttribute('data-msg-success') || '',
+        error: form.getAttribute('data-msg-error') || '',
+        invalid: form.getAttribute('data-msg-invalid') || ''
+      };
+      this.form.addEventListener('submit', (event) => this.handleSubmit(event));
+    }
+
+    isValidEmail(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    setStatus(state, message) {
+      if (!this.status) return;
+      this.status.textContent = message;
+      if (state) {
+        this.status.setAttribute('data-state', state);
+      } else {
+        this.status.removeAttribute('data-state');
+      }
+    }
+
+    setLoading(isLoading) {
+      if (this.button) this.button.disabled = isLoading;
+      if (this.input) this.input.disabled = isLoading;
+      this.form.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+    }
+
+    async handleSubmit(event) {
+      event.preventDefault();
+      const email = (this.input && this.input.value ? this.input.value : '').trim();
+
+      if (!this.isValidEmail(email)) {
+        this.setStatus('error', this.messages.invalid);
+        return;
+      }
+      if (!this.company || !this.list) {
+        this.setStatus('error', this.messages.error);
+        return;
+      }
+
+      this.setLoading(true);
+      this.setStatus('', '');
+
+      const payload = {
+        data: {
+          type: 'subscription',
+          attributes: {
+            custom_source: this.source,
+            profile: {
+              data: {
+                type: 'profile',
+                attributes: {
+                  email: email,
+                  properties: { signup_source: this.source }
+                }
+              }
+            }
+          },
+          relationships: {
+            list: { data: { type: 'list', id: this.list } }
+          }
+        }
+      };
+
+      try {
+        const response = await fetch(
+          'https://a.klaviyo.com/client/subscriptions/?company_id=' + encodeURIComponent(this.company),
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              revision: '2024-10-15'
+            },
+            body: JSON.stringify(payload)
+          }
+        );
+
+        if (response.ok || response.status === 202) {
+          this.setStatus('success', this.messages.success);
+          this.form.reset();
+        } else {
+          this.setStatus('error', this.messages.error);
+        }
+      } catch (error) {
+        this.setStatus('error', this.messages.error);
+      } finally {
+        this.setLoading(false);
+      }
+    }
+  }
+
+  function initKlaviyoForms() {
+    document.querySelectorAll('[data-klaviyo-subscribe]').forEach((form) => {
+      if (form.dataset.klaviyoInit) return;
+      form.dataset.klaviyoInit = 'true';
+      new KlaviyoSubscribe(form);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initKlaviyoForms);
+  } else {
+    initKlaviyoForms();
+  }
+{% endjavascript %}
+
 {% schema %}
   {
     "name": "t:general.footer",
@@ -615,6 +757,17 @@
         "id": "breadcrumb_text_color",
         "label": "t:footer.settings.breadcrumb_text_color",
         "default": "#3E2027"
+      },
+      {
+        "type": "header",
+        "content": "t:general.klaviyo"
+      },
+      {
+        "type": "text",
+        "id": "klaviyo_list_id",
+        "label": "t:labels.klaviyo_list_id",
+        "info": "t:labels.klaviyo_list_id_info",
+        "default": "U6y4hf"
       },
       {
         "type": "header",

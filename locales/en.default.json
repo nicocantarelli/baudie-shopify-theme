@@ -86,7 +86,10 @@
     }
   },
   "newsletter": {
-    "email_placeholder": "Enter your email"
+    "email_placeholder": "Enter your email",
+    "success": "You're in! Check your inbox to confirm.",
+    "error": "Something went wrong. Please try again.",
+    "invalid_email": "Please enter a valid email address."
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
