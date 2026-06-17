@@ -87,7 +87,7 @@
   },
   "newsletter": {
     "email_placeholder": "Enter your email",
-    "success": "You're in! Check your inbox to confirm.",
+    "success": "You're in! Welcome to the club.",
     "error": "Something went wrong. Please try again.",
     "invalid_email": "Please enter a valid email address."
   },

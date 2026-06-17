@@ -20,9 +20,9 @@
         data-klaviyo-company="{{ settings.klaviyo_public_key }}"
         data-klaviyo-list="{{ section.settings.klaviyo_list_id }}"
         data-klaviyo-source="newsletter_section"
-        data-msg-success="{{ 'newsletter.success' | t | escape }}"
-        data-msg-error="{{ 'newsletter.error' | t | escape }}"
-        data-msg-invalid="{{ 'newsletter.invalid_email' | t | escape }}"
+        data-msg-success="{{ 'newsletter.success' | t }}"
+        data-msg-error="{{ 'newsletter.error' | t }}"
+        data-msg-invalid="{{ 'newsletter.invalid_email' | t }}"
         novalidate>
         <input
           type="email"
@@ -101,7 +101,8 @@
 
   .newsletter-section__status {
     font-family: var(--font-jokker);
-    font-size: 13px;
+    font-size: 15px;
+    font-weight: 600;
     line-height: 1.4;
     text-align: center;
     margin: 0;
@@ -110,7 +111,7 @@
   }
 
   .newsletter-section__status[data-state="error"] {
-    color: #B00020;
+    color: #C0392B;
   }
 
   .newsletter-section__status:empty {

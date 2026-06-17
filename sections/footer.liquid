@@ -139,9 +139,9 @@
           data-klaviyo-company="{{ settings.klaviyo_public_key }}"
           data-klaviyo-list="{{ section.settings.klaviyo_list_id }}"
           data-klaviyo-source="footer"
-          data-msg-success="{{ 'newsletter.success' | t | escape }}"
-          data-msg-error="{{ 'newsletter.error' | t | escape }}"
-          data-msg-invalid="{{ 'newsletter.invalid_email' | t | escape }}"
+          data-msg-success="{{ 'newsletter.success' | t }}"
+          data-msg-error="{{ 'newsletter.error' | t }}"
+          data-msg-invalid="{{ 'newsletter.invalid_email' | t }}"
           novalidate>
           <input
             type="email"
@@ -358,14 +358,15 @@
 
   .footer__newsletter-status {
     font-family: var(--font-jokker);
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: 600;
     line-height: 1.4;
-    margin: 10px 0 0;
+    margin: 12px 0 0;
     color: var(--text-color, #3E2027);
   }
 
   .footer__newsletter-status[data-state="error"] {
-    color: #E57373;
+    color: #C0392B;
   }
 
   .footer__newsletter-status:empty {
