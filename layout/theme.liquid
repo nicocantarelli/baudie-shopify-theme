@@ -35,6 +35,15 @@
     <meta name="facebook-domain-verification" content="x0p33zgscy0vxd5kmz7ngx8u0zdh6m">
 
     {{ content_for_header }}
+    <!-- Google Tag Manager - Search Console verification only -->
+    <script>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-PFMGFGT7');
+    </script>
+    <!-- End Google Tag Manager -->
     <!-- Google Analytics verification for Search Console. Pageview disabled to avoid duplicate tracking. -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RTYX65S660"></script>
     <script>
@@ -46,6 +55,9 @@
   </head>
 
   <body>
+    <!-- Google Tag Manager (noscript) - Search Console verification only -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PFMGFGT7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     {% sections 'header-group' %}
 
     {{ content_for_layout }}
