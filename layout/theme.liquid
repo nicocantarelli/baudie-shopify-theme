@@ -34,11 +34,7 @@
 
     <meta name="facebook-domain-verification" content="x0p33zgscy0vxd5kmz7ngx8u0zdh6m">
 
-    {% capture shopify_header_markup %}{{ content_for_header }}{% endcapture %}
-    {{
-      shopify_header_markup
-      | replace: '<meta name="google-site-verification" content="6Kz-X27heWTozSho5Mb3gwRIUi9KiUfagYxURuWwnXc">', '<meta name="google-site-verification" content="Pexl2ZNpUPrFcS4uZHsFjxiJlUKIf6JzNPW0E0kHmMo"><meta name="google-site-verification" content="6Kz-X27heWTozSho5Mb3gwRIUi9KiUfagYxURuWwnXc">'
-    }}
+    {{ content_for_header }}
   </head>
 
   <body>
