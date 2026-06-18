@@ -36,6 +36,14 @@
 
     {{ content_for_header }}
         <meta name="google-site-verification" content="Pexl2ZNpUPrFcS4uZHsFjxiJlUKIf6JzNPW0E0kHmMo">
+            <!-- Google Analytics verification for Search Console. Pageview disabled to avoid duplicate tracking. -->
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-RTYX65S660"></script>
+                    <script>
+                          window.dataLayer = window.dataLayer || [];
+                                function gtag(){dataLayer.push(arguments);}
+                                      gtag('js', new Date());
+                                            gtag('config', 'G-RTYX65S660', { 'send_page_view': false });
+                                                </script>
   </head>
 
   <body>
