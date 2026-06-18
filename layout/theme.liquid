@@ -2,6 +2,14 @@
 <html lang="{{ request.locale.iso_code }}">
   <head>
       <meta name="google-site-verification" content="Pexl2ZNpUPrFcS4uZHsFjxiJlUKIf6JzNPW0E0kHmMo" />
+      <!-- Google Analytics verification for Search Console. Pageview disabled to avoid duplicate tracking. -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-RTYX65S660"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RTYX65S660', { 'send_page_view': false });
+      </script>
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
 
@@ -35,15 +43,6 @@
     <meta name="facebook-domain-verification" content="x0p33zgscy0vxd5kmz7ngx8u0zdh6m">
 
     {{ content_for_header }}
-        <meta name="google-site-verification" content="Pexl2ZNpUPrFcS4uZHsFjxiJlUKIf6JzNPW0E0kHmMo">
-            <!-- Google Analytics verification for Search Console. Pageview disabled to avoid duplicate tracking. -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-RTYX65S660"></script>
-                    <script>
-                          window.dataLayer = window.dataLayer || [];
-                                function gtag(){dataLayer.push(arguments);}
-                                      gtag('js', new Date());
-                                            gtag('config', 'G-RTYX65S660', { 'send_page_view': false });
-                                                </script>
   </head>
 
   <body>
