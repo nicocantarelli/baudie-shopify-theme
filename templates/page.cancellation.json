@@ -38,7 +38,7 @@
             "background_color": "#FFCAD1",
             "text_color": "#3E2027",
             "border_radius": "0px",
-            "max_width": "800px",
+            "max_width": "850px",
             "show_order_lookup": true,
             "require_order_number": true,
             "hide_order_notes": false,
