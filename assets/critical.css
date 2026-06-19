@@ -172,3 +172,22 @@ button.star-rating {
   color: currentColor;
   white-space: nowrap;
 }
+
+/* EU Widerruf withdrawal form (cancellation page).
+   The app block prints its own heading/description above the iframe; the page
+   already has a branded "Cancel your contract" heading, so hide the app's and
+   match the frame to Baudie's square, dark-bordered inputs. */
+.wf-iframe-heading,
+.wf-iframe-description {
+  display: none !important;
+}
+
+.wf-iframe-container {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.wf-iframe-container iframe {
+  border: 1px solid #3E2027 !important;
+  border-radius: 0 !important;
+}
