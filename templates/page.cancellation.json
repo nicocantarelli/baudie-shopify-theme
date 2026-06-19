@@ -21,8 +21,8 @@
         "heading": "Return request",
         "body": "<p>Please use the form below to submit your cancellation.</p>",
         "bottom_padding": 24,
-        "background_color": "#FCE9EC",
-        "text_color": "#3E2027"
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
       }
     },
     "1781836852d1177aeb": {
@@ -35,9 +35,9 @@
             "heading": "-",
             "description": "-",
             "iframe_height": 500,
-            "primary_color": "#3E2027",
-            "background_color": "#FFCAD1",
-            "text_color": "#3E2027",
+            "primary_color": "#3e2027",
+            "background_color": "#ffcad1",
+            "text_color": "#3e2027",
             "border_radius": "0px",
             "max_width": "850px",
             "show_order_lookup": true,
