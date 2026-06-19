@@ -10,9 +10,16 @@
 {
   "sections": {
     "main": {
+      "type": "page",
+      "disabled": true,
+      "settings": {}
+    },
+    "legal_page_K7UX6p": {
       "type": "legal-page",
+      "name": "t:sections.legal_page.name",
       "settings": {
-        "heading": "Cancel your contract",
+        "heading": "Return request",
+        "body": "<p>Please use the form below to submit your cancellation.</p>",
         "background_color": "#FCE9EC",
         "text_color": "#3E2027"
       }
@@ -23,14 +30,14 @@
         "eu_widerruf_button_form_inline_3qiyCF": {
           "type": "shopify://apps/eu-widerruf-button/blocks/form-inline/019b2ca9-9838-7858-9694-3a8051afa76e",
           "settings": {
-            "show_heading": false,
+            "show_heading": true,
             "heading": "-",
             "description": "-",
-            "iframe_height": 850,
-            "primary_color": "#3E2027",
-            "background_color": "#FCE9EC",
-            "text_color": "#3E2027",
-            "border_radius": "0px",
+            "iframe_height": 500,
+            "primary_color": "#000000",
+            "background_color": "#ffffff",
+            "text_color": "#212529",
+            "border_radius": "8px",
             "max_width": "700px",
             "show_order_lookup": true,
             "require_order_number": true,
@@ -49,6 +56,7 @@
   },
   "order": [
     "main",
+    "legal_page_K7UX6p",
     "1781836852d1177aeb"
   ]
 }
