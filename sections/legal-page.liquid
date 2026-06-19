@@ -5,7 +5,7 @@
 
 <section
   class="legal-page full-width"
-  style="--lp-bg: {{ bg_color }}; --lp-text: {{ text_color }}; --lp-bottom: {{ section.settings.bottom_padding | default: 120 }}px;">
+  style="--lp-bg: {{ bg_color }}; --lp-text: {{ text_color }}; --lp-bottom: {{ section.settings.bottom_padding | default: 120 }}px; --lp-title-gap: {{ section.settings.heading_spacing | default: 60 }}px;">
   <div class="legal-page__container">
     {%- if section.settings.heading != blank -%}
       <h1 class="legal-page__title">{{ section.settings.heading }}</h1>
@@ -37,7 +37,7 @@
   font-weight: 400;
   line-height: 1;
   color: var(--lp-text);
-  margin: 0 0 60px;
+  margin: 0 0 var(--lp-title-gap, 60px);
 }
 
 .legal-page__body {
@@ -88,7 +88,7 @@
 
   .legal-page__title {
     font-size: 50px;
-    margin-bottom: 50px;
+    margin-bottom: min(var(--lp-title-gap, 50px), 50px);
   }
 }
 
@@ -103,7 +103,7 @@
 
   .legal-page__title {
     font-size: 40px;
-    margin-bottom: 30px;
+    margin-bottom: min(var(--lp-title-gap, 30px), 30px);
   }
 
   .legal-page__body {
@@ -132,6 +132,16 @@
       "type": "richtext",
       "id": "body",
       "label": "t:sections.legal_page.settings.body"
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "t:labels.heading_spacing",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 60
     },
     {
       "type": "range",
