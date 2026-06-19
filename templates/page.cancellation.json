@@ -10,7 +10,15 @@
 {
   "sections": {
     "main": {
-      "type": "cancellation",
+      "type": "legal-page",
+      "settings": {
+        "heading": "Cancel your contract",
+        "background_color": "#FCE9EC",
+        "text_color": "#3E2027"
+      }
+    },
+    "1781836852d1177aeb": {
+      "type": "apps",
       "blocks": {
         "eu_widerruf_button_form_inline_3qiyCF": {
           "type": "shopify://apps/eu-widerruf-button/blocks/form-inline/019b2ca9-9838-7858-9694-3a8051afa76e",
@@ -36,14 +44,11 @@
       "block_order": [
         "eu_widerruf_button_form_inline_3qiyCF"
       ],
-      "settings": {
-        "heading": "Cancel your contract",
-        "background_color": "#FCE9EC",
-        "text_color": "#3E2027"
-      }
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "1781836852d1177aeb"
   ]
 }
