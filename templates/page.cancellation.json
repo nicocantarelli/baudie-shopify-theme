@@ -20,6 +20,7 @@
       "settings": {
         "heading": "Return request",
         "body": "<p>Please use the form below to submit your cancellation.</p>",
+        "bottom_padding": 24,
         "background_color": "#FCE9EC",
         "text_color": "#3E2027"
       }

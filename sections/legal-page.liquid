@@ -5,7 +5,7 @@
 
 <section
   class="legal-page full-width"
-  style="--lp-bg: {{ bg_color }}; --lp-text: {{ text_color }};">
+  style="--lp-bg: {{ bg_color }}; --lp-text: {{ text_color }}; --lp-bottom: {{ section.settings.bottom_padding | default: 120 }}px;">
   <div class="legal-page__container">
     {%- if section.settings.heading != blank -%}
       <h1 class="legal-page__title">{{ section.settings.heading }}</h1>
@@ -22,7 +22,7 @@
 {% stylesheet %}
 .legal-page {
   background-color: var(--lp-bg);
-  padding: calc(var(--total-header-height, 110px) + 60px) 0 120px;
+  padding: calc(var(--total-header-height, 110px) + 60px) 0 var(--lp-bottom, 120px);
 }
 
 .legal-page__container {
@@ -94,7 +94,7 @@
 
 @media (max-width: 768px) {
   .legal-page {
-    padding: calc(var(--total-header-height, 100px) + 40px) 0 80px;
+    padding: calc(var(--total-header-height, 100px) + 40px) 0 min(var(--lp-bottom, 80px), 80px);
   }
 
   .legal-page__container {
@@ -132,6 +132,16 @@
       "type": "richtext",
       "id": "body",
       "label": "t:sections.legal_page.settings.body"
+    },
+    {
+      "type": "range",
+      "id": "bottom_padding",
+      "label": "t:labels.bottom_spacing",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 120
     },
     {
       "type": "header",
