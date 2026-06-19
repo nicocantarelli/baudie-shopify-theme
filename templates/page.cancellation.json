@@ -30,20 +30,20 @@
         "eu_widerruf_button_form_inline_3qiyCF": {
           "type": "shopify://apps/eu-widerruf-button/blocks/form-inline/019b2ca9-9838-7858-9694-3a8051afa76e",
           "settings": {
-            "show_heading": true,
+            "show_heading": false,
             "heading": "-",
             "description": "-",
-            "iframe_height": 500,
-            "primary_color": "#000000",
-            "background_color": "#ffffff",
-            "text_color": "#212529",
-            "border_radius": "8px",
-            "max_width": "700px",
+            "iframe_height": 400,
+            "primary_color": "#3E2027",
+            "background_color": "#FFCAD1",
+            "text_color": "#3E2027",
+            "border_radius": "0px",
+            "max_width": "800px",
             "show_order_lookup": true,
             "require_order_number": true,
             "hide_order_notes": false,
             "require_items": false,
-            "confirm_step": false,
+            "confirm_step": true,
             "hide_outside_eu": false
           }
         }
