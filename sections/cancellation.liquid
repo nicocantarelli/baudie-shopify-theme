@@ -1,0 +1,147 @@
+{%- comment -%}
+  Cancellation / Right-of-Withdrawal page. Wraps the EU Widerruf app form block
+  in a Baudie-styled, header-cleared container with a branded heading and intro.
+{%- endcomment -%}
+
+{%- liquid
+  assign bg_color = section.settings.background_color | default: '#FCE9EC'
+  assign text_color = section.settings.text_color | default: '#3E2027'
+-%}
+
+<section
+  class="cancellation-page full-width"
+  style="--cp-bg: {{ bg_color }}; --cp-text: {{ text_color }};">
+  <div class="cancellation-page__container">
+    {%- if section.settings.heading != blank -%}
+      <h1 class="cancellation-page__title">{{ section.settings.heading }}</h1>
+    {%- endif -%}
+
+    {%- if section.settings.intro != blank -%}
+      <div class="cancellation-page__intro rte">{{ section.settings.intro }}</div>
+    {%- endif -%}
+
+    <div class="cancellation-page__form">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when '@app' -%}
+            {%- render block -%}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .cancellation-page {
+    background-color: var(--cp-bg);
+    padding: calc(var(--total-header-height, 110px) + 60px) 0 120px;
+  }
+
+  .cancellation-page__container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .cancellation-page__title {
+    font-family: var(--font-alyona);
+    font-size: 70px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--cp-text);
+    text-align: center;
+    margin: 0 0 24px;
+  }
+
+  .cancellation-page__intro {
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--cp-text);
+    text-align: center;
+    margin: 0 auto 48px;
+    max-width: 640px;
+  }
+
+  .cancellation-page__intro a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .cancellation-page__form {
+    width: 100%;
+  }
+
+  @media (max-width: 1024px) {
+    .cancellation-page__container {
+      padding: 0 24px;
+    }
+
+    .cancellation-page__title {
+      font-size: 50px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .cancellation-page {
+      padding: calc(var(--total-header-height, 100px) + 40px) 0 80px;
+    }
+
+    .cancellation-page__container {
+      padding: 0 16px;
+    }
+
+    .cancellation-page__title {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+
+    .cancellation-page__intro {
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+  {
+    "name": "Cancellation page",
+    "tag": "section",
+    "class": "cancellation-page-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "t:labels.heading",
+        "default": "Cancel your contract"
+      },
+      {
+        "type": "richtext",
+        "id": "intro",
+        "label": "t:labels.description"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.colors"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "t:labels.background_color",
+        "default": "#FCE9EC"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "t:labels.text_color",
+        "default": "#3E2027"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "@app"
+      }
+    ]
+  }
+{% endschema %}

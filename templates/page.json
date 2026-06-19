@@ -12,39 +12,9 @@
     "main": {
       "type": "page",
       "settings": {}
-    },
-    "1781836852d1177aeb": {
-      "type": "apps",
-      "blocks": {
-        "eu_widerruf_button_form_inline_3qiyCF": {
-          "type": "shopify://apps/eu-widerruf-button/blocks/form-inline/019b2ca9-9838-7858-9694-3a8051afa76e",
-          "settings": {
-            "show_heading": true,
-            "heading": "-",
-            "description": "-",
-            "iframe_height": 500,
-            "primary_color": "#000000",
-            "background_color": "#ffffff",
-            "text_color": "#212529",
-            "border_radius": "8px",
-            "max_width": "700px",
-            "show_order_lookup": true,
-            "require_order_number": true,
-            "hide_order_notes": false,
-            "require_items": false,
-            "confirm_step": false,
-            "hide_outside_eu": false
-          }
-        }
-      },
-      "block_order": [
-        "eu_widerruf_button_form_inline_3qiyCF"
-      ],
-      "settings": {}
     }
   },
   "order": [
-    "main",
-    "1781836852d1177aeb"
+    "main"
   ]
 }

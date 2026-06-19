@@ -10,23 +10,19 @@
 {
   "sections": {
     "main": {
-      "type": "page",
-      "settings": {}
-    },
-    "1781836852d1177aeb": {
-      "type": "apps",
+      "type": "cancellation",
       "blocks": {
         "eu_widerruf_button_form_inline_3qiyCF": {
           "type": "shopify://apps/eu-widerruf-button/blocks/form-inline/019b2ca9-9838-7858-9694-3a8051afa76e",
           "settings": {
-            "show_heading": true,
+            "show_heading": false,
             "heading": "-",
             "description": "-",
-            "iframe_height": 500,
-            "primary_color": "#000000",
-            "background_color": "#ffffff",
-            "text_color": "#212529",
-            "border_radius": "8px",
+            "iframe_height": 850,
+            "primary_color": "#3E2027",
+            "background_color": "#FCE9EC",
+            "text_color": "#3E2027",
+            "border_radius": "0px",
             "max_width": "700px",
             "show_order_lookup": true,
             "require_order_number": true,
@@ -40,11 +36,14 @@
       "block_order": [
         "eu_widerruf_button_form_inline_3qiyCF"
       ],
-      "settings": {}
+      "settings": {
+        "heading": "Cancel your contract",
+        "background_color": "#FCE9EC",
+        "text_color": "#3E2027"
+      }
     }
   },
   "order": [
-    "main",
-    "1781836852d1177aeb"
+    "main"
   ]
 }
