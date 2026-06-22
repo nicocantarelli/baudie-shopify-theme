@@ -33,6 +33,12 @@
         {%- endfor -%}
       </div>
     {%- endif -%}
+
+    {%- if section.settings.button_label != blank -%}
+      <div class="about-philosophy__cta">
+        <a class="about-philosophy__button" href="{{ section.settings.button_link | default: '#affiliate-signup' }}">{{ section.settings.button_label }}</a>
+      </div>
+    {%- endif -%}
   </div>
 </section>
 
@@ -112,6 +118,31 @@
   margin-bottom: 0;
 }
 
+.about-philosophy__cta {
+  text-align: center;
+  margin-top: 56px;
+}
+
+.about-philosophy__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 14px 32px;
+  background-color: var(--ap-text);
+  color: var(--ap-bg);
+  transition: opacity 0.2s ease;
+}
+
+.about-philosophy__button:hover {
+  opacity: 0.9;
+}
+
 @media (min-width: 769px) {
   .about-philosophy {
     padding: 56px 0 100px;
@@ -158,6 +189,20 @@
       "type": "richtext",
       "id": "intro",
       "label": "t:sections.about_philosophy.settings.intro"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.about_philosophy.settings.cta_header"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:labels.button_text"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.about_philosophy.settings.button_link"
     },
     {
       "type": "header",

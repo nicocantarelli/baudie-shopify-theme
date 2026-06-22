@@ -474,10 +474,12 @@
         "image_header": "Background image",
         "layout_header": "Layout",
         "colors_header": "Colors",
+        "cta_header": "Button",
         "eyebrow": "Eyebrow text",
         "subheading": "Subheading",
         "subheading_size": "Subheading size",
         "subheading_bold": "Bold subheading",
+        "button_link": "Button link",
         "image_desktop": "Desktop image",
         "image_mobile": "Mobile image",
         "overlay_opacity": "Image overlay opacity",
@@ -485,12 +487,28 @@
         "min_height_mobile": "Minimum height (mobile)"
       }
     },
+    "affiliate_signup": {
+      "name": "Affiliate signup",
+      "settings": {
+        "intro": "Intro text",
+        "embed_code": "Snowball embed code",
+        "embed_code_info": "Paste the iframe embed code from your Social Snowball dashboard. Or leave blank and add the Snowball app block to this section instead.",
+        "min_height": "Form minimum height",
+        "max_width": "Content width",
+        "width_standard": "Standard",
+        "width_wide": "Wide",
+        "width_full": "Full",
+        "colors_header": "Colors"
+      }
+    },
     "about_philosophy": {
       "name": "About philosophy",
       "settings": {
         "content_header": "Content",
         "colors_header": "Colors",
-        "intro": "Intro text"
+        "cta_header": "Button",
+        "intro": "Intro text",
+        "button_link": "Button link"
       },
       "blocks": {
         "pillar": {

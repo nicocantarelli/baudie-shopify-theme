@@ -41,6 +41,9 @@
     {%- if section.settings.subheading != blank -%}
       <p class="about-hero__subheading">{{ section.settings.subheading }}</p>
     {%- endif -%}
+    {%- if section.settings.button_label != blank -%}
+      <a class="about-hero__button" href="{{ section.settings.button_link | default: '#affiliate-signup' }}">{{ section.settings.button_label }}</a>
+    {%- endif -%}
   </div>
 </section>
 
@@ -87,6 +90,31 @@
 
 .about-hero__heading + .about-hero__subheading {
   margin-top: 2px;
+}
+
+.about-hero__heading + .about-hero__button,
+.about-hero__subheading + .about-hero__button {
+  margin-top: 28px;
+}
+
+.about-hero__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 14px 32px;
+  background-color: var(--ah-text);
+  color: var(--ah-bg);
+  transition: opacity 0.2s ease;
+}
+
+.about-hero__button:hover {
+  opacity: 0.9;
 }
 
 .about-hero__eyebrow {
@@ -176,6 +204,20 @@
       "id": "subheading_bold",
       "label": "t:sections.about_hero.settings.subheading_bold",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.about_hero.settings.cta_header"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:labels.button_text"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.about_hero.settings.button_link"
     },
     {
       "type": "header",
