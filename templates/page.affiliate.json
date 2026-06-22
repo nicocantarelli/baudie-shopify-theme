@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
@@ -7,31 +16,78 @@
         "heading": "Join the Baudie collective",
         "subheading": "We'd love for you to help spread the word about plant-forward products that actually work. Share what you love and earn doing it.",
         "subheading_size": 20,
-        "button_label": "Apply now",
-        "button_link": "#affiliate-signup",
-        "overlay_opacity": 20,
+        "subheading_bold": false,
+        "button_label": "Apply Now",
+        "button_link": "",
+        "image": "shopify://shop_images/magnific_high-quality-photo.-a-top_2885101817__upscayl_2x_remacri-4x.png",
+        "overlay_opacity": 30,
         "min_height_desktop": 480,
         "min_height_mobile": 400,
-        "background_color": "#3E2027",
-        "text_color": "#FFFFFF"
+        "background_color": "#3e2027",
+        "text_color": "#ffffff"
       }
     },
     "perks": {
       "type": "about-philosophy",
       "blocks": {
-        "perk_1": { "type": "pillar", "settings": { "heading": "Generous commission", "text": "<p>Earn on every sale you drive with your unique code and link.</p>" } },
-        "perk_2": { "type": "pillar", "settings": { "heading": "Evergreen code", "text": "<p>A reusable discount code to share with your community any time.</p>" } },
-        "perk_3": { "type": "pillar", "settings": { "heading": "Long cookie window", "text": "<p>A generous attribution window so you get credit for the sales you inspire.</p>" } },
-        "perk_4": { "type": "pillar", "settings": { "heading": "Free product", "text": "<p>Get the products you'll be sharing, on us.</p>" } },
-        "perk_5": { "type": "pillar", "settings": { "heading": "Early access", "text": "<p>Be first to try new launches, sales, and limited drops.</p>" } },
-        "perk_6": { "type": "pillar", "settings": { "heading": "Dedicated support", "text": "<p>A real person on our team to help you succeed.</p>" } }
+        "perk_1": {
+          "type": "pillar",
+          "settings": {
+            "heading": "Generous commission",
+            "text": "<p>Earn on every sale you drive with your unique code and link.</p>"
+          }
+        },
+        "perk_2": {
+          "type": "pillar",
+          "settings": {
+            "heading": "Evergreen code",
+            "text": "<p>A reusable discount code to share with your community any time.</p>"
+          }
+        },
+        "perk_3": {
+          "type": "pillar",
+          "settings": {
+            "heading": "Long cookie window",
+            "text": "<p>A generous attribution window so you get credit for the sales you inspire.</p>"
+          }
+        },
+        "perk_4": {
+          "type": "pillar",
+          "settings": {
+            "heading": "Free product",
+            "text": "<p>Get the products you'll be sharing, on us.</p>"
+          }
+        },
+        "perk_5": {
+          "type": "pillar",
+          "settings": {
+            "heading": "Early access",
+            "text": "<p>Be first to try new launches, sales, and limited drops.</p>"
+          }
+        },
+        "perk_6": {
+          "type": "pillar",
+          "settings": {
+            "heading": "Dedicated support",
+            "text": "<p>A real person on our team to help you succeed.</p>"
+          }
+        }
       },
-      "block_order": ["perk_1", "perk_2", "perk_3", "perk_4", "perk_5", "perk_6"],
+      "block_order": [
+        "perk_1",
+        "perk_2",
+        "perk_3",
+        "perk_4",
+        "perk_5",
+        "perk_6"
+      ],
       "settings": {
         "heading": "Why join",
         "intro": "<p>Perks designed to reward the people who spread the word.</p>",
-        "background_color": "#FFFFFF",
-        "text_color": "#3E2027"
+        "button_label": "",
+        "button_link": "",
+        "background_color": "#ffffff",
+        "text_color": "#3e2027"
       }
     },
     "who_we_are": {
@@ -43,7 +99,9 @@
         "image_position": "left",
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
-        "text_vertical_align": "center"
+        "text_vertical_align": "center",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
       }
     },
     "who_you_are": {
@@ -55,23 +113,48 @@
         "image_position": "right",
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
-        "text_vertical_align": "center"
+        "text_vertical_align": "center",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
       }
     },
     "how_it_works": {
       "type": "about-philosophy",
       "blocks": {
-        "step_1": { "type": "pillar", "settings": { "heading": "1. Apply", "text": "<p>Fill out the short form below to join the program.</p>" } },
-        "step_2": { "type": "pillar", "settings": { "heading": "2. Share", "text": "<p>Get your unique code and link, and share what you love.</p>" } },
-        "step_3": { "type": "pillar", "settings": { "heading": "3. Earn", "text": "<p>Earn commission on every sale you drive.</p>" } }
+        "step_1": {
+          "type": "pillar",
+          "settings": {
+            "heading": "1. Apply",
+            "text": "<p>Fill out the short form below to join the program.</p>"
+          }
+        },
+        "step_2": {
+          "type": "pillar",
+          "settings": {
+            "heading": "2. Share",
+            "text": "<p>Get your unique code and link, and share what you love.</p>"
+          }
+        },
+        "step_3": {
+          "type": "pillar",
+          "settings": {
+            "heading": "3. Earn",
+            "text": "<p>Earn commission on every sale you drive.</p>"
+          }
+        }
       },
-      "block_order": ["step_1", "step_2", "step_3"],
+      "block_order": [
+        "step_1",
+        "step_2",
+        "step_3"
+      ],
       "settings": {
         "heading": "How it works",
-        "button_label": "Apply now",
-        "button_link": "#affiliate-signup",
-        "background_color": "#FFFFFF",
-        "text_color": "#3E2027"
+        "intro": "",
+        "button_label": "",
+        "button_link": "",
+        "background_color": "#ffffff",
+        "text_color": "#3e2027"
       }
     },
     "signup": {
@@ -82,24 +165,55 @@
         "embed_code": "",
         "min_height": 600,
         "max_width": "standard",
-        "background_color": "#3E2027",
-        "text_color": "#FFFFFF"
+        "background_color": "#3e2027",
+        "text_color": "#ffffff"
       }
     },
     "faq": {
       "type": "product-faq",
       "blocks": {
-        "faq_1": { "type": "faq_item", "settings": { "question": "How much can I earn?", "answer": "<p>You earn a commission on every sale made with your code or link. Full details are shared when you're approved.</p>" } },
-        "faq_2": { "type": "faq_item", "settings": { "question": "Who can apply?", "answer": "<p>Anyone who loves Baudie and shares it authentically with their community.</p>" } },
-        "faq_3": { "type": "faq_item", "settings": { "question": "How do I get paid?", "answer": "<p>Payouts are handled automatically through our affiliate platform, Social Snowball.</p>" } }
+        "faq_1": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How much can I earn?",
+            "answer": "<p>You earn a commission on every sale made with your code or link. Full details are shared when you're approved.</p>"
+          }
+        },
+        "faq_2": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Who can apply?",
+            "answer": "<p>Anyone who loves Baudie and shares it authentically with their community.</p>"
+          }
+        },
+        "faq_3": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I get paid?",
+            "answer": "<p>Payouts are handled automatically through our affiliate platform, Social Snowball.</p>"
+          }
+        }
       },
-      "block_order": ["faq_1", "faq_2", "faq_3"],
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3"
+      ],
       "settings": {
         "title": "Frequently asked questions",
-        "background_color": "#FFFFFF",
-        "text_color": "#3E2027"
+        "intro": "",
+        "background_color": "#ffffff",
+        "text_color": "#3e2027"
       }
     }
   },
-  "order": ["hero", "perks", "who_we_are", "who_you_are", "how_it_works", "signup", "faq"]
+  "order": [
+    "hero",
+    "perks",
+    "who_we_are",
+    "who_you_are",
+    "how_it_works",
+    "signup",
+    "faq"
+  ]
 }
