@@ -15,11 +15,16 @@ template `page.our-story.json`) page. The Snowball signup is captured via Snowba
 
 - Snowball exposes **no public API** for creating affiliates. Supported capture methods are its
   **iframe embed** and its **theme app block** only.
-- The Snowball form is **cross-origin**, so its fields cannot be restyled with our CSS/fonts. We
-  achieve brand cohesion by framing the embed in an on-brand container whose background blends with
-  Snowball's form background.
-- The embed code is **store-specific** and lives in the client's Snowball dashboard; we cannot
-  retrieve it. The section must accept it via the theme editor.
+- Snowball's form editor includes a **Custom CSS** field (and a "Remove Powered by Social Snowball"
+  toggle). Snowball applies this CSS to its *own* form, so the cross-origin restriction does **not**
+  block styling — we can match fields, labels, and the submit button to the Baudie brand. Remaining
+  limits: we can only style the DOM/classes Snowball renders (no markup or field changes), selectors
+  may be fragile if Snowball uses hashed class names, and brand fonts inside the form require an
+  accessible `@font-face` source. **Custom CSS / branding removal require a paid Snowball plan** —
+  confirm the client's plan before scoping the form styling.
+- The embed code and Custom CSS field are **store-specific** and live in the client's Snowball
+  dashboard; we cannot retrieve them. We need dashboard access (or the client to paste our CSS) to
+  apply and iterate on the form styling. The section accepts the embed via the theme editor.
 
 ## Brand reference (from about-us)
 
@@ -93,7 +98,9 @@ applicable; all user-facing strings use translation keys.
 ## Out of scope
 
 - Custom-built signup form or Snowball API wiring (chose supported embed path).
-- Restyling inside the Snowball form (cross-origin — not possible).
+- Form styling is done via Snowball's **Custom CSS** field (in their dashboard), not via our theme
+  CSS — included in scope, but dependent on a paid Snowball plan and dashboard access. We cannot
+  change the form's markup or fields, only style what Snowball renders.
 - Unrelated refactors of existing sections. If an existing section needs a minor setting to support
   reuse (e.g. an anchor id for the hero CTA target), add it minimally and only as needed.
 
