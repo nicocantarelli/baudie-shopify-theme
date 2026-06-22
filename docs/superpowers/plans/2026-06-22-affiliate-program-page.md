@@ -24,7 +24,8 @@
 ## File Structure
 
 - **Create** `sections/affiliate-signup.liquid` — new section framing the Snowball embed (iframe setting + `@app` block + placeholder). One responsibility: render and brand-frame the signup.
-- **Modify** `sections/about-hero.liquid` — add optional CTA button (label + link), rendered only when configured.
+- **Modify** `sections/about-hero.liquid` — add optional CTA button (label + link), rendered only when configured (the "above" CTA).
+- **Modify** `sections/about-philosophy.liquid` — add the same optional CTA button (rendered after the pillars) so the "how it works" section carries the "below" CTA, per the two-CTA layout requested (mirrors the Primally Pure inspiration).
 - **Create** `templates/page.affiliate.json` — page template wiring the 7 sections with brand defaults and starter copy.
 - **Modify** `locales/en.default.json` — storefront string: signup empty-state placeholder.
 - **Modify** `locales/en.default.schema.json` — editor labels for the new section and the new about-hero button settings.
