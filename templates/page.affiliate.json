@@ -1,0 +1,105 @@
+{
+  "sections": {
+    "hero": {
+      "type": "about-hero",
+      "settings": {
+        "eyebrow": "Affiliate program",
+        "heading": "Join the Baudie collective",
+        "subheading": "We'd love for you to help spread the word about plant-forward products that actually work. Share what you love and earn doing it.",
+        "subheading_size": 20,
+        "button_label": "Apply now",
+        "button_link": "#affiliate-signup",
+        "overlay_opacity": 20,
+        "min_height_desktop": 480,
+        "min_height_mobile": 400,
+        "background_color": "#3E2027",
+        "text_color": "#FFFFFF"
+      }
+    },
+    "perks": {
+      "type": "about-philosophy",
+      "blocks": {
+        "perk_1": { "type": "pillar", "settings": { "heading": "Generous commission", "text": "<p>Earn on every sale you drive with your unique code and link.</p>" } },
+        "perk_2": { "type": "pillar", "settings": { "heading": "Evergreen code", "text": "<p>A reusable discount code to share with your community any time.</p>" } },
+        "perk_3": { "type": "pillar", "settings": { "heading": "Long cookie window", "text": "<p>A generous attribution window so you get credit for the sales you inspire.</p>" } },
+        "perk_4": { "type": "pillar", "settings": { "heading": "Free product", "text": "<p>Get the products you'll be sharing, on us.</p>" } },
+        "perk_5": { "type": "pillar", "settings": { "heading": "Early access", "text": "<p>Be first to try new launches, sales, and limited drops.</p>" } },
+        "perk_6": { "type": "pillar", "settings": { "heading": "Dedicated support", "text": "<p>A real person on our team to help you succeed.</p>" } }
+      },
+      "block_order": ["perk_1", "perk_2", "perk_3", "perk_4", "perk_5", "perk_6"],
+      "settings": {
+        "heading": "Why join",
+        "intro": "<p>Perks designed to reward the people who spread the word.</p>",
+        "background_color": "#FFFFFF",
+        "text_color": "#3E2027"
+      }
+    },
+    "who_we_are": {
+      "type": "image-text-block",
+      "settings": {
+        "eyebrow": "Who we are",
+        "heading": "Clean, confident, for every body",
+        "body": "<p>Baudie makes plant-forward deodorant enhancers built on inclusivity, simplicity, and transparency. We believe in real ingredients and feeling your most confident self — and in partnering with people who share those values.</p>",
+        "image_position": "left",
+        "image_aspect_ratio": "portrait",
+        "container_width": "standard",
+        "text_vertical_align": "center"
+      }
+    },
+    "who_you_are": {
+      "type": "image-text-block",
+      "settings": {
+        "eyebrow": "Who you are",
+        "heading": "A voice your community trusts",
+        "body": "<p>You choose clean, thoughtful products and love sharing what genuinely works. Whether you have a large following or a close-knit community, if you inspire the people around you, we'd love to partner with you.</p>",
+        "image_position": "right",
+        "image_aspect_ratio": "portrait",
+        "container_width": "standard",
+        "text_vertical_align": "center"
+      }
+    },
+    "how_it_works": {
+      "type": "about-philosophy",
+      "blocks": {
+        "step_1": { "type": "pillar", "settings": { "heading": "1. Apply", "text": "<p>Fill out the short form below to join the program.</p>" } },
+        "step_2": { "type": "pillar", "settings": { "heading": "2. Share", "text": "<p>Get your unique code and link, and share what you love.</p>" } },
+        "step_3": { "type": "pillar", "settings": { "heading": "3. Earn", "text": "<p>Earn commission on every sale you drive.</p>" } }
+      },
+      "block_order": ["step_1", "step_2", "step_3"],
+      "settings": {
+        "heading": "How it works",
+        "button_label": "Apply now",
+        "button_link": "#affiliate-signup",
+        "background_color": "#FFFFFF",
+        "text_color": "#3E2027"
+      }
+    },
+    "signup": {
+      "type": "affiliate-signup",
+      "settings": {
+        "heading": "Apply to the program",
+        "intro": "<p>Fill out the form below and we'll be in touch.</p>",
+        "embed_code": "",
+        "min_height": 600,
+        "max_width": "standard",
+        "background_color": "#3E2027",
+        "text_color": "#FFFFFF"
+      }
+    },
+    "faq": {
+      "type": "product-faq",
+      "blocks": {
+        "faq_1": { "type": "faq_item", "settings": { "question": "How much can I earn?", "answer": "<p>You earn a commission on every sale made with your code or link. Full details are shared when you're approved.</p>" } },
+        "faq_2": { "type": "faq_item", "settings": { "question": "Who can apply?", "answer": "<p>Anyone who loves Baudie and shares it authentically with their community.</p>" } },
+        "faq_3": { "type": "faq_item", "settings": { "question": "How do I get paid?", "answer": "<p>Payouts are handled automatically through our affiliate platform, Social Snowball.</p>" } }
+      },
+      "block_order": ["faq_1", "faq_2", "faq_3"],
+      "settings": {
+        "title": "Frequently asked questions",
+        "background_color": "#FFFFFF",
+        "text_color": "#3E2027"
+      }
+    }
+  },
+  "order": ["hero", "perks", "who_we_are", "who_you_are", "how_it_works", "signup", "faq"]
+}
