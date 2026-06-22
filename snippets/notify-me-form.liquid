@@ -5,10 +5,14 @@
   store's "Back in Stock" flow once Shopify inventory for that variant is
   replenished. Works for any product automatically — no per-product setup.
 
+  Interaction: starts as a single full-width "Notify me when available" button.
+  Clicking it slides an email field in to the left on the same line, and the
+  button shifts right and becomes the "Notify me" submit button.
+
   @param {variant} variant - The variant to subscribe to (required)
-  @param {string} [button_class] - Extra classes for the trigger button so it
-    visually matches the host section's primary button
-  @param {string} [label] - Override for the trigger button label
+  @param {string} [button_class] - Extra classes for the button so it visually
+    matches the host section's primary button
+  @param {string} [label] - Override for the initial button label
 {% enddoc %}
 
 {%- liquid
@@ -21,84 +25,84 @@
   <notify-me-form
     class="notify-me"
     data-variant-id="{{ variant.id }}"
-    data-company-id="{{ company_id }}"
-    data-msg-success="{{ 'products.notify_me_success' | t | escape }}"
-    data-msg-error="{{ 'products.notify_me_error' | t | escape }}"
-    data-msg-invalid="{{ 'products.notify_me_invalid' | t | escape }}">
-    <button
-      type="button"
-      class="notify-me__trigger {{ button_class }}"
-      data-notify-trigger
-      aria-expanded="false"
-      aria-controls="notify-panel-{{ uid }}">
-      {{ trigger_label }}
-    </button>
-    <div class="notify-me__panel" id="notify-panel-{{ uid }}" data-notify-panel hidden>
-      <label class="notify-me__label" for="notify-email-{{ uid }}">{{ 'products.notify_me_label' | t }}</label>
-      <div class="notify-me__row">
-        <input
-          type="email"
-          id="notify-email-{{ uid }}"
-          class="notify-me__input"
-          data-notify-email
-          placeholder="{{ 'products.notify_me_placeholder' | t }}"
-          autocomplete="email"
-          required>
-        <button type="button" class="notify-me__submit" data-notify-submit>
-          {{ 'products.notify_me_submit' | t }}
-        </button>
-      </div>
-      <p class="notify-me__status" data-notify-status role="status" aria-live="polite"></p>
+    data-company-id="{{ company_id }}">
+    <script type="application/json" class="notify-me__i18n">
+      {
+        "labelSubmit": {{ 'products.notify_me_submit' | t | json }},
+        "success": {{ 'products.notify_me_success' | t | json }},
+        "error": {{ 'products.notify_me_error' | t | json }},
+        "invalid": {{ 'products.notify_me_invalid' | t | json }}
+      }
+    </script>
+    <div class="notify-me__row">
+      <input
+        type="email"
+        id="notify-email-{{ uid }}"
+        class="notify-me__input"
+        data-notify-email
+        placeholder="{{ 'products.notify_me_placeholder' | t }}"
+        aria-label="{{ 'products.notify_me_label' | t }}"
+        autocomplete="email"
+        tabindex="-1"
+        required>
+      <button
+        type="button"
+        class="notify-me__button {{ button_class }}"
+        data-notify-button
+        aria-expanded="false">
+        <span data-notify-label>{{ trigger_label }}</span>
+      </button>
     </div>
+    <p class="notify-me__status" data-notify-status role="status" aria-live="polite"></p>
   </notify-me-form>
 
   <style>
     .notify-me { display: block; width: 100%; }
-    .notify-me__trigger { width: 100%; }
-    .notify-me__panel { margin-top: 12px; }
-    .notify-me__panel[hidden] { display: none; }
-    .notify-me__label {
-      display: block;
-      font-family: var(--font-sweet-sans, sans-serif);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: -0.12px;
-      margin-bottom: 6px;
-      color: var(--product-text, #3E2027);
+    .notify-me__row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
     }
-    .notify-me__row { display: flex; gap: 8px; }
-    .notify-me__input {
+    .notify-me.is-open .notify-me__row {
+      gap: 8px;
+    }
+    .notify-me__button {
       flex: 1 1 auto;
+      width: 100%;
+      transition: flex-grow 0.25s ease;
+    }
+    .notify-me__input {
+      flex: 0 0 0;
+      width: 0;
       min-width: 0;
       height: 48px;
-      padding: 0 14px;
-      border: 1px solid rgba(62, 32, 39, 0.25);
+      padding: 0;
+      border: 1px solid transparent;
       background: #FFFFFF;
       font-family: var(--font-sweet-sans, sans-serif);
       font-size: 14px;
       color: var(--product-text, #3E2027);
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transition: flex-basis 0.25s ease, opacity 0.2s ease, padding 0.25s ease;
+    }
+    .notify-me.is-open .notify-me__input {
+      flex: 1 1 auto;
+      width: auto;
+      padding: 0 14px;
+      border-color: rgba(62, 32, 39, 0.25);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .notify-me.is-open .notify-me__button {
+      flex: 0 0 auto;
+      width: auto;
     }
     .notify-me__input:focus-visible {
       outline: 2px solid var(--product-text, #3E2027);
       outline-offset: 1px;
     }
-    .notify-me__submit {
-      height: 48px;
-      padding: 0 20px;
-      border: none;
-      cursor: pointer;
-      background-color: var(--product-text, #3E2027);
-      color: #FFFFFF;
-      font-family: var(--font-sweet-sans, sans-serif);
-      font-weight: 500;
-      font-size: 12px;
-      letter-spacing: -0.12px;
-      text-transform: uppercase;
-      white-space: nowrap;
-      transition: opacity 0.2s ease;
-    }
-    .notify-me__submit:hover { opacity: 0.9; }
-    .notify-me__submit:disabled { opacity: 0.5; cursor: not-allowed; }
     .notify-me__status {
       margin: 8px 0 0;
       min-height: 1em;
@@ -107,38 +111,35 @@
     }
     .notify-me__status--error { color: #B00020; }
     .notify-me__status--success { color: var(--product-text, #3E2027); }
-    @media (max-width: 480px) {
-      .notify-me__row { flex-direction: column; }
-      .notify-me__submit { width: 100%; }
-    }
   </style>
 
   <script>
     if (!customElements.get('notify-me-form')) {
       customElements.define('notify-me-form', class extends HTMLElement {
         connectedCallback() {
-          this.trigger = this.querySelector('[data-notify-trigger]');
-          this.panel = this.querySelector('[data-notify-panel]');
-          this.email = this.querySelector('[data-notify-email]');
-          this.submitBtn = this.querySelector('[data-notify-submit]');
+          this.button = this.querySelector('[data-notify-button]');
+          this.labelEl = this.querySelector('[data-notify-label]');
+          this.input = this.querySelector('[data-notify-email]');
           this.status = this.querySelector('[data-notify-status]');
-          if (!this.trigger || !this.panel || !this.submitBtn) return;
-          this.trigger.addEventListener('click', () => this.toggle());
-          this.submitBtn.addEventListener('click', () => this.subscribe());
-          this.email.addEventListener('keydown', (e) => {
+          this.isOpen = false;
+          var cfg = this.querySelector('.notify-me__i18n');
+          this.i18n = cfg ? JSON.parse(cfg.textContent) : {};
+          if (!this.button || !this.input) return;
+          this.button.addEventListener('click', () => {
+            this.isOpen ? this.subscribe() : this.openForm();
+          });
+          this.input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { e.preventDefault(); this.subscribe(); }
           });
         }
 
-        toggle() {
-          var willOpen = this.panel.hasAttribute('hidden');
-          if (willOpen) {
-            this.panel.removeAttribute('hidden');
-            this.email.focus();
-          } else {
-            this.panel.setAttribute('hidden', '');
-          }
-          this.trigger.setAttribute('aria-expanded', String(willOpen));
+        openForm() {
+          this.classList.add('is-open');
+          this.isOpen = true;
+          this.button.setAttribute('aria-expanded', 'true');
+          this.labelEl.textContent = this.i18n.labelSubmit;
+          this.input.removeAttribute('tabindex');
+          this.input.focus();
         }
 
         setStatus(message, type) {
@@ -147,13 +148,14 @@
         }
 
         async subscribe() {
-          var email = (this.email.value || '').trim();
+          var email = (this.input.value || '').trim();
           if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-            this.setStatus(this.dataset.msgInvalid, 'error');
-            this.email.focus();
+            this.setStatus(this.i18n.invalid, 'error');
+            this.input.focus();
             return;
           }
-          this.submitBtn.disabled = true;
+          this.button.disabled = true;
+          this.input.disabled = true;
           this.setStatus('', '');
           var url = 'https://a.klaviyo.com/client/back-in-stock-subscriptions/?company_id=' + encodeURIComponent(this.dataset.companyId);
           var payload = {
@@ -177,18 +179,17 @@
               body: JSON.stringify(payload)
             });
             if (res.ok) {
-              this.panel.innerHTML = '';
-              var done = document.createElement('p');
-              done.className = 'notify-me__status notify-me__status--success';
-              done.textContent = this.dataset.msgSuccess;
-              this.panel.appendChild(done);
+              this.querySelector('.notify-me__row').hidden = true;
+              this.setStatus(this.i18n.success, 'success');
             } else {
-              this.submitBtn.disabled = false;
-              this.setStatus(this.dataset.msgError, 'error');
+              this.button.disabled = false;
+              this.input.disabled = false;
+              this.setStatus(this.i18n.error, 'error');
             }
           } catch (err) {
-            this.submitBtn.disabled = false;
-            this.setStatus(this.dataset.msgError, 'error');
+            this.button.disabled = false;
+            this.input.disabled = false;
+            this.setStatus(this.i18n.error, 'error');
           }
         }
       });
