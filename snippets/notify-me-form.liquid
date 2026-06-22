@@ -25,15 +25,11 @@
   <notify-me-form
     class="notify-me"
     data-variant-id="{{ variant.id }}"
-    data-company-id="{{ company_id }}">
-    <script type="application/json" class="notify-me__i18n">
-      {
-        "labelSubmit": {{ 'products.notify_me_submit' | t | json }},
-        "success": {{ 'products.notify_me_success' | t | json }},
-        "error": {{ 'products.notify_me_error' | t | json }},
-        "invalid": {{ 'products.notify_me_invalid' | t | json }}
-      }
-    </script>
+    data-company-id="{{ company_id }}"
+    data-label-submit="{{ 'products.notify_me_submit' | t }}"
+    data-msg-success="{{ 'products.notify_me_success' | t }}"
+    data-msg-error="{{ 'products.notify_me_error' | t }}"
+    data-msg-invalid="{{ 'products.notify_me_invalid' | t }}">
     <div class="notify-me__row">
       <input
         type="email"
@@ -125,8 +121,6 @@
           this.input = this.querySelector('[data-notify-email]');
           this.status = this.querySelector('[data-notify-status]');
           this.isOpen = false;
-          var cfg = this.querySelector('.notify-me__i18n');
-          this.i18n = cfg ? JSON.parse(cfg.textContent) : {};
           if (!this.button || !this.input) return;
           this.button.addEventListener('click', () => {
             this.isOpen ? this.subscribe() : this.openForm();
@@ -140,7 +134,7 @@
           this.classList.add('is-open');
           this.isOpen = true;
           this.button.setAttribute('aria-expanded', 'true');
-          this.labelEl.textContent = this.i18n.labelSubmit;
+          this.labelEl.textContent = this.dataset.labelSubmit;
           this.input.removeAttribute('tabindex');
           this.input.focus();
         }
@@ -153,7 +147,7 @@
         async subscribe() {
           var email = (this.input.value || '').trim();
           if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-            this.setStatus(this.i18n.invalid, 'error');
+            this.setStatus(this.dataset.msgInvalid, 'error');
             this.input.focus();
             return;
           }
@@ -183,16 +177,16 @@
             });
             if (res.ok) {
               this.querySelector('.notify-me__row').hidden = true;
-              this.setStatus(this.i18n.success, 'success');
+              this.setStatus(this.dataset.msgSuccess, 'success');
             } else {
               this.button.disabled = false;
               this.input.disabled = false;
-              this.setStatus(this.i18n.error, 'error');
+              this.setStatus(this.dataset.msgError, 'error');
             }
           } catch (err) {
             this.button.disabled = false;
             this.input.disabled = false;
-            this.setStatus(this.i18n.error, 'error');
+            this.setStatus(this.dataset.msgError, 'error');
           }
         }
       });
