@@ -1,0 +1,197 @@
+{% doc %}
+  Renders a "Notify me when available" control shown in place of the add-to-cart
+  button when a product is sold out or tagged coming soon. Submitting subscribes
+  the shopper to Klaviyo Back in Stock for the given variant, which triggers the
+  store's "Back in Stock" flow once Shopify inventory for that variant is
+  replenished. Works for any product automatically — no per-product setup.
+
+  @param {variant} variant - The variant to subscribe to (required)
+  @param {string} [button_class] - Extra classes for the trigger button so it
+    visually matches the host section's primary button
+  @param {string} [label] - Override for the trigger button label
+{% enddoc %}
+
+{%- liquid
+  assign company_id = settings.klaviyo_public_key
+  assign trigger_label = label | default: 'products.notify_me' | t
+  assign uid = variant.id | default: 'na'
+-%}
+
+{%- if variant != blank and company_id != blank -%}
+  <notify-me-form
+    class="notify-me"
+    data-variant-id="{{ variant.id }}"
+    data-company-id="{{ company_id }}"
+    data-msg-success="{{ 'products.notify_me_success' | t | escape }}"
+    data-msg-error="{{ 'products.notify_me_error' | t | escape }}"
+    data-msg-invalid="{{ 'products.notify_me_invalid' | t | escape }}">
+    <button
+      type="button"
+      class="notify-me__trigger {{ button_class }}"
+      data-notify-trigger
+      aria-expanded="false"
+      aria-controls="notify-panel-{{ uid }}">
+      {{ trigger_label }}
+    </button>
+    <div class="notify-me__panel" id="notify-panel-{{ uid }}" data-notify-panel hidden>
+      <label class="notify-me__label" for="notify-email-{{ uid }}">{{ 'products.notify_me_label' | t }}</label>
+      <div class="notify-me__row">
+        <input
+          type="email"
+          id="notify-email-{{ uid }}"
+          class="notify-me__input"
+          data-notify-email
+          placeholder="{{ 'products.notify_me_placeholder' | t }}"
+          autocomplete="email"
+          required>
+        <button type="button" class="notify-me__submit" data-notify-submit>
+          {{ 'products.notify_me_submit' | t }}
+        </button>
+      </div>
+      <p class="notify-me__status" data-notify-status role="status" aria-live="polite"></p>
+    </div>
+  </notify-me-form>
+
+  <style>
+    .notify-me { display: block; width: 100%; }
+    .notify-me__trigger { width: 100%; }
+    .notify-me__panel { margin-top: 12px; }
+    .notify-me__panel[hidden] { display: none; }
+    .notify-me__label {
+      display: block;
+      font-family: var(--font-sweet-sans, sans-serif);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: -0.12px;
+      margin-bottom: 6px;
+      color: var(--product-text, #3E2027);
+    }
+    .notify-me__row { display: flex; gap: 8px; }
+    .notify-me__input {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 48px;
+      padding: 0 14px;
+      border: 1px solid rgba(62, 32, 39, 0.25);
+      background: #FFFFFF;
+      font-family: var(--font-sweet-sans, sans-serif);
+      font-size: 14px;
+      color: var(--product-text, #3E2027);
+    }
+    .notify-me__input:focus-visible {
+      outline: 2px solid var(--product-text, #3E2027);
+      outline-offset: 1px;
+    }
+    .notify-me__submit {
+      height: 48px;
+      padding: 0 20px;
+      border: none;
+      cursor: pointer;
+      background-color: var(--product-text, #3E2027);
+      color: #FFFFFF;
+      font-family: var(--font-sweet-sans, sans-serif);
+      font-weight: 500;
+      font-size: 12px;
+      letter-spacing: -0.12px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: opacity 0.2s ease;
+    }
+    .notify-me__submit:hover { opacity: 0.9; }
+    .notify-me__submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .notify-me__status {
+      margin: 8px 0 0;
+      min-height: 1em;
+      font-family: var(--font-sweet-sans, sans-serif);
+      font-size: 13px;
+    }
+    .notify-me__status--error { color: #B00020; }
+    .notify-me__status--success { color: var(--product-text, #3E2027); }
+    @media (max-width: 480px) {
+      .notify-me__row { flex-direction: column; }
+      .notify-me__submit { width: 100%; }
+    }
+  </style>
+
+  <script>
+    if (!customElements.get('notify-me-form')) {
+      customElements.define('notify-me-form', class extends HTMLElement {
+        connectedCallback() {
+          this.trigger = this.querySelector('[data-notify-trigger]');
+          this.panel = this.querySelector('[data-notify-panel]');
+          this.email = this.querySelector('[data-notify-email]');
+          this.submitBtn = this.querySelector('[data-notify-submit]');
+          this.status = this.querySelector('[data-notify-status]');
+          if (!this.trigger || !this.panel || !this.submitBtn) return;
+          this.trigger.addEventListener('click', () => this.toggle());
+          this.submitBtn.addEventListener('click', () => this.subscribe());
+          this.email.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); this.subscribe(); }
+          });
+        }
+
+        toggle() {
+          var willOpen = this.panel.hasAttribute('hidden');
+          if (willOpen) {
+            this.panel.removeAttribute('hidden');
+            this.email.focus();
+          } else {
+            this.panel.setAttribute('hidden', '');
+          }
+          this.trigger.setAttribute('aria-expanded', String(willOpen));
+        }
+
+        setStatus(message, type) {
+          this.status.textContent = message;
+          this.status.className = 'notify-me__status' + (type ? ' notify-me__status--' + type : '');
+        }
+
+        async subscribe() {
+          var email = (this.email.value || '').trim();
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+            this.setStatus(this.dataset.msgInvalid, 'error');
+            this.email.focus();
+            return;
+          }
+          this.submitBtn.disabled = true;
+          this.setStatus('', '');
+          var url = 'https://a.klaviyo.com/client/back-in-stock-subscriptions/?company_id=' + encodeURIComponent(this.dataset.companyId);
+          var payload = {
+            data: {
+              type: 'back-in-stock-subscription',
+              attributes: {
+                profile: { data: { type: 'profile', attributes: { email: email } } },
+                channels: ['EMAIL']
+              },
+              relationships: {
+                variant: {
+                  data: { type: 'catalog-variant', id: '$shopify:::$default:::' + this.dataset.variantId }
+                }
+              }
+            }
+          };
+          try {
+            var res = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', revision: '2024-06-15' },
+              body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+              this.panel.innerHTML = '';
+              var done = document.createElement('p');
+              done.className = 'notify-me__status notify-me__status--success';
+              done.textContent = this.dataset.msgSuccess;
+              this.panel.appendChild(done);
+            } else {
+              this.submitBtn.disabled = false;
+              this.setStatus(this.dataset.msgError, 'error');
+            }
+          } catch (err) {
+            this.submitBtn.disabled = false;
+            this.setStatus(this.dataset.msgError, 'error');
+          }
+        }
+      });
+    }
+  </script>
+{%- endif -%}

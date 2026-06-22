@@ -117,7 +117,14 @@
     "sold_out": "Sold out",
     "coming_soon": "Coming soon",
     "regular_price": "Regular price",
-    "sale_price": "Sale price"
+    "sale_price": "Sale price",
+    "notify_me": "Notify me when available",
+    "notify_me_label": "Get an email when it's back in stock",
+    "notify_me_placeholder": "Email address",
+    "notify_me_submit": "Notify me",
+    "notify_me_success": "You're on the list! We'll email you when it's back.",
+    "notify_me_error": "Something went wrong. Please try again.",
+    "notify_me_invalid": "Please enter a valid email address."
   },
   "search": {
     "title": "Search",
