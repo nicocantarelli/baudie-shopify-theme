@@ -240,12 +240,28 @@
               if product.tags contains 'coming-soon' or product.tags contains 'Coming soon' or product.tags contains 'coming soon' or product.tags contains 'Coming Soon'
                 assign is_coming_soon = true
               endif
+
+              # Only treat as restock (notify-me) if genuinely out of stock, not
+              # just unavailable in the visitor's market/region (Shopify Markets).
+              assign inventory_tracked = false
+              if selected_variant.inventory_management != blank
+                assign inventory_tracked = true
+              endif
+              assign is_out_of_stock = false
+              if inventory_tracked and selected_variant.inventory_quantity <= 0
+                assign is_out_of_stock = true
+              endif
             -%}
-            {%- if is_coming_soon or selected_variant.available == false -%}
+            {%- if is_coming_soon or is_out_of_stock -%}
               {% render 'notify-me-form',
                 variant: selected_variant,
                 button_class: 'hero-product__button hero-product__button--add'
               %}
+            {%- elsif selected_variant.available == false -%}
+              {%- comment -%} In stock, but not purchasable in this market/region {%- endcomment -%}
+              <button type="button" class="hero-product__button hero-product__button--add" disabled aria-disabled="true">
+                <span>{{ 'products.unavailable_region' | t }}</span>
+              </button>
             {%- else -%}
               {% form 'product', product %}
                 <input

@@ -119,6 +119,7 @@
     "regular_price": "Regular price",
     "sale_price": "Sale price",
     "notify_me": "Notify me when available",
+    "unavailable_region": "Not available in your region",
     "notify_me_label": "Get an email when it's back in stock",
     "notify_me_placeholder": "Email address",
     "notify_me_submit": "Notify me",

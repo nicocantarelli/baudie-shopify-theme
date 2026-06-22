@@ -137,11 +137,29 @@
         <p class="product-main__price">{{ current_variant.price | money }}</p>
         {%- if is_final_sale and final_sale_placement == 'price' -%}{{ final_sale_mark }}{%- endif -%}
       </div>
-      {%- if is_coming_soon or current_variant.available == false -%}
+      {%- liquid
+        # Distinguish a true out-of-stock from an in-stock variant that simply
+        # isn't purchasable in the visitor's market/region (Shopify Markets).
+        # Only show the Klaviyo notify-me form for genuine restock scenarios.
+        assign inventory_tracked = false
+        if current_variant.inventory_management != blank
+          assign inventory_tracked = true
+        endif
+        assign is_out_of_stock = false
+        if inventory_tracked and current_variant.inventory_quantity <= 0
+          assign is_out_of_stock = true
+        endif
+      -%}
+      {%- if is_coming_soon or is_out_of_stock -%}
         {% render 'notify-me-form',
           variant: current_variant,
           button_class: 'product-main__button product-main__button--add'
         %}
+      {%- elsif current_variant.available == false -%}
+        {%- comment -%} In stock, but not purchasable in this market/region {%- endcomment -%}
+        <button type="button" class="product-main__button product-main__button--add" disabled aria-disabled="true">
+          <span>{{ 'products.unavailable_region' | t }}</span>
+        </button>
       {%- else -%}
         {% form 'product', product, class: 'product-main__form' %}
           <input type="hidden" name="id" value="{{ current_variant.id }}">
