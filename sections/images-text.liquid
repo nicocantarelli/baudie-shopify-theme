@@ -45,12 +45,13 @@
 .images-text {
   background-color: var(--it-bg);
   color: var(--it-text);
-  padding: 48px 28px;
+  padding: 48px 0;
 }
 
 .images-text__inner {
   max-width: 1600px;
   margin: 0 auto;
+  padding: 0 28px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -113,10 +114,11 @@
 
 @media (min-width: 769px) {
   .images-text {
-    padding: 80px 40px;
+    padding: 80px 0;
   }
 
   .images-text__inner {
+    padding: 0 40px;
     flex-direction: row;
     align-items: center;
     gap: 48px;
