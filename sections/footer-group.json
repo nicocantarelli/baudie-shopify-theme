@@ -21,7 +21,7 @@
         "facebook_url": "https://www.facebook.com/baudieofficial/",
         "instagram_url": "https://www.instagram.com/baudieofficial/",
         "tiktok_url": "https://www.tiktok.com/@baudieofficial",
-        "show_affiliate_cta": false,
+        "show_affiliate_cta": true,
         "affiliate_cta_label": "Join our affiliate community",
         "affiliate_cta_link": "shopify://pages/affiliate-program",
         "contact_email": "help@baudie.com",
