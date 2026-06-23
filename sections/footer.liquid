@@ -154,20 +154,20 @@
             {% endif %}
           </div>
         </div>
+
+        {%- comment -%} Affiliate community CTA {%- endcomment -%}
+        {%- if section.settings.show_affiliate_cta -%}
+          <a
+            class="footer__affiliate-cta"
+            href="{{ section.settings.affiliate_cta_link | default: '/pages/affiliate-program' }}">
+            <span>{{ section.settings.affiliate_cta_label | default: 'Join our affiliate community' }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        {%- endif -%}
       </div>
     </div>
-
-    {%- comment -%} Affiliate community CTA {%- endcomment -%}
-    {%- if section.settings.show_affiliate_cta -%}
-      <a
-        class="footer__affiliate-cta"
-        href="{{ section.settings.affiliate_cta_link | default: '/pages/affiliate-program' }}">
-        <span>{{ section.settings.affiliate_cta_label | default: 'Join our affiliate community' }}</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-          <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-    {%- endif -%}
 
     {%- comment -%} Bottom Horizontal Line {%- endcomment -%}
     <div class="footer__line"></div>
