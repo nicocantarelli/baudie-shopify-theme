@@ -609,7 +609,8 @@
         "text_vertical_align": "Text vertical alignment",
         "align_top": "Top",
         "align_center": "Center",
-        "align_bottom": "Bottom"
+        "align_bottom": "Bottom",
+        "padding_top": "Add top spacing"
       }
     },
     "about_partnerships": {

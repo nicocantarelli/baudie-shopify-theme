@@ -8,7 +8,7 @@
 -%}
 
 <section
-  class="image-text-block image-text-block--image-{{ image_position }} image-text-block--ratio-{{ image_ratio }} image-text-block--{{ container_width }} image-text-block--text-{{ text_vertical_align }} full-width"
+  class="image-text-block image-text-block--image-{{ image_position }} image-text-block--ratio-{{ image_ratio }} image-text-block--{{ container_width }} image-text-block--text-{{ text_vertical_align }}{% if section.settings.padding_top %} image-text-block--pad-top{% endif %} full-width"
   style="--itb-bg: {{ bg_color }}; --itb-text: {{ text_color }};">
   <div class="image-text-block__container">
     <div class="image-text-block__grid">
@@ -49,6 +49,10 @@
 .image-text-block {
   color: var(--itb-text);
   padding: 0 0 40px;
+}
+
+.image-text-block--pad-top {
+  padding-top: 40px;
 }
 
 .image-text-block__text-col {
@@ -335,6 +339,12 @@
         { "value": "bottom", "label": "t:sections.image_text_block.settings.align_bottom" }
       ],
       "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "padding_top",
+      "label": "t:sections.image_text_block.settings.padding_top",
+      "default": false
     },
     {
       "type": "header",
