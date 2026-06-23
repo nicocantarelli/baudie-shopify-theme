@@ -131,7 +131,7 @@
         "body": "<p>And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. </p>",
         "text_position": "right",
         "image_aspect": "portrait",
-        "background_color": "#ffffff",
+        "background_color": "#FCE9EC",
         "text_color": "#3e2027"
       }
     },
@@ -145,7 +145,8 @@
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
         "text_vertical_align": "center",
-        "background_color": "#fce9ec",
+        "padding_top": false,
+        "background_color": "#E8DDD0",
         "text_color": "#3e2027"
       }
     },
@@ -159,7 +160,8 @@
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
         "text_vertical_align": "center",
-        "background_color": "#FFCAD1",
+        "padding_top": false,
+        "background_color": "#ffcad1",
         "text_color": "#3e2027"
       }
     },
@@ -196,12 +198,12 @@
       "settings": {
         "heading": "How it works",
         "intro": "",
-        "button_label": "Apply Now",
+        "button_label": "",
         "button_link": "https://baudie.socialsnowball.io/signup/5757dff7-b438-4059-a74f-1faedebb4a82",
         "columns": "3",
         "alignment": "center",
-        "background_color": "#ffffff",
-        "text_color": "#3e2027"
+        "background_color": "#FCE9EC",
+        "text_color": "#3E2027"
       }
     },
     "faq": {
@@ -237,7 +239,7 @@
       "settings": {
         "title": "Frequently asked questions",
         "intro": "",
-        "background_color": "#ffffff",
+        "background_color": "#FCE9EC",
         "text_color": "#3e2027"
       }
     },
@@ -250,7 +252,7 @@
         "button_link": "",
         "layout": "inline",
         "button_style": "outline",
-        "background_color": "#ece7dd",
+        "background_color": "#FFCAD1",
         "text_color": "#3e2027"
       }
     }
