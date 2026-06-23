@@ -14,8 +14,8 @@
       "name": "Affiliate hero",
       "settings": {
         "eyebrow": "Affiliate program",
-        "heading": "Join the Baudie collective",
-        "subheading": "We'd love for you to help spread the word about plant-forward products that actually work. Share what you love and earn doing it.",
+        "heading": "Become a Baudie Affiliate",
+        "subheading": "Interested in joining the Baudie affiliate community? Click the link below to apply.",
         "subheading_size": 20,
         "subheading_bold": false,
         "button_label": "Apply Now",
@@ -33,7 +33,7 @@
       "name": "t:sections.rich_text.name",
       "settings": {
         "heading": "",
-        "content": "<p>Add your text here. Use multiple paragraphs, <strong>bold</strong>, <em>italics</em>, lists, and links.</p>",
+        "content": "<p>Thank you for stopping by and for your interest in joining our affiliate community! We’re so excited to share our mission with you. As the world’s first and only patented deodorant enhancer, our goal is simple: to help people smell fresh, feel confident, and feel good in their bodies every day. We’re thrilled to partner with people who believe in spreading confidence, self-care, and body positivity.</p>",
         "width": "standard",
         "alignment": "center",
         "background_color": "#3e2027",
@@ -96,7 +96,7 @@
       ],
       "name": "Affiliate philosophy",
       "settings": {
-        "heading": "Why join",
+        "heading": "Program Outline",
         "intro": "",
         "button_label": "",
         "button_link": "",
