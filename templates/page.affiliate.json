@@ -129,6 +129,8 @@
       ],
       "name": "t:sections.images_text.name",
       "settings": {
+        "content_type": "image",
+        "content_image": "shopify://shop_images/baudie-logo-no-tm.png",
         "eyebrow": "Baudie",
         "heading": "This is a test",
         "body": "<p>And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. </p>",
