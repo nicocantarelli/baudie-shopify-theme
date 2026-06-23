@@ -35,8 +35,8 @@
         "content": "<p>Add your text here. Use multiple paragraphs, <strong>bold</strong>, <em>italics</em>, lists, and links.</p>",
         "width": "standard",
         "alignment": "center",
-        "background_color": "#FFFFFF",
-        "text_color": "#3E2027"
+        "background_color": "#3E2027",
+        "text_color": "#FFFFFF"
       }
     },
     "perks": {
@@ -101,7 +101,7 @@
         "columns": "3",
         "alignment": "center",
         "background_color": "#ffffff",
-        "text_color": "#3e2027"
+        "text_color": "#FCE9EC"
       }
     },
     "images_text_RRAy38": {
@@ -131,8 +131,8 @@
         "body": "<p>And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. </p>",
         "text_position": "right",
         "image_aspect": "portrait",
-        "background_color": "#FFFFFF",
-        "text_color": "#3E2027"
+        "background_color": "#ffffff",
+        "text_color": "#3e2027"
       }
     },
     "who_we_are": {
