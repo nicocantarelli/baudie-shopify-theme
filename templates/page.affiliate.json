@@ -202,6 +202,7 @@
         "step_2",
         "step_3"
       ],
+      "disabled": true,
       "name": "Affiliate philosophy",
       "settings": {
         "heading": "How it works",
@@ -245,6 +246,7 @@
         "faq_2",
         "faq_3"
       ],
+      "disabled": true,
       "settings": {
         "title": "Frequently asked questions",
         "intro": "",
