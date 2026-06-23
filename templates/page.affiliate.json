@@ -205,6 +205,7 @@
         "button_link": "https://baudie.socialsnowball.io/signup/5757dff7-b438-4059-a74f-1faedebb4a82",
         "columns": "3",
         "alignment": "center",
+        "bottom_padding": 24,
         "background_color": "#FCE9EC",
         "text_color": "#3E2027"
       }
@@ -242,6 +243,7 @@
       "settings": {
         "title": "Frequently asked questions",
         "intro": "",
+        "top_padding": 40,
         "background_color": "#FCE9EC",
         "text_color": "#3e2027"
       }
