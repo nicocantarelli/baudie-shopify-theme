@@ -1,11 +1,13 @@
 {%- liquid
   assign bg_color = section.settings.background_color | default: '#FCE9EC'
   assign text_color = section.settings.text_color | default: '#3E2027'
+  assign columns = section.settings.columns | default: 4
+  assign alignment = section.settings.alignment | default: 'left'
 -%}
 
 <section
-  class="about-philosophy full-width"
-  style="--ap-bg: {{ bg_color }}; --ap-text: {{ text_color }};">
+  class="about-philosophy about-philosophy--align-{{ alignment }} full-width"
+  style="--ap-bg: {{ bg_color }}; --ap-text: {{ text_color }}; --ap-columns: {{ columns }};">
   <div class="about-philosophy__container">
     {%- if section.settings.heading != blank -%}
       <h2 class="about-philosophy__heading">{{ section.settings.heading }}</h2>
@@ -91,6 +93,10 @@
 
 .about-philosophy__pillar {
   text-align: left;
+}
+
+.about-philosophy--align-center .about-philosophy__pillar {
+  text-align: center;
 }
 
 .about-philosophy__pillar-heading {
@@ -181,7 +187,7 @@
   }
 
   .about-philosophy__grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(var(--ap-columns, 4), 1fr);
     gap: 48px 40px;
   }
 }
@@ -224,6 +230,31 @@
     },
     {
       "type": "header",
+      "content": "t:sections.about_philosophy.settings.layout_header"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "t:sections.about_philosophy.settings.columns",
+      "options": [
+        { "value": "2", "label": "t:sections.about_philosophy.settings.columns_2" },
+        { "value": "3", "label": "t:sections.about_philosophy.settings.columns_3" },
+        { "value": "4", "label": "t:sections.about_philosophy.settings.columns_4" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:labels.alignment",
+      "options": [
+        { "value": "left", "label": "t:sections.about_philosophy.settings.align_left" },
+        { "value": "center", "label": "t:sections.about_philosophy.settings.align_center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
       "content": "t:sections.about_philosophy.settings.colors_header"
     },
     {
@@ -257,7 +288,7 @@
       ]
     }
   ],
-  "max_blocks": 6,
+  "max_blocks": 24,
   "presets": [
     {
       "name": "t:sections.about_philosophy.name",

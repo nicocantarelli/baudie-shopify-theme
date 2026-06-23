@@ -1,0 +1,157 @@
+{%- liquid
+  assign bg = section.settings.background_color | default: '#FFFFFF'
+  assign text = section.settings.text_color | default: '#3E2027'
+  assign width = section.settings.width | default: 'standard'
+  assign alignment = section.settings.alignment | default: 'left'
+-%}
+
+<section
+  class="rich-text rich-text--{{ width }} rich-text--align-{{ alignment }} full-width"
+  style="--rt-bg: {{ bg }}; --rt-text: {{ text }};">
+  <div class="rich-text__inner">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="rich-text__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+    {%- if section.settings.content != blank -%}
+      <div class="rich-text__content rte">{{ section.settings.content }}</div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+.rich-text {
+  background-color: var(--rt-bg);
+  color: var(--rt-text);
+  padding: 48px 24px;
+}
+
+.rich-text__inner {
+  margin: 0 auto;
+}
+
+.rich-text--narrow .rich-text__inner { max-width: 680px; }
+.rich-text--standard .rich-text__inner { max-width: 860px; }
+.rich-text--wide .rich-text__inner { max-width: 1100px; }
+
+.rich-text--align-center .rich-text__inner {
+  text-align: center;
+}
+
+.rich-text__heading {
+  font-family: var(--font-alyona);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 400;
+  line-height: 1.1;
+  margin: 0 0 20px;
+  color: var(--rt-text);
+}
+
+.rich-text__content {
+  font-family: var(--font-jokker);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--rt-text);
+}
+
+.rich-text__content p {
+  margin: 0 0 16px;
+}
+
+.rich-text__content p:last-child {
+  margin-bottom: 0;
+}
+
+.rich-text__content a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.rich-text__content h2,
+.rich-text__content h3 {
+  font-family: var(--font-alyona);
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+
+.rich-text__content ul,
+.rich-text__content ol {
+  margin: 0 0 16px;
+  padding-left: 1.2em;
+}
+
+.rich-text__content li {
+  margin-bottom: 6px;
+}
+
+@media (min-width: 769px) {
+  .rich-text {
+    padding: 64px 40px;
+  }
+
+  .rich-text__content {
+    font-size: 17px;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.rich_text.name",
+  "tag": "section",
+  "class": "rich-text-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:sections.rich_text.settings.content",
+      "default": "<p>Add your text here. Use multiple paragraphs, <strong>bold</strong>, <em>italics</em>, lists, and links.</p>"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:sections.rich_text.settings.width",
+      "options": [
+        { "value": "narrow", "label": "t:sections.rich_text.settings.width_narrow" },
+        { "value": "standard", "label": "t:sections.rich_text.settings.width_standard" },
+        { "value": "wide", "label": "t:sections.rich_text.settings.width_wide" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:labels.alignment",
+      "options": [
+        { "value": "left", "label": "t:sections.rich_text.settings.align_left" },
+        { "value": "center", "label": "t:sections.rich_text.settings.align_center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.rich_text.settings.colors_header"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
+    }
+  ],
+  "presets": [
+    { "name": "t:sections.rich_text.name" }
+  ]
+}
+{% endschema %}

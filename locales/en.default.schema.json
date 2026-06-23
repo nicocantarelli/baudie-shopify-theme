@@ -501,6 +501,19 @@
         "colors_header": "Colors"
       }
     },
+    "rich_text": {
+      "name": "Rich text",
+      "settings": {
+        "content": "Content",
+        "width": "Width",
+        "width_narrow": "Narrow",
+        "width_standard": "Standard",
+        "width_wide": "Wide",
+        "align_left": "Left",
+        "align_center": "Center",
+        "colors_header": "Colors"
+      }
+    },
     "cta_banner": {
       "name": "CTA banner",
       "settings": {
@@ -520,8 +533,15 @@
         "content_header": "Content",
         "colors_header": "Colors",
         "cta_header": "Button",
+        "layout_header": "Layout",
         "intro": "Intro text",
-        "button_link": "Button link"
+        "button_link": "Button link",
+        "columns": "Columns (desktop)",
+        "columns_2": "2",
+        "columns_3": "3",
+        "columns_4": "4",
+        "align_left": "Left",
+        "align_center": "Center"
       },
       "blocks": {
         "pillar": {

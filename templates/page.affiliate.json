@@ -86,6 +86,8 @@
         "intro": "<p>Perks designed to reward the people who spread the word.</p>",
         "button_label": "",
         "button_link": "",
+        "columns": "3",
+        "alignment": "center",
         "background_color": "#ffffff",
         "text_color": "#3e2027"
       }
