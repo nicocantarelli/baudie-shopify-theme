@@ -20,14 +20,16 @@
         "subheading_bold": false,
         "content_position": "right",
         "heading_size": "small",
+        "mobile_layout": "bottom",
         "button_label": "Apply Now",
         "button_link": "https://baudie.socialsnowball.io/signup/5757dff7-b438-4059-a74f-1faedebb4a82",
         "image": "shopify://shop_images/Model_Group_Shot_Desktop.png",
+        "image_mobile": "shopify://shop_images/Model_Group_Shot_square.png",
         "image_position": "center",
         "overlay_opacity": 25,
         "overlay_style": "scrim",
         "min_height_desktop": 760,
-        "min_height_mobile": 400,
+        "min_height_mobile": 620,
         "background_color": "#3e2027",
         "text_color": "#ffffff"
       }
