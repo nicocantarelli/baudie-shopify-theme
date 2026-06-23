@@ -102,6 +102,7 @@
         "button_link": "",
         "columns": "3",
         "alignment": "center",
+        "bottom_padding": 120,
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
@@ -133,7 +134,7 @@
         "body": "<p>And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. </p>",
         "text_position": "right",
         "image_aspect": "portrait",
-        "background_color": "#FFCAD1",
+        "background_color": "#ffcad1",
         "text_color": "#3e2027"
       }
     },
@@ -148,7 +149,7 @@
         "container_width": "standard",
         "text_vertical_align": "center",
         "padding_top": true,
-        "background_color": "#E8DDD0",
+        "background_color": "#e8ddd0",
         "text_color": "#3e2027"
       }
     },
@@ -205,9 +206,9 @@
         "button_link": "https://baudie.socialsnowball.io/signup/5757dff7-b438-4059-a74f-1faedebb4a82",
         "columns": "3",
         "alignment": "center",
-        "bottom_padding": 24,
-        "background_color": "#FCE9EC",
-        "text_color": "#3E2027"
+        "bottom_padding": 72,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
       }
     },
     "faq": {
@@ -244,7 +245,7 @@
         "title": "Frequently asked questions",
         "intro": "",
         "top_padding": 40,
-        "background_color": "#FCE9EC",
+        "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
     },
@@ -257,7 +258,7 @@
         "button_link": "",
         "layout": "inline",
         "button_style": "outline",
-        "background_color": "#FFCAD1",
+        "background_color": "#ffcad1",
         "text_color": "#3e2027"
       }
     }
