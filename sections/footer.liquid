@@ -72,6 +72,29 @@
         <div class="footer__header-row">
           <div class="footer__text-content">
             <h3 class="footer__heading">{{ 'footer.stay_connected' | t }}</h3>
+
+            {%- comment -%} Newsletter Form - wired to Klaviyo {%- endcomment -%}
+            <form
+              class="footer__newsletter-form"
+              data-klaviyo-subscribe
+              data-klaviyo-company="{{ settings.klaviyo_public_key }}"
+              data-klaviyo-list="{{ section.settings.klaviyo_list_id }}"
+              data-klaviyo-source="footer"
+              data-msg-success="{{ 'newsletter.success' | t }}"
+              data-msg-error="{{ 'newsletter.error' | t }}"
+              data-msg-invalid="{{ 'newsletter.invalid_email' | t }}"
+              novalidate>
+              <input
+                type="email"
+                name="email"
+                class="footer__newsletter-input"
+                placeholder="{{ 'footer.email_placeholder' | t }}"
+                required>
+              <button type="submit" class="footer__newsletter-button">
+                {{ 'footer.subscribe' | t }}
+              </button>
+            </form>
+            <p class="footer__newsletter-status" data-klaviyo-status role="status" aria-live="polite"></p>
           </div>
 
           {%- comment -%} Social Media Links {%- endcomment -%}
@@ -131,29 +154,6 @@
             {% endif %}
           </div>
         </div>
-
-        {%- comment -%} Newsletter Form - wired to Klaviyo {%- endcomment -%}
-        <form
-          class="footer__newsletter-form"
-          data-klaviyo-subscribe
-          data-klaviyo-company="{{ settings.klaviyo_public_key }}"
-          data-klaviyo-list="{{ section.settings.klaviyo_list_id }}"
-          data-klaviyo-source="footer"
-          data-msg-success="{{ 'newsletter.success' | t }}"
-          data-msg-error="{{ 'newsletter.error' | t }}"
-          data-msg-invalid="{{ 'newsletter.invalid_email' | t }}"
-          novalidate>
-          <input
-            type="email"
-            name="email"
-            class="footer__newsletter-input"
-            placeholder="{{ 'footer.email_placeholder' | t }}"
-            required>
-          <button type="submit" class="footer__newsletter-button">
-            {{ 'footer.subscribe' | t }}
-          </button>
-        </form>
-        <p class="footer__newsletter-status" data-klaviyo-status role="status" aria-live="polite"></p>
       </div>
     </div>
 
