@@ -27,6 +27,18 @@
         "text_color": "#ffffff"
       }
     },
+    "rich_text_MKcEGX": {
+      "type": "rich-text",
+      "name": "t:sections.rich_text.name",
+      "settings": {
+        "heading": "",
+        "content": "<p>Add your text here. Use multiple paragraphs, <strong>bold</strong>, <em>italics</em>, lists, and links.</p>",
+        "width": "standard",
+        "alignment": "center",
+        "background_color": "#FFFFFF",
+        "text_color": "#3E2027"
+      }
+    },
     "perks": {
       "type": "about-philosophy",
       "blocks": {
@@ -83,7 +95,7 @@
       ],
       "settings": {
         "heading": "Why join",
-        "intro": "<p>Perks designed to reward the people who spread the word.</p>",
+        "intro": "",
         "button_label": "",
         "button_link": "",
         "columns": "3",
@@ -214,6 +226,7 @@
   },
   "order": [
     "hero",
+    "rich_text_MKcEGX",
     "perks",
     "who_we_are",
     "who_you_are",
