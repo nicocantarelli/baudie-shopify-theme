@@ -13,10 +13,11 @@
   assign heading_size = section.settings.heading_size | default: 'large'
   assign overlay_style = section.settings.overlay_style | default: 'full'
   assign image_position = section.settings.image_position | default: 'center'
+  assign mobile_layout = section.settings.mobile_layout | default: 'center'
 -%}
 
 <section
-  class="about-hero about-hero--position-{{ content_position }} about-hero--heading-{{ heading_size }} about-hero--overlay-{{ overlay_style }} full-width"
+  class="about-hero about-hero--position-{{ content_position }} about-hero--heading-{{ heading_size }} about-hero--overlay-{{ overlay_style }} about-hero--mobile-{{ mobile_layout }} full-width"
   style="
     --ah-bg: {{ bg_color }};
     --ah-text: {{ text_color }};
@@ -228,6 +229,25 @@
     letter-spacing: -0.14px;
   }
 }
+@media (max-width: 768px) {
+  .about-hero--mobile-bottom {
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+
+  .about-hero--mobile-bottom .about-hero__content {
+    max-width: 100%;
+    margin: 0;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .about-hero--mobile-bottom.about-hero--overlay-full .about-hero__overlay,
+  .about-hero--mobile-bottom.about-hero--overlay-scrim .about-hero__overlay {
+    opacity: 1;
+    background: linear-gradient(to top, rgba(0, 0, 0, var(--ah-overlay)) 0%, rgba(0, 0, 0, 0) 60%);
+  }
+}
 {% endstylesheet %}
 
 {% schema %}
@@ -292,6 +312,16 @@
         { "value": "large", "label": "t:sections.about_hero.settings.size_large" }
       ],
       "default": "large"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "t:sections.about_hero.settings.mobile_layout",
+      "options": [
+        { "value": "center", "label": "t:sections.about_hero.settings.mobile_center" },
+        { "value": "bottom", "label": "t:sections.about_hero.settings.mobile_bottom" }
+      ],
+      "default": "center"
     },
     {
       "type": "header",
