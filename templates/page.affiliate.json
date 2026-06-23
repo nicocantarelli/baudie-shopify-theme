@@ -100,8 +100,8 @@
         "button_link": "",
         "columns": "3",
         "alignment": "center",
-        "background_color": "#FCE9EC",
-        "text_color": "#3E2027"
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
       }
     },
     "images_text_RRAy38": {
@@ -159,7 +159,7 @@
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
         "text_vertical_align": "center",
-        "background_color": "#fce9ec",
+        "background_color": "#FFCAD1",
         "text_color": "#3e2027"
       }
     },
