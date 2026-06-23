@@ -4,6 +4,7 @@
   assign text_position = section.settings.text_position | default: 'right'
   assign ratio = section.settings.image_aspect | default: 'portrait'
   assign image_count = section.blocks.size | at_least: 1
+  assign content_type = section.settings.content_type | default: 'text'
 -%}
 
 <section
@@ -28,14 +29,27 @@
     {%- endif -%}
 
     <div class="images-text__content">
-      {%- if section.settings.eyebrow != blank -%}
-        <p class="images-text__eyebrow">{{ section.settings.eyebrow }}</p>
-      {%- endif -%}
-      {%- if section.settings.heading != blank -%}
-        <h2 class="images-text__heading">{{ section.settings.heading }}</h2>
-      {%- endif -%}
-      {%- if section.settings.body != blank -%}
-        <div class="images-text__body rte">{{ section.settings.body }}</div>
+      {%- if content_type == 'image' -%}
+        {%- if section.settings.content_image != blank -%}
+          <div class="images-text__content-image">
+            {{ section.settings.content_image | image_url: width: 1000 | image_tag:
+              loading: 'lazy',
+              widths: '300, 500, 700, 1000',
+              class: 'images-text__content-img',
+              alt: section.settings.content_image.alt | default: shop.name
+            }}
+          </div>
+        {%- endif -%}
+      {%- else -%}
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="images-text__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="images-text__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.body != blank -%}
+          <div class="images-text__body rte">{{ section.settings.body }}</div>
+        {%- endif -%}
       {%- endif -%}
     </div>
   </div>
@@ -112,6 +126,18 @@
 .images-text__body p { margin: 0 0 14px; }
 .images-text__body p:last-child { margin-bottom: 0; }
 
+.images-text__content-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.images-text__content-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 @media (min-width: 769px) {
   .images-text {
     padding: 80px 0;
@@ -144,6 +170,22 @@
   "tag": "section",
   "class": "images-text-section",
   "settings": [
+    {
+      "type": "select",
+      "id": "content_type",
+      "label": "t:sections.images_text.settings.content_type",
+      "options": [
+        { "value": "text", "label": "t:sections.images_text.settings.content_text" },
+        { "value": "image", "label": "t:sections.images_text.settings.content_image_opt" }
+      ],
+      "default": "text"
+    },
+    {
+      "type": "image_picker",
+      "id": "content_image",
+      "label": "t:sections.images_text.settings.content_image",
+      "info": "t:sections.images_text.settings.content_image_info"
+    },
     {
       "type": "text",
       "id": "eyebrow",

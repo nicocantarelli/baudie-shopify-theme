@@ -505,6 +505,11 @@
     "images_text": {
       "name": "Images with text",
       "settings": {
+        "content_type": "Content column",
+        "content_text": "Text",
+        "content_image_opt": "Image (e.g. logo)",
+        "content_image": "Content image",
+        "content_image_info": "Shown in the text column when Content column is set to Image.",
         "eyebrow": "Eyebrow text",
         "body": "Body text",
         "text_position": "Text position",
