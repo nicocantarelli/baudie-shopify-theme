@@ -129,7 +129,7 @@
       ],
       "name": "t:sections.images_text.name",
       "settings": {
-        "eyebrow": "BAUDIE",
+        "eyebrow": "",
         "heading": "This is a test",
         "body": "<p>And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. </p>",
         "text_position": "right",
