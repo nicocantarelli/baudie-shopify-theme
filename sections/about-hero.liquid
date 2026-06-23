@@ -12,6 +12,7 @@
   assign content_position = section.settings.content_position | default: 'center'
   assign heading_size = section.settings.heading_size | default: 'large'
   assign overlay_style = section.settings.overlay_style | default: 'full'
+  assign image_position = section.settings.image_position | default: 'center'
 -%}
 
 <section
@@ -24,6 +25,7 @@
     --ah-min-mobile: {{ min_h_mobile }}px;
     --ah-subheading-size: {{ subheading_size }}px;
     --ah-subheading-weight: {{ subheading_weight }};
+    --ah-position: {{ image_position }};
     {%- if section.settings.image != blank -%}
       --ah-image: url('{{ section.settings.image | image_url: width: 2400 }}');
     {%- endif -%}
@@ -56,7 +58,7 @@
   background-color: var(--ah-bg);
   background-image: var(--ah-image-mobile, none);
   background-size: cover;
-  background-position: center;
+  background-position: var(--ah-position, center);
   background-repeat: no-repeat;
   min-height: var(--ah-min-mobile);
   margin-top: var(--total-header-height, 100px);
@@ -318,6 +320,17 @@
       "type": "image_picker",
       "id": "image_mobile",
       "label": "t:sections.about_hero.settings.image_mobile"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "t:sections.about_hero.settings.image_position",
+      "options": [
+        { "value": "top", "label": "t:sections.about_hero.settings.image_pos_top" },
+        { "value": "center", "label": "t:sections.about_hero.settings.image_pos_center" },
+        { "value": "bottom", "label": "t:sections.about_hero.settings.image_pos_bottom" }
+      ],
+      "default": "center"
     },
     {
       "type": "range",
