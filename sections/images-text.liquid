@@ -15,7 +15,7 @@
         {%- for block in section.blocks -%}
           {%- if block.settings.image != blank -%}
             <div class="images-text__media" {{ block.shopify_attributes }}>
-              {{ block.settings.image | image_tag:
+              {{ block.settings.image | image_url: width: 1200 | image_tag:
                 loading: 'lazy',
                 widths: '300, 500, 700, 900, 1200',
                 class: 'images-text__img',
