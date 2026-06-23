@@ -18,7 +18,7 @@
         "subheading_size": 20,
         "subheading_bold": false,
         "button_label": "Apply Now",
-        "button_link": "",
+        "button_link": "https://baudie.socialsnowball.io/signup/5757dff7-b438-4059-a74f-1faedebb4a82",
         "image": "shopify://shop_images/magnific_highend-beauty-flat-lay-t_2885705758_1__upscayl_2x_remacri-4x.png",
         "overlay_opacity": 30,
         "min_height_desktop": 480,
@@ -125,7 +125,7 @@
           "type": "pillar",
           "settings": {
             "heading": "1. Apply",
-            "text": "<p>Fill out the short form below to join the program.</p>"
+            "text": "<p>Hit Apply now and fill out the quick form to join the program.</p>"
           }
         },
         "step_2": {
@@ -151,22 +151,10 @@
       "settings": {
         "heading": "How it works",
         "intro": "",
-        "button_label": "",
-        "button_link": "",
+        "button_label": "Apply Now",
+        "button_link": "https://baudie.socialsnowball.io/signup/5757dff7-b438-4059-a74f-1faedebb4a82",
         "background_color": "#ffffff",
         "text_color": "#3e2027"
-      }
-    },
-    "signup": {
-      "type": "affiliate-signup",
-      "settings": {
-        "heading": "Apply to the program",
-        "intro": "<p>Fill out the form below and we'll be in touch.</p>",
-        "embed_code": "",
-        "min_height": 600,
-        "max_width": "standard",
-        "background_color": "#3e2027",
-        "text_color": "#ffffff"
       }
     },
     "faq": {
@@ -213,7 +201,6 @@
     "who_we_are",
     "who_you_are",
     "how_it_works",
-    "signup",
     "faq"
   ]
 }
