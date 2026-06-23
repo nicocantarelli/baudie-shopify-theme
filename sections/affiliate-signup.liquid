@@ -96,23 +96,6 @@
 }
 {% endstylesheet %}
 
-{% javascript %}
-(function () {
-  var forms = document.querySelectorAll('.affiliate-signup__form');
-  if (!forms.length) return;
-  window.addEventListener('message', function (e) {
-    if (!/snowball/i.test(e.origin)) return;
-    var data = e.data || {};
-    var h = data.height || data.frameHeight;
-    if (!h || isNaN(h)) return;
-    forms.forEach(function (form) {
-      var iframe = form.querySelector('iframe');
-      if (iframe) iframe.style.height = h + 'px';
-    });
-  });
-})();
-{% endjavascript %}
-
 {% schema %}
 {
   "name": "t:sections.affiliate_signup.name",
