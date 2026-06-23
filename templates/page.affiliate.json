@@ -104,6 +104,37 @@
         "text_color": "#3e2027"
       }
     },
+    "images_text_RRAy38": {
+      "type": "images-text",
+      "blocks": {
+        "image_rCMqmP": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/CapriSeaside7.png"
+          }
+        },
+        "image_eJNxwx": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/DeepRitual5_1.png"
+          }
+        }
+      },
+      "block_order": [
+        "image_rCMqmP",
+        "image_eJNxwx"
+      ],
+      "name": "t:sections.images_text.name",
+      "settings": {
+        "eyebrow": "BAUDIE",
+        "heading": "This is a test",
+        "body": "<p>And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. And here we paste more test text. </p>",
+        "text_position": "right",
+        "image_aspect": "portrait",
+        "background_color": "#FFFFFF",
+        "text_color": "#3E2027"
+      }
+    },
     "who_we_are": {
       "type": "image-text-block",
       "settings": {
@@ -228,6 +259,7 @@
     "hero",
     "rich_text_MKcEGX",
     "perks",
+    "images_text_RRAy38",
     "who_we_are",
     "who_you_are",
     "how_it_works",
