@@ -11,10 +11,11 @@
   endif
   assign content_position = section.settings.content_position | default: 'center'
   assign heading_size = section.settings.heading_size | default: 'large'
+  assign overlay_style = section.settings.overlay_style | default: 'full'
 -%}
 
 <section
-  class="about-hero about-hero--position-{{ content_position }} about-hero--heading-{{ heading_size }} full-width"
+  class="about-hero about-hero--position-{{ content_position }} about-hero--heading-{{ heading_size }} about-hero--overlay-{{ overlay_style }} full-width"
   style="
     --ah-bg: {{ bg_color }};
     --ah-text: {{ text_color }};
@@ -73,6 +74,20 @@
   background-color: #000;
   opacity: var(--ah-overlay);
   pointer-events: none;
+}
+
+/* Scrim: darken only where the text sits, fading across the image */
+.about-hero--overlay-scrim .about-hero__overlay {
+  opacity: 1;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, var(--ah-overlay)) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+.about-hero--overlay-scrim.about-hero--position-left .about-hero__overlay {
+  background: linear-gradient(to right, rgba(0, 0, 0, var(--ah-overlay)) 0%, rgba(0, 0, 0, 0) 55%);
+}
+
+.about-hero--overlay-scrim.about-hero--position-right .about-hero__overlay {
+  background: linear-gradient(to left, rgba(0, 0, 0, var(--ah-overlay)) 0%, rgba(0, 0, 0, 0) 55%);
 }
 
 .about-hero__content {
@@ -313,6 +328,16 @@
       "step": 5,
       "unit": "%",
       "default": 30
+    },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "t:sections.about_hero.settings.overlay_style",
+      "options": [
+        { "value": "full", "label": "t:sections.about_hero.settings.overlay_full" },
+        { "value": "scrim", "label": "t:sections.about_hero.settings.overlay_scrim" }
+      ],
+      "default": "full"
     },
     {
       "type": "header",
