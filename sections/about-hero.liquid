@@ -42,7 +42,7 @@
       <p class="about-hero__subheading">{{ section.settings.subheading }}</p>
     {%- endif -%}
     {%- if section.settings.button_label != blank -%}
-      <a class="about-hero__button" href="{{ section.settings.button_link | default: '#affiliate-signup' }}">{{ section.settings.button_label }}</a>
+      <a class="about-hero__button" href="{{ section.settings.button_link | default: '#affiliate-signup' }}"{% if section.settings.button_link contains '://' %} target="_blank" rel="noopener"{% endif %}>{{ section.settings.button_label }}</a>
     {%- endif -%}
   </div>
 </section>

@@ -39,7 +39,7 @@
 
     {%- if section.settings.button_label != blank -%}
       <div class="about-philosophy__cta">
-        <a class="about-philosophy__button" href="{{ section.settings.button_link | default: '#affiliate-signup' }}">{{ section.settings.button_label }}</a>
+        <a class="about-philosophy__button" href="{{ section.settings.button_link | default: '#affiliate-signup' }}"{% if section.settings.button_link contains '://' %} target="_blank" rel="noopener"{% endif %}>{{ section.settings.button_label }}</a>
       </div>
     {%- endif -%}
   </div>

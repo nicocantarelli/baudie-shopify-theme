@@ -20,7 +20,8 @@
     {%- if section.settings.button_label != blank -%}
       <a
         class="cta-banner__button cta-banner__button--{{ button_style }}"
-        href="{{ section.settings.button_link | default: '#' }}">
+        href="{{ section.settings.button_link | default: '#' }}"
+        {% if section.settings.button_link contains '://' %}target="_blank" rel="noopener"{% endif %}>
         {{ section.settings.button_label }}
       </a>
     {%- endif -%}
