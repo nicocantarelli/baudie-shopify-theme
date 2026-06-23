@@ -155,6 +155,8 @@
         "intro": "",
         "button_label": "Apply Now",
         "button_link": "https://baudie.socialsnowball.io/signup/5757dff7-b438-4059-a74f-1faedebb4a82",
+        "columns": "4",
+        "alignment": "left",
         "background_color": "#ffffff",
         "text_color": "#3e2027"
       }
@@ -195,6 +197,19 @@
         "background_color": "#ffffff",
         "text_color": "#3e2027"
       }
+    },
+    "cta_banner_f6wxbN": {
+      "type": "cta-banner",
+      "name": "t:sections.cta_banner.name",
+      "settings": {
+        "heading": "Are we a good fit?",
+        "button_label": "Apply now",
+        "button_link": "",
+        "layout": "inline",
+        "button_style": "outline",
+        "background_color": "#ECE7DD",
+        "text_color": "#3E2027"
+      }
     }
   },
   "order": [
@@ -203,6 +218,7 @@
     "who_we_are",
     "who_you_are",
     "how_it_works",
-    "faq"
+    "faq",
+    "cta_banner_f6wxbN"
   ]
 }
