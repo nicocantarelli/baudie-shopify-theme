@@ -501,6 +501,19 @@
         "colors_header": "Colors"
       }
     },
+    "cta_banner": {
+      "name": "CTA banner",
+      "settings": {
+        "button_link": "Button link",
+        "layout": "Layout",
+        "layout_inline": "Heading inline with button",
+        "layout_stacked": "Heading above button",
+        "button_style": "Button style",
+        "style_outline": "Outline",
+        "style_filled": "Filled",
+        "colors_header": "Colors"
+      }
+    },
     "about_philosophy": {
       "name": "About philosophy",
       "settings": {
