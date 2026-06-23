@@ -35,8 +35,8 @@
         "content": "<p>Add your text here. Use multiple paragraphs, <strong>bold</strong>, <em>italics</em>, lists, and links.</p>",
         "width": "standard",
         "alignment": "center",
-        "background_color": "#3E2027",
-        "text_color": "#FFFFFF"
+        "background_color": "#3e2027",
+        "text_color": "#ffffff"
       }
     },
     "perks": {
@@ -100,8 +100,8 @@
         "button_link": "",
         "columns": "3",
         "alignment": "center",
-        "background_color": "#ffffff",
-        "text_color": "#FCE9EC"
+        "background_color": "#FCE9EC",
+        "text_color": "#3E2027"
       }
     },
     "images_text_RRAy38": {
