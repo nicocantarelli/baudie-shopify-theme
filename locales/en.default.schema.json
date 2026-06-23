@@ -112,6 +112,7 @@
   "labels": {
     "alignment": "Alignment",
     "bottom_spacing": "Bottom spacing",
+    "top_spacing": "Top spacing",
     "heading_spacing": "Heading spacing",
     "klaviyo_public_key": "Klaviyo public API key",
     "klaviyo_public_key_info": "Your 6-character public key (Site ID) from Klaviyo: Settings → API keys. Connects the newsletter signup forms.",

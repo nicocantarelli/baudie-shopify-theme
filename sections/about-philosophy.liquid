@@ -3,11 +3,12 @@
   assign text_color = section.settings.text_color | default: '#3E2027'
   assign columns = section.settings.columns | default: 4
   assign alignment = section.settings.alignment | default: 'left'
+  assign bottom_padding = section.settings.bottom_padding | default: 120
 -%}
 
 <section
   class="about-philosophy about-philosophy--align-{{ alignment }} full-width"
-  style="--ap-bg: {{ bg_color }}; --ap-text: {{ text_color }}; --ap-columns: {{ columns }};">
+  style="--ap-bg: {{ bg_color }}; --ap-text: {{ text_color }}; --ap-columns: {{ columns }}; --ap-bottom: {{ bottom_padding }}px;">
   <div class="about-philosophy__container">
     {%- if section.settings.heading != blank -%}
       <h2 class="about-philosophy__heading">{{ section.settings.heading }}</h2>
@@ -183,7 +184,7 @@
 
 @media (min-width: 1025px) {
   .about-philosophy {
-    padding: 72px 0 120px;
+    padding: 72px 0 var(--ap-bottom, 120px);
   }
 
   .about-philosophy__grid {
@@ -252,6 +253,16 @@
         { "value": "center", "label": "t:sections.about_philosophy.settings.align_center" }
       ],
       "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "bottom_padding",
+      "label": "t:labels.bottom_spacing",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 120
     },
     {
       "type": "header",
