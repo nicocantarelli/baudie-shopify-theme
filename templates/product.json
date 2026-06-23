@@ -314,6 +314,7 @@
       "settings": {
         "title": "Frequently Asked Questions",
         "intro": "<p>Got questions? We’ve got answers. This is your go-to spot for everything you might be wondering about Baudie - from how to use it, to what makes it different, to all the little details in between. Think of this as the cheat sheet to staying fresh, informed, and fully in the know.</p>",
+        "top_padding": 112,
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
@@ -339,6 +340,7 @@
       "block_order": [
         "klaviyo_reviews_product_reviews_w98tre"
       ],
+      "custom_css": [],
       "settings": {}
     },
     "1781645562b78e840e": {

@@ -9,8 +9,8 @@
  */
 {
   "current": {
-    "favicon": "shopify://shop_images/favicon.png",
     "background_color": "#FCE9EC",
+    "favicon": "shopify://shop_images/favicon.png",
     "promo_banner_enabled": false,
     "promo_banner_text": "<p>Packaging Re-brand Sale<br/>35% OFF SITE WIDE<br/>Code: REFRESH35</p>",
     "promo_banner_bg": "#e15374",
@@ -36,5 +36,15 @@
         "settings": {}
       }
     }
+  },
+  "platform_customizations": {
+    "custom_css": [
+      "/* Base typography + color */#klaviyo-product-reviews-wrapper {font-family: var(--font-jokker, sans-serif) !important; color: #3E2027 !important;}",
+      "/* Headings (e.g. \"Customer reviews\", \"Reviews\", the 4.9 score) → serif */#klaviyo-product-reviews-wrapper h2,#klaviyo-product-reviews-wrapper h3 {font-family: var(--font-alyona, serif) !important; font-weight: 400 !important; color: #3E2027 !important;}",
+      "/* Stars → brand plum (better contrast on the pink than the default pink) */#klaviyo-product-reviews-wrapper .kl_reviews__full_star,#klaviyo-product-reviews-wrapper .kl_reviews__partial_star,#klaviyo-product-reviews-wrapper .kl_reviews__full_star path,#klaviyo-product-reviews-wrapper .kl_reviews__partial_star path {color: #3E2027 !important; fill: #3E2027 !important;}",
+      "#klaviyo-product-reviews-wrapper .kl_reviews__empty_star,#klaviyo-product-reviews-wrapper .kl_reviews__empty_star path {color: rgba(62,32,39,0.2) !important; fill: rgba(62,32,39,0.2) !important;}",
+      "/* \"Write a review\" button → Baudie button */#klaviyo-product-reviews-wrapper .kl_reviews__button {background-color: #3E2027 !important; color: #FFFFFF !important; border: none !important; border-radius: 0 !important; font-family: var(--font-sweet-sans, sans-serif) !important; font-weight: 500 !important; letter-spacing: -0.14px !important; text-transform: uppercase !important; transition: opacity .2s ease !important;}",
+      "#klaviyo-product-reviews-wrapper .kl_reviews__button:hover {opacity: 0.9 !important;}"
+    ]
   }
 }
