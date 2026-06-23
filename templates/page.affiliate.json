@@ -257,7 +257,7 @@
         "button_label": "Apply now",
         "button_link": "",
         "layout": "inline",
-        "button_style": "outline",
+        "button_style": "filled",
         "background_color": "#ffcad1",
         "text_color": "#3e2027"
       }
