@@ -46,22 +46,22 @@
         "perk_1": {
           "type": "pillar",
           "settings": {
-            "heading": "Generous commission",
-            "text": "<p>Earn on every sale you drive with your unique code and link.</p>"
+            "heading": "Commission",
+            "text": "<p>Earn 10% on every sale you drive with your unique link.</p>"
           }
         },
         "perk_2": {
           "type": "pillar",
           "settings": {
-            "heading": "Evergreen code",
-            "text": "<p>A reusable discount code to share with your community any time.</p>"
+            "heading": "Customized Links",
+            "text": "<p>A reusable customized link to share with your community any time.</p>"
           }
         },
         "perk_3": {
           "type": "pillar",
           "settings": {
-            "heading": "Long cookie window",
-            "text": "<p>A generous attribution window so you get credit for the sales you inspire.</p>"
+            "heading": "Cookie window",
+            "text": "<p>15 Day cookie window</p>"
           }
         },
         "perk_4": {
