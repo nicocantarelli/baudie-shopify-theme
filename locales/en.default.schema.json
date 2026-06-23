@@ -501,6 +501,27 @@
         "colors_header": "Colors"
       }
     },
+    "images_text": {
+      "name": "Images with text",
+      "settings": {
+        "eyebrow": "Eyebrow text",
+        "body": "Body text",
+        "text_position": "Text position",
+        "text_left": "Left",
+        "text_right": "Right",
+        "image_aspect": "Image aspect ratio",
+        "ratio_square": "Square",
+        "ratio_portrait": "Portrait",
+        "ratio_landscape": "Landscape",
+        "ratio_natural": "Natural",
+        "colors_header": "Colors"
+      },
+      "blocks": {
+        "image": {
+          "name": "Image"
+        }
+      }
+    },
     "rich_text": {
       "name": "Rich text",
       "settings": {

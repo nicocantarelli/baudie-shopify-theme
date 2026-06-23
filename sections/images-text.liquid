@@ -1,0 +1,223 @@
+{%- liquid
+  assign bg = section.settings.background_color | default: '#FFFFFF'
+  assign text = section.settings.text_color | default: '#3E2027'
+  assign text_position = section.settings.text_position | default: 'right'
+  assign ratio = section.settings.image_aspect | default: 'portrait'
+  assign image_count = section.blocks.size | at_least: 1
+-%}
+
+<section
+  class="images-text images-text--text-{{ text_position }} images-text--ratio-{{ ratio }} full-width"
+  style="--it-bg: {{ bg }}; --it-text: {{ text }}; --it-cols: {{ image_count }};">
+  <div class="images-text__inner">
+    {%- if section.blocks.size > 0 -%}
+      <div class="images-text__gallery">
+        {%- for block in section.blocks -%}
+          {%- if block.settings.image != blank -%}
+            <div class="images-text__media" {{ block.shopify_attributes }}>
+              {{ block.settings.image | image_tag:
+                loading: 'lazy',
+                widths: '300, 500, 700, 900, 1200',
+                class: 'images-text__img',
+                alt: block.settings.image.alt | default: section.settings.heading
+              }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="images-text__content">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="images-text__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="images-text__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <div class="images-text__body rte">{{ section.settings.body }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+.images-text {
+  background-color: var(--it-bg);
+  color: var(--it-text);
+  padding: 48px 24px;
+}
+
+.images-text__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.images-text__gallery {
+  display: grid;
+  grid-template-columns: repeat(var(--it-cols, 2), 1fr);
+  gap: 16px;
+}
+
+.images-text__media {
+  overflow: hidden;
+}
+
+.images-text--ratio-square .images-text__media { aspect-ratio: 1 / 1; }
+.images-text--ratio-portrait .images-text__media { aspect-ratio: 3 / 4; }
+.images-text--ratio-landscape .images-text__media { aspect-ratio: 4 / 3; }
+
+.images-text__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.images-text--ratio-natural .images-text__img {
+  height: auto;
+}
+
+.images-text__eyebrow {
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+  color: var(--it-text);
+}
+
+.images-text__heading {
+  font-family: var(--font-alyona);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 400;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--it-text);
+}
+
+.images-text__body {
+  font-family: var(--font-jokker);
+  font-size: 16px;
+  line-height: 1.7;
+  margin-top: 16px;
+  color: var(--it-text);
+}
+
+.images-text__body p { margin: 0 0 14px; }
+.images-text__body p:last-child { margin-bottom: 0; }
+
+@media (min-width: 769px) {
+  .images-text {
+    padding: 80px 40px;
+  }
+
+  .images-text__inner {
+    flex-direction: row;
+    align-items: center;
+    gap: 48px;
+  }
+
+  .images-text__gallery {
+    flex: 2;
+  }
+
+  .images-text__content {
+    flex: 1;
+  }
+
+  .images-text--text-left .images-text__content {
+    order: -1;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.images_text.name",
+  "tag": "section",
+  "class": "images-text-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.images_text.settings.eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "t:sections.images_text.settings.body"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "t:sections.images_text.settings.text_position",
+      "options": [
+        { "value": "left", "label": "t:sections.images_text.settings.text_left" },
+        { "value": "right", "label": "t:sections.images_text.settings.text_right" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect",
+      "label": "t:sections.images_text.settings.image_aspect",
+      "options": [
+        { "value": "square", "label": "t:sections.images_text.settings.ratio_square" },
+        { "value": "portrait", "label": "t:sections.images_text.settings.ratio_portrait" },
+        { "value": "landscape", "label": "t:sections.images_text.settings.ratio_landscape" },
+        { "value": "natural", "label": "t:sections.images_text.settings.ratio_natural" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.images_text.settings.colors_header"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "t:sections.images_text.blocks.image.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:labels.image"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "t:sections.images_text.name",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}
