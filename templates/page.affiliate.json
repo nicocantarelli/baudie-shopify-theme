@@ -133,6 +133,7 @@
         "image_rCMqmP",
         "image_eJNxwx"
       ],
+      "disabled": true,
       "name": "t:sections.images_text.name",
       "settings": {
         "content_type": "image",
@@ -265,7 +266,7 @@
       "type": "cta-banner",
       "name": "t:sections.cta_banner.name",
       "settings": {
-        "heading": "Are we a good fit?",
+        "heading": "Want to join?",
         "button_label": "Apply now",
         "button_link": "",
         "layout": "inline",
