@@ -67,14 +67,14 @@
           "type": "pillar",
           "settings": {
             "heading": "Cookie window",
-            "text": "<p>15 Day cookie window</p>"
+            "text": "<p>15 Day cookie window.</p>"
           }
         },
         "perk_4": {
           "type": "pillar",
           "settings": {
             "heading": "No MINImum sale",
-            "text": "<p>No minimum sale requirements. </p>"
+            "text": "<p>No minimum sale requirements and post requirements. </p>"
           }
         },
         "perk_5": {
