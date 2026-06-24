@@ -28,7 +28,7 @@
         "image_position": "center",
         "overlay_opacity": 25,
         "overlay_style": "scrim",
-        "min_height_desktop": 760,
+        "min_height_desktop": 650,
         "min_height_mobile": 620,
         "background_color": "#3e2027",
         "text_color": "#ffffff"
