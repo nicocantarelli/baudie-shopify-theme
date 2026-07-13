@@ -16,11 +16,11 @@
         "heading": "This helps deo last longer + helps sweat stay odorless.",
         "heading_color": "#ffffff",
         "hero_products": [
+          "capri-seaside",
           "sweet-muse",
           "st-tropez",
           "petal-kiss",
           "deep-ritual",
-          "capri-seaside",
           "barely-there"
         ],
         "use_default_colors": false,
@@ -452,6 +452,7 @@
       "type": "newsletter",
       "name": "t:general.newsletter",
       "settings": {
+        "klaviyo_list_id": "U6y4hf",
         "heading": "Stay Fresh. Stay in the Loop.",
         "description": "Be the first to know when new scents drop, bundles launch, and good pit news happens.",
         "placeholder": "Enter your email",
