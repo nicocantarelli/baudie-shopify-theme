@@ -52,46 +52,6 @@
             "answer_15": ""
           }
         },
-        "category_H8B7VH": {
-          "type": "category",
-          "settings": {
-            "tab_label": "FAQ",
-            "url_slug": "faq",
-            "icon": "faq",
-            "section_heading": "Frequently Asked Questions",
-            "section_description": "",
-            "question_1": "",
-            "answer_1": "",
-            "question_2": "",
-            "answer_2": "",
-            "question_3": "",
-            "answer_3": "",
-            "question_4": "",
-            "answer_4": "",
-            "question_5": "",
-            "answer_5": "",
-            "question_6": "",
-            "answer_6": "",
-            "question_7": "",
-            "answer_7": "",
-            "question_8": "",
-            "answer_8": "",
-            "question_9": "",
-            "answer_9": "",
-            "question_10": "",
-            "answer_10": "",
-            "question_11": "",
-            "answer_11": "",
-            "question_12": "",
-            "answer_12": "",
-            "question_13": "",
-            "answer_13": "",
-            "question_14": "",
-            "answer_14": "",
-            "question_15": "",
-            "answer_15": ""
-          }
-        },
         "returns": {
           "type": "category",
           "settings": {
@@ -418,7 +378,6 @@
       },
       "block_order": [
         "delivery",
-        "category_H8B7VH",
         "returns",
         "payment",
         "category_nGQzhn",
