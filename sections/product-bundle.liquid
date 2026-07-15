@@ -161,24 +161,14 @@
       {%- comment -%} Watch It In Action {%- endcomment -%}
       {% if section.settings.show_watch_in_action %}
         {%- if section.settings.videowise_embed != blank or request.design_mode -%}
-          <div class="bundle-main__accordion is-open" data-accordion>
-            <button
-              type="button"
-              id="accordion-video-trigger-{{ section.id }}"
-              class="bundle-main__accordion-trigger"
-              aria-expanded="true"
-              aria-controls="accordion-video-{{ section.id }}">
+          <div class="bundle-main__accordion is-open">
+            <div class="bundle-main__accordion-heading" id="accordion-video-heading-{{ section.id }}">
               <span>{{ 'sections.product_bundle.watch_in_action' | t }}</span>
-              <svg class="bundle-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-                <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
+            </div>
             <div
               class="bundle-main__accordion-content"
-              id="accordion-video-{{ section.id }}"
               role="region"
-              aria-labelledby="accordion-video-trigger-{{ section.id }}"
-              aria-hidden="false">
+              aria-labelledby="accordion-video-heading-{{ section.id }}">
               <div class="bundle-main__accordion-body">
                 {%- if section.settings.videowise_embed != blank -%}
                   <div class="bundle-main__video-embed">
@@ -774,6 +764,19 @@
   .bundle-main__accordion-trigger:focus-visible {
     outline: 2px solid var(--product-text, #3E2027);
     outline-offset: 2px;
+  }
+
+  .bundle-main__accordion-heading {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
   }
 
   .bundle-main__accordion-icon {
