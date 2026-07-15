@@ -217,39 +217,45 @@
     </div>
 
     {%- comment -%} Accordions {%- endcomment -%}
+    {%- liquid
+      assign show_watch_in_action = false
+      if section.settings.show_watch_in_action
+        if section.settings.videowise_embed != blank or request.design_mode
+          assign show_watch_in_action = true
+        endif
+      endif
+    -%}
     <div class="product-main__accordions" data-product-accordions>
-      <hr class="product-main__divider">
+      {%- comment -%} Top divider is skipped when the videos lead, so they sit flush {%- endcomment -%}
+      {%- unless show_watch_in_action -%}
+        <hr class="product-main__divider">
+      {%- endunless -%}
 
       {%- comment -%} Watch It In Action {%- endcomment -%}
-      {% if section.settings.show_watch_in_action %}
-        {%- if section.settings.videowise_embed != blank or request.design_mode -%}
-          <div class="product-main__accordion is-open">
-            <div class="product-main__accordion-heading" id="accordion-video-heading-{{ section.id }}">
-              <span>{{ 'sections.product.watch_in_action' | t }}</span>
+      {% if show_watch_in_action %}
+        <div class="product-main__accordion is-open">
+          <div
+            class="product-main__accordion-content"
+            role="region"
+            aria-label="{{ 'sections.product.watch_in_action' | t }}">
+            <div class="product-main__accordion-body">
+              {%- if section.settings.videowise_embed != blank -%}
+                <div class="product-main__video-embed">
+                  {{ section.settings.videowise_embed }}
+                </div>
+              {%- else -%}
+                <div class="product-main__video-grid">
+                  <div class="product-main__video-placeholder"></div>
+                  <div class="product-main__video-placeholder"></div>
+                  <div class="product-main__video-placeholder"></div>
+                  <div class="product-main__video-placeholder"></div>
+                  <div class="product-main__video-placeholder"></div>
+                </div>
+              {%- endif -%}
             </div>
-            <div
-              class="product-main__accordion-content"
-              role="region"
-              aria-labelledby="accordion-video-heading-{{ section.id }}">
-              <div class="product-main__accordion-body">
-                {%- if section.settings.videowise_embed != blank -%}
-                  <div class="product-main__video-embed">
-                    {{ section.settings.videowise_embed }}
-                  </div>
-                {%- else -%}
-                  <div class="product-main__video-grid">
-                    <div class="product-main__video-placeholder"></div>
-                    <div class="product-main__video-placeholder"></div>
-                    <div class="product-main__video-placeholder"></div>
-                    <div class="product-main__video-placeholder"></div>
-                    <div class="product-main__video-placeholder"></div>
-                  </div>
-                {%- endif -%}
-              </div>
-            </div>
-            <hr class="product-main__divider">
           </div>
-        {%- endif -%}
+          <hr class="product-main__divider">
+        </div>
       {% endif %}
 
       {%- comment -%} Details {%- endcomment -%}
@@ -880,20 +886,6 @@
   .product-main__accordion-trigger:focus-visible {
     outline: 2px solid var(--product-text);
     outline-offset: 2px;
-  }
-
-  .product-main__accordion-heading {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 15px 0;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    line-height: normal;
-    letter-spacing: -0.14px;
-    text-transform: uppercase;
-    color: var(--product-text);
   }
 
   .product-main__accordion-icon {
