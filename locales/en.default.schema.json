@@ -374,6 +374,8 @@
       "close": "Close",
       "settings": {
         "show_watch_in_action": "Show \"Watch it in action\" section",
+        "videowise_embed": "Videowise embed code",
+        "videowise_embed_info": "Paste the widget embed code from Videowise (Copy embed code) to show the videos here. Leave blank to hide this section.",
         "scent_collection": "Scent collection",
         "bundle_size": "Bundle size",
         "colors_header": "Colors",
@@ -426,6 +428,8 @@
     "product": {
       "name": "Product",
       "show_watch_in_action": "Show \"Watch it in action\" section",
+      "videowise_embed": "Videowise embed code",
+      "videowise_embed_info": "Paste the widget embed code from Videowise (Copy embed code) to show the videos here. Leave blank to hide this section.",
       "popup_text_color": "Popup text color",
       "bundle_upsell_header": "Bundle upsell",
       "bundle_upsell_bg_color": "Button background color",

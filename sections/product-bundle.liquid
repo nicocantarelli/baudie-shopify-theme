@@ -160,36 +160,44 @@
 
       {%- comment -%} Watch It In Action {%- endcomment -%}
       {% if section.settings.show_watch_in_action %}
-        <div class="bundle-main__accordion is-open" data-accordion>
-          <button
-            type="button"
-            id="accordion-video-trigger-{{ section.id }}"
-            class="bundle-main__accordion-trigger"
-            aria-expanded="true"
-            aria-controls="accordion-video-{{ section.id }}">
-            <span>{{ 'sections.product_bundle.watch_in_action' | t }}</span>
-            <svg class="bundle-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div
-            class="bundle-main__accordion-content"
-            id="accordion-video-{{ section.id }}"
-            role="region"
-            aria-labelledby="accordion-video-trigger-{{ section.id }}"
-            aria-hidden="false">
-            <div class="bundle-main__accordion-body">
-              <div class="bundle-main__video-grid" data-tolstoy-container>
-                <div class="bundle-main__video-placeholder"></div>
-                <div class="bundle-main__video-placeholder"></div>
-                <div class="bundle-main__video-placeholder"></div>
-                <div class="bundle-main__video-placeholder"></div>
-                <div class="bundle-main__video-placeholder"></div>
+        {%- if section.settings.videowise_embed != blank or request.design_mode -%}
+          <div class="bundle-main__accordion is-open" data-accordion>
+            <button
+              type="button"
+              id="accordion-video-trigger-{{ section.id }}"
+              class="bundle-main__accordion-trigger"
+              aria-expanded="true"
+              aria-controls="accordion-video-{{ section.id }}">
+              <span>{{ 'sections.product_bundle.watch_in_action' | t }}</span>
+              <svg class="bundle-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+                <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div
+              class="bundle-main__accordion-content"
+              id="accordion-video-{{ section.id }}"
+              role="region"
+              aria-labelledby="accordion-video-trigger-{{ section.id }}"
+              aria-hidden="false">
+              <div class="bundle-main__accordion-body">
+                {%- if section.settings.videowise_embed != blank -%}
+                  <div class="bundle-main__video-embed">
+                    {{ section.settings.videowise_embed }}
+                  </div>
+                {%- else -%}
+                  <div class="bundle-main__video-grid">
+                    <div class="bundle-main__video-placeholder"></div>
+                    <div class="bundle-main__video-placeholder"></div>
+                    <div class="bundle-main__video-placeholder"></div>
+                    <div class="bundle-main__video-placeholder"></div>
+                    <div class="bundle-main__video-placeholder"></div>
+                  </div>
+                {%- endif -%}
               </div>
             </div>
+            <hr class="bundle-main__divider">
           </div>
-          <hr class="bundle-main__divider">
-        </div>
+        {%- endif -%}
       {% endif %}
 
       {% if product_details %}
@@ -738,6 +746,10 @@
     height: 125px;
     background-color: #D9D9D9;
     flex-shrink: 0;
+  }
+
+  .bundle-main__video-embed {
+    width: 100%;
   }
 
   /* --- Accordions --- */
@@ -1407,6 +1419,12 @@
       "id": "show_watch_in_action",
       "label": "t:sections.product_bundle.settings.show_watch_in_action",
       "default": true
+    },
+    {
+      "type": "liquid",
+      "id": "videowise_embed",
+      "label": "t:sections.product_bundle.settings.videowise_embed",
+      "info": "t:sections.product_bundle.settings.videowise_embed_info"
     },
     {
       "type": "collection",
