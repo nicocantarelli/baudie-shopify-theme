@@ -20,9 +20,9 @@
         "show_rating": true,
         "image": "shopify://shop_images/Model_Group_Shot_Desktop.png",
         "image_alt": "Baudie Discovery Set",
-        "overlay_opacity": 0,
+        "overlay_opacity": 10,
         "background_color": "#d8d5d0",
-        "text_color": "#FFFFFF",
+        "text_color": "#ffffff",
         "button_background_color": "#3e2027",
         "button_text_color": "#ffffff"
       }
