@@ -82,38 +82,38 @@
         <div class="landing-hero__description">{{ section.settings.description }}</div>
       {%- endif -%}
 
-      {%- if section.settings.show_price and product != blank -%}
-        <p class="landing-hero__price">
-          {{ selected_variant.price | money }}
-          {%- if selected_variant.compare_at_price > selected_variant.price -%}
-            <s class="landing-hero__price-compare">{{ selected_variant.compare_at_price | money }}</s>
-          {%- endif -%}
-        </p>
-      {%- endif -%}
+      {%- comment -%} Purchase group: price sits beside the button, as on the product page {%- endcomment -%}
+      <div class="landing-hero__purchase-group">
+        {%- if section.settings.show_price and product != blank -%}
+          <p class="landing-hero__price">
+            {{ selected_variant.price | money }}
+            {%- if selected_variant.compare_at_price > selected_variant.price -%}
+              <s class="landing-hero__price-compare">{{ selected_variant.compare_at_price | money }}</s>
+            {%- endif -%}
+          </p>
+        {%- endif -%}
 
-      <div class="landing-hero__actions">
         {%- if product == blank -%}
-          <button type="button" class="landing-hero__button" disabled aria-disabled="true">
-            <span>{{ 'products.add_to_cart' | t }}</span>
+          <button type="button" class="landing-hero__button landing-hero__button--add" disabled aria-disabled="true">
+            <span>{{ 'sections.product.add_to_cart' | t }}</span>
           </button>
         {%- elsif is_coming_soon or is_out_of_stock -%}
-          {% render 'notify-me-form', variant: selected_variant, button_class: 'landing-hero__button' %}
+          {% render 'notify-me-form',
+            variant: selected_variant,
+            button_class: 'landing-hero__button landing-hero__button--add'
+          %}
         {%- elsif selected_variant.available == false -%}
           {%- comment -%} In stock, but not purchasable in this market/region {%- endcomment -%}
-          <button type="button" class="landing-hero__button" disabled aria-disabled="true">
+          <button type="button" class="landing-hero__button landing-hero__button--add" disabled aria-disabled="true">
             <span>{{ 'products.unavailable_region' | t }}</span>
           </button>
         {%- else -%}
-          {% form 'product', product %}
+          {% form 'product', product, class: 'landing-hero__form' %}
             <input type="hidden" name="id" value="{{ selected_variant.id }}">
-            <button type="submit" name="add" class="landing-hero__button">
-              <span>
-                {%- if section.settings.button_text != blank -%}
-                  {{ section.settings.button_text }}
-                {%- else -%}
-                  {{ 'products.add_to_cart' | t }}
-                {%- endif -%}
-              </span>
+            <button
+              type="submit"
+              name="add"
+              class="landing-hero__button landing-hero__button--add">
               <svg
                 aria-hidden="true"
                 focusable="false"
@@ -123,12 +123,13 @@
                 viewBox="0 0 16 16"
                 fill="none">
                 <path
-                  d="M1 8H15M15 8L8.5 1.5M15 8L8.5 14.5"
+                  d="M0.75 7.75H14.75M7.75 0.75V14.75"
                   stroke="currentColor"
                   stroke-width="1.5"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
+              <span>{{ 'sections.product.add_to_cart' | t }}</span>
             </button>
           {% endform %}
         {%- endif -%}
@@ -139,7 +140,8 @@
           rating: rating,
           count: review_count,
           scale_max: rating_scale,
-          class: 'landing-hero__rating'
+          class: 'landing-hero__rating',
+          scroll_to_reviews: true
         %}
       {%- endif -%}
     </div>
@@ -200,7 +202,7 @@
     align-items: flex-start;
     gap: 20px;
     width: 100%;
-    max-width: 460px;
+    max-width: 640px;
     color: var(--text-color, #3e2027);
   }
 
@@ -215,6 +217,10 @@
   .landing-hero[data-content-position='center'] .landing-hero__content {
     align-items: center;
     text-align: center;
+  }
+
+  .landing-hero[data-content-position='center'] .landing-hero__purchase-group {
+    justify-content: center;
   }
 
   .landing-hero[data-content-position='right'] .landing-hero__inner {
@@ -234,9 +240,8 @@
   .landing-hero__heading {
     font-family: var(--font-alyona);
     font-weight: 400;
-    font-size: 64px;
-    line-height: 1.02;
-    letter-spacing: -0.02em;
+    font-size: 40px;
+    line-height: 1;
     margin: 0;
   }
 
@@ -254,72 +259,113 @@
     margin-bottom: 0;
   }
 
+  /* Price and button match .product-main__price / .product-main__button on the product page. */
+  .landing-hero__purchase-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .landing-hero__purchase-group .landing-hero__form {
+    margin: 0;
+    width: 100%;
+  }
+
   .landing-hero__price {
     font-family: var(--font-sweet-sans);
-    font-size: 20px;
     font-weight: 500;
+    font-size: 26px;
+    line-height: normal;
     margin: 0;
     display: flex;
     align-items: baseline;
     gap: 10px;
+    white-space: nowrap;
   }
 
   .landing-hero__price-compare {
-    font-size: 16px;
+    font-size: 18px;
     opacity: 0.55;
   }
 
-  .landing-hero__actions {
-    display: flex;
-    width: 100%;
-  }
-
-  /* The product form is the flex item; without this the button's width:100% resolves against a shrink-to-fit form. */
-  .landing-hero__actions form {
-    flex: 1;
-    margin: 0;
-  }
-
-  .landing-hero[data-content-position='center'] .landing-hero__actions {
-    justify-content: center;
-  }
-
   .landing-hero__button {
-    display: inline-flex;
+    width: 100%;
+    height: 48px;
+    padding: 10px 28px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 6px;
     font-family: var(--font-sweet-sans);
     font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.14px;
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: -0.12px;
     text-transform: uppercase;
-    padding: 16px 28px;
+    text-decoration: none;
     border: none;
-    border-radius: 999px;
     cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .landing-hero__button--add {
     background-color: var(--button-bg, #3e2027);
     color: var(--button-text, #ffffff);
-    text-decoration: none;
-    transition: opacity 0.2s ease;
+  }
+
+  .landing-hero__button svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
   }
 
   .landing-hero__button:hover {
-    opacity: 0.85;
+    opacity: 0.9;
+    transform: translateY(-1px);
   }
 
-  .landing-hero__button[disabled] {
+  .landing-hero__button:active {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+
+  .landing-hero__button:focus-visible {
+    outline: 2px solid var(--text-color, #3e2027);
+    outline-offset: 2px;
+  }
+
+  .landing-hero__button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .landing-hero__button:disabled:hover {
+    transform: none;
   }
 
   .landing-hero__rating {
     margin: 0;
   }
 
-  @media screen and (max-width: 1024px) {
+  @media screen and (min-width: 1024px) {
     .landing-hero__heading {
-      font-size: 48px;
+      font-size: 74px;
+    }
+
+    .landing-hero__purchase-group {
+      display: grid;
+      grid-template-columns: max-content max-content;
+      column-gap: 20px;
+      row-gap: 12px;
+      align-items: center;
+      justify-items: stretch;
+      width: auto;
+    }
+
+    .landing-hero[data-content-position='center'] .landing-hero__purchase-group {
+      justify-content: center;
     }
   }
 
@@ -344,17 +390,6 @@
       text-align: left;
     }
 
-    .landing-hero[data-content-position='center'] .landing-hero__actions {
-      justify-content: flex-start;
-    }
-
-    .landing-hero__heading {
-      font-size: 40px;
-    }
-
-    .landing-hero__button {
-      width: 100%;
-    }
   }
 
   /*
@@ -405,12 +440,6 @@
         { "value": "right", "label": "t:sections.landing_hero.settings.position_right" }
       ],
       "default": "right"
-    },
-    {
-      "type": "text",
-      "id": "button_text",
-      "label": "t:labels.button_text",
-      "default": "Get started"
     },
     {
       "type": "checkbox",
