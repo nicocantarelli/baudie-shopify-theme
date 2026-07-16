@@ -72,7 +72,7 @@
         "trust_badge_fcKKBw"
       ],
       "settings": {
-        "show_watch_in_action": false,
+        "show_watch_in_action": true,
         "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
         "popup_text_color": "#3e2027",
         "bundle_upsell_bg_color": "#ffffff",
