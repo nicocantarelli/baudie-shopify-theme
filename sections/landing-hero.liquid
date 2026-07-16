@@ -184,10 +184,12 @@
     position: relative;
     z-index: 1;
     display: flex;
-    min-height: 680px;
+    min-height: 100vh;
+    min-height: 100svh;
     max-width: var(--page-width, 1360px);
     margin: 0 auto;
-    padding: 80px var(--page-margin, 20px);
+    /* The header is position:fixed and overlays the section, so clear it here. */
+    padding: calc(var(--total-header-height, 110px) + 40px) var(--page-margin, 20px) 80px;
     box-sizing: border-box;
     align-items: center;
   }
@@ -231,7 +233,8 @@
 
   .landing-hero__heading {
     font-family: var(--font-alyona);
-    font-size: 56px;
+    font-weight: 400;
+    font-size: 64px;
     line-height: 1.02;
     letter-spacing: -0.02em;
     margin: 0;
@@ -316,18 +319,13 @@
 
   @media screen and (max-width: 1024px) {
     .landing-hero__heading {
-      font-size: 44px;
-    }
-
-    .landing-hero__inner {
-      min-height: 560px;
+      font-size: 48px;
     }
   }
 
   @media screen and (max-width: 768px) {
     .landing-hero__inner {
-      min-height: 540px;
-      padding: 56px var(--page-margin, 20px);
+      padding: calc(var(--total-header-height, 95px) + 32px) var(--page-margin, 20px) 56px;
       justify-content: flex-start;
     }
 
@@ -351,7 +349,7 @@
     }
 
     .landing-hero__heading {
-      font-size: 38px;
+      font-size: 40px;
     }
 
     .landing-hero__button {
