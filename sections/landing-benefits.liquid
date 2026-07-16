@@ -65,10 +65,10 @@
   .landing-benefits__heading {
     font-family: var(--font-alyona);
     font-weight: 400;
-    font-size: 40px;
-    line-height: 1.1;
+    font-size: 70px;
+    line-height: 1;
     text-align: center;
-    margin: 0 0 56px;
+    margin: 0 0 64px;
   }
 
   .landing-benefits__grid {
@@ -108,17 +108,17 @@
   .landing-benefit {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 12px;
+    align-items: flex-start;
+    text-align: left;
+    gap: 14px;
   }
 
   .landing-benefit__icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background-color: var(--icon-bg, #3e2027);
     color: var(--icon-color, #ffffff);
@@ -126,8 +126,8 @@
   }
 
   .landing-benefit__icon-image {
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
     display: block;
@@ -135,19 +135,20 @@
 
   .landing-benefit__title {
     font-family: var(--font-sweet-sans);
-    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.06em;
+    font-size: 18px;
+    line-height: normal;
+    letter-spacing: -0.18px;
     text-transform: uppercase;
     margin: 0;
   }
 
   .landing-benefit__text {
-    font-family: var(--font-sweet-sans);
-    font-size: 14px;
+    font-family: var(--font-jokker);
+    font-weight: 400;
+    font-size: 16px;
     line-height: 1.5;
     margin: 0;
-    opacity: 0.85;
   }
 
   .landing-benefit__text p {
@@ -160,8 +161,8 @@
 
   @media screen and (max-width: 1024px) {
     .landing-benefits__heading {
-      font-size: 32px;
-      margin-bottom: 40px;
+      font-size: 48px;
+      margin-bottom: 48px;
     }
 
     .landing-benefits__grid {
@@ -201,8 +202,8 @@
     }
 
     .landing-benefits__heading {
-      font-size: 28px;
-      margin-bottom: 32px;
+      font-size: 32px;
+      margin-bottom: 36px;
     }
   }
 {% endstylesheet %}
