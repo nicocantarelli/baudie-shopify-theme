@@ -1,0 +1,500 @@
+{% comment %}
+  Landing hero - full-bleed image with an overlaid buy box (heading, price,
+  rating, add to cart). Built for ad landing page templates; reads the ambient
+  product, so it works on any product template.
+{% endcomment %}
+
+{%- liquid
+  assign selected_variant = product.selected_or_first_available_variant
+
+  assign rating = product.metafields.reviews.rating.value.rating | default: 0
+  assign rating_scale = product.metafields.reviews.rating.value.scale_max | default: 5
+  assign review_count = product.metafields.reviews.rating_count.value | default: 0
+
+  assign is_coming_soon = false
+  if product.tags contains 'coming-soon' or product.tags contains 'Coming soon' or product.tags contains 'coming soon' or product.tags contains 'Coming Soon'
+    assign is_coming_soon = true
+  endif
+
+  comment
+    Only treat as restock (notify-me) if genuinely out of stock, not just
+    unavailable in the visitor's market/region (Shopify Markets).
+  endcomment
+  assign inventory_tracked = false
+  if selected_variant.inventory_management != blank
+    assign inventory_tracked = true
+  endif
+  assign is_out_of_stock = false
+  if inventory_tracked and selected_variant.inventory_quantity <= 0
+    assign is_out_of_stock = true
+  endif
+-%}
+
+<section
+  class="landing-hero full-width"
+  data-content-position="{{ section.settings.content_position }}"
+  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --button-bg: {{ section.settings.button_background_color }}; --button-text: {{ section.settings.button_text_color }}; --overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};">
+  {%- if section.settings.image != blank -%}
+    <div class="landing-hero__media">
+      {%- comment -%}
+        <picture> so the browser fetches exactly one image: a display:none <img>
+        still downloads. The desktop image is the fallback when no mobile image is set.
+      {%- endcomment -%}
+      <picture>
+        {%- if section.settings.mobile_image != blank -%}
+          <source
+            media="(max-width: 768px)"
+            sizes="100vw"
+            srcset="
+              {{ section.settings.mobile_image | image_url: width: 400 }} 400w,
+              {{ section.settings.mobile_image | image_url: width: 600 }} 600w,
+              {{ section.settings.mobile_image | image_url: width: 800 }} 800w,
+              {{ section.settings.mobile_image | image_url: width: 1200 }} 1200w
+            ">
+        {%- endif -%}
+        {{
+          section.settings.image
+          | image_url: width: 2400
+          | image_tag:
+            alt: section.settings.image_alt,
+            class: 'landing-hero__image',
+            loading: 'eager',
+            fetchpriority: 'high',
+            sizes: '100vw',
+            widths: '600, 900, 1200, 1600, 2000, 2400'
+        }}
+      </picture>
+      <div class="landing-hero__overlay" aria-hidden="true"></div>
+    </div>
+  {%- endif -%}
+
+  <div class="landing-hero__inner">
+    <div class="landing-hero__content">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="landing-hero__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h1 class="landing-hero__heading">{{ section.settings.heading }}</h1>
+      {%- endif -%}
+
+      {%- if section.settings.description != blank -%}
+        <div class="landing-hero__description">{{ section.settings.description }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.show_price and product != blank -%}
+        <p class="landing-hero__price">
+          {{ selected_variant.price | money }}
+          {%- if selected_variant.compare_at_price > selected_variant.price -%}
+            <s class="landing-hero__price-compare">{{ selected_variant.compare_at_price | money }}</s>
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+
+      <div class="landing-hero__actions">
+        {%- if product == blank -%}
+          <button type="button" class="landing-hero__button" disabled aria-disabled="true">
+            <span>{{ 'products.add_to_cart' | t }}</span>
+          </button>
+        {%- elsif is_coming_soon or is_out_of_stock -%}
+          {% render 'notify-me-form', variant: selected_variant, button_class: 'landing-hero__button' %}
+        {%- elsif selected_variant.available == false -%}
+          {%- comment -%} In stock, but not purchasable in this market/region {%- endcomment -%}
+          <button type="button" class="landing-hero__button" disabled aria-disabled="true">
+            <span>{{ 'products.unavailable_region' | t }}</span>
+          </button>
+        {%- else -%}
+          {% form 'product', product %}
+            <input type="hidden" name="id" value="{{ selected_variant.id }}">
+            <button type="submit" name="add" class="landing-hero__button">
+              <span>
+                {%- if section.settings.button_text != blank -%}
+                  {{ section.settings.button_text }}
+                {%- else -%}
+                  {{ 'products.add_to_cart' | t }}
+                {%- endif -%}
+              </span>
+              <svg
+                aria-hidden="true"
+                focusable="false"
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none">
+                <path
+                  d="M1 8H15M15 8L8.5 1.5M15 8L8.5 14.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </button>
+          {% endform %}
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.show_rating and review_count > 0 -%}
+        {% render 'star-rating',
+          rating: rating,
+          count: review_count,
+          scale_max: rating_scale,
+          class: 'landing-hero__rating'
+        %}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .landing-hero {
+    position: relative;
+    background-color: var(--section-bg, #d8d5d0);
+    isolation: isolate;
+  }
+
+  .landing-hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .landing-hero__media picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .landing-hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .landing-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: #000;
+    opacity: var(--overlay-opacity, 0);
+    pointer-events: none;
+  }
+
+  .landing-hero__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-height: 680px;
+    max-width: var(--page-width, 1360px);
+    margin: 0 auto;
+    padding: 80px var(--page-margin, 20px);
+    box-sizing: border-box;
+    align-items: center;
+  }
+
+  .landing-hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    max-width: 460px;
+    color: var(--text-color, #3e2027);
+  }
+
+  .landing-hero[data-content-position='left'] .landing-hero__inner {
+    justify-content: flex-start;
+  }
+
+  .landing-hero[data-content-position='center'] .landing-hero__inner {
+    justify-content: center;
+  }
+
+  .landing-hero[data-content-position='center'] .landing-hero__content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .landing-hero[data-content-position='right'] .landing-hero__inner {
+    justify-content: flex-end;
+  }
+
+  .landing-hero__eyebrow {
+    font-family: var(--font-sweet-sans);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0;
+    opacity: 0.75;
+  }
+
+  .landing-hero__heading {
+    font-family: var(--font-alyona);
+    font-size: 56px;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .landing-hero__description {
+    font-family: var(--font-sweet-sans);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .landing-hero__description p {
+    margin: 0 0 8px;
+  }
+
+  .landing-hero__description p:last-child {
+    margin-bottom: 0;
+  }
+
+  .landing-hero__price {
+    font-family: var(--font-sweet-sans);
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .landing-hero__price-compare {
+    font-size: 16px;
+    opacity: 0.55;
+  }
+
+  .landing-hero__actions {
+    display: flex;
+    width: 100%;
+  }
+
+  /* The product form is the flex item; without this the button's width:100% resolves against a shrink-to-fit form. */
+  .landing-hero__actions form {
+    flex: 1;
+    margin: 0;
+  }
+
+  .landing-hero[data-content-position='center'] .landing-hero__actions {
+    justify-content: center;
+  }
+
+  .landing-hero__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    padding: 16px 28px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    background-color: var(--button-bg, #3e2027);
+    color: var(--button-text, #ffffff);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .landing-hero__button:hover {
+    opacity: 0.85;
+  }
+
+  .landing-hero__button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .landing-hero__rating {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .landing-hero__heading {
+      font-size: 44px;
+    }
+
+    .landing-hero__inner {
+      min-height: 560px;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .landing-hero__inner {
+      min-height: 540px;
+      padding: 56px var(--page-margin, 20px);
+      justify-content: flex-start;
+    }
+
+    .landing-hero[data-content-position='right'] .landing-hero__inner,
+    .landing-hero[data-content-position='center'] .landing-hero__inner {
+      justify-content: flex-start;
+    }
+
+    .landing-hero__content {
+      max-width: 100%;
+      gap: 16px;
+    }
+
+    .landing-hero[data-content-position='center'] .landing-hero__content {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .landing-hero[data-content-position='center'] .landing-hero__actions {
+      justify-content: flex-start;
+    }
+
+    .landing-hero__heading {
+      font-size: 38px;
+    }
+
+    .landing-hero__button {
+      width: 100%;
+    }
+  }
+
+  /*
+    The mobile image sits behind the copy at small sizes, so guarantee contrast
+    even when the merchant leaves the overlay at 0.
+  */
+  @media screen and (max-width: 768px) {
+    .landing-hero__media::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgb(0 0 0 / 18%) 0%, rgb(0 0 0 / 0%) 60%);
+      pointer-events: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.landing_hero.name",
+  "class": "landing-hero-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.landing_hero.settings.eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Next Generation Deodorant"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "t:labels.description",
+      "default": "<p>The sustainable deodorant backed by science. With plastic-free refills and clean effective ingredients.</p>"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "t:labels.horizontal_position",
+      "info": "t:sections.landing_hero.settings.content_position_info",
+      "options": [
+        { "value": "left", "label": "t:sections.landing_hero.settings.position_left" },
+        { "value": "center", "label": "t:sections.landing_hero.settings.position_center" },
+        { "value": "right", "label": "t:sections.landing_hero.settings.position_right" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "t:labels.button_text",
+      "default": "Get started"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "t:sections.landing_hero.settings.show_price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "t:sections.landing_hero.settings.show_rating",
+      "info": "t:sections.landing_hero.settings.show_rating_info",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.landing_hero.settings.image_header"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:labels.background_image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "t:sections.landing_hero.settings.mobile_image",
+      "info": "t:sections.landing_hero.settings.mobile_image_info"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "t:sections.landing_hero.settings.image_alt",
+      "info": "t:sections.landing_hero.settings.image_alt_info"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:sections.landing_hero.settings.overlay_opacity",
+      "info": "t:sections.landing_hero.settings.overlay_opacity_info",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#D8D5D0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "t:labels.button_background_color",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "t:labels.button_text_color",
+      "default": "#FFFFFF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.landing_hero.name"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

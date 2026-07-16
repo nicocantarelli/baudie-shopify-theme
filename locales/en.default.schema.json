@@ -736,6 +736,40 @@
         "privacy": "Privacy",
         "contact": "Contact"
       }
+    },
+    "landing_hero": {
+      "name": "Landing hero",
+      "settings": {
+        "eyebrow": "Eyebrow",
+        "content_position_info": "Where the buy box sits over the image on desktop.",
+        "position_left": "Left",
+        "position_center": "Center",
+        "position_right": "Right",
+        "show_price": "Show price",
+        "show_rating": "Show star rating",
+        "show_rating_info": "Only shows once the product has reviews.",
+        "image_header": "Image",
+        "mobile_image": "Mobile image",
+        "mobile_image_info": "Falls back to the desktop image when empty.",
+        "image_alt": "Image description",
+        "image_alt_info": "Describe the image for accessibility.",
+        "overlay_opacity": "Image overlay",
+        "overlay_opacity_info": "Darkens the image to keep the text readable."
+      }
+    },
+    "landing_benefits": {
+      "name": "Landing benefits",
+      "settings": {
+        "image_alt": "Image description",
+        "image_alt_info": "Describe the image for accessibility.",
+        "icon": "Icon",
+        "icon_info": "Optional. Falls back to a checkmark.",
+        "icon_background_color": "Icon background",
+        "icon_color": "Icon color"
+      },
+      "blocks": {
+        "benefit": "Benefit"
+      }
     }
   },
   "blocks": {

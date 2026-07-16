@@ -1,0 +1,45 @@
+{% doc %}
+  Renders a single benefit item for the landing benefits section: an icon, a
+  title and a short body. Falls back to a checkmark when no icon image is set.
+
+  @param {object} block - The `benefit` block, with `icon`, `title` and `text` settings.
+
+  @example
+  {% render 'landing-benefit-item', block: block %}
+{% enddoc %}
+
+<div class="landing-benefit" {{ block.shopify_attributes }}>
+  {%- if block.settings.icon != blank -%}
+    {{
+      block.settings.icon
+      | image_url: width: 96
+      | image_tag: alt: '', class: 'landing-benefit__icon-image', loading: 'lazy', widths: '34, 68, 96'
+    }}
+  {%- else -%}
+    <span class="landing-benefit__icon">
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="12"
+        viewBox="0 0 16 12"
+        fill="none">
+        <path
+          d="M1.5 6L5.75 10.25L14.5 1.5"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+    </span>
+  {%- endif -%}
+
+  {%- if block.settings.title != blank -%}
+    <h3 class="landing-benefit__title">{{ block.settings.title }}</h3>
+  {%- endif -%}
+
+  {%- if block.settings.text != blank -%}
+    <div class="landing-benefit__text">{{ block.settings.text }}</div>
+  {%- endif -%}
+</div>

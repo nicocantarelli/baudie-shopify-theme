@@ -1,0 +1,302 @@
+{% comment %}
+  Landing benefits - benefit blocks split evenly down two columns flanking a
+  centered product image. Blocks fill left-to-right: the first half land in the
+  left column, the rest in the right.
+{% endcomment %}
+
+{%- liquid
+  assign block_count = section.blocks.size
+  assign left_count = block_count | plus: 1 | divided_by: 2
+-%}
+
+<section
+  class="landing-benefits full-width"
+  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --icon-bg: {{ section.settings.icon_background_color }}; --icon-color: {{ section.settings.icon_color }};">
+  <div class="landing-benefits__container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="landing-benefits__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="landing-benefits__grid{% if section.settings.image == blank %} landing-benefits__grid--no-image{% endif %}">
+      <div class="landing-benefits__column landing-benefits__column--left">
+        {%- for block in section.blocks limit: left_count -%}
+          {% render 'landing-benefit-item', block: block %}
+        {%- endfor -%}
+      </div>
+
+      <div class="landing-benefits__media">
+        {%- if section.settings.image != blank -%}
+          {{
+            section.settings.image
+            | image_url: width: 1200
+            | image_tag:
+              alt: section.settings.image_alt,
+              class: 'landing-benefits__image',
+              loading: 'lazy',
+              sizes: '(min-width: 1024px) 480px, 40vw',
+              widths: '300, 480, 720, 960, 1200'
+          }}
+        {%- endif -%}
+      </div>
+
+      <div class="landing-benefits__column landing-benefits__column--right">
+        {%- for block in section.blocks offset: left_count -%}
+          {% render 'landing-benefit-item', block: block %}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .landing-benefits {
+    background-color: var(--section-bg, #fce9ec);
+    color: var(--text-color, #3e2027);
+    padding: 80px 0 96px;
+  }
+
+  .landing-benefits__container {
+    max-width: var(--page-width, 1360px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+    box-sizing: border-box;
+  }
+
+  .landing-benefits__heading {
+    font-family: var(--font-alyona);
+    font-size: 40px;
+    line-height: 1.1;
+    text-align: center;
+    margin: 0 0 56px;
+  }
+
+  .landing-benefits__grid {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 1.1fr) 1fr;
+    align-items: center;
+    gap: 32px;
+  }
+
+  /* Without an image the middle track would still claim its fr share, leaving a gap. */
+  .landing-benefits__grid--no-image {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .landing-benefits__grid--no-image .landing-benefits__media {
+    display: none;
+  }
+
+  .landing-benefits__column {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  .landing-benefits__media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .landing-benefits__image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .landing-benefit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .landing-benefit__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: var(--icon-bg, #3e2027);
+    color: var(--icon-color, #ffffff);
+    flex-shrink: 0;
+  }
+
+  .landing-benefit__icon-image {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .landing-benefit__title {
+    font-family: var(--font-sweet-sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .landing-benefit__text {
+    font-family: var(--font-sweet-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+    opacity: 0.85;
+  }
+
+  .landing-benefit__text p {
+    margin: 0 0 6px;
+  }
+
+  .landing-benefit__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .landing-benefits__heading {
+      font-size: 32px;
+      margin-bottom: 40px;
+    }
+
+    .landing-benefits__grid {
+      gap: 20px;
+    }
+
+    .landing-benefits__column {
+      gap: 40px;
+    }
+  }
+
+  /*
+    Below 600px the three-column shape squeezes the copy into unreadable
+    columns, so the image moves above a 2x2 block grid.
+  */
+  @media screen and (max-width: 600px) {
+    .landing-benefits {
+      padding: 56px 0 64px;
+    }
+
+    .landing-benefits__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px 20px;
+      /* Top-align so icons line up across a row when the copy runs to different lengths. */
+      align-items: start;
+    }
+
+    .landing-benefits__media {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      max-width: 260px;
+      margin: 0 auto;
+    }
+
+    .landing-benefits__column {
+      display: contents;
+    }
+
+    .landing-benefits__heading {
+      font-size: 28px;
+      margin-bottom: 32px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.landing_benefits.name",
+  "class": "landing-benefits-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Reasons to love it"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:labels.product_image"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "t:sections.landing_benefits.settings.image_alt",
+      "info": "t:sections.landing_benefits.settings.image_alt_info"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color",
+      "default": "#FCE9EC"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "icon_background_color",
+      "label": "t:sections.landing_benefits.settings.icon_background_color",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "t:sections.landing_benefits.settings.icon_color",
+      "default": "#FFFFFF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "t:sections.landing_benefits.blocks.benefit",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.landing_benefits.settings.icon",
+          "info": "t:sections.landing_benefits.settings.icon_info"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:labels.title",
+          "default": "Benefit"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:labels.description",
+          "default": "<p>Describe the benefit in a sentence or two.</p>"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "t:sections.landing_benefits.name",
+      "blocks": [
+        { "type": "benefit" },
+        { "type": "benefit" },
+        { "type": "benefit" },
+        { "type": "benefit" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}
