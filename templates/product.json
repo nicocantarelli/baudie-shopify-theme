@@ -85,7 +85,6 @@
       "blocks": {
         "videowise_video_commerce_videowise_page_widgets_DzTrNm": {
           "type": "shopify://apps/videowise-video-commerce/blocks/videowise-page-widgets/b48d6c0c-3e3f-4791-a9ab-a5ab7ec82f4d",
-          "disabled": true,
           "settings": {
             "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>"
           }
