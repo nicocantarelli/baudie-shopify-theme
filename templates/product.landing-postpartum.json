@@ -18,11 +18,13 @@
         "content_position": "right",
         "show_price": true,
         "show_rating": true,
+        "image": "shopify://shop_images/Model_Group_Shot_Desktop.png",
+        "mobile_image": "shopify://shop_images/bg-mobile.png",
         "image_alt": "Baudie Discovery Set",
-        "overlay_opacity": 0,
+        "overlay_opacity": 10,
         "background_color": "#d8d5d0",
-        "text_color": "#3e2027",
-        "button_background_color": "#3e2027",
+        "text_color": "#FFFFFF",
+        "button_background_color": "#3E2027",
         "button_text_color": "#ffffff"
       }
     },
@@ -127,6 +129,7 @@
       ],
       "settings": {
         "heading": "Reasons new mums love it",
+        "image": "shopify://shop_images/Untitled_design_97.png",
         "image_alt": "Baudie Discovery Set",
         "background_color": "#fce9ec",
         "text_color": "#3e2027",
