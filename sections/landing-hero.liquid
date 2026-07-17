@@ -33,6 +33,7 @@
 <section
   class="landing-hero full-width"
   data-content-position="{{ section.settings.content_position }}"
+  data-vertical-position="{{ section.settings.vertical_position }}"
   style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --button-bg: {{ section.settings.button_background_color }}; --button-text: {{ section.settings.button_text_color }}; --overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};">
   {%- if section.settings.image != blank -%}
     <div class="landing-hero__media">
@@ -207,6 +208,18 @@
     color: var(--text-color, #3e2027);
   }
 
+  .landing-hero[data-vertical-position='top'] .landing-hero__inner {
+    align-items: flex-start;
+  }
+
+  .landing-hero[data-vertical-position='center'] .landing-hero__inner {
+    align-items: center;
+  }
+
+  .landing-hero[data-vertical-position='bottom'] .landing-hero__inner {
+    align-items: flex-end;
+  }
+
   .landing-hero[data-content-position='left'] .landing-hero__inner {
     justify-content: flex-start;
   }
@@ -249,7 +262,7 @@
   .landing-hero__description {
     font-family: var(--font-sweet-sans);
     font-weight: 400;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.5;
   }
 
@@ -442,6 +455,17 @@
         { "value": "right", "label": "t:sections.landing_hero.settings.position_right" }
       ],
       "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "vertical_position",
+      "label": "t:labels.vertical_position",
+      "options": [
+        { "value": "top", "label": "t:sections.landing_hero.settings.position_top" },
+        { "value": "center", "label": "t:sections.landing_hero.settings.position_center" },
+        { "value": "bottom", "label": "t:sections.landing_hero.settings.position_bottom" }
+      ],
+      "default": "center"
     },
     {
       "type": "checkbox",

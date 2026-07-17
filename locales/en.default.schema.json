@@ -754,7 +754,9 @@
         "image_alt": "Image description",
         "image_alt_info": "Describe the image for accessibility.",
         "overlay_opacity": "Image overlay",
-        "overlay_opacity_info": "Darkens the image to keep the text readable."
+        "overlay_opacity_info": "Darkens the image to keep the text readable.",
+        "position_top": "Top",
+        "position_bottom": "Bottom"
       }
     },
     "landing_benefits": {
