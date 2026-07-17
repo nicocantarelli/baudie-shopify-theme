@@ -756,7 +756,8 @@
         "overlay_opacity": "Image overlay",
         "overlay_opacity_info": "Darkens the image to keep the text readable.",
         "position_top": "Top",
-        "position_bottom": "Bottom"
+        "position_bottom": "Bottom",
+        "vertical_position_info": "Mobile only. On desktop the content stays vertically centered."
       }
     },
     "landing_benefits": {
