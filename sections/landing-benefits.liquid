@@ -159,33 +159,20 @@
     margin-bottom: 0;
   }
 
+  /*
+    The flanking shape only works while the side columns stay wide enough to set
+    a heading on one or two lines - around 350px each. Below 1024px they fall
+    under ~130px, so the image moves above the blocks instead.
+  */
   @media screen and (max-width: 1024px) {
     .landing-benefits__heading {
       font-size: 48px;
-      margin-bottom: 48px;
-    }
-
-    .landing-benefits__grid {
-      gap: 20px;
-    }
-
-    .landing-benefits__column {
-      gap: 40px;
-    }
-  }
-
-  /*
-    Below 600px the three-column shape squeezes the copy into unreadable
-    columns, so the image moves above a 2x2 block grid.
-  */
-  @media screen and (max-width: 600px) {
-    .landing-benefits {
-      padding: 56px 0 64px;
+      margin-bottom: 44px;
     }
 
     .landing-benefits__grid {
       grid-template-columns: repeat(2, 1fr);
-      gap: 40px 20px;
+      gap: 44px 32px;
       /* Top-align so icons line up across a row when the copy runs to different lengths. */
       align-items: start;
     }
@@ -193,17 +180,38 @@
     .landing-benefits__media {
       grid-column: 1 / -1;
       grid-row: 1;
-      max-width: 260px;
-      margin: 0 auto;
+      max-width: 420px;
+      margin: 0 auto 12px;
     }
 
     .landing-benefits__column {
       display: contents;
     }
+  }
+
+  /* Two columns on a phone leaves ~150px per block, which shreds the headings. */
+  @media screen and (max-width: 600px) {
+    .landing-benefits {
+      padding: 56px 0 64px;
+    }
 
     .landing-benefits__heading {
-      font-size: 32px;
-      margin-bottom: 36px;
+      font-size: 34px;
+      margin-bottom: 32px;
+    }
+
+    .landing-benefits__grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .landing-benefits__media {
+      max-width: 320px;
+      margin: 0 auto 4px;
+    }
+
+    .landing-benefit {
+      gap: 10px;
     }
   }
 {% endstylesheet %}
