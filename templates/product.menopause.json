@@ -13,18 +13,18 @@
       "type": "landing-hero",
       "settings": {
         "eyebrow": "",
-        "heading": "Feel like yourself again",
-        "description": "<p>Body chemistry shifts during menopause. Our Discovery Set lets you find the scent that works with yours.</p>",
+        "heading": "Smelly during Menopause?",
+        "description": "<p>Say hello to the product that helps deodorant last longer and helps to keep your sweat odorless. Menopause is real. Odor doesn’t have to be.</p>",
         "content_position": "right",
         "vertical_position": "bottom",
         "show_price": true,
         "show_rating": true,
-        "image": "shopify://shop_images/Model_Group_Shot_Desktop.png",
-        "mobile_image": "shopify://shop_images/bg-mobile.png",
+        "image": "shopify://shop_images/Untitled_design_-_2026-07-21T145149.655.png",
+        "mobile_image": "shopify://shop_images/2040_x_869.png",
         "image_alt": "Baudie Discovery Set",
-        "overlay_opacity": 10,
+        "overlay_opacity": 0,
         "background_color": "#fce9ec",
-        "text_color": "#ffffff",
+        "text_color": "#443131",
         "button_background_color": "#3e2027",
         "button_text_color": "#ffffff"
       }
@@ -96,22 +96,22 @@
         "benefit_1": {
           "type": "benefit",
           "settings": {
-            "title": "Works with your chemistry",
-            "text": "<p>Menopause changes how scent sits on skin. Find the one that still smells like you.</p>"
+            "title": "Helps deodorant keep up with hot flashes",
+            "text": "<p>When sudden sweating strikes, it helps your deodorant last longer.</p>"
           }
         },
         "benefit_2": {
           "type": "benefit",
           "settings": {
-            "title": "24hr protection",
-            "text": "<p>Science-backed formula that keeps you feeling fresh through hot flashes.</p>"
+            "title": "Sweat = Odorless",
+            "text": "<p>Helps sweat stay odorless, even sweat caused by hormonal changes.</p>"
           }
         },
         "benefit_3": {
           "type": "benefit",
           "settings": {
-            "title": "Gentle on skin",
-            "text": "<p>Aluminium free, paraben free and kind to sensitive skin.</p>"
+            "title": "Patented technology",
+            "text": "<p>Our one-of-a-kind patented Odor Eliminating Bacterial Technology is a formula that is plant-based and science-backed. </p>"
           }
         },
         "benefit_4": {
@@ -129,7 +129,7 @@
         "benefit_4"
       ],
       "settings": {
-        "heading": "Reasons to love it",
+        "heading": "Why it's great for peri/menopause...",
         "image": "shopify://shop_images/Untitled_design_97.png",
         "image_alt": "Baudie Discovery Set",
         "background_color": "#fce9ec",
