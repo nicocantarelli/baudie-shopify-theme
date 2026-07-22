@@ -370,6 +370,11 @@
     .landing-hero[data-content-position='center'] .landing-hero__purchase-group {
       justify-content: center;
     }
+
+    /* Pull the buy box in from the right edge so it reads nearer the centre. */
+    .landing-hero[data-content-position='right'] .landing-hero__inner {
+      padding-right: clamp(40px, 10vw, 200px);
+    }
   }
 
   @media screen and (max-width: 768px) {
