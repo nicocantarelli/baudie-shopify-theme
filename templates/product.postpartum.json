@@ -138,6 +138,80 @@
         "icon_color": "#ffffff"
       }
     },
+    "how-to-use": {
+      "type": "how-to-use",
+      "blocks": {
+        "step_spray": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/spray-icon.svg",
+            "label": "Spray"
+          }
+        },
+        "step_wipe": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/wipe-icon.svg",
+            "label": "Wipe"
+          }
+        },
+        "step_apply": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/apply-icon.svg",
+            "label": "Apply Deo"
+          }
+        },
+        "step_fresh": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/fresh-icon.svg",
+            "label": "Stay Fresh"
+          }
+        },
+        "dosage_light": {
+          "type": "dosage",
+          "settings": {
+            "label": "I smell a little",
+            "drops": 4,
+            "amount": "4-5 Sprays"
+          }
+        },
+        "dosage_medium": {
+          "type": "dosage",
+          "settings": {
+            "label": "It's... Noticeable",
+            "drops": 6,
+            "amount": "5-8 Sprays"
+          }
+        },
+        "dosage_heavy": {
+          "type": "dosage",
+          "settings": {
+            "label": "I'm really stinky",
+            "drops": 8,
+            "amount": "8-12 Sprays"
+          }
+        }
+      },
+      "block_order": [
+        "step_spray",
+        "step_wipe",
+        "step_apply",
+        "step_fresh",
+        "dosage_light",
+        "dosage_medium",
+        "dosage_heavy"
+      ],
+      "settings": {
+        "title": "How to use",
+        "mobile_description": "",
+        "description": "",
+        "sprays_title": "",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
     "product-faq": {
       "type": "product-faq",
       "blocks": {
@@ -203,6 +277,7 @@
     "landing_hero",
     "in_press",
     "landing_benefits",
+    "how-to-use",
     "product-faq",
     "klaviyo_reviews"
   ]
