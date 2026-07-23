@@ -19,13 +19,13 @@
         "vertical_position": "bottom",
         "show_price": true,
         "show_rating": true,
-        "image": "shopify://shop_images/Model_Group_Shot_Desktop.png",
-        "mobile_image": "shopify://shop_images/bg-mobile.png",
+        "image": "shopify://shop_images/Untitled_design_-_2026-07-22T193714.731.png",
+        "mobile_image": "shopify://shop_images/2040_x_869_6.png",
         "image_alt": "Baudie Discovery Set",
         "overlay_opacity": 10,
         "background_color": "#d8d5d0",
-        "text_color": "#FFFFFF",
-        "button_background_color": "#3E2027",
+        "text_color": "#ffffff",
+        "button_background_color": "#3e2027",
         "button_text_color": "#ffffff"
       }
     },
