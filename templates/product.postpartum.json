@@ -96,15 +96,15 @@
         "benefit_1": {
           "type": "benefit",
           "settings": {
-            "title": "Safe while nursing",
-            "text": "<p>Clean, effective ingredients with nothing you would not want near your baby.</p>"
+            "title": "Helps deodorant keep up",
+            "text": "<p>When hormones change, this helps deodorant last longer and work better.</p>"
           }
         },
         "benefit_2": {
           "type": "benefit",
           "settings": {
-            "title": "Works with your chemistry",
-            "text": "<p>Post-partum hormones shift how scent sits on skin. Find the one that still smells like you.</p>"
+            "title": "Sweat = Odorless",
+            "text": "<p>Our Patented Odor Eliminating Bacterial Technology helps keep your sweat odorless.</p>"
           }
         },
         "benefit_3": {
