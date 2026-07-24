@@ -34,7 +34,7 @@
   class="landing-hero full-width"
   data-content-position="{{ section.settings.content_position }}"
   data-vertical-position="{{ section.settings.vertical_position }}"
-  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --button-bg: {{ section.settings.button_background_color }}; --button-text: {{ section.settings.button_text_color }}; --overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};">
+  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --button-bg: {{ section.settings.button_background_color }}; --button-text: {{ section.settings.button_text_color }}; --overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }}; --mobile-content-offset: {{ section.settings.mobile_content_offset | default: 0 }}px;">
   {%- if section.settings.image != blank -%}
     <div class="landing-hero__media">
       {%- comment -%}
@@ -404,6 +404,8 @@
     .landing-hero__content {
       max-width: 100%;
       gap: 16px;
+      /* Nudge the copy clear of the mobile image without changing the layout box. */
+      transform: translateY(var(--mobile-content-offset, 0px));
     }
 
     .landing-hero__description {
@@ -477,6 +479,17 @@
         { "value": "bottom", "label": "t:sections.landing_hero.settings.position_bottom" }
       ],
       "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_offset",
+      "label": "t:sections.landing_hero.settings.mobile_content_offset",
+      "info": "t:sections.landing_hero.settings.mobile_content_offset_info",
+      "min": -60,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "checkbox",

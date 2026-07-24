@@ -460,6 +460,9 @@
       "dosage_drops": "Number of drops",
       "dosage_amount": "Amount text"
     },
+    "how_to_use_centered": {
+      "name": "How to use (centered)"
+    },
     "product_faq": {
       "name": "Product FAQ",
       "title": "Title",
@@ -757,7 +760,9 @@
         "overlay_opacity_info": "Darkens the image to keep the text readable.",
         "position_top": "Top",
         "position_bottom": "Bottom",
-        "vertical_position_info": "Mobile only. On desktop the content stays vertically centered."
+        "vertical_position_info": "Mobile only. On desktop the content stays vertically centered.",
+        "mobile_content_offset": "Mobile content offset",
+        "mobile_content_offset_info": "Mobile only. Nudges the content up or down to fit the image."
       }
     },
     "landing_benefits": {
