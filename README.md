@@ -1,6 +1,8 @@
 # Baudie — Shopify theme
 
-Custom Shopify theme for [Baudie](https://baudie.com), built and maintained by [Lumios Digital](https://lumios.digital).
+Custom Shopify theme for [Baudie](https://baudie.com).
+
+Designed and built by Nicolas Cantarelli for Lumios Digital.
 
 Designed around Baudie's Deodorant Enhancer® product line, with custom sections for the storefront, product pages, about/our-story, and a configurable password page used during private launch and on the legacy Bella Skin Beauty store.
 
@@ -15,7 +17,7 @@ Designed around Baudie's Deodorant Enhancer® product line, with custom sections
 ### Local dev
 
 ```bash
-git clone git@github.com:lumiosdigital/baudie-shopify-theme.git
+git clone git@github.com:nicocantarelli/baudie-shopify-theme.git
 cd baudie-shopify-theme
 shopify theme dev --store baudie.myshopify.com
 ```
@@ -199,34 +201,43 @@ Custom product metafields used throughout the theme. All live under the `custom`
 | `full_ingredient_list` | Rich text — full INCI list |
 | `scent_name` | Display name for the scent picker (separate from product title) |
 
+### Upsell system
+
+| Key | Purpose |
+|---|---|
+| `upsell_price` | Deal price for the side-cart / checkout upsell. A product carrying this metafield is an "upsell product"; the value is the price it drops to when the cart holds at least one regular product. |
+
+The upsell is a three-part system sharing this metafield contract: the theme's [snippets/sidecart-upsell-item.liquid](./snippets/sidecart-upsell-item.liquid) (side-cart display), the [baudie-checkout-upsell](https://github.com/nicocantarelli/baudie-checkout-upsell) checkout UI extension (in-checkout offers), and the [baudie-discounts](https://github.com/nicocantarelli/baudie-discounts) Shopify Function (server-side price enforcement). The pricing rules must stay in sync across all three.
+
 ## Deploy
 
-This repo is connected to the production Shopify store via Shopify's GitHub integration. **Pushes to `main` automatically sync to the live theme** — there is no separate deploy step.
+Deployment is manual via **Shopify CLI** — this repo is *not* connected to the store through Shopify's GitHub integration. (It was until mid-2026; the `Update from Shopify …` commits in the history are from that era.)
 
-### Branch strategy
-
-Currently the project uses a **single-branch (`main` only)** workflow. This works because the team is small and the scope is contained, but it has tradeoffs:
-
-- **Pro**: simple, no merge dance, theme editor edits land in version control immediately
-- **Con**: every commit goes live; no preview environment isolated from production
-
-If you need to test substantial changes without exposing them to customers:
-
-1. Create a feature branch (`feat/some-change`)
-2. In Shopify admin → **Online Store → Themes**, duplicate the live theme into an unpublished "Preview" theme
-3. Connect the feature branch to that preview theme via the GitHub integration (Shopify admin → Theme actions → Connect to GitHub)
-4. Push to the feature branch to test in isolation
-5. Merge to `main` when ready, which auto-deploys to live
-
-When this happens often enough to be annoying, formalize a `staging` branch wired to a permanent preview theme.
-
-### Theme editor commits
-
-Edits made in the Shopify admin theme editor are auto-committed to `main` by Shopify (look for `Update from Shopify for theme baudie-shopify-theme/main` in the git log). **Always pull before starting work** to avoid clobbering merchant edits:
+### Workflow
 
 ```bash
-git pull --rebase
+shopify theme pull --store baudie.myshopify.com    # 1. ALWAYS pull the live theme first
+git diff                                            # 2. Review + commit editor changes it brought in
+shopify theme dev                                   # 3. Develop against a hot-reloading dev theme
+shopify theme push                                  # 4. Push to the selected theme when ready
+git commit && git push                              # 5. Keep the repo in sync manually
 ```
+
+**Pull before you push — every time.** Theme-editor changes made by the merchant (text, settings, images, colors) live in `config/settings_data.json` and `templates/*.json` and no longer flow into git automatically. Pushing stale local copies of those files overwrites the merchant's work. When pushing code-only changes, exclude them:
+
+```bash
+shopify theme push --ignore "config/settings_data.json" --ignore "templates/*.json"
+```
+
+### Testing without touching live
+
+Push to an unpublished theme and preview it there:
+
+```bash
+shopify theme push --unpublished --theme "Preview — feature name"
+```
+
+Publish from the admin (or `shopify theme publish`) once verified.
 
 ## Runbook
 
@@ -256,9 +267,9 @@ Cause: asymmetric padding (e.g., `padding: 120px 24px 40px`). Even though the fl
 
 **Fix**: equalize top/bottom padding when the section relies on flex centering.
 
-### Theme editor edits appear as commits on `main`
+### Merchant editor changes are missing from the repo
 
-This is expected — Shopify's GitHub integration auto-commits theme editor changes. They show up as `Update from Shopify for theme baudie-shopify-theme/main`. Don't force-push over them; pull first.
+Expected — since the GitHub integration was removed, theme-editor changes exist only in the store until someone runs `shopify theme pull` and commits the result. Do that at the start of every working session (see **Deploy → Workflow**).
 
 ### A new schema setting isn't showing up in the editor
 
@@ -282,4 +293,4 @@ The breakpoint convention is **mobile-first** with `@media (min-width: 769px)` t
 
 ## License
 
-Proprietary — Lumios Digital + Baudie. See [LICENSE.md](./LICENSE.md).
+Base theme code under Shopify's theme license — see [LICENSE.md](./LICENSE.md). Theme customizations by Nicolas Cantarelli / Lumios Digital; Baudie branding, content, and imagery belong to Baudie.
