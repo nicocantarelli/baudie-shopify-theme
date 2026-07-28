@@ -44,9 +44,9 @@ Standard Shopify theme structure — see [shopify.dev/docs/storefronts/themes/ar
 ├── config/         # Global theme settings + data
 ├── layout/         # theme.liquid, password.liquid
 ├── locales/        # Translations + schema translations
-├── sections/       # 40 sections — the bulk of the work lives here
+├── sections/       # 45 sections — the bulk of the work lives here
 ├── snippets/       # Reusable Liquid fragments (css-variables, meta-tags, prelude, etc.)
-└── templates/      # JSON templates that compose sections into pages
+└── templates/      # 23 JSON templates that compose sections into pages
 ```
 
 ### Key custom sections
