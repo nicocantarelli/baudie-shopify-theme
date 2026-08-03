@@ -204,7 +204,13 @@
     align-items: flex-start;
     gap: 20px;
     width: 100%;
-    max-width: 640px;
+    /*
+      Fluid so the copy stays clear of the product in the background image.
+      The box is right-aligned, so narrowing it moves the left edge right:
+      narrow screens get the tighter box, 1600px+ keeps the full 640px.
+      Mobile overrides this to 100% below.
+    */
+    max-width: clamp(430px, 40vw, 640px);
     color: var(--text-color, #3e2027);
   }
 
@@ -371,9 +377,15 @@
       justify-content: center;
     }
 
-    /* Pull the buy box in from the right edge so it reads nearer the centre. */
+    /*
+      Pull the buy box in from the right edge so it reads nearer the centre.
+      Scale the inset up from the 1024px breakpoint rather than straight vw:
+      at 10vw a 1280-1440px laptop got ~130-145px of inset, which pushed the
+      copy left onto the product in the image. Now narrow laptops sit close to
+      the page margin and only wide screens get the full pull-in.
+    */
     .landing-hero[data-content-position='right'] .landing-hero__inner {
-      padding-right: clamp(40px, 10vw, 200px);
+      padding-right: clamp(var(--page-margin, 20px), calc((100vw - 1024px) * 0.22), 200px);
     }
   }
 
