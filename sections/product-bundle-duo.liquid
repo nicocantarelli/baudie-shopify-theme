@@ -1,0 +1,1590 @@
+{%- comment -%}
+  Duo bundle product page — 1 Deodorant Enhancer (customer picks the scent)
+  + 1 fixed companion product (Cotton Dry Wipes).
+
+  Adapted from sections/product-bundle.liquid. It is a separate section rather
+  than a shared one because {% stylesheet %} / {% javascript %} blocks are
+  concatenated theme-wide, so the two pages must not share a class prefix or a
+  JS root selector — everything here is `bundle-duo` / `data-duo-*`.
+
+  Only the scent is chosen, so only the scent is submitted as an option-group
+  property. The companion is a fixed component of the bundle in Simple Bundles
+  & Kits, which expands both into separate line items server-side (see
+  addToCart below).
+{%- endcomment -%}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant | default: product.variants.first
+  assign product_text_color = product.metafields.custom.product_text_color | default: '#3E2027'
+  assign popup_text_color = section.settings.popup_text_color | default: '#3E2027'
+  assign gradient_1 = section.settings.gradient_color_1 | default: '#F4D2A4'
+  assign gradient_2 = section.settings.gradient_color_2 | default: '#FCF5DE'
+  assign bottle_size = product.metafields.custom.bottle_size
+  assign product_details = product.metafields.custom.product_details
+  assign scent_notes = product.metafields.custom.scent_notes
+  assign key_ingredients = product.metafields.custom.key_ingredients
+  assign full_ingredient_list = product.metafields.custom.full_ingredient_list
+  assign scent_collection = section.settings.scent_collection
+
+  comment
+    The companion slot is fixed art, not a picker. Prefer an explicit image
+    override, then the product's card image, then its featured image — matching
+    how the scent bottles resolve in the bundle.
+  endcomment
+  assign companion_product = section.settings.companion_product
+  assign companion_image = section.settings.companion_image | default: companion_product.metafields.custom.card_image | default: companion_product.featured_image
+  assign companion_title = section.settings.companion_label | default: companion_product.title
+
+  comment
+    Simple Bundles matches the picked scent by option-group name. The bundle-of-3
+    uses "First Scent" / "Second Scent" / ...; a one-scent bundle may be
+    configured as either "First Scent" or "Scent" in the app, so this is a
+    setting — it must match the app exactly, and a mismatch means the line will
+    not expand.
+  endcomment
+  assign scent_property_name = section.settings.scent_property_name | default: 'First Scent'
+
+  comment
+    Aggregate rating is synced from Klaviyo Reviews into the standard
+    `reviews.rating` / `reviews.rating_count` Shopify metafields.
+  endcomment
+  assign rating = product.metafields.reviews.rating.value.rating | default: 0 | round: 1
+  assign rating_scale = product.metafields.reviews.rating.value.scale_max | default: 5
+  assign review_count = product.metafields.reviews.rating_count.value | default: 0
+-%}
+
+<section
+  class="bundle-duo full-width"
+  data-section-id="{{ section.id }}"
+  aria-label="{{ product.title }}"
+  style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }};">
+
+  {%- comment -%} Mobile Header {%- endcomment -%}
+  <div class="bundle-duo__mobile-header">
+    <div class="bundle-duo__mobile-subtitle-row">
+      <p class="bundle-duo__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
+    </div>
+    <h1 class="bundle-duo__title" data-duo-title>{{ product.title }}</h1>
+    {% if bottle_size %}
+      <p class="bundle-duo__size bundle-duo__size--mobile">{{ bottle_size }}{% if companion_title != blank %} + {{ companion_title }}{% endif %}</p>
+    {% endif %}
+  </div>
+
+  {%- comment -%}
+    Image Column — the picked bottle on the left, the fixed companion on the
+    right. Slot 1 mirrors the bundle exactly (hidden <img> + dashed placeholder
+    that the JS swaps); slot 2 is static and never changes.
+  {%- endcomment -%}
+  <div class="bundle-duo__image-column">
+    <div class="bundle-duo__bottles" data-duo-bottles>
+      <div class="bundle-duo__bottle-slot" data-duo-slot="1">
+        <img
+          class="bundle-duo__bottle-img"
+          src=""
+          alt=""
+          loading="eager"
+          style="display: none;">
+        <div class="bundle-duo__bottle-placeholder">
+          <span class="bundle-duo__bottle-number">1</span>
+        </div>
+      </div>
+
+      <div class="bundle-duo__bottle-slot bundle-duo__bottle-slot--companion">
+        {%- if companion_image -%}
+          <img
+            class="bundle-duo__companion-img"
+            src="{{ companion_image | image_url: width: 800 }}"
+            srcset="{{ companion_image | image_url: width: 400 }} 400w, {{ companion_image | image_url: width: 800 }} 800w, {{ companion_image | image_url: width: 1200 }} 1200w"
+            sizes="(min-width: 990px) 350px, 200px"
+            alt="{{ companion_title | escape }}"
+            loading="eager"
+            width="800"
+            height="800">
+        {%- else -%}
+          <div class="bundle-duo__bottle-placeholder">
+            <span class="bundle-duo__bottle-number">2</span>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Info Column {%- endcomment -%}
+  <div class="bundle-duo__info-column">
+
+    {%- comment -%} Desktop Header {%- endcomment -%}
+    <div class="bundle-duo__desktop-header">
+      <p class="bundle-duo__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
+      <h1 class="bundle-duo__title">{{ product.title }}</h1>
+      {% if bottle_size %}
+        <p class="bundle-duo__size-line">{{ bottle_size }}{% if companion_title != blank %} + {{ companion_title }}{% endif %}</p>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Rating (synced from Klaviyo Reviews metafields) {%- endcomment -%}
+    {% if review_count > 0 %}
+      {% render 'star-rating',
+        rating: rating,
+        count: review_count,
+        scale_max: rating_scale,
+        class: 'bundle-duo__rating',
+        scroll_to_reviews: true
+      %}
+    {% endif %}
+
+    {%- comment -%}
+      Scent Selector — one only. The `data-duo-scent-selector="1"` index is kept
+      (rather than dropped) so the JS selection/rendering path stays identical to
+      the bundle's, and so a second picked component could be added later without
+      reworking it.
+    {%- endcomment -%}
+    <div class="bundle-duo__selectors" data-duo-selectors>
+      <div class="bundle-duo__selector" data-duo-scent-selector="1">
+        <button
+          type="button"
+          class="bundle-duo__selector-trigger"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-controls="duo-scent-list-{{ section.id }}">
+          <span class="bundle-duo__selector-label" data-selector-label>{{ 'sections.product_bundle.choose_scent' | t }}</span>
+          <svg class="bundle-duo__selector-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none" aria-hidden="true" focusable="false">
+            <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <ul
+          class="bundle-duo__selector-list"
+          id="duo-scent-list-{{ section.id }}"
+          role="listbox"
+          aria-label="{{ 'sections.product_bundle.choose_scent' | t }}">
+          {% if scent_collection %}
+            {% for scent_product in scent_collection.products %}
+              {%- comment -%} Skip scents that are sold out or tagged coming soon so they can't be picked in the bundle. {%- endcomment -%}
+              {%- assign scent_coming_soon = false -%}
+              {%- if scent_product.tags contains 'coming-soon' or scent_product.tags contains 'Coming soon' or scent_product.tags contains 'coming soon' or scent_product.tags contains 'Coming Soon' -%}
+                {%- assign scent_coming_soon = true -%}
+              {%- endif -%}
+              {% if scent_product.metafields.custom.scent_name != blank and scent_product.available and scent_coming_soon == false %}
+                <li
+                  role="option"
+                  aria-selected="false"
+                  class="bundle-duo__selector-option"
+                  data-product-handle="{{ scent_product.handle }}"
+                  data-product-title="{{ scent_product.title | escape }}"
+                  data-variant-id="{{ scent_product.selected_or_first_available_variant.id }}"
+                  data-variant-gid="{{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' }}"
+                  data-card-image="{% if scent_product.metafields.custom.card_image != blank %}{{ scent_product.metafields.custom.card_image | image_url: width: 800 }}{% elsif scent_product.featured_image %}{{ scent_product.featured_image | image_url: width: 800 }}{% endif %}">
+                  {{ scent_product.title }}
+                </li>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+
+    {%- comment -%} Divider {%- endcomment -%}
+    <hr class="bundle-duo__divider">
+
+    {%- comment -%} Price + Actions {%- endcomment -%}
+    <div class="bundle-duo__purchase-row">
+      <p class="bundle-duo__price" data-duo-price>{{ current_variant.price | money }}</p>
+      <div class="bundle-duo__actions">
+        <button
+          type="button"
+          class="bundle-duo__button bundle-duo__button--add"
+          disabled
+          data-duo-add>
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>{{ 'sections.product_bundle.add_to_cart' | t }}</span>
+        </button>
+      </div>
+    </div>
+
+    {%- comment -%} Accordions {%- endcomment -%}
+    {%- liquid
+      assign show_watch_in_action = false
+      if section.settings.show_watch_in_action
+        if section.settings.videowise_embed != blank or request.design_mode
+          assign show_watch_in_action = true
+        endif
+      endif
+    -%}
+    <div class="bundle-duo__accordions" data-duo-accordions>
+      {%- comment -%} Top divider is skipped when the videos lead, so they sit flush {%- endcomment -%}
+      {%- unless show_watch_in_action -%}
+        <hr class="bundle-duo__divider">
+      {%- endunless -%}
+
+      {%- comment -%} Watch It In Action {%- endcomment -%}
+      {% if show_watch_in_action %}
+        <div class="bundle-duo__accordion is-open">
+          <div
+            class="bundle-duo__accordion-content"
+            role="region"
+            aria-label="{{ 'sections.product_bundle.watch_in_action' | t }}">
+            <div class="bundle-duo__accordion-body">
+              {%- if section.settings.videowise_embed != blank -%}
+                <div class="bundle-duo__video-embed">
+                  {{ section.settings.videowise_embed }}
+                </div>
+              {%- else -%}
+                <div class="bundle-duo__video-grid">
+                  <div class="bundle-duo__video-placeholder"></div>
+                  <div class="bundle-duo__video-placeholder"></div>
+                  <div class="bundle-duo__video-placeholder"></div>
+                  <div class="bundle-duo__video-placeholder"></div>
+                  <div class="bundle-duo__video-placeholder"></div>
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+          <hr class="bundle-duo__divider">
+        </div>
+      {% endif %}
+
+      {% if product_details %}
+        <div class="bundle-duo__accordion" data-accordion>
+          <button
+            type="button"
+            id="accordion-details-trigger-{{ section.id }}"
+            class="bundle-duo__accordion-trigger"
+            aria-expanded="false"
+            aria-controls="accordion-details-{{ section.id }}">
+            <span>{{ 'sections.product_bundle.details' | t }}</span>
+            <svg class="bundle-duo__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            class="bundle-duo__accordion-content"
+            id="accordion-details-{{ section.id }}"
+            role="region"
+            aria-labelledby="accordion-details-trigger-{{ section.id }}"
+            aria-hidden="true">
+            <div class="bundle-duo__accordion-body">
+              {{ product_details }}
+            </div>
+          </div>
+          <hr class="bundle-duo__divider">
+        </div>
+      {% endif %}
+
+      {% if scent_notes %}
+        <div class="bundle-duo__accordion" data-accordion>
+          <button
+            type="button"
+            id="accordion-scent-trigger-{{ section.id }}"
+            class="bundle-duo__accordion-trigger"
+            aria-expanded="false"
+            aria-controls="accordion-scent-{{ section.id }}">
+            <span>{{ 'sections.product_bundle.scent_notes' | t }}</span>
+            <svg class="bundle-duo__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            class="bundle-duo__accordion-content"
+            id="accordion-scent-{{ section.id }}"
+            role="region"
+            aria-labelledby="accordion-scent-trigger-{{ section.id }}"
+            aria-hidden="true">
+            <div class="bundle-duo__accordion-body">
+              {{ scent_notes }}
+            </div>
+          </div>
+          <hr class="bundle-duo__divider">
+        </div>
+      {% endif %}
+
+      {% if key_ingredients %}
+        <div class="bundle-duo__accordion is-open" data-accordion>
+          <button
+            type="button"
+            id="accordion-ingredients-trigger-{{ section.id }}"
+            class="bundle-duo__accordion-trigger"
+            aria-expanded="true"
+            aria-controls="accordion-ingredients-{{ section.id }}">
+            <span>{{ 'sections.product_bundle.key_ingredients' | t }}</span>
+            <svg class="bundle-duo__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div
+            class="bundle-duo__accordion-content"
+            id="accordion-ingredients-{{ section.id }}"
+            role="region"
+            aria-labelledby="accordion-ingredients-trigger-{{ section.id }}"
+            aria-hidden="false">
+            <div class="bundle-duo__accordion-body">
+              {{ key_ingredients }}
+              {% if full_ingredient_list %}
+                <button
+                  type="button"
+                  class="bundle-duo__ingredients-link"
+                  data-open-ingredients
+                  aria-haspopup="dialog">
+                  {{ 'sections.product_bundle.all_ingredients' | t }}
+                </button>
+              {% endif %}
+            </div>
+          </div>
+          <hr class="bundle-duo__divider">
+        </div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Trust Badges {%- endcomment -%}
+    {% if section.blocks.size > 0 %}
+      <div class="bundle-duo__badges">
+        {% for block in section.blocks %}
+          {% if block.type == 'trust_badge' %}
+            <div class="bundle-duo__badge" {{ block.shopify_attributes }}>
+              {% if block.settings.icon %}
+                <span
+                  class="bundle-duo__badge-icon"
+                  role="img"
+                  aria-label="{{ block.settings.label | default: '' }}"
+                  style="-webkit-mask-image: url('{{ block.settings.icon | image_url: width: 60 }}'); mask-image: url('{{ block.settings.icon | image_url: width: 60 }}');">
+                </span>
+              {% endif %}
+              {% if block.settings.label %}
+                <p class="bundle-duo__badge-label">{{ block.settings.label }}</p>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  {%- comment -%} Ingredients Popup {%- endcomment -%}
+  {% if full_ingredient_list %}
+    <dialog
+      class="bundle-duo__dialog"
+      id="ingredients-dialog-{{ section.id }}"
+      scroll-lock
+      aria-labelledby="dialog-title-{{ section.id }}">
+      <div class="bundle-duo__dialog-inner">
+        <div class="bundle-duo__dialog-header">
+          <h2 id="dialog-title-{{ section.id }}" class="bundle-duo__dialog-title">{{ 'sections.product_bundle.ingredients_popup_title' | t }}</h2>
+          <button
+            type="button"
+            class="bundle-duo__dialog-close"
+            data-close-ingredients
+            aria-label="{{ 'sections.product_bundle.close' | t }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+              <path d="M2 2L18 18M18 2L2 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="bundle-duo__dialog-body">
+          {{ full_ingredient_list }}
+        </div>
+      </div>
+    </dialog>
+  {% endif %}
+
+  {%- comment -%} Product data JSON for JS {%- endcomment -%}
+  {% if scent_collection %}
+    <script type="application/json" data-duo-products>
+      {
+        "bundleVariantId": {{ current_variant.id | json }},
+        "scentPropertyName": {{ scent_property_name | json }},
+        "scents": {
+          {%- assign scent_comma = '' -%}
+          {% for scent_product in scent_collection.products %}
+            {%- assign scent_coming_soon = false -%}
+            {%- if scent_product.tags contains 'coming-soon' or scent_product.tags contains 'Coming soon' or scent_product.tags contains 'coming soon' or scent_product.tags contains 'Coming Soon' -%}
+              {%- assign scent_coming_soon = true -%}
+            {%- endif -%}
+            {% if scent_product.metafields.custom.scent_name != blank and scent_product.available and scent_coming_soon == false %}
+              {{ scent_comma }}
+              "{{ scent_product.handle }}": {
+                "title": {{ scent_product.title | json }},
+                "variantId": {{ scent_product.selected_or_first_available_variant.id | json }},
+                "variantGid": {{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' | json }},
+                {%- if scent_product.metafields.custom.card_image != blank -%}
+                  "cardImage": {{ scent_product.metafields.custom.card_image | image_url: width: 800 | json }},
+                {%- elsif scent_product.featured_image -%}
+                  "cardImage": {{ scent_product.featured_image | image_url: width: 800 | json }},
+                {%- else -%}
+                  "cardImage": "",
+                {%- endif -%}
+                "price": {{ scent_product.price | json }},
+                "available": {{ scent_product.available | json }},
+                "variantAvailable": {{ scent_product.selected_or_first_available_variant.available | json }}
+              }
+              {%- assign scent_comma = ',' -%}
+            {% endif %}
+          {% endfor %}
+        }
+      }
+    </script>
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  /* ============================================
+     Base styles (Mobile-first, matching product.liquid)
+     ============================================ */
+
+  .bundle-duo {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, var(--gradient-1) 1.4%, var(--gradient-2) 55%);
+    margin-top: var(--total-header-height, 110px);
+    color: var(--product-text, #3E2027);
+  }
+
+  /* --- Mobile Header (above image on mobile) --- */
+
+  .bundle-duo__mobile-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 50px 12px 0;
+  }
+
+  .bundle-duo__mobile-subtitle-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  /* --- Desktop-only header (hidden on mobile) --- */
+
+  .bundle-duo__desktop-header {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* --- Image Column --- */
+
+  .bundle-duo__image-column {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 12px 30px;
+  }
+
+  .bundle-duo__bottles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    width: 100%;
+    max-width: 416px;
+    min-height: 340px;
+    overflow: hidden;
+  }
+
+  /* Two slots, not three: the bundle's heavy -30px overlap is meant to fan out
+     a row of identical bottles. Here a tall bottle sits beside a flat wipes
+     pouch, so they only kiss rather than stack. */
+  .bundle-duo__bottle-slot {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -12px;
+  }
+
+  .bundle-duo__bottle-img {
+    width: 100%;
+    height: auto;
+    max-height: 340px;
+    object-fit: contain;
+    transition: opacity 0.4s ease;
+  }
+
+  /* The wipes pouch is wider and shorter than a bottle; cap it so the bottle
+     still reads as the hero of the pair. */
+  .bundle-duo__companion-img {
+    width: 100%;
+    height: auto;
+    max-height: 260px;
+    object-fit: contain;
+  }
+
+  .bundle-duo__bottle-placeholder {
+    width: 45%;
+    aspect-ratio: 3 / 4;
+    border: 2px dashed var(--product-text, #3E2027);
+    border-radius: 40% 40% 10% 10%;
+    opacity: 0.15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bundle-duo__bottle-number {
+    font-family: var(--font-alyona);
+    font-size: 32px;
+    opacity: 0.5;
+  }
+
+  /* --- Info Column --- */
+
+  .bundle-duo__info-column {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 0 12px 40px;
+    position: relative;
+  }
+
+  /* --- Rating --- */
+
+  .bundle-duo__rating {
+    gap: 8px;
+    color: var(--product-text);
+  }
+
+  .bundle-duo__rating .star-rating__layer {
+    gap: 6px;
+  }
+
+  .bundle-duo__rating .star-rating__layer svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .bundle-duo__rating .star-rating__count {
+    font-size: 13px;
+  }
+
+  /* --- Header Typography --- */
+
+  .bundle-duo__subtitle {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: normal;
+    letter-spacing: -0.16px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+  }
+
+  .bundle-duo__title {
+    font-family: var(--font-alyona);
+    font-weight: 400;
+    font-size: 34px;
+    line-height: 1;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+  }
+
+  .bundle-duo__size,
+  .bundle-duo__size-line {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 13px;
+    line-height: normal;
+    letter-spacing: -0.13px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+  }
+
+  /* --- Scent Selectors --- */
+
+  .bundle-duo__selectors {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bundle-duo__selector {
+    position: relative;
+    width: 100%;
+  }
+
+  .bundle-duo__selector-trigger {
+    width: 100%;
+    height: 40px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    color: var(--product-text, #3E2027);
+    background: transparent;
+    border: 1px solid var(--product-text, #3E2027);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .bundle-duo__selector.is-selected .bundle-duo__selector-trigger {
+    background-color: #FFFFFF;
+    border-color: transparent;
+  }
+
+  .bundle-duo__selector-chevron {
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .bundle-duo__selector-trigger[aria-expanded="true"] .bundle-duo__selector-chevron {
+    transform: rotate(180deg);
+  }
+
+  .bundle-duo__selector-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid var(--product-text, #3E2027);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 10;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .bundle-duo__selector-trigger[aria-expanded="true"] + .bundle-duo__selector-list {
+    display: block;
+  }
+
+  .bundle-duo__selector-option {
+    padding: 10px 20px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    color: var(--product-text, #3E2027);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .bundle-duo__selector-option:hover {
+    background-color: var(--gradient-1);
+  }
+
+  .bundle-duo__selector-option[aria-disabled="true"] {
+    opacity: 0.35;
+    text-decoration: line-through;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .bundle-duo__selector-option[aria-selected="true"] {
+    font-weight: 700;
+  }
+
+  /* --- Divider --- */
+
+  .bundle-duo__divider {
+    border: none;
+    border-top: 1px solid var(--product-text, #3E2027);
+    opacity: 0.2;
+    margin: 0;
+  }
+
+  /* --- Purchase Row --- */
+
+  .bundle-duo__purchase-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .bundle-duo__price {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 26px;
+    line-height: normal;
+    letter-spacing: -0.26px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .bundle-duo__actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .bundle-duo__button {
+    flex: 1;
+    width: 100%;
+    height: 48px;
+    padding: 10px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .bundle-duo__button:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .bundle-duo__button:active:not(:disabled) {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+
+  .bundle-duo__button--add {
+    background-color: var(--product-text, #3E2027);
+    color: #FFFFFF;
+  }
+
+  .bundle-duo__button--buy {
+    background-color: var(--product-text, #3E2027);
+    color: #FFFFFF;
+  }
+
+  .bundle-duo__button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .bundle-duo__button:focus-visible {
+    outline: 2px solid var(--product-text, #3E2027);
+    outline-offset: 2px;
+  }
+
+  .bundle-duo__status {
+    width: 100%;
+    margin: 10px 0 0;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.3;
+    color: #B42318;
+  }
+
+  /* --- Watch It In Action --- */
+
+  .bundle-duo__video-grid {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .bundle-duo__video-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bundle-duo__video-placeholder {
+    width: 90px;
+    height: 125px;
+    background-color: #D9D9D9;
+    flex-shrink: 0;
+  }
+
+  .bundle-duo__video-embed {
+    width: 100%;
+  }
+
+  /* --- Accordions --- */
+
+  .bundle-duo__accordion-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+  }
+
+  .bundle-duo__accordion-trigger:focus-visible {
+    outline: 2px solid var(--product-text, #3E2027);
+    outline-offset: 2px;
+  }
+
+  .bundle-duo__accordion-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  .bundle-duo__accordion.is-open .bundle-duo__accordion-icon {
+    transform: rotate(45deg);
+  }
+
+  .bundle-duo__accordion-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+  }
+
+  .bundle-duo__accordion.is-open .bundle-duo__accordion-content {
+    grid-template-rows: 1fr;
+  }
+
+  .bundle-duo__accordion-body {
+    overflow: hidden;
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--product-text, #3E2027);
+    padding-bottom: 0;
+    transition: padding-bottom 0.3s ease;
+  }
+
+  .bundle-duo__accordion-body a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+  }
+
+  .bundle-duo__accordion-body a:hover,
+  .bundle-duo__accordion-body a:focus-visible {
+    opacity: 0.7;
+  }
+
+  .bundle-duo__accordion-body a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  .bundle-duo__accordion.is-open .bundle-duo__accordion-body {
+    padding-bottom: 15px;
+  }
+
+  .bundle-duo__ingredients-link {
+    display: inline;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--product-text, #3E2027);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .bundle-duo__ingredients-link:hover {
+    opacity: 0.7;
+  }
+
+  .bundle-duo__ingredients-link:focus-visible {
+    outline: 2px solid var(--product-text, #3E2027);
+    outline-offset: 2px;
+  }
+
+  /* --- Trust Badges --- */
+
+  .bundle-duo__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 10px;
+    justify-content: center;
+  }
+
+  .bundle-duo__badge {
+    width: 130px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .bundle-duo__badge-icon {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    display: inline-block;
+    background-color: var(--product-text, #3E2027);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+
+  .bundle-duo__badge-label {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+    color: var(--product-text, #3E2027);
+    margin: 0;
+    line-height: normal;
+    white-space: pre-line;
+  }
+
+  /* --- Ingredients Dialog (mobile: bottom sheet) --- */
+
+  .bundle-duo__dialog {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    z-index: 999;
+  }
+
+  .bundle-duo__dialog::backdrop {
+    background-color: rgba(62, 32, 39, 0.5);
+  }
+
+  .bundle-duo__dialog-inner {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 80vh;
+    background: #FCE9EC;
+    color: var(--popup-text, #3E2027);
+    padding: 30px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .bundle-duo__dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .bundle-duo__dialog-title {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: -0.18px;
+    color: var(--popup-text, #3E2027);
+    margin: 0;
+  }
+
+  .bundle-duo__dialog-close {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--popup-text, #3E2027);
+  }
+
+  .bundle-duo__dialog-close:focus-visible {
+    outline: 2px solid var(--popup-text, #3E2027);
+    outline-offset: 2px;
+  }
+
+  .bundle-duo__dialog-body {
+    font-family: var(--font-jokker);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--popup-text, #3E2027);
+  }
+
+  .bundle-duo__dialog-body a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+  }
+
+  .bundle-duo__dialog-body a:hover,
+  .bundle-duo__dialog-body a:focus-visible {
+    opacity: 0.7;
+  }
+
+  .bundle-duo__dialog-body a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+
+  /* ============================================
+     Desktop (1024px+) — matching product.liquid
+     ============================================ */
+
+  @media (min-width: 1024px) {
+    .bundle-duo {
+      flex-direction: row;
+      min-height: calc(100vh - var(--total-header-height, 110px));
+    }
+
+    .bundle-duo__mobile-header {
+      display: none;
+    }
+
+    .bundle-duo__desktop-header {
+      display: flex;
+      gap: 16px;
+    }
+
+    /* Desktop: rating pinned to top-right of the info column */
+    .bundle-duo__rating {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .bundle-duo__rating .star-rating__layer {
+      gap: 4px;
+    }
+
+    .bundle-duo__rating .star-rating__layer svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .bundle-duo__rating .star-rating__count {
+      font-size: 14px;
+    }
+
+    .bundle-duo__image-column {
+      width: 55%;
+      position: sticky;
+      top: var(--total-header-height, 110px);
+      height: calc(100vh - var(--total-header-height, 110px));
+      padding: 40px;
+      flex-shrink: 0;
+    }
+
+    /* Narrower than the bundle's 700px — two items spread across that width
+       leave a gap in the middle of the sticky column. */
+    .bundle-duo__bottles {
+      max-width: 560px;
+      min-height: 500px;
+    }
+
+    .bundle-duo__bottle-slot {
+      margin: 0 -24px;
+    }
+
+    .bundle-duo__bottle-img {
+      max-height: 600px;
+    }
+
+    .bundle-duo__companion-img {
+      max-height: 440px;
+    }
+
+    .bundle-duo__bottle-placeholder {
+      width: 55%;
+      aspect-ratio: 3 / 5;
+    }
+
+    .bundle-duo__bottle-number {
+      font-size: 48px;
+    }
+
+    .bundle-duo__info-column {
+      width: 45%;
+      padding: 120px 40px 60px;
+    }
+
+    .bundle-duo__subtitle {
+      font-size: 20px;
+      letter-spacing: -0.2px;
+    }
+
+    .bundle-duo__title {
+      font-size: 74px;
+    }
+
+    .bundle-duo__size,
+    .bundle-duo__size-line {
+      font-size: 16px;
+      letter-spacing: -0.16px;
+    }
+
+    .bundle-duo__selector {
+      width: 255px;
+    }
+
+    .bundle-duo__purchase-row {
+      flex-direction: row;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .bundle-duo__price {
+      font-size: 26px;
+      letter-spacing: -0.26px;
+    }
+
+    .bundle-duo__actions {
+      gap: 10px;
+      width: auto;
+    }
+
+    .bundle-duo__button {
+      flex: 0 0 auto;
+      width: auto;
+      min-width: 200px;
+      height: 40px;
+      padding: 10px 28px;
+      gap: 10px;
+      font-size: 14px;
+      letter-spacing: -0.14px;
+    }
+
+    .bundle-duo__badges {
+      justify-content: flex-start;
+    }
+
+    .bundle-duo__dialog-inner {
+      top: 50%;
+      left: 50%;
+      right: auto;
+      bottom: auto;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 560px;
+      max-height: 70vh;
+      padding: 40px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    class BundleDuoSection {
+      constructor(section) {
+        this.section = section;
+        // Exactly one component is customer-picked; the companion is fixed.
+        this.bundleSize = 1;
+        this.scentPropertyName = 'First Scent';
+        this.selections = {};
+        this.productData = {};
+
+        this.parseProductData();
+        this.initSelectors();
+        this.initAccordions();
+        this.initIngredientsDialog();
+        this.initCartButtons();
+      }
+
+      parseProductData() {
+        const jsonEl = this.section.querySelector('[data-duo-products]');
+        if (jsonEl) {
+          try {
+            const data = JSON.parse(jsonEl.textContent);
+            this.productData = data.scents || {};
+            this.bundleVariantId = data.bundleVariantId;
+            if (data.scentPropertyName) this.scentPropertyName = data.scentPropertyName;
+          } catch (e) {
+            console.error('Duo bundle: failed to parse product data', e);
+          }
+        }
+      }
+
+      initSelectors() {
+        this.selectors = this.section.querySelectorAll('[data-duo-scent-selector]');
+        this.selectors.forEach(selector => {
+          const trigger = selector.querySelector('.bundle-duo__selector-trigger');
+          const options = selector.querySelectorAll('.bundle-duo__selector-option');
+          const selectorIndex = selector.getAttribute('data-duo-scent-selector');
+
+          trigger.addEventListener('click', () => this.toggleDropdown(selector));
+
+          options.forEach(option => {
+            option.addEventListener('click', () => {
+              if (option.getAttribute('aria-disabled') === 'true') return;
+              this.selectScent(selector, selectorIndex, option);
+            });
+          });
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('[data-duo-scent-selector]')) {
+            this.closeAllDropdowns();
+          }
+        });
+
+        this.syncDisabledStates();
+      }
+
+      toggleDropdown(selector) {
+        const trigger = selector.querySelector('.bundle-duo__selector-trigger');
+        const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+        this.closeAllDropdowns();
+
+        if (!isOpen) {
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+      }
+
+      closeAllDropdowns() {
+        this.selectors.forEach(s => {
+          s.querySelector('.bundle-duo__selector-trigger').setAttribute('aria-expanded', 'false');
+        });
+      }
+
+      selectScent(selector, selectorIndex, option) {
+        const handle = option.getAttribute('data-product-handle');
+        let product = this.productData[handle];
+        if (!product) {
+          const variantId = option.getAttribute('data-variant-id');
+          if (!variantId) return;
+          product = {
+            title: option.getAttribute('data-product-title') || option.textContent.trim(),
+            variantId: variantId,
+            variantGid: option.getAttribute('data-variant-gid') || ('gid://shopify/ProductVariant/' + variantId),
+            cardImage: option.getAttribute('data-card-image') || '',
+          };
+          this.productData[handle] = product;
+        }
+        if (!product) return;
+
+        this.selections[selectorIndex] = handle;
+
+        const label = selector.querySelector('[data-selector-label]');
+        label.textContent = selectorIndex + '. ' + product.title;
+        selector.classList.add('is-selected');
+
+        option.setAttribute('aria-selected', 'true');
+        selector.querySelectorAll('.bundle-duo__selector-option').forEach(opt => {
+          if (opt !== option) opt.setAttribute('aria-selected', 'false');
+        });
+
+        this.closeAllDropdowns();
+        this.syncDisabledStates();
+        this.updateBottleImage(selectorIndex, product);
+        this.updateButtons();
+      }
+
+      syncDisabledStates() {
+        this.selectors.forEach(selector => {
+          selector.querySelectorAll('.bundle-duo__selector-option').forEach(option => {
+            option.setAttribute('aria-disabled', 'false');
+          });
+        });
+      }
+
+      updateBottleImage(selectorIndex, product) {
+        const slot = this.section.querySelector('[data-duo-slot="' + selectorIndex + '"]');
+        if (!slot) return;
+
+        const img = slot.querySelector('.bundle-duo__bottle-img');
+        const placeholder = slot.querySelector('.bundle-duo__bottle-placeholder');
+
+        if (product.cardImage) {
+          img.src = product.cardImage;
+          img.alt = product.title;
+          img.style.display = 'block';
+          if (placeholder) placeholder.style.display = 'none';
+        }
+      }
+
+      updateButtons() {
+        const allSelected = Object.keys(this.selections).length >= this.bundleSize;
+        const canAdd = allSelected;
+        const addBtn = this.section.querySelector('[data-duo-add]');
+        const buyBtn = this.section.querySelector('[data-duo-buy]');
+
+        if (addBtn) addBtn.disabled = !canAdd;
+        if (buyBtn) buyBtn.disabled = !canAdd;
+      }
+
+      getSelectedProducts() {
+        return Object.entries(this.selections).map(([index, handle]) => {
+          const product = this.productData[handle];
+          return product ? { index, handle, ...product } : null;
+        }).filter(Boolean);
+      }
+
+      initCartButtons() {
+        const addBtn = this.section.querySelector('[data-duo-add]');
+        const buyBtn = this.section.querySelector('[data-duo-buy]');
+
+        if (addBtn) {
+          addBtn.addEventListener('click', () => this.addToCart(false));
+        }
+        if (buyBtn) {
+          buyBtn.addEventListener('click', () => this.addToCart(true));
+        }
+      }
+
+      async addToCart(goToCart) {
+        const selected = this.getSelectedProducts().sort((a, b) => Number(a.index) - Number(b.index));
+        if (selected.length < this.bundleSize) return;
+        if (!this.bundleVariantId) {
+          console.error('Duo bundle: no bundle variant ID found');
+          return;
+        }
+
+        const addBtn = this.section.querySelector('[data-duo-add]');
+        const buyBtn = this.section.querySelector('[data-duo-buy]');
+        if (addBtn) addBtn.disabled = true;
+        if (buyBtn) buyBtn.disabled = true;
+
+        try {
+          const formBody = new URLSearchParams();
+          formBody.append('id', this.bundleVariantId);
+          formBody.append('quantity', '1');
+
+          // Simple Bundles & Kits expands this line into its components (and
+          // decrements each component's stock) server-side via its Cart
+          // Transform, so both the enhancer and the wipe land on the order as
+          // separate line items. It keys off the option-group property plus a
+          // "_bundle_selection" summary, exactly as its own widget submits them.
+          //
+          // Only the scent is submitted: the wipe is a FIXED component of the
+          // bundle in the app, so it needs no property (same as the wipes
+          // 3-pack). The group name must match the app's configuration — see
+          // the scent_property_name setting.
+          const scent = selected[0];
+          formBody.append(`properties[${this.scentPropertyName}]`, scent.title);
+          formBody.append('properties[_bundle_selection]', scent.title);
+
+          const response = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formBody
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            console.error('Duo bundle: cart response', response.status, errorData);
+            throw new Error('Failed to add to cart');
+          }
+
+          if (goToCart) {
+            window.location.href = '/cart';
+          } else {
+            const cartResponse = await fetch('/cart.js');
+            const cartData = await cartResponse.json();
+            document.dispatchEvent(new CustomEvent('cart:updated', { detail: cartData }));
+            document.dispatchEvent(new CustomEvent('cart:open'));
+            if (addBtn) addBtn.disabled = false;
+            if (buyBtn) buyBtn.disabled = false;
+          }
+        } catch (error) {
+          console.error('Duo bundle: add to cart failed', error);
+          if (addBtn) addBtn.disabled = false;
+          if (buyBtn) buyBtn.disabled = false;
+        }
+      }
+
+      initAccordions() {
+        const accordions = this.section.querySelectorAll('[data-accordion]');
+        accordions.forEach(accordion => {
+          const trigger = accordion.querySelector('.bundle-duo__accordion-trigger');
+          if (!trigger) return;
+
+          trigger.addEventListener('click', () => {
+            const isOpen = accordion.classList.contains('is-open');
+            accordion.classList.toggle('is-open');
+            trigger.setAttribute('aria-expanded', !isOpen);
+
+            const content = accordion.querySelector('.bundle-duo__accordion-content');
+            if (content) {
+              content.setAttribute('aria-hidden', isOpen);
+            }
+          });
+        });
+      }
+
+      initIngredientsDialog() {
+        const sectionId = this.section.getAttribute('data-section-id');
+        const dialog = this.section.querySelector('#ingredients-dialog-' + sectionId);
+        if (!dialog) return;
+
+        const openBtn = this.section.querySelector('[data-open-ingredients]');
+        const closeBtn = this.section.querySelector('[data-close-ingredients]');
+
+        if (openBtn) {
+          openBtn.addEventListener('click', () => dialog.showModal());
+        }
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => dialog.close());
+        }
+        dialog.addEventListener('click', (e) => {
+          if (e.target === dialog) dialog.close();
+        });
+      }
+    }
+
+    function init() {
+      const section = document.querySelector('.bundle-duo');
+      if (section) new BundleDuoSection(section);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    document.addEventListener('shopify:section:load', (e) => {
+      if (e.target.querySelector('.bundle-duo')) {
+        init();
+      }
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.product_bundle_duo.name",
+  "class": "bundle-duo-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_watch_in_action",
+      "label": "t:sections.product_bundle.settings.show_watch_in_action",
+      "default": true
+    },
+    {
+      "type": "liquid",
+      "id": "videowise_embed",
+      "label": "t:sections.product_bundle.settings.videowise_embed",
+      "info": "t:sections.product_bundle.settings.videowise_embed_info"
+    },
+    {
+      "type": "collection",
+      "id": "scent_collection",
+      "label": "t:sections.product_bundle.settings.scent_collection"
+    },
+    {
+      "type": "text",
+      "id": "scent_property_name",
+      "label": "t:sections.product_bundle_duo.settings.scent_property_name",
+      "info": "t:sections.product_bundle_duo.settings.scent_property_name_info",
+      "default": "First Scent"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_bundle_duo.settings.companion_header"
+    },
+    {
+      "type": "product",
+      "id": "companion_product",
+      "label": "t:sections.product_bundle_duo.settings.companion_product",
+      "info": "t:sections.product_bundle_duo.settings.companion_product_info"
+    },
+    {
+      "type": "image_picker",
+      "id": "companion_image",
+      "label": "t:sections.product_bundle_duo.settings.companion_image",
+      "info": "t:sections.product_bundle_duo.settings.companion_image_info"
+    },
+    {
+      "type": "text",
+      "id": "companion_label",
+      "label": "t:sections.product_bundle_duo.settings.companion_label",
+      "info": "t:sections.product_bundle_duo.settings.companion_label_info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_bundle.settings.colors_header"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_1",
+      "label": "t:sections.product_bundle.settings.gradient_color_1",
+      "default": "#F4D2A4"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_2",
+      "label": "t:sections.product_bundle.settings.gradient_color_2",
+      "default": "#FCF5DE"
+    },
+    {
+      "type": "color",
+      "id": "popup_text_color",
+      "label": "t:sections.product_bundle.settings.popup_text_color",
+      "default": "#3E2027"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust_badge",
+      "name": "t:sections.product.trust_badge",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.product.trust_badge_icon"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.product.trust_badge_label",
+          "default": "Free"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.product_bundle_duo.name",
+      "blocks": [
+        { "type": "trust_badge", "settings": { "label": "Aluminum\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Paraben\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Sulfate\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Cruelty\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Plant-Based\nIngredients" } },
+        { "type": "trust_badge", "settings": { "label": "Phthalate\nFree" } },
+        { "type": "trust_badge", "settings": { "label": "Vegan" } },
+        { "type": "trust_badge", "settings": { "label": "U.S. Patent\n11,857,668" } }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

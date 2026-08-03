@@ -1,0 +1,328 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "product-bundle-duo",
+      "blocks": {
+        "trust_badge_vegan": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Vegan.svg",
+            "label": "Vegan"
+          }
+        },
+        "trust_badge_cruelty": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Cruel.svg",
+            "label": "Cruelty Free"
+          }
+        },
+        "trust_badge_phthalate": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Phthalate.svg",
+            "label": "Phthalate Free"
+          }
+        },
+        "trust_badge_paraben": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Paraben.svg",
+            "label": "Paraben Free"
+          }
+        },
+        "trust_badge_sulfate": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Sulfate.svg",
+            "label": "Sulfate Free"
+          }
+        },
+        "trust_badge_plant": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/Plant-Based.svg",
+            "label": "Plant-Based"
+          }
+        },
+        "trust_badge_aluminium": {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shopify://shop_images/aluminium.svg",
+            "label": "Aluminium Free"
+          }
+        }
+      },
+      "block_order": [
+        "trust_badge_vegan",
+        "trust_badge_cruelty",
+        "trust_badge_phthalate",
+        "trust_badge_paraben",
+        "trust_badge_sulfate",
+        "trust_badge_plant",
+        "trust_badge_aluminium"
+      ],
+      "settings": {
+        "show_watch_in_action": false,
+        "videowise_embed": "",
+        "scent_collection": "shop",
+        "scent_property_name": "First Scent",
+        "companion_product": "cotton-dry-wipes",
+        "companion_label": "",
+        "gradient_color_1": "#f4d2a4",
+        "gradient_color_2": "#fcf5de",
+        "popup_text_color": "#3e2027"
+      }
+    },
+    "how_to_use_7CAtDd": {
+      "type": "how-to-use",
+      "blocks": {
+        "step_49pB3g": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/spray-icon.svg",
+            "label": "Spray"
+          }
+        },
+        "step_wELDNw": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/wipe-icon_4729b54e-d58f-41ed-8430-ede67b448e49.svg",
+            "label": "Wipe"
+          }
+        },
+        "step_wpP4xq": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/apply-icon.svg",
+            "label": "Apply Deo"
+          }
+        },
+        "step_EQ7Cbz": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/fresh-icon.svg",
+            "label": "Stay fresh"
+          }
+        },
+        "dosage_fMYqUC": {
+          "type": "dosage",
+          "settings": {
+            "label": "I smell a little",
+            "drops": 2,
+            "amount": "2-4 Sprays"
+          }
+        },
+        "dosage_eqKdnH": {
+          "type": "dosage",
+          "settings": {
+            "label": "It's... Noticeable",
+            "drops": 4,
+            "amount": "4-8 Sprays"
+          }
+        },
+        "dosage_dWBXLi": {
+          "type": "dosage",
+          "settings": {
+            "label": "I'm really stinky",
+            "drops": 8,
+            "amount": "8–12 Sprays"
+          }
+        }
+      },
+      "block_order": [
+        "step_49pB3g",
+        "step_wELDNw",
+        "step_wpP4xq",
+        "step_EQ7Cbz",
+        "dosage_fMYqUC",
+        "dosage_eqKdnH",
+        "dosage_dWBXLi"
+      ],
+      "name": "How to use",
+      "settings": {
+        "title": "How to use",
+        "mobile_description": "",
+        "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
+        "sprays_title": "How many sprays do i need?",
+        "media_video": "shopify://files/videos/Video_20260327-141053.mov",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "in_press_eFx7et": {
+      "type": "in-press",
+      "name": "t:general.in_press",
+      "settings": {
+        "title": "IN PRESS",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027",
+        "divider_color": "#3e2027"
+      }
+    },
+    "what_makes_different_kamc8a": {
+      "type": "what-makes-different",
+      "name": "t:sections.what_makes_different.name",
+      "settings": {
+        "heading": "What Makes Baudie Different",
+        "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
+        "desktop_base": "shopify://shop_images/test.png",
+        "desktop_overlay": "shopify://shop_images/molecule-desktop-text.png",
+        "mobile_base": "shopify://shop_images/molecule-m.png",
+        "mobile_overlay": "shopify://shop_images/molecule-mobile-text.png",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "product_faq_ciNhG7": {
+      "type": "product-faq",
+      "blocks": {
+        "faq_item_rYXXki": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is Baudie a deodorant?",
+            "answer": ""
+          }
+        },
+        "faq_item_XpjCqg": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I use it?",
+            "answer": ""
+          }
+        },
+        "faq_item_txbqhq": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Why do I need a pre-deodorant?",
+            "answer": ""
+          }
+        },
+        "faq_item_RfQ4DQ": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What does \"odor-eliminating bacterial technology\" mean?",
+            "answer": ""
+          }
+        },
+        "faq_item_XVL96K": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Will the enhancer scent mix with my deodorant or perfume?",
+            "answer": ""
+          }
+        },
+        "faq_item_Ct3yzM": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I use Baudie without deodorant?",
+            "answer": ""
+          }
+        },
+        "faq_item_c3DiVG": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I use it before workouts?",
+            "answer": ""
+          }
+        },
+        "faq_item_zwMy9i": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is it suitable for sensitive skin?",
+            "answer": ""
+          }
+        },
+        "faq_item_qHzjAi": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can teens use Baudie?",
+            "answer": ""
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_rYXXki",
+        "faq_item_XpjCqg",
+        "faq_item_txbqhq",
+        "faq_item_RfQ4DQ",
+        "faq_item_XVL96K",
+        "faq_item_Ct3yzM",
+        "faq_item_c3DiVG",
+        "faq_item_zwMy9i",
+        "faq_item_qHzjAi"
+      ],
+      "name": "Product FAQ",
+      "settings": {
+        "title": "Frequently Asked Questions",
+        "intro": "",
+        "top_padding": 112,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {
+        "heading": "You may also like",
+        "collection": "shop",
+        "max_products": 8,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "1785729814f94b4975": {
+      "type": "apps",
+      "blocks": {
+        "simple_bundles_kits_infinite_options_selector_yEegBR": {
+          "type": "shopify://apps/simple-bundles-kits/blocks/infinite-options-selector/e553276b-36b2-446d-b80a-aa47fe5f96ac",
+          "disabled": true,
+          "settings": {
+            "select_placeholder": "Please select an option",
+            "disable_oos_options": true,
+            "show_price_variance": true,
+            "rank_options_by_price_diff": true,
+            "custom_css": "",
+            "custom_js": ""
+          }
+        }
+      },
+      "block_order": [
+        "simple_bundles_kits_infinite_options_selector_yEegBR"
+      ],
+      "settings": {}
+    },
+    "product-reviews": {
+      "type": "apps",
+      "blocks": {
+        "klaviyo_reviews_product_reviews_nThAbd": {
+          "type": "shopify://apps/klaviyo-reviews/blocks/product-reviews/db20e365-d984-4ac4-9655-e1588d951ca9",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "klaviyo_reviews_product_reviews_nThAbd"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "how_to_use_7CAtDd",
+    "in_press_eFx7et",
+    "what_makes_different_kamc8a",
+    "product_faq_ciNhG7",
+    "related-products",
+    "1785729814f94b4975",
+    "product-reviews"
+  ]
+}
