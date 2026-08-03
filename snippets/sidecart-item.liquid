@@ -37,6 +37,18 @@
   endif
 
   comment
+    An untracked variant reports inventory_quantity 0, and `default` won't swap
+    that out (it only replaces nil/false/blank), so the quantity stepper would
+    read a hard cap of zero — blocking "+" and flashing a false stock warning.
+    Bundle parents are untracked by design: their stock lives on the component
+    products. Treat "not tracked" as unlimited.
+  endcomment
+  assign item_inventory = 99999
+  if item.variant.inventory_management != blank
+    assign item_inventory = item.variant.inventory_quantity
+  endif
+
+  comment
     Simple Bundles & Kits bundle lines carry each picked scent as an
     option-group property ("First Scent", "Second Scent", ...). Read the scent
     names from those (clean titles, no escaping) and resolve each scent's bottle
@@ -74,7 +86,7 @@
   endif
 -%}
 
-<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ item.variant.compare_at_price | default: 0 }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
+<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item_inventory }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ item.variant.compare_at_price | default: 0 }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if bundle_has_bottles -%}
       <div class="sidecart-item__bundle-bottles">
