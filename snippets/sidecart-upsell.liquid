@@ -16,6 +16,8 @@
   @param {product} [product_1] - First upsell product
   @param {product} [product_2] - Second upsell product
   @param {collection} [exclude_collection] - Cart of only these products shows no upsell
+  @param {product_list} [contained_in_1] - Bundles that already include product_1
+  @param {product_list} [contained_in_2] - Bundles that already include product_2
 {% enddoc %}
 
 {%- liquid
@@ -62,10 +64,10 @@
     {%- endif -%}
     <ul class="sidecart-upsell__list" role="list">
       {%- if has_1 -%}
-        {% render 'sidecart-upsell-item', product: product_1 %}
+        {% render 'sidecart-upsell-item', product: product_1, contained_in: contained_in_1 %}
       {%- endif -%}
       {%- if has_2 -%}
-        {% render 'sidecart-upsell-item', product: product_2 %}
+        {% render 'sidecart-upsell-item', product: product_2, contained_in: contained_in_2 %}
       {%- endif -%}
     </ul>
   </div>

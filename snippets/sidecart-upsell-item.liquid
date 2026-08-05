@@ -5,6 +5,10 @@
   applies the real reduction once the item is added to the cart).
 
   @param {product} product - The product to offer as an upsell
+  @param {product_list} [contained_in] - Bundle products that already include this
+    offer. Their component lines never appear in /cart.js (Simple Bundles expands
+    them at checkout), so the "already in cart" check cannot see them — these ids
+    let the JS hide the offer anyway.
 {% enddoc %}
 
 {%- liquid
@@ -31,7 +35,7 @@
 -%}
 
 {%- if render_card -%}
-  <li class="sidecart-upsell__item" data-sidecart-upsell-offer data-product-id="{{ product.id }}" data-card-bg="{{ product.metafields.custom.product_card_background | default: '#FCF0D2' }}">
+  <li class="sidecart-upsell__item" data-sidecart-upsell-offer data-product-id="{{ product.id }}" data-contained-in="{% if contained_in != blank %}{% for p in contained_in %}{{ p.id }}{% unless forloop.last %},{% endunless %}{% endfor %}{% endif %}" data-card-bg="{{ product.metafields.custom.product_card_background | default: '#FCF0D2' }}">
     <div class="sidecart-upsell__image-wrap">
       {%- if card_image -%}
         {{ card_image | image_url: width: 160 | image_tag:

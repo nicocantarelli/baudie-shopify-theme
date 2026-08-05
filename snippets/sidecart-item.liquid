@@ -37,18 +37,6 @@
   endif
 
   comment
-    An untracked variant reports inventory_quantity 0, and `default` won't swap
-    that out (it only replaces nil/false/blank), so the quantity stepper would
-    read a hard cap of zero — blocking "+" and flashing a false stock warning.
-    Bundle parents are untracked by design: their stock lives on the component
-    products. Treat "not tracked" as unlimited.
-  endcomment
-  assign item_inventory = 99999
-  if item.variant.inventory_management != blank
-    assign item_inventory = item.variant.inventory_quantity
-  endif
-
-  comment
     Simple Bundles & Kits bundle lines carry each picked scent as an
     option-group property ("First Scent", "Second Scent", ...). Read the scent
     names from those (clean titles, no escaping) and resolve each scent's bottle
@@ -75,6 +63,19 @@
     endif
   endif
 
+  comment
+    Fixed bundle components (e.g. the Cotton Wipe in the duo) live in Simple
+    Bundles, not on the cart line — only customer-PICKED components are
+    submitted as properties. So the line itself cannot tell us the wipe is in
+    there. Read it off the bundle product instead, which also means it renders
+    however the item reached the cart.
+  endcomment
+  assign bundle_companion = item.product.metafields.custom.bundle_companion.value
+  assign companion_image = ''
+  if bundle_companion != blank
+    assign companion_image = bundle_companion.metafields.custom.card_image | default: bundle_companion.featured_image
+  endif
+
   assign has_compare_price = false
   assign compare_price = 0
   if item_original > item_price
@@ -86,7 +87,7 @@
   endif
 -%}
 
-<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item_inventory }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ item.variant.compare_at_price | default: 0 }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
+<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ item.variant.compare_at_price | default: 0 }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if bundle_has_bottles -%}
       <div class="sidecart-item__bundle-bottles">
@@ -106,6 +107,15 @@
             {%- endif -%}
           {%- endif -%}
         {%- endfor -%}
+        {%- if companion_image != blank -%}
+          <img
+            src="{{ companion_image | image_url: width: 1200 }}"
+            srcset="{{ companion_image | image_url: width: 400 }} 400w, {{ companion_image | image_url: width: 800 }} 800w, {{ companion_image | image_url: width: 1200 }} 1200w"
+            sizes="120px"
+            loading="lazy"
+            class="sidecart-item__bundle-bottle"
+            alt="{{ bundle_companion.title | escape }}">
+        {%- endif -%}
       </div>
     {%- elsif item_image -%}
       {{ item_image | image_url: width: 400 | image_tag:
@@ -135,6 +145,9 @@
           {%- for scent_title in bundle_scents -%}
             <li class="sidecart-item__bundle-scent">{{ scent_title }}</li>
           {%- endfor -%}
+          {%- if bundle_companion != blank -%}
+            <li class="sidecart-item__bundle-scent">{{ bundle_companion.title }}</li>
+          {%- endif -%}
         </ul>
       {%- elsif item.properties.size > 0 -%}
         <ul class="sidecart-item__properties">

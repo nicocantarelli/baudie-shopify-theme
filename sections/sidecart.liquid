@@ -177,7 +177,7 @@
   <a href="{{ routes.all_products_collection_url }}" class="sidecart__continue-btn">
     {{ section.settings.continue_button_text }}
   </a>
-</div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading, product_1: section.settings.upsell_product_1, product_2: section.settings.upsell_product_2, exclude_collection: section.settings.upsell_exclude_collection %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
+</div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading, product_1: section.settings.upsell_product_1, product_2: section.settings.upsell_product_2, exclude_collection: section.settings.upsell_exclude_collection, contained_in_1: section.settings.upsell_contained_in_1, contained_in_2: section.settings.upsell_contained_in_2 %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
 {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
   <div
     class="sidecart__shipping-bar"
@@ -1767,7 +1767,18 @@ class Sidecart {
 
     let anyVisible = false;
     region.querySelectorAll('[data-sidecart-upsell-offer]').forEach((offer) => {
-      const inCart = productIds.includes(String(offer.dataset.productId));
+      // A bundle that contains this offer arrives as ONE line item: Simple
+      // Bundles expands it at checkout, so the component's product id never
+      // appears in /cart.js. Treat "a bundle containing it is in the cart" as
+      // equivalent to the offer itself being in the cart, or we upsell the
+      // customer something they have already bought.
+      const containedIn = (offer.dataset.containedIn || '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const inCart =
+        productIds.includes(String(offer.dataset.productId)) ||
+        containedIn.some((id) => productIds.includes(id));
       offer.hidden = inCart;
       if (!inCart) anyVisible = true;
     });
@@ -2200,9 +2211,19 @@ if (Shopify.designMode) {
       "id": "upsell_product_1",
       "label": "t:sidecart.settings.upsell_product_1.label"
     }, {
+      "type": "product_list",
+      "id": "upsell_contained_in_1",
+      "label": "t:sidecart.settings.upsell_contained_in_1.label",
+      "info": "t:sidecart.settings.upsell_contained_in.info"
+    }, {
       "type": "product",
       "id": "upsell_product_2",
       "label": "t:sidecart.settings.upsell_product_2.label"
+    }, {
+      "type": "product_list",
+      "id": "upsell_contained_in_2",
+      "label": "t:sidecart.settings.upsell_contained_in_2.label",
+      "info": "t:sidecart.settings.upsell_contained_in.info"
     }, {
       "type": "collection",
       "id": "upsell_exclude_collection",
