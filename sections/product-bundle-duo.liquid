@@ -45,6 +45,18 @@
   assign scent_property_name = section.settings.scent_property_name | default: 'First Scent'
 
   comment
+    Coming-soon state for the BUNDLE itself (the checks further down filter
+    coming-soon scents out of the picker, which is a different thing). Matches
+    the tag spellings product.liquid accepts. A bundle parent carries no
+    inventory of its own, so there is no out-of-stock case to gate on here —
+    availability comes from the components via Simple Bundles.
+  endcomment
+  assign is_coming_soon = false
+  if product.tags contains 'coming-soon' or product.tags contains 'Coming soon' or product.tags contains 'coming soon' or product.tags contains 'Coming Soon'
+    assign is_coming_soon = true
+  endif
+
+  comment
     Aggregate rating is synced from Klaviyo Reviews into the standard
     `reviews.rating` / `reviews.rating_count` Shopify metafields.
   endcomment
@@ -189,16 +201,27 @@
     <div class="bundle-duo__purchase-row">
       <p class="bundle-duo__price" data-duo-price>{{ current_variant.price | money }}</p>
       <div class="bundle-duo__actions">
-        <button
-          type="button"
-          class="bundle-duo__button bundle-duo__button--add"
-          disabled
-          data-duo-add>
-          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>{{ 'sections.product_bundle.add_to_cart' | t }}</span>
-        </button>
+        {%- if is_coming_soon -%}
+          {%- comment -%}
+            The JS null-guards [data-duo-add], so omitting the button here is
+            safe — the picker still works, there is just nothing to add with.
+          {%- endcomment -%}
+          {% render 'notify-me-form',
+            variant: current_variant,
+            button_class: 'bundle-duo__button bundle-duo__button--add'
+          %}
+        {%- else -%}
+          <button
+            type="button"
+            class="bundle-duo__button bundle-duo__button--add"
+            disabled
+            data-duo-add>
+            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ 'sections.product_bundle.add_to_cart' | t }}</span>
+          </button>
+        {%- endif -%}
       </div>
     </div>
 
