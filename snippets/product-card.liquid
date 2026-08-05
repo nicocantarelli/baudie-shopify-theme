@@ -134,7 +134,14 @@
     </a>
 
     <div class="product-card__actions">
-      {%- if custom_button_text != blank -%}
+      {%- comment -%}
+        Coming soon outranks custom_button_text. The two settings otherwise
+        fight: custom_button_text exists to send bundles to their product page
+        instead of quick-adding them without a picked scent, but it also
+        skipped the branch below that disables and relabels the button — so a
+        tagged product showed the coming-soon badge above a working CTA.
+      {%- endcomment -%}
+      {%- if custom_button_text != blank and is_coming_soon == false -%}
         <a
           href="{{ product.url }}"
           class="product-card__action-btn product-card__action-btn--buy"
