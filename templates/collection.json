@@ -111,6 +111,16 @@
             "custom_button_text": "",
             "badge_text": ""
           }
+        },
+        "product_card_8PEYH9": {
+          "type": "product_card",
+          "settings": {
+            "product": "scent-wipes-pack",
+            "card_width": "1",
+            "show_badge": true,
+            "custom_button_text": "",
+            "badge_text": "Coming Soon"
+          }
         }
       },
       "block_order": [
@@ -123,7 +133,8 @@
         "product_card_dJmhWz",
         "product_card_MDjGH8",
         "product_card_TdxRJP",
-        "product_card_iaPYFi"
+        "product_card_iaPYFi",
+        "product_card_8PEYH9"
       ],
       "settings": {
         "heading": "Meet Your Scents",

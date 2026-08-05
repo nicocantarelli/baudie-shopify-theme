@@ -72,8 +72,8 @@
         "trust_badge_aluminium"
       ],
       "settings": {
-        "show_watch_in_action": false,
-        "videowise_embed": "",
+        "show_watch_in_action": true,
+        "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
         "scent_collection": "shop",
         "scent_property_name": "First Scent",
         "companion_product": "cotton-dry-wipes",
