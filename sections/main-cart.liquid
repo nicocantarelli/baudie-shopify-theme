@@ -537,6 +537,17 @@
     margin: 0 -14px;
   }
 
+  /* The negative margin above fans THREE bottles into a small square. A duo is
+     a bottle beside a wipes pouch — two dissimilar shapes that need separating,
+     not overlapping. Scoped so the bundle-of-3 card is untouched. */
+  .cart-item__bundle-bottles--with-companion {
+    gap: 8px;
+  }
+
+  .cart-item__bundle-bottles--with-companion .cart-item__bundle-bottle {
+    margin: 0;
+  }
+
   .cart-item__bundle-list {
     list-style: none;
     margin: 0;
@@ -796,6 +807,14 @@
     .cart-item__bundle-bottle {
       max-width: 42%;
       margin: 0 -8px;
+    }
+
+    .cart-item__bundle-bottles--with-companion {
+      gap: 4px;
+    }
+
+    .cart-item__bundle-bottles--with-companion .cart-item__bundle-bottle {
+      margin: 0;
     }
 
     .cart-item__image-link {

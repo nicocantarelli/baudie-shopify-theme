@@ -90,7 +90,7 @@
 <li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ item.variant.compare_at_price | default: 0 }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if bundle_has_bottles -%}
-      <div class="sidecart-item__bundle-bottles">
+      <div class="sidecart-item__bundle-bottles{% if companion_image != blank %} sidecart-item__bundle-bottles--with-companion{% endif %}">
         {%- for scent_title in bundle_scents -%}
           {%- assign scent_handle = scent_title | handleize -%}
           {%- assign scent_product = all_products[scent_handle] -%}
