@@ -75,12 +75,14 @@
         "show_watch_in_action": true,
         "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
         "scent_collection": "shop",
-        "scent_property_name": "First Scent",
+        "scent_property_name": "Scents",
         "companion_product": "cotton-dry-wipes",
         "companion_label": "",
         "gradient_color_1": "#f4d2a4",
         "gradient_color_2": "#fcf5de",
-        "popup_text_color": "#3e2027"
+        "popup_text_color": "#3e2027",
+        "companion_property_name": "Wipes",
+        "companion_property_value": "Organic Cotton Dry Wipes"
       }
     },
     "how_to_use_7CAtDd": {

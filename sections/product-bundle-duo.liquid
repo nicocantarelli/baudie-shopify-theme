@@ -36,13 +36,18 @@
   assign companion_title = section.settings.companion_label | default: companion_product.title
 
   comment
-    Simple Bundles matches the picked scent by option-group name. The bundle-of-3
-    uses "First Scent" / "Second Scent" / ...; a one-scent bundle may be
-    configured as either "First Scent" or "Scent" in the app, so this is a
-    setting — it must match the app exactly, and a mismatch means the line will
-    not expand.
+    Simple Bundles matches each component by OPTION GROUP name, and the value
+    must be the option name inside that group. Both must match the app exactly
+    or the line will not expand into separate order lines.
+
+    This bundle is built in the app's "Manually build" mode, which makes every
+    component an option group — including the wipe. So the wipe is NOT a fixed
+    component the app resolves on its own: it has to be submitted just like the
+    scent, even though the customer never picks it (its group holds one option).
   endcomment
-  assign scent_property_name = section.settings.scent_property_name | default: 'First Scent'
+  assign scent_property_name = section.settings.scent_property_name | default: 'Scents'
+  assign companion_property_name = section.settings.companion_property_name | default: 'Wipes'
+  assign companion_property_value = section.settings.companion_property_value | default: companion_product.title
 
   comment
     Coming-soon state for the BUNDLE itself (the checks further down filter
@@ -415,6 +420,8 @@
       {
         "bundleVariantId": {{ current_variant.id | json }},
         "scentPropertyName": {{ scent_property_name | json }},
+        "companionPropertyName": {{ companion_property_name | json }},
+        "companionPropertyValue": {{ companion_property_value | json }},
         "scents": {
           {%- assign scent_comma = '' -%}
           {% for scent_product in scent_collection.products %}
@@ -1227,7 +1234,9 @@
         this.section = section;
         // Exactly one component is customer-picked; the companion is fixed.
         this.bundleSize = 1;
-        this.scentPropertyName = 'First Scent';
+        this.scentPropertyName = 'Scents';
+        this.companionPropertyName = 'Wipes';
+        this.companionPropertyValue = '';
         this.selections = {};
         this.productData = {};
 
@@ -1246,6 +1255,8 @@
             this.productData = data.scents || {};
             this.bundleVariantId = data.bundleVariantId;
             if (data.scentPropertyName) this.scentPropertyName = data.scentPropertyName;
+            if (data.companionPropertyName) this.companionPropertyName = data.companionPropertyName;
+            if (data.companionPropertyValue) this.companionPropertyValue = data.companionPropertyValue;
           } catch (e) {
             console.error('Duo bundle: failed to parse product data', e);
           }
@@ -1401,16 +1412,25 @@
           // Simple Bundles & Kits expands this line into its components (and
           // decrements each component's stock) server-side via its Cart
           // Transform, so both the enhancer and the wipe land on the order as
-          // separate line items. It keys off the option-group property plus a
-          // "_bundle_selection" summary, exactly as its own widget submits them.
+          // separate line items. It keys off one property per OPTION GROUP,
+          // plus a "_bundle_selection" summary, exactly as its own widget
+          // submits them.
           //
-          // Only the scent is submitted: the wipe is a FIXED component of the
-          // bundle in the app, so it needs no property (same as the wipes
-          // 3-pack). The group name must match the app's configuration — see
-          // the scent_property_name setting.
+          // BOTH groups must be sent. The bundle is built in the app's "Manually
+          // build" mode, so the wipe is an option group of its own rather than a
+          // fixed component — the customer never chooses it (one option), but
+          // omitting it leaves that group unresolved and the line will not
+          // expand. Group names and values are settings so they can be matched
+          // to the app without a code change.
           const scent = selected[0];
+          const parts = [];
+          if (this.companionPropertyName && this.companionPropertyValue) {
+            formBody.append(`properties[${this.companionPropertyName}]`, this.companionPropertyValue);
+            parts.push(this.companionPropertyValue);
+          }
           formBody.append(`properties[${this.scentPropertyName}]`, scent.title);
-          formBody.append('properties[_bundle_selection]', scent.title);
+          parts.push(scent.title);
+          formBody.append('properties[_bundle_selection]', parts.join(' <> '));
 
           const response = await fetch('/cart/add.js', {
             method: 'POST',
@@ -1526,7 +1546,20 @@
       "id": "scent_property_name",
       "label": "t:sections.product_bundle_duo.settings.scent_property_name",
       "info": "t:sections.product_bundle_duo.settings.scent_property_name_info",
-      "default": "First Scent"
+      "default": "Scents"
+    },
+    {
+      "type": "text",
+      "id": "companion_property_name",
+      "label": "t:sections.product_bundle_duo.settings.companion_property_name",
+      "info": "t:sections.product_bundle_duo.settings.companion_property_name_info",
+      "default": "Wipes"
+    },
+    {
+      "type": "text",
+      "id": "companion_property_value",
+      "label": "t:sections.product_bundle_duo.settings.companion_property_value",
+      "info": "t:sections.product_bundle_duo.settings.companion_property_value_info"
     },
     {
       "type": "header",

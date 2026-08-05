@@ -388,14 +388,18 @@
       "name": "Product bundle (duo)",
       "settings": {
         "scent_property_name": "Scent option group name",
-        "scent_property_name_info": "Must match the option group name on this bundle in Simple Bundles & Kits exactly (e.g. \"First Scent\" or \"Scent\"). If it does not match, the order will not split into separate line items.",
+        "scent_property_name_info": "The OPTION GROUP name for the scent in Simple Bundles & Kits (e.g. \"Scents\"). Must match exactly, including case. A mismatch means the order will not split into separate line items.",
         "companion_header": "Companion product",
         "companion_product": "Companion product",
         "companion_product_info": "The fixed second item in the bundle (e.g. Cotton Dry Wipes). Used for its image and name only — it is added by the bundle app, not by this section.",
         "companion_image": "Companion image override",
         "companion_image_info": "Optional. Defaults to the companion product's card image, then its featured image.",
         "companion_label": "Companion name override",
-        "companion_label_info": "Optional. Shown in the size line under the title. Defaults to the companion product's title."
+        "companion_label_info": "Optional. Shown in the size line under the title. Defaults to the companion product's title.",
+        "companion_property_name": "Companion option group name",
+        "companion_property_name_info": "The OPTION GROUP name for the companion in Simple Bundles & Kits (e.g. \"Wipes\"). This bundle is built in the app's \"Manually build\" mode, so the companion is an option group too and must be submitted even though the customer never picks it. Leave blank only if the companion is a genuinely fixed component.",
+        "companion_property_value": "Companion option name",
+        "companion_property_value_info": "The option name inside that group (e.g. \"Organic Cotton Dry Wipes\"). Defaults to the companion product's title. Must match the app exactly."
       }
     },
     "blog": {
