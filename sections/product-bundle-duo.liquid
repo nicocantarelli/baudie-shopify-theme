@@ -485,15 +485,16 @@
   }
 
   /* Two slots, not three: the bundle's heavy -30px overlap is meant to fan out
-     a row of identical bottles. Here a tall bottle sits beside a flat wipes
-     pouch, so they only kiss rather than stack. */
+     a row of identical bottles. A tall bottle beside a flat wipes pouch needs
+     them separated, not stacked — just enough negative margin to absorb the
+     transparent padding around each image. */
   .bundle-duo__bottle-slot {
     flex: 1;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 -12px;
+    margin: 0 -4px;
   }
 
   .bundle-duo__bottle-img {
@@ -1107,7 +1108,7 @@
     }
 
     .bundle-duo__bottle-slot {
-      margin: 0 -24px;
+      margin: 0 -8px;
     }
 
     .bundle-duo__bottle-img {
