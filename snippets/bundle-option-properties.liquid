@@ -29,11 +29,27 @@
 {%- if bundle_product != blank and group_names != blank and group_value != blank -%}
   {%- if product.id == bundle_product.id -%}
     {%- assign names = group_names | split: ',' -%}
+    {%- assign summary = '' -%}
     {%- for name in names -%}
       {%- assign group_name = name | strip -%}
       {%- if group_name != blank -%}
         <input type="hidden" name="properties[{{ group_name | escape }}]" value="{{ group_value | escape }}">
+        {%- if summary == blank -%}
+          {%- assign summary = group_value -%}
+        {%- else -%}
+          {%- assign summary = summary | append: ' <> ' | append: group_value -%}
+        {%- endif -%}
       {%- endif -%}
     {%- endfor -%}
+    {%- comment -%}
+      The app's own widget pairs the groups with a "_bundle_selection" summary,
+      and both custom bundle sections replicate it for that reason. The widget
+      only runs on the product page, so without this an add from a collection
+      card or the sidecart upsell would reach the app missing a property its
+      own adds always carry.
+    {%- endcomment -%}
+    {%- if summary != blank -%}
+      <input type="hidden" name="properties[_bundle_selection]" value="{{ summary | escape }}">
+    {%- endif -%}
   {%- endif -%}
 {%- endif -%}
