@@ -264,6 +264,7 @@
               </button>
             {%- else -%}
               {% form 'product', product %}
+                {% render 'bundle-option-properties', product: product %}
                 <input
                   type="hidden"
                   name="id"

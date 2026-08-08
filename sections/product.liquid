@@ -163,6 +163,7 @@
       {%- else -%}
         {% form 'product', product, class: 'product-main__form' %}
           <input type="hidden" name="id" value="{{ current_variant.id }}">
+          {% render 'bundle-option-properties', product: product %}
           <button
             type="submit"
             name="add"

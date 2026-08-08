@@ -76,6 +76,19 @@
     assign companion_image = bundle_companion.metafields.custom.card_image | default: bundle_companion.featured_image
   endif
 
+  comment
+    A same-variant bundle (the wipes 3-pack) carries one option-group property
+    per unit purely so Shopify keeps the components on separate order lines for
+    the warehouse. That is app plumbing, not something a shopper chose, so it is
+    hidden here rather than listed under the item.
+  endcomment
+  assign hide_bundle_props = false
+  if settings.bundle_props_product != blank and settings.bundle_props_names != blank
+    if item.product.id == settings.bundle_props_product.id
+      assign hide_bundle_props = true
+    endif
+  endif
+
   assign has_compare_price = false
   assign compare_price = 0
   if item_original > item_price
@@ -149,7 +162,7 @@
             <li class="sidecart-item__bundle-scent">{{ bundle_companion.title }}</li>
           {%- endif -%}
         </ul>
-      {%- elsif item.properties.size > 0 -%}
+      {%- elsif item.properties.size > 0 and hide_bundle_props == false -%}
         <ul class="sidecart-item__properties">
           {%- for property in item.properties -%}
             {%- unless property.last == blank or property.first contains '_' -%}
