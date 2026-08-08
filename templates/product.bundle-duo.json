@@ -163,6 +163,58 @@
     },
     "in_press_eFx7et": {
       "type": "in-press",
+      "blocks": {
+        "press_logo_hLBQRT": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/2.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_fLeqCg": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/6.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_fMzjrq": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/3.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_iUwiMD": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/4.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_TgBxkT": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/5.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_L69iTx": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/1.png",
+            "alt_text": "Press logo"
+          }
+        }
+      },
+      "block_order": [
+        "press_logo_hLBQRT",
+        "press_logo_fLeqCg",
+        "press_logo_fMzjrq",
+        "press_logo_iUwiMD",
+        "press_logo_TgBxkT",
+        "press_logo_L69iTx"
+      ],
       "name": "t:general.in_press",
       "settings": {
         "title": "IN PRESS",
@@ -188,85 +240,85 @@
     "product_faq_ciNhG7": {
       "type": "product-faq",
       "blocks": {
-        "faq_item_rYXXki": {
+        "faq_item_8G4ye8": {
           "type": "faq_item",
           "settings": {
             "question": "Is Baudie a deodorant?",
-            "answer": ""
+            "answer": "<p>No. Baudie is not a deodorant and does not replace one. It is a Deodorant Enhancer® that works before deodorant to stop odor at the source and create the perfect base for your deo to last longer.</p>"
           }
         },
-        "faq_item_XpjCqg": {
+        "faq_item_UpwmVD": {
           "type": "faq_item",
           "settings": {
-            "question": "How do I use it?",
-            "answer": ""
+            "question": "Do I need to wipe after I spray it on?",
+            "answer": "<p>Yes! This is of utmost importance. Think of this product as a cleanse for your armpits. When you cleanse your face you always wash off the cleanser. Same goes here...You want to spray and then use a tissue/towel to wipe away all the odor-causing bacteria under your arms. If you do not wipe off, the product will not work effectively.</p>"
           }
         },
-        "faq_item_txbqhq": {
+        "faq_item_y4DAHY": {
           "type": "faq_item",
           "settings": {
-            "question": "Why do I need a pre-deodorant?",
-            "answer": ""
+            "question": "Where exactly do I spray it + how many sprays do I need?",
+            "answer": "<p>Our armpit extends greater than just the middle area. Make sure to spray the product all around the sides, top, and middle of the armpit or the product may not be as effective. Please refer to the spray chart in the \"how to use\" section above for a reference as to how many sprays you should be using per armpit.</p>"
           }
         },
-        "faq_item_RfQ4DQ": {
+        "faq_item_zBPWmx": {
           "type": "faq_item",
           "settings": {
-            "question": "What does \"odor-eliminating bacterial technology\" mean?",
-            "answer": ""
+            "question": "Will every scent work the same?",
+            "answer": "<p>This product works off of body chemistry. Therefore you may experience different results with different scents. If you notice one scent doesn’t work as well for you, do not get discouraged as we have plenty of scents for you to try and experience great results. We recommend trying our <a href=\"/products/discovery-set\" target=\"_blank\" title=\"Discovery Set\">Discovery Set</a> to start.</p>"
           }
         },
-        "faq_item_XVL96K": {
+        "faq_item_UxgLEU": {
           "type": "faq_item",
           "settings": {
-            "question": "Will the enhancer scent mix with my deodorant or perfume?",
-            "answer": ""
+            "question": "Will the Deodorant Enhancer®️ scent mix with my deodorant or perfume?",
+            "answer": "<p>We formulated this product to dissipate after you wipe it off. Therefore, it will not affect or change the smell of your deodorant or perfume. You can mix and match any of our scents with your deodorant.</p>"
           }
         },
-        "faq_item_Ct3yzM": {
+        "faq_item_4CXF84": {
           "type": "faq_item",
           "settings": {
-            "question": "Can I use Baudie without deodorant?",
-            "answer": ""
+            "question": "Does this work with any deodorant?",
+            "answer": "<p>This product will work with almost any deodorant and/or antiperspirant. </p>"
           }
         },
-        "faq_item_c3DiVG": {
+        "faq_item_bNifqF": {
           "type": "faq_item",
           "settings": {
-            "question": "Can I use it before workouts?",
-            "answer": ""
+            "question": "Why do I smell worse the first week of using it?",
+            "answer": "<p>It is unlikely, but it is possible. It could mean that you are going through a detox period and you need to give your body a few days to adjust. It could also mean that the scent that you purchased does not mesh well with your body chemistry and it is likely one of the other scents will work better for you. We recommend trying our <a href=\"/products/discovery-set\" target=\"_blank\" title=\"Discovery Set\">Discovery Set</a> to start.</p>"
           }
         },
-        "faq_item_zwMy9i": {
+        "faq_item_LQTrHm": {
           "type": "faq_item",
           "settings": {
-            "question": "Is it suitable for sensitive skin?",
-            "answer": ""
+            "question": "Will this irritate my skin?",
+            "answer": "<p>It is important to remember that every body is unique and different. Our product was tested for safety, stability and efficacy, however due to the fact that every body and skin type is unique, we advise to patch test the product first as you should do with any skin/body product. If you notice irritation or an allergy occur, please stop usage. Please note: If you are NOT wiping the product off as instructed, it can cause irritation on the skin. Applying the product on freshly shaven/waxed/lasered underarms can cause a slight sting but is nothing to be concerned about.</p>"
           }
         },
-        "faq_item_qHzjAi": {
+        "faq_item_tehRF6": {
           "type": "faq_item",
           "settings": {
-            "question": "Can teens use Baudie?",
-            "answer": ""
+            "question": "Who can use this product?",
+            "answer": "<p>The Deodorant Enhancer® is unisex and can be used for pre-teens and up. Please make sure to patch-test before use.</p>"
           }
         }
       },
       "block_order": [
-        "faq_item_rYXXki",
-        "faq_item_XpjCqg",
-        "faq_item_txbqhq",
-        "faq_item_RfQ4DQ",
-        "faq_item_XVL96K",
-        "faq_item_Ct3yzM",
-        "faq_item_c3DiVG",
-        "faq_item_zwMy9i",
-        "faq_item_qHzjAi"
+        "faq_item_8G4ye8",
+        "faq_item_UpwmVD",
+        "faq_item_y4DAHY",
+        "faq_item_zBPWmx",
+        "faq_item_UxgLEU",
+        "faq_item_4CXF84",
+        "faq_item_bNifqF",
+        "faq_item_LQTrHm",
+        "faq_item_tehRF6"
       ],
       "name": "Product FAQ",
       "settings": {
         "title": "Frequently Asked Questions",
-        "intro": "",
+        "intro": "<p>Got questions? We’ve got answers. This is your go-to spot for everything you might be wondering about Baudie - from how to use it, to what makes it different, to all the little details in between. Think of this as the cheat sheet to staying fresh, informed, and fully in the know.</p>",
         "top_padding": 112,
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
