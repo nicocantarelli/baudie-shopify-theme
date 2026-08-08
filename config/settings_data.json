@@ -40,7 +40,10 @@
         "disabled": false,
         "settings": {}
       }
-    }
+    },
+    "bundle_props_product": "cotton-dry-wipes-3-pack",
+    "bundle_props_names": "Wipes 1, Wipes 2, Wipes 3",
+    "bundle_props_value": "Organic Cotton Dry Wipes"
   },
   "platform_customizations": {
     "custom_css": [

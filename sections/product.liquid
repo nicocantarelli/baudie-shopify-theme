@@ -62,6 +62,20 @@
   aria-label="{{ product.title }}"
   style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --gradient-3: {{ gradient_3 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }};">
 
+  {%- comment -%}
+    Simple Bundles injects its own option selector into the product form for a
+    bundle parent. For the wipes 3-pack every group holds a single choice, so
+    the shopper is given three dropdowns with nothing to decide. The theme
+    already submits those properties itself (see `bundle-option-properties`),
+    which also covers the collection cards and sidecart upsell the app widget
+    never reaches, so the widget is hidden rather than relied on.
+  {%- endcomment -%}
+  {%- if settings.bundle_props_product != blank and settings.bundle_props_names != blank -%}
+    {%- if product.id == settings.bundle_props_product.id -%}
+      <style>#simple-bundles-io-options { display: none !important; }</style>
+    {%- endif -%}
+  {%- endif -%}
+
   {%- comment -%} Mobile Header (visible mobile only, above image) {%- endcomment -%}
   <div class="product-main__mobile-header">
     <div class="product-main__mobile-subtitle-row">
