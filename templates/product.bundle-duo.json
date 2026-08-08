@@ -88,51 +88,51 @@
     "how_to_use_7CAtDd": {
       "type": "how-to-use",
       "blocks": {
-        "step_49pB3g": {
+        "step_JwEGnG": {
           "type": "step",
           "settings": {
             "icon": "shopify://shop_images/spray-icon.svg",
             "label": "Spray"
           }
         },
-        "step_wELDNw": {
+        "step_rF3Rmp": {
           "type": "step",
           "settings": {
             "icon": "shopify://shop_images/wipe-icon_4729b54e-d58f-41ed-8430-ede67b448e49.svg",
             "label": "Wipe"
           }
         },
-        "step_wpP4xq": {
+        "step_dhLY9E": {
           "type": "step",
           "settings": {
             "icon": "shopify://shop_images/apply-icon.svg",
             "label": "Apply Deo"
           }
         },
-        "step_EQ7Cbz": {
+        "step_3PFwcw": {
           "type": "step",
           "settings": {
             "icon": "shopify://shop_images/fresh-icon.svg",
             "label": "Stay fresh"
           }
         },
-        "dosage_fMYqUC": {
+        "dosage_UTC4gX": {
           "type": "dosage",
           "settings": {
             "label": "I smell a little",
-            "drops": 2,
-            "amount": "2-4 Sprays"
+            "drops": 4,
+            "amount": "4-5 Sprays"
           }
         },
-        "dosage_eqKdnH": {
+        "dosage_i6kpRW": {
           "type": "dosage",
           "settings": {
             "label": "It's... Noticeable",
-            "drops": 4,
-            "amount": "4-8 Sprays"
+            "drops": 6,
+            "amount": "5-8 Sprays"
           }
         },
-        "dosage_dWBXLi": {
+        "dosage_DaEyLn": {
           "type": "dosage",
           "settings": {
             "label": "I'm really stinky",
@@ -142,19 +142,19 @@
         }
       },
       "block_order": [
-        "step_49pB3g",
-        "step_wELDNw",
-        "step_wpP4xq",
-        "step_EQ7Cbz",
-        "dosage_fMYqUC",
-        "dosage_eqKdnH",
-        "dosage_dWBXLi"
+        "step_JwEGnG",
+        "step_rF3Rmp",
+        "step_dhLY9E",
+        "step_3PFwcw",
+        "dosage_UTC4gX",
+        "dosage_i6kpRW",
+        "dosage_DaEyLn"
       ],
       "name": "How to use",
       "settings": {
         "title": "How to use",
         "mobile_description": "",
-        "description": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
+        "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
         "sprays_title": "How many sprays do i need?",
         "media_video": "shopify://files/videos/Video_20260327-141053.mov",
         "background_color": "#fce9ec",
