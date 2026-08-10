@@ -292,7 +292,7 @@
             aria-labelledby="accordion-details-trigger-{{ section.id }}"
             aria-hidden="true">
             <div class="bundle-duo__accordion-body">
-              {{ product_details }}
+              {{ product.metafields.custom.product_details | metafield_tag }}
             </div>
           </div>
           <hr class="bundle-duo__divider">
@@ -319,7 +319,7 @@
             aria-labelledby="accordion-scent-trigger-{{ section.id }}"
             aria-hidden="true">
             <div class="bundle-duo__accordion-body">
-              {{ scent_notes }}
+              {{ product.metafields.custom.scent_notes | metafield_tag }}
             </div>
           </div>
           <hr class="bundle-duo__divider">
@@ -346,7 +346,7 @@
             aria-labelledby="accordion-ingredients-trigger-{{ section.id }}"
             aria-hidden="false">
             <div class="bundle-duo__accordion-body">
-              {{ key_ingredients }}
+              {{ product.metafields.custom.key_ingredients | metafield_tag }}
               {% if full_ingredient_list %}
                 <button
                   type="button"
@@ -408,7 +408,7 @@
           </button>
         </div>
         <div class="bundle-duo__dialog-body">
-          {{ full_ingredient_list }}
+          {{ product.metafields.custom.full_ingredient_list | metafield_tag }}
         </div>
       </div>
     </dialog>
