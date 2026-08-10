@@ -110,7 +110,6 @@
           </button>
         {%- else -%}
           {% form 'product', product, class: 'landing-hero__form' %}
-            {% render 'bundle-option-properties', product: product %}
             <input type="hidden" name="id" value="{{ selected_variant.id }}">
             <button
               type="submit"

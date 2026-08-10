@@ -107,7 +107,6 @@
                 {%- endif -%}
                 <div class="related-products__actions">
                   {%- form 'product', item, class: 'related-products__form' -%}
-                    {% render 'bundle-option-properties', product: item %}
                     <input type="hidden" name="id" value="{{ selected_variant.id }}">
                     <button
                       type="submit"

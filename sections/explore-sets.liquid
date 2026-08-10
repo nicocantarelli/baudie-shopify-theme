@@ -159,7 +159,6 @@
                       </a>
                     {%- else -%}
                       {%- form 'product', bundle_product -%}
-                        {% render 'bundle-option-properties', product: bundle_product %}
                         {%- assign selected_variant = bundle_product.selected_or_first_available_variant -%}
                         <input type="hidden" name="id" value="{{ selected_variant.id }}">
                         <button type="submit" name="add" class="bundle-card-mobile__btn bundle-card-mobile__btn--add" {% unless selected_variant.available %}disabled{% endunless %}>

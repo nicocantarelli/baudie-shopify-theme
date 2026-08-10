@@ -62,7 +62,6 @@
 
     {%- form 'product', product, class: 'sidecart-upsell__form' -%}
       <input type="hidden" name="id" value="{{ variant.id }}">
-      {% render 'bundle-option-properties', product: product %}
       <button
         type="submit"
         name="add"

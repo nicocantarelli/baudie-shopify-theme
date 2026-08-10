@@ -234,32 +234,5 @@
         "default": "VzFAXK"
       }
     ]
-  },
-  {
-    "name": "Bundle line properties",
-    "settings": [
-      {
-        "type": "paragraph",
-        "content": "For a bundle made of several of the SAME product, Shopify merges the units into one order line unless each unit carries its own option-group property. Enter the group names exactly as they appear in Simple Bundles & Kits."
-      },
-      {
-        "type": "product",
-        "id": "bundle_props_product",
-        "label": "Bundle product",
-        "info": "Only this product's add-to-cart submits the properties below. Leave empty to switch the feature off."
-      },
-      {
-        "type": "text",
-        "id": "bundle_props_names",
-        "label": "Option group names",
-        "info": "Comma separated, one per unit. Must match the app character for character, e.g. First Wipe, Second Wipe, Third Wipe"
-      },
-      {
-        "type": "text",
-        "id": "bundle_props_value",
-        "label": "Option value",
-        "info": "The choice selected in every group, e.g. Organic Cotton Dry Wipes"
-      }
-    ]
   }
 ]

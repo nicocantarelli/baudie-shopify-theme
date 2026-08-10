@@ -150,7 +150,6 @@
         </a>
       {%- else -%}
         {%- form 'product', product, class: 'product-card__form' -%}
-          {% render 'bundle-option-properties', product: product %}
           {%- assign selected_variant = product.selected_or_first_available_variant -%}
           <input type="hidden" name="id" value="{{ selected_variant.id }}">
           <button
