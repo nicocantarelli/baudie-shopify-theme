@@ -75,6 +75,7 @@
         "show_watch_in_action": true,
         "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
         "scent_collection": "shop",
+        "default_scent_product": "st-tropez",
         "scent_property_name": "Scents",
         "companion_product": "cotton-dry-wipes",
         "companion_label": "",

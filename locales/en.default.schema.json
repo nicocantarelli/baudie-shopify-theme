@@ -387,6 +387,8 @@
     "product_bundle_duo": {
       "name": "Product bundle (duo)",
       "settings": {
+        "default_scent_product": "Default scent",
+        "default_scent_product_info": "The scent selected when the page loads, so the bottle shows next to the wipes instead of an empty placeholder. The customer can still change it. If this scent is sold out or coming soon, the first available scent in the collection is used instead.",
         "scent_property_name": "Scent option group name",
         "scent_property_name_info": "The OPTION GROUP name for the scent in Simple Bundles & Kits (e.g. \"Scents\"). Must match exactly, including case. A mismatch means the order will not split into separate line items.",
         "companion_header": "Companion product",
