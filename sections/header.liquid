@@ -74,9 +74,50 @@
 
       <nav class="header__menu">
         {% for link in section.settings.menu.links %}
-          <a href="{{ link.url }}" class="header__menu-link">
-            {{ link.title }}
-          </a>
+          {%- if link.links.size > 0 -%}
+            <div class="header__menu-item" data-menu-item>
+              <a
+                href="{{ link.url }}"
+                class="header__menu-link header__menu-link--parent"
+                aria-expanded="false"
+                aria-controls="header-submenu-{{ forloop.index }}"
+                data-menu-trigger>
+                {{ link.title }}
+                <svg
+                  class="header__menu-caret"
+                  aria-hidden="true"
+                  focusable="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="10"
+                  height="6"
+                  viewBox="0 0 10 6"
+                  fill="none">
+                  <path
+                    d="M1 1L5 5L9 1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </a>
+              <div
+                class="header__submenu"
+                id="header-submenu-{{ forloop.index }}"
+                data-menu-panel>
+                <div class="header__submenu-inner">
+                  {% for child_link in link.links %}
+                    <a href="{{ child_link.url }}" class="header__submenu-link">
+                      {{ child_link.title }}
+                    </a>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {%- else -%}
+            <a href="{{ link.url }}" class="header__menu-link">
+              {{ link.title }}
+            </a>
+          {%- endif -%}
         {% endfor %}
       </nav>
 
@@ -207,9 +248,57 @@
       </div>
       <nav class="mobile-menu__nav">
         {% for link in section.settings.menu.links %}
-          <a href="{{ link.url }}" class="mobile-menu__link">
-            {{ link.title }}
-          </a>
+          {%- if link.links.size > 0 -%}
+            <div class="mobile-menu__group" data-mobile-group>
+              {%- comment -%}
+                The parent stays a link and the caret is its own button, so a
+                menu item with children is still reachable on touch.
+              {%- endcomment -%}
+              <div class="mobile-menu__row">
+                <a href="{{ link.url }}" class="mobile-menu__link">
+                  {{ link.title }}
+                </a>
+                <button
+                  type="button"
+                  class="mobile-menu__expand"
+                  aria-expanded="false"
+                  aria-controls="mobile-submenu-{{ forloop.index }}"
+                  aria-label="{{ 'header.expand_submenu' | t: title: link.title }}"
+                  data-submenu-toggle>
+                  <svg
+                    class="mobile-menu__caret"
+                    aria-hidden="true"
+                    focusable="false"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="9"
+                    viewBox="0 0 10 6"
+                    fill="none">
+                    <path
+                      d="M1 1L5 5L9 1"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="mobile-menu__submenu"
+                id="mobile-submenu-{{ forloop.index }}"
+                hidden>
+                {% for child_link in link.links %}
+                  <a href="{{ child_link.url }}" class="mobile-menu__sublink">
+                    {{ child_link.title }}
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          {%- else -%}
+            <a href="{{ link.url }}" class="mobile-menu__link">
+              {{ link.title }}
+            </a>
+          {%- endif -%}
         {% endfor %}
       </nav>
     </div>
@@ -411,6 +500,111 @@
     border-radius: 6px;
   }
 
+  /* Dropdown — any menu item with child links in the Shopify navigation */
+  .header__menu-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .header__menu-link--parent {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .header__menu-caret {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .header__menu-item:hover .header__menu-caret,
+  .header__menu-item:focus-within .header__menu-caret,
+  .header__menu-item.is-open .header__menu-caret {
+    transform: rotate(180deg);
+  }
+
+  /* The panel's own padding-top bridges the gap under the link, so the pointer
+     never leaves the item on its way down to the submenu. */
+  .header__submenu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding-top: 22px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 10;
+  }
+
+  .header__menu-item:hover .header__submenu,
+  .header__menu-item:focus-within .header__submenu,
+  .header__menu-item.is-open .header__submenu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* Escape shuts the panel while the trigger keeps focus. Without this the
+     :focus-within rule above would immediately reopen it. Cleared once the
+     pointer or focus leaves the item. */
+  .header__menu-item.is-dismissed .header__submenu {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .header__menu-item.is-dismissed .header__menu-caret {
+    transform: none;
+  }
+
+  .header__submenu-inner {
+    display: flex;
+    flex-direction: column;
+    min-width: 190px;
+    padding: 8px 0;
+    background-color: var(--header-bg);
+    border: 1px solid rgba(62, 32, 39, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(62, 32, 39, 0.12);
+  }
+
+  .header__submenu-link {
+    font-family: 'Sweet Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: -0.13px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--header-text);
+    text-decoration: none;
+    padding: 11px 24px;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .header__submenu-link:hover {
+    background-color: rgba(62, 32, 39, 0.05);
+  }
+
+  .header__submenu-link:active {
+    opacity: 0.75;
+  }
+
+  .header__submenu-link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header__submenu,
+    .header__menu-caret,
+    .mobile-menu__caret {
+      transition: none;
+    }
+  }
+
   /* Header Icons */
   .header__icons {
     display: flex;
@@ -579,6 +773,85 @@
     outline-offset: -2px;
   }
 
+  /* Mobile accordion */
+  .mobile-menu__group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-menu__row {
+    display: flex;
+    align-items: center;
+  }
+
+  .mobile-menu__row .mobile-menu__link {
+    flex: 1 1 auto;
+  }
+
+  .mobile-menu__expand {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    width: 56px;
+    color: var(--header-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 0.2s ease;
+  }
+
+  .mobile-menu__expand:hover {
+    background-color: rgba(62, 32, 39, 0.05);
+  }
+
+  .mobile-menu__expand:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+
+  .mobile-menu__caret {
+    transition: transform 0.2s ease;
+  }
+
+  .mobile-menu__expand[aria-expanded='true'] .mobile-menu__caret {
+    transform: rotate(180deg);
+  }
+
+  .mobile-menu__submenu {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 8px;
+  }
+
+  /* display:flex above would otherwise beat the hidden attribute */
+  .mobile-menu__submenu[hidden] {
+    display: none;
+  }
+
+  .mobile-menu__sublink {
+    font-family: 'Sweet Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.14px;
+    text-transform: uppercase;
+    color: var(--header-text);
+    text-decoration: none;
+    padding: 12px 20px 12px 36px;
+    transition: background-color 0.2s ease;
+  }
+
+  .mobile-menu__sublink:hover {
+    background-color: rgba(62, 32, 39, 0.05);
+  }
+
+  .mobile-menu__sublink:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+
   /* Tablet */
   @media (max-width: 1024px) {
     .header__inner {
@@ -730,7 +1003,11 @@
     if (!menu || !toggleButton) return;
 
     function getFocusableElements() {
-      return drawer.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      const candidates = drawer.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+
+      // Links inside a collapsed submenu are still in the DOM but cannot take
+      // focus, so they must not count as the trap's first/last stop.
+      return Array.from(candidates).filter((el) => el.offsetParent !== null);
     }
 
     function openMenu() {
@@ -776,6 +1053,88 @@
     closeButton?.addEventListener('click', closeMenu);
     overlay?.addEventListener('click', closeMenu);
     document.addEventListener('keydown', handleKeydown);
+  })();
+
+  (function initHeaderDropdowns() {
+    const items = document.querySelectorAll('[data-menu-item]');
+    if (!items.length) return;
+
+    function isTouch() {
+      return window.matchMedia('(pointer: coarse)').matches;
+    }
+
+    function setOpen(item, isOpen) {
+      item.classList.toggle('is-open', isOpen);
+      item.querySelector('[data-menu-trigger]')?.setAttribute('aria-expanded', String(isOpen));
+    }
+
+    function closeAll(except) {
+      items.forEach((item) => {
+        if (item !== except) setOpen(item, false);
+      });
+    }
+
+    items.forEach((item) => {
+      const trigger = item.querySelector('[data-menu-trigger]');
+      if (!trigger) return;
+
+      // Touch devices never fire hover: the first tap opens the submenu and a
+      // second tap on the same link follows it through.
+      trigger.addEventListener('click', (event) => {
+        if (!isTouch() || item.classList.contains('is-open')) return;
+
+        event.preventDefault();
+        closeAll(item);
+        setOpen(item, true);
+      });
+
+      item.addEventListener('mouseenter', () => setOpen(item, true));
+      item.addEventListener('mouseleave', () => {
+        item.classList.remove('is-dismissed');
+        if (!item.contains(document.activeElement)) setOpen(item, false);
+      });
+      item.addEventListener('focusin', () => setOpen(item, true));
+      item.addEventListener('focusout', (event) => {
+        if (item.contains(event.relatedTarget)) return;
+
+        item.classList.remove('is-dismissed');
+        setOpen(item, false);
+      });
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+
+      const item =
+        document.activeElement?.closest('[data-menu-item]') ||
+        document.querySelector('[data-menu-item].is-open');
+      if (!item) return;
+
+      setOpen(item, false);
+      item.classList.add('is-dismissed');
+      item.querySelector('[data-menu-trigger]')?.focus();
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('[data-menu-item]')) closeAll();
+    });
+  })();
+
+  (function initMobileSubmenus() {
+    const toggles = document.querySelectorAll('[data-submenu-toggle]');
+    if (!toggles.length) return;
+
+    toggles.forEach((toggle) => {
+      const submenu = document.getElementById(toggle.getAttribute('aria-controls'));
+      if (!submenu) return;
+
+      toggle.addEventListener('click', () => {
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+
+        toggle.setAttribute('aria-expanded', String(!isOpen));
+        submenu.hidden = isOpen;
+      });
+    });
   })();
 
   (function initCartToggle() {

@@ -1,0 +1,64 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "collection-grid",
+      "blocks": {
+        "product_card_wipes_3_pack": {
+          "type": "product_card",
+          "settings": {
+            "product": "cotton-dry-wipes-3-pack",
+            "card_width": "1",
+            "show_badge": false,
+            "custom_button_text": "",
+            "badge_text": ""
+          }
+        },
+        "product_card_wipes_single": {
+          "type": "product_card",
+          "settings": {
+            "product": "cotton-dry-wipes",
+            "card_width": "1",
+            "show_badge": false,
+            "custom_button_text": "",
+            "badge_text": ""
+          }
+        },
+        "product_card_scent_wipes_pack": {
+          "type": "product_card",
+          "settings": {
+            "product": "scent-wipes-pack",
+            "card_width": "1",
+            "show_badge": true,
+            "custom_button_text": "Choose Your Scent",
+            "badge_text": "Coming Soon"
+          }
+        }
+      },
+      "block_order": [
+        "product_card_wipes_3_pack",
+        "product_card_wipes_single",
+        "product_card_scent_wipes_pack"
+      ],
+      "settings": {
+        "heading": "Wipes",
+        "show_seo_content": false,
+        "seo_heading": "",
+        "seo_text": "",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

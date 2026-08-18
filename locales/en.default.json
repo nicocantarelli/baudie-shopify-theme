@@ -103,7 +103,8 @@
     "rewards": "Rewards",
     "cart": "Cart",
     "menu": "Menu",
-    "close_menu": "Close menu"
+    "close_menu": "Close menu",
+    "expand_submenu": "Show {{ title }} submenu"
   },
   "password": {
     "title": "This shop is private",
