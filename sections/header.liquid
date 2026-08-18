@@ -76,8 +76,12 @@
         {% for link in section.settings.menu.links %}
           {%- if link.links.size > 0 -%}
             <div class="header__menu-item" data-menu-item>
-              <a
-                href="{{ link.url }}"
+              {%- comment -%}
+                A menu item with children opens the submenu and nothing else.
+                It is a button rather than a link so it cannot navigate.
+              {%- endcomment -%}
+              <button
+                type="button"
                 class="header__menu-link header__menu-link--parent"
                 aria-expanded="false"
                 aria-controls="header-submenu-{{ forloop.index }}"
@@ -99,7 +103,7 @@
                     stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
-              </a>
+              </button>
               <div
                 class="header__submenu"
                 id="header-submenu-{{ forloop.index }}"
@@ -249,40 +253,31 @@
       <nav class="mobile-menu__nav">
         {% for link in section.settings.menu.links %}
           {%- if link.links.size > 0 -%}
-            <div class="mobile-menu__group" data-mobile-group>
-              {%- comment -%}
-                The parent stays a link and the caret is its own button, so a
-                menu item with children is still reachable on touch.
-              {%- endcomment -%}
-              <div class="mobile-menu__row">
-                <a href="{{ link.url }}" class="mobile-menu__link">
-                  {{ link.title }}
-                </a>
-                <button
-                  type="button"
-                  class="mobile-menu__expand"
-                  aria-expanded="false"
-                  aria-controls="mobile-submenu-{{ forloop.index }}"
-                  aria-label="{{ 'header.expand_submenu' | t: title: link.title }}"
-                  data-submenu-toggle>
-                  <svg
-                    class="mobile-menu__caret"
-                    aria-hidden="true"
-                    focusable="false"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="9"
-                    viewBox="0 0 10 6"
-                    fill="none">
-                    <path
-                      d="M1 1L5 5L9 1"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round" />
-                  </svg>
-                </button>
-              </div>
+            <div class="mobile-menu__group">
+              <button
+                type="button"
+                class="mobile-menu__link mobile-menu__link--toggle"
+                aria-expanded="false"
+                aria-controls="mobile-submenu-{{ forloop.index }}"
+                data-submenu-toggle>
+                {{ link.title }}
+                <svg
+                  class="mobile-menu__caret"
+                  aria-hidden="true"
+                  focusable="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="9"
+                  viewBox="0 0 10 6"
+                  fill="none">
+                  <path
+                    d="M1 1L5 5L9 1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </button>
               <div
                 class="mobile-menu__submenu"
                 id="mobile-submenu-{{ forloop.index }}"
@@ -511,6 +506,11 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    line-height: normal;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
   }
 
   .header__menu-caret {
@@ -779,44 +779,25 @@
     flex-direction: column;
   }
 
-  .mobile-menu__row {
+  .mobile-menu__link--toggle {
     display: flex;
     align-items: center;
-  }
-
-  .mobile-menu__row .mobile-menu__link {
-    flex: 1 1 auto;
-  }
-
-  .mobile-menu__expand {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-self: stretch;
-    width: 56px;
-    color: var(--header-text);
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    line-height: normal;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0;
-    transition: background-color 0.2s ease;
-  }
-
-  .mobile-menu__expand:hover {
-    background-color: rgba(62, 32, 39, 0.05);
-  }
-
-  .mobile-menu__expand:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: -2px;
   }
 
   .mobile-menu__caret {
+    flex-shrink: 0;
     transition: transform 0.2s ease;
   }
 
-  .mobile-menu__expand[aria-expanded='true'] .mobile-menu__caret {
+  .mobile-menu__link--toggle[aria-expanded='true'] .mobile-menu__caret {
     transform: rotate(180deg);
   }
 
@@ -1059,10 +1040,6 @@
     const items = document.querySelectorAll('[data-menu-item]');
     if (!items.length) return;
 
-    function isTouch() {
-      return window.matchMedia('(pointer: coarse)').matches;
-    }
-
     function setOpen(item, isOpen) {
       item.classList.toggle('is-open', isOpen);
       item.querySelector('[data-menu-trigger]')?.setAttribute('aria-expanded', String(isOpen));
@@ -1076,24 +1053,39 @@
 
     items.forEach((item) => {
       const trigger = item.querySelector('[data-menu-trigger]');
-      if (!trigger) return;
+      const panel = item.querySelector('[data-menu-panel]');
+      if (!trigger || !panel) return;
 
-      // Touch devices never fire hover: the first tap opens the submenu and a
-      // second tap on the same link follows it through.
-      trigger.addEventListener('click', (event) => {
-        if (!isTouch() || item.classList.contains('is-open')) return;
+      // The panel opens from CSS on hover and focus as well as from .is-open,
+      // so ask the computed style rather than tracking every source separately.
+      function isPanelVisible() {
+        return window.getComputedStyle(panel).visibility === 'visible';
+      }
 
-        event.preventDefault();
+      // Touch devices never fire hover, so the tap has to do the opening. On a
+      // mouse it doubles as a way to shut a panel the pointer is still over.
+      trigger.addEventListener('click', () => {
+        if (isPanelVisible()) {
+          setOpen(item, false);
+          item.classList.add('is-dismissed');
+          return;
+        }
+
         closeAll(item);
+        item.classList.remove('is-dismissed');
         setOpen(item, true);
       });
 
-      item.addEventListener('mouseenter', () => setOpen(item, true));
+      item.addEventListener('mouseenter', () => {
+        if (!item.classList.contains('is-dismissed')) setOpen(item, true);
+      });
       item.addEventListener('mouseleave', () => {
         item.classList.remove('is-dismissed');
         if (!item.contains(document.activeElement)) setOpen(item, false);
       });
-      item.addEventListener('focusin', () => setOpen(item, true));
+      item.addEventListener('focusin', () => {
+        if (!item.classList.contains('is-dismissed')) setOpen(item, true);
+      });
       item.addEventListener('focusout', (event) => {
         if (item.contains(event.relatedTarget)) return;
 
