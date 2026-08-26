@@ -36,17 +36,17 @@
           "type": "product_card",
           "settings": {
             "product": "scent-wipes-pack",
-            "card_width": "1",
+            "card_width": "2",
             "show_badge": true,
             "custom_button_text": "Choose Your Scent",
-            "badge_text": "Coming Soon"
+            "badge_text": ""
           }
         },
         "product_card_wipes_3_pack": {
           "type": "product_card",
           "settings": {
             "product": "cotton-dry-wipes-3-pack",
-            "card_width": "1",
+            "card_width": "2",
             "show_badge": false,
             "custom_button_text": "",
             "badge_text": ""
