@@ -17,8 +17,14 @@
   assign current_variant = product.selected_or_first_available_variant | default: product.variants.first
   assign product_text_color = product.metafields.custom.product_text_color | default: '#3E2027'
   assign popup_text_color = section.settings.popup_text_color | default: '#3E2027'
-  assign gradient_1 = section.settings.gradient_color_1 | default: '#F4D2A4'
-  assign gradient_2 = section.settings.gradient_color_2 | default: '#FCF5DE'
+  comment
+    Gradient resolves metafield first, then the section setting. The scent pages
+    (sections/product.liquid) have always been metafield-driven, so colors get
+    authored on the product; this page only read its section setting, and a
+    template with the setting saved meant no metafield could ever show through.
+  endcomment
+  assign gradient_1 = product.metafields.custom.gradient_color_1 | default: section.settings.gradient_color_1 | default: '#F4D2A4'
+  assign gradient_2 = product.metafields.custom.gradient_color_2 | default: section.settings.gradient_color_2 | default: '#FCF5DE'
   assign bottle_size = product.metafields.custom.bottle_size
   assign product_details = product.metafields.custom.product_details
   assign scent_notes = product.metafields.custom.scent_notes
