@@ -3,6 +3,7 @@
 
   @param {product} product - The product to display
   @param {string} [card_width] - Card width: "1" (single) or "2" (double), default "1"
+  @param {boolean} [narrow_image_mobile] - Narrows this card's image on mobile only, default false
   @param {boolean} [show_badge] - Whether to show a badge
   @param {string} [badge_text] - Text for the badge
   @param {string} [custom_button_text] - Replaces action buttons with a link to product page
@@ -57,7 +58,7 @@
   endif
 -%}
 
-<article class="product-card{% if is_wide %} product-card--wide{% endif %}{% if has_video %} product-card--has-video{% endif %}" data-product-card>
+<article class="product-card{% if is_wide %} product-card--wide{% endif %}{% if has_video %} product-card--has-video{% endif %}{% if narrow_image_mobile %} product-card--narrow-mobile{% endif %}" data-product-card>
   <div class="product-card__image-wrapper" style="background-color: {{ card_bg }};">
     {%- if is_coming_soon -%}
       <span class="product-card__badge product-card__badge--coming-soon" aria-hidden="true">{{ 'products.coming_soon' | t }}</span>

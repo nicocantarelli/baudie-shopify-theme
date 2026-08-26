@@ -36,6 +36,7 @@
                   {% render 'product-card',
                     product: block.settings.product,
                     card_width: block.settings.card_width,
+                    narrow_image_mobile: block.settings.narrow_image_mobile,
                     show_badge: block.settings.show_badge,
                     badge_text: block.settings.badge_text,
                     custom_button_text: block.settings.custom_button_text,
@@ -580,6 +581,14 @@
       height: 280px;
     }
 
+    /* Per-card opt-in (block setting "Narrow image on mobile"). Card art that is
+       wide relative to its frame — the duo bundle's pack + bottle, for one —
+       runs past the wrapper at the default 247px and gets clipped at the sides
+       in a two-up mobile grid. Shrinking it here keeps every other card as is. */
+    .product-card--narrow-mobile .product-card__img--single {
+      width: var(--card-mobile-image-width, 78%);
+    }
+
     .product-card__actions {
       opacity: 1;
       transform: translateY(0);
@@ -796,6 +805,13 @@
             }
           ],
           "default": "1"
+        },
+        {
+          "type": "checkbox",
+          "id": "narrow_image_mobile",
+          "label": "t:blocks.product_card.settings.narrow_image_mobile",
+          "info": "t:blocks.product_card.settings.narrow_image_mobile_info",
+          "default": false
         },
         {
           "type": "checkbox",
