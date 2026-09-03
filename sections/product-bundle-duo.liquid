@@ -33,12 +33,22 @@
   assign scent_collection = section.settings.scent_collection
 
   comment
-    Default scent. An empty slot reads fine on the three-bottle bundle, where
-    the whole row starts empty, but next to the fixed wipe it looks broken — so
-    this page opens with a scent already picked and the customer changes it from
-    there. Resolved against the same eligibility filter the picker uses, and
-    falls back to the first eligible scent when the configured one is sold out
-    or coming soon, so the slot is never empty.
+    Default scent — for the BOTTLE ART ONLY. An empty slot reads fine on the
+    three-bottle bundle, where the whole row starts empty, but next to the fixed
+    wipe it looks broken, so slot 1 opens on this scent.
+
+    It is deliberately not a pre-made selection. When it was one, the page could
+    add a scent the customer never consciously chose, and any mismatch between
+    that scent's title and its option in Simple Bundles broke the bundle
+    silently: the Scents group went unresolved, the whole duo price landed on
+    the wipe, and the enhancer came out as a loose full-price line — the
+    customer paid for the duo and for the enhancer again (order #6835).
+    Add to cart now stays disabled until the customer picks, so nothing is ever
+    submitted on their behalf.
+
+    Resolved against the same eligibility filter the picker uses, and falls back
+    to the first eligible scent when the configured one is sold out or coming
+    soon, so the slot is never empty.
   endcomment
   assign default_scent_handle = section.settings.default_scent_product.handle
   assign default_scent = ''
@@ -127,11 +137,12 @@
 
   {%- comment -%}
     Image Column — the picked bottle on the left, the fixed companion on the
-    right. Slot 1 is rendered with the default scent already in it so the pair
-    never flashes an empty placeholder before the JS runs; the JS then swaps the
-    same <img> on every later pick. The dashed placeholder is only rendered as a
-    safety net for when no scent is eligible at all (every one sold out or
-    coming soon). Slot 2 is static and never changes.
+    right. Slot 1 opens on the default scent so the pair never reads as broken
+    before a pick; the JS swaps the same <img> on every pick after that. It is
+    artwork only — it stands in for "a bottle goes here", and does NOT stand in
+    for a choice. The dashed placeholder is only rendered as a safety net for
+    when no scent is eligible at all (every one sold out or coming soon).
+    Slot 2 is static and never changes.
 
     No srcset here on purpose — the JS swap only sets .src, and a srcset would
     win over it and freeze the bottle on the default scent.
@@ -218,9 +229,9 @@
           aria-haspopup="listbox"
           aria-controls="duo-scent-list-{{ section.id }}">
           {%- comment -%}
-            Stays on the prompt even though a default scent is already applied
-            below — the bottle shows what they'd get, but the trigger keeps
-            asking until they actually pick one.
+            Reads as a prompt until the customer picks, and nothing is added to
+            the cart before they do — the bottle beside it is a preview of the
+            pair, not a selection. See the default-scent note at the top.
           {%- endcomment -%}
           <span class="bundle-duo__selector-label" data-selector-label>{{ 'sections.product_bundle.choose_scent' | t }}</span>
           <svg class="bundle-duo__selector-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none" aria-hidden="true" focusable="false">
@@ -240,15 +251,9 @@
                 {%- assign scent_coming_soon = true -%}
               {%- endif -%}
               {% if scent_product.metafields.custom.scent_name != blank and scent_product.available and scent_coming_soon == false %}
-                {%- comment -%} data-duo-default is what the JS re-selects on load so the cart state matches the pre-rendered UI. {%- endcomment -%}
-                {%- assign is_default_scent = false -%}
-                {%- if default_scent != blank and scent_product.handle == default_scent.handle -%}
-                  {%- assign is_default_scent = true -%}
-                {%- endif -%}
                 <li
                   role="option"
-                  aria-selected="{% if is_default_scent %}true{% else %}false{% endif %}"
-                  {% if is_default_scent %}data-duo-default{% endif %}
+                  aria-selected="false"
                   class="bundle-duo__selector-option"
                   data-product-handle="{{ scent_product.handle }}"
                   data-product-title="{{ scent_product.title | escape }}"
@@ -1343,15 +1348,6 @@
               this.selectScent(selector, selectorIndex, option);
             });
           });
-
-          // The default scent is already rendered into the label and the bottle
-          // slot server-side; running it back through selectScent is what
-          // registers it as a real selection, so the cart submits it and the add
-          // button starts enabled. Nothing visible changes here.
-          const defaultOption = selector.querySelector('.bundle-duo__selector-option[data-duo-default]');
-          if (defaultOption) {
-            this.selectScent(selector, selectorIndex, defaultOption, true);
-          }
         });
 
         document.addEventListener('click', (e) => {
@@ -1380,7 +1376,7 @@
         });
       }
 
-      selectScent(selector, selectorIndex, option, isDefault) {
+      selectScent(selector, selectorIndex, option) {
         const handle = option.getAttribute('data-product-handle');
         let product = this.productData[handle];
         if (!product) {
@@ -1398,14 +1394,11 @@
 
         this.selections[selectorIndex] = handle;
 
-        // The load-time default fills the cart and the bottle slot but leaves the
-        // trigger reading "Choose your scent" in its unpicked state — only a
-        // deliberate pick renames it and flips it to the filled style.
-        if (!isDefault) {
-          const label = selector.querySelector('[data-selector-label]');
-          label.textContent = product.title;
-          selector.classList.add('is-selected');
-        }
+        // Only ever reached from a deliberate pick — the pre-rendered default
+        // bottle is artwork, not a selection, so it never lands here.
+        const label = selector.querySelector('[data-selector-label]');
+        label.textContent = product.title;
+        selector.classList.add('is-selected');
 
         option.setAttribute('aria-selected', 'true');
         selector.querySelectorAll('.bundle-duo__selector-option').forEach(opt => {
