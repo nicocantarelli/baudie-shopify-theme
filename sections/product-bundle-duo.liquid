@@ -159,12 +159,6 @@
             width="{{ default_scent_image.width }}"
             height="{{ default_scent_image.height }}">
         {%- else -%}
-          <img
-            class="bundle-duo__bottle-img"
-            src=""
-            alt=""
-            loading="eager"
-            style="display: none;">
           <div class="bundle-duo__bottle-placeholder">
             <span class="bundle-duo__bottle-number">1</span>
           </div>
@@ -1423,10 +1417,18 @@
         const slot = this.section.querySelector('[data-duo-slot="' + selectorIndex + '"]');
         if (!slot) return;
 
-        const img = slot.querySelector('.bundle-duo__bottle-img');
+        let img = slot.querySelector('.bundle-duo__bottle-img');
         const placeholder = slot.querySelector('.bundle-duo__bottle-placeholder');
 
         if (product.cardImage) {
+          if (!img) {
+            img = document.createElement('img');
+            img.className = 'bundle-duo__bottle-img';
+            img.loading = 'eager';
+            img.width = 800;
+            img.height = 800;
+            slot.prepend(img);
+          }
           img.src = product.cardImage;
           img.alt = product.title;
           img.style.display = 'block';
