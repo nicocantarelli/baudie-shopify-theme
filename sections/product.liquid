@@ -10,6 +10,8 @@
   assign gradient_2 = product.metafields.custom.gradient_color_2 | default: '#D1E3F4'
   assign gradient_3 = product.metafields.custom.gradient_color_3 | default: '#96C8FA'
   assign product_text_color = product.metafields.custom.product_text_color | default: '#3E2027'
+  assign product_title_note = product.metafields.custom.product_title_note.value
+  assign product_title_note_color = product.metafields.custom.product_title_note_color.value | default: product_text_color
   assign popup_text_color = section.settings.popup_text_color | default: '#3E2027'
   assign bottle_size = product.metafields.custom.bottle_size
   assign product_details = product.metafields.custom.product_details
@@ -67,13 +69,20 @@
     <div class="product-main__mobile-subtitle-row">
       <p class="product-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
     </div>
-    <h1 class="product-main__title">
-      {%- if product.metafields.custom.scent_name != blank -%}
-        {{ 'sections.product.scent_prefix' | t }} {{ product.metafields.custom.scent_name }}
-      {%- else -%}
-        {{ product.title }}
+    <div class="product-main__title-group">
+      <h1 class="product-main__title">
+        {%- if product.metafields.custom.scent_name != blank -%}
+          {{ 'sections.product.scent_prefix' | t }} {{ product.metafields.custom.scent_name }}
+        {%- else -%}
+          {{ product.title }}
+        {%- endif -%}
+      </h1>
+      {%- if product_title_note != blank -%}
+        <p class="product-main__subtitle product-main__title-note" style="--product-title-note-color: {{ product_title_note_color }};">
+          {{ product_title_note | escape }}
+        </p>
       {%- endif -%}
-    </h1>
+    </div>
     {% if bottle_size %}
       <p class="product-main__size product-main__size--mobile">{{ bottle_size }}</p>
     {% endif %}
@@ -107,13 +116,20 @@
     {%- comment -%} Product Header (desktop only — mobile header is above image) {%- endcomment -%}
     <div class="product-main__header--desktop">
       <p class="product-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
-      <h1 class="product-main__title">
-        {%- if product.metafields.custom.scent_name != blank -%}
-          {{ 'sections.product.scent_prefix' | t }} {{ product.metafields.custom.scent_name }}
-        {%- else -%}
-          {{ product.title }}
+      <div class="product-main__title-group">
+        <h1 class="product-main__title">
+          {%- if product.metafields.custom.scent_name != blank -%}
+            {{ 'sections.product.scent_prefix' | t }} {{ product.metafields.custom.scent_name }}
+          {%- else -%}
+            {{ product.title }}
+          {%- endif -%}
+        </h1>
+        {%- if product_title_note != blank -%}
+          <p class="product-main__subtitle product-main__title-note" style="--product-title-note-color: {{ product_title_note_color }};">
+            {{ product_title_note | escape }}
+          </p>
         {%- endif -%}
-      </h1>
+      </div>
       {% if bottle_size %}
         <p class="product-main__size">{{ bottle_size }}</p>
       {% endif %}
@@ -561,6 +577,18 @@
     line-height: 1;
     color: var(--product-text);
     margin: 0;
+  }
+
+  .product-main__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .product-main__title-note {
+    color: var(--product-title-note-color, var(--product-text));
+    font-size: 13px;
+    letter-spacing: -0.13px;
   }
 
   .product-main__size {
@@ -1180,6 +1208,11 @@
     .product-main__subtitle {
       font-size: 20px;
       letter-spacing: -0.2px;
+    }
+
+    .product-main__title-note {
+      font-size: 16px;
+      letter-spacing: -0.16px;
     }
 
     .product-main__size {
