@@ -188,6 +188,7 @@ Custom product metafields used throughout the theme. All live under the `custom`
 | `product_card_background` | Card background color (defaults to `#FCF0D2`) |
 | `card_background_color` | Background in `meet-your-scents` (defaults to `#FFCAD2`) |
 | `product_text_color` | Text color override on PDP |
+| `product_title_note_color` | Optional color for the supporting line below the PDP title; defaults to `product_text_color` |
 
 ### Copy + content
 
@@ -200,6 +201,7 @@ Custom product metafields used throughout the theme. All live under the `custom`
 | `key_ingredients` | Rich text — featured ingredients |
 | `full_ingredient_list` | Rich text — full INCI list |
 | `scent_name` | Display name for the scent picker (separate from product title) |
+| `product_title_note` | Optional single-line supporting copy shown directly below the PDP title |
 
 ### Upsell system
 
