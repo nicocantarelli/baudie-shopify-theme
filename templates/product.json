@@ -77,6 +77,14 @@
         "popup_text_color": "#3e2027",
         "bundle_upsell_bg_color": "#ffffff",
         "bundle_upsell_text_color": "#3e2027",
+        "show_patent_stamp": true,
+        "patent_stamp_position": "image_bottom_right",
+        "patent_stamp_heading": "PATENTED FORMULA",
+        "patent_stamp_number": "U.S. PATENT 11,857,668",
+        "patent_stamp_size": 100,
+        "patent_stamp_rotation": 0,
+        "patent_stamp_background": "#3e2027",
+        "patent_stamp_text_color": "#fcf5de",
         "final_sale_placement": "title"
       }
     },
