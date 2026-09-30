@@ -68,12 +68,14 @@
       class="product-main__patent-stamp"
       role="note"
       aria-label="{{ section.settings.patent_stamp_heading | escape }} {{ section.settings.patent_stamp_number | escape }}">
-      {%- if section.settings.patent_stamp_heading != blank -%}
-        <span class="product-main__patent-stamp-heading">{{ section.settings.patent_stamp_heading | escape }}</span>
-      {%- endif -%}
-      {%- if section.settings.patent_stamp_number != blank -%}
-        <span class="product-main__patent-stamp-number">{{ section.settings.patent_stamp_number | escape }}</span>
-      {%- endif -%}
+      <span class="product-main__patent-stamp-content">
+        {%- if section.settings.patent_stamp_heading != blank -%}
+          <span class="product-main__patent-stamp-heading">{{ section.settings.patent_stamp_heading | escape }}</span>
+        {%- endif -%}
+        {%- if section.settings.patent_stamp_number != blank -%}
+          <span class="product-main__patent-stamp-number">{{ section.settings.patent_stamp_number | escape }}</span>
+        {%- endif -%}
+      </span>
     </div>
   {%- endcapture -%}
 {%- endif -%}
@@ -602,16 +604,25 @@
     height: var(--patent-stamp-mobile-size);
     box-sizing: border-box;
     border-radius: 50%;
+    position: relative;
+    text-align: center;
+    color: var(--patent-stamp-text);
+    background: var(--patent-stamp-background);
+    transform: rotate(var(--patent-stamp-rotation));
+  }
+
+  .product-main__patent-stamp-content {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 5px;
-    padding: 12px;
+    padding: 8px;
     text-align: center;
-    color: var(--patent-stamp-text);
-    background: var(--patent-stamp-background);
-    transform: rotate(var(--patent-stamp-rotation));
+    transform: translateY(2px);
   }
 
   .product-main__patent-stamp-heading,
@@ -623,13 +634,14 @@
   }
 
   .product-main__patent-stamp-heading {
-    max-width: 9ch;
+    width: 100%;
     font-weight: 700;
     font-size: 11px;
     letter-spacing: 0.03em;
   }
 
   .product-main__patent-stamp-number {
+    width: 100%;
     font-weight: 500;
     font-size: 7px;
     letter-spacing: 0.01em;
@@ -1316,7 +1328,10 @@
     .product-main__patent-stamp {
       width: var(--patent-stamp-size);
       height: var(--patent-stamp-size);
-      padding: 14px;
+    }
+
+    .product-main__patent-stamp-content {
+      transform: translateY(3px);
     }
 
     .product-main__patent-stamp-heading {
