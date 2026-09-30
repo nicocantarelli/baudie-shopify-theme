@@ -1,6 +1,6 @@
 {%- comment -%}
   Main product section with gradient background image, product info,
-  accordions, Tolstoy video embed, and trust badges.
+  accordions, Tolstoy video embed, patent stamp, and trust badges.
 {%- endcomment -%}
 
 {%- liquid
@@ -13,6 +13,10 @@
   assign product_title_note = product.metafields.custom.product_title_note.value
   assign product_title_note_color = product.metafields.custom.product_title_note_color.value | default: product_text_color
   assign popup_text_color = section.settings.popup_text_color | default: '#3E2027'
+  assign show_patent_stamp = section.settings.show_patent_stamp
+  assign patent_stamp_position = section.settings.patent_stamp_position | default: 'image_bottom_right'
+  assign patent_stamp_size = section.settings.patent_stamp_size | default: 100
+  assign patent_stamp_mobile_size = patent_stamp_size | times: 82 | divided_by: 100
   assign bottle_size = product.metafields.custom.bottle_size
   assign product_details = product.metafields.custom.product_details
   assign scent_notes = product.metafields.custom.scent_notes
@@ -58,11 +62,27 @@
   {%- capture final_sale_mark -%}<span class="product-main__final-sale">{{ 'sections.product.final_sale_label' | t }}</span>{%- endcapture -%}
 {%- endif -%}
 
+{%- if show_patent_stamp -%}
+  {%- capture patent_stamp -%}
+    <div
+      class="product-main__patent-stamp"
+      role="note"
+      aria-label="{{ section.settings.patent_stamp_heading | escape }} {{ section.settings.patent_stamp_number | escape }}">
+      {%- if section.settings.patent_stamp_heading != blank -%}
+        <span class="product-main__patent-stamp-heading">{{ section.settings.patent_stamp_heading | escape }}</span>
+      {%- endif -%}
+      {%- if section.settings.patent_stamp_number != blank -%}
+        <span class="product-main__patent-stamp-number">{{ section.settings.patent_stamp_number | escape }}</span>
+      {%- endif -%}
+    </div>
+  {%- endcapture -%}
+{%- endif -%}
+
 <section
-  class="product-main full-width"
+  class="product-main{% if show_patent_stamp %} product-main--patent-{{ patent_stamp_position }}{% endif %} full-width"
   data-section-id="{{ section.id }}"
   aria-label="{{ product.title }}"
-  style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --gradient-3: {{ gradient_3 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }};">
+  style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --gradient-3: {{ gradient_3 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }}; --patent-stamp-size: {{ patent_stamp_size }}px; --patent-stamp-mobile-size: {{ patent_stamp_mobile_size }}px; --patent-stamp-rotation: {{ section.settings.patent_stamp_rotation | default: 0 }}deg; --patent-stamp-background: {{ section.settings.patent_stamp_background | default: '#3E2027' }}; --patent-stamp-text: {{ section.settings.patent_stamp_text_color | default: '#FCF5DE' }};">
 
   {%- comment -%} Mobile Header (visible mobile only, above image) {%- endcomment -%}
   <div class="product-main__mobile-header">
@@ -87,6 +107,11 @@
       <p class="product-main__size product-main__size--mobile">{{ bottle_size }}</p>
     {% endif %}
     {%- if is_final_sale and final_sale_placement == 'title' -%}{{ final_sale_mark }}{%- endif -%}
+    {%- if show_patent_stamp and patent_stamp_position == 'title_right' -%}
+      <div class="product-main__patent-position product-main__patent-position--title">
+        {{ patent_stamp }}
+      </div>
+    {%- endif -%}
   </div>
 
   {%- comment -%} Image Column {%- endcomment -%}
@@ -108,6 +133,11 @@
         }}
       </div>
     {% endif %}
+    {%- if show_patent_stamp and patent_stamp_position == 'image_bottom_right' -%}
+      <div class="product-main__patent-position product-main__patent-position--image">
+        {{ patent_stamp }}
+      </div>
+    {%- endif -%}
   </div>
 
   {%- comment -%} Info Column {%- endcomment -%}
@@ -134,6 +164,11 @@
         <p class="product-main__size">{{ bottle_size }}</p>
       {% endif %}
       {%- if is_final_sale and final_sale_placement == 'title' -%}{{ final_sale_mark }}{%- endif -%}
+      {%- if show_patent_stamp and patent_stamp_position == 'title_right' -%}
+        <div class="product-main__patent-position product-main__patent-position--title">
+          {{ patent_stamp }}
+        </div>
+      {%- endif -%}
     </div>
 
     {%- comment -%} Rating (synced from Klaviyo Reviews metafields) {%- endcomment -%}
@@ -231,6 +266,12 @@
       </div>
     {% endif %}
     </div>
+
+    {%- if show_patent_stamp and patent_stamp_position == 'below_purchase' -%}
+      <div class="product-main__patent-position product-main__patent-position--flow">
+        {{ patent_stamp }}
+      </div>
+    {%- endif -%}
 
     {%- comment -%} Accordions {%- endcomment -%}
     {%- liquid
@@ -396,6 +437,12 @@
       {% endif %}
     </div>
 
+    {%- if show_patent_stamp and patent_stamp_position == 'above_badges' -%}
+      <div class="product-main__patent-position product-main__patent-position--flow">
+        {{ patent_stamp }}
+      </div>
+    {%- endif -%}
+
     {%- comment -%} Trust Badges {%- endcomment -%}
     {% if section.blocks.size > 0 %}
       <div class="product-main__badges">
@@ -525,6 +572,73 @@
     height: 130%;
     object-fit: contain;
     object-position: center;
+  }
+
+  /* --- Patent Stamp --- */
+
+  .product-main__patent-position {
+    z-index: 3;
+  }
+
+  .product-main__patent-position--image {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .product-main__patent-position--title {
+    position: absolute;
+    top: 42px;
+    right: 12px;
+  }
+
+  .product-main__patent-position--flow {
+    display: flex;
+    align-self: flex-start;
+  }
+
+  .product-main__patent-stamp {
+    width: var(--patent-stamp-mobile-size);
+    height: var(--patent-stamp-mobile-size);
+    box-sizing: border-box;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 12px;
+    text-align: center;
+    color: var(--patent-stamp-text);
+    background: var(--patent-stamp-background);
+    transform: rotate(var(--patent-stamp-rotation));
+  }
+
+  .product-main__patent-stamp-heading,
+  .product-main__patent-stamp-number {
+    display: block;
+    font-family: var(--font-sweet-sans);
+    line-height: 1.08;
+    text-transform: uppercase;
+  }
+
+  .product-main__patent-stamp-heading {
+    max-width: 9ch;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+
+  .product-main__patent-stamp-number {
+    font-weight: 500;
+    font-size: 7px;
+    letter-spacing: 0.01em;
+  }
+
+  .product-main--patent-title_right .product-main__mobile-header {
+    position: relative;
+    min-height: var(--patent-stamp-mobile-size);
+    padding-right: calc(var(--patent-stamp-mobile-size) + 28px);
   }
 
   /* --- Info Column --- */
@@ -1189,6 +1303,30 @@
       max-width: 85%;
     }
 
+    .product-main__patent-position--image {
+      right: 32px;
+      bottom: 32px;
+    }
+
+    .product-main__patent-position--title {
+      top: 0;
+      right: 0;
+    }
+
+    .product-main__patent-stamp {
+      width: var(--patent-stamp-size);
+      height: var(--patent-stamp-size);
+      padding: 14px;
+    }
+
+    .product-main__patent-stamp-heading {
+      font-size: 13px;
+    }
+
+    .product-main__patent-stamp-number {
+      font-size: 9px;
+    }
+
     .product-main__info-column {
       width: 45%;
       padding: 120px 40px 60px;
@@ -1221,7 +1359,13 @@
     }
 
     .product-main__header--desktop {
+      position: relative;
       gap: 16px;
+    }
+
+    .product-main--patent-title_right .product-main__header--desktop {
+      min-height: var(--patent-stamp-size);
+      padding-right: calc(var(--patent-stamp-size) + 20px);
     }
 
     /* Desktop: rating pinned to top-right of the info column */
@@ -1472,6 +1616,72 @@
     },
     {
       "type": "header",
+      "content": "t:sections.product.patent_stamp_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_patent_stamp",
+      "label": "t:sections.product.show_patent_stamp",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "patent_stamp_position",
+      "label": "t:sections.product.patent_stamp_position",
+      "options": [
+        { "value": "image_bottom_right", "label": "t:sections.product.patent_stamp_position_image" },
+        { "value": "title_right", "label": "t:sections.product.patent_stamp_position_title" },
+        { "value": "below_purchase", "label": "t:sections.product.patent_stamp_position_purchase" },
+        { "value": "above_badges", "label": "t:sections.product.patent_stamp_position_badges" }
+      ],
+      "default": "image_bottom_right"
+    },
+    {
+      "type": "text",
+      "id": "patent_stamp_heading",
+      "label": "t:sections.product.patent_stamp_heading",
+      "default": "PATENTED FORMULA"
+    },
+    {
+      "type": "text",
+      "id": "patent_stamp_number",
+      "label": "t:sections.product.patent_stamp_number",
+      "default": "U.S. PATENT 11,857,668"
+    },
+    {
+      "type": "range",
+      "id": "patent_stamp_size",
+      "label": "t:sections.product.patent_stamp_size",
+      "min": 72,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "patent_stamp_rotation",
+      "label": "t:sections.product.patent_stamp_rotation",
+      "min": -10,
+      "max": 10,
+      "step": 1,
+      "unit": "deg",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "patent_stamp_background",
+      "label": "t:sections.product.patent_stamp_background",
+      "default": "#3E2027"
+    },
+    {
+      "type": "color",
+      "id": "patent_stamp_text_color",
+      "label": "t:sections.product.patent_stamp_text_color",
+      "default": "#FCF5DE"
+    },
+    {
+      "type": "header",
       "content": "t:sections.product.bundle_upsell_header"
     },
     {
@@ -1532,8 +1742,7 @@
         { "type": "trust_badge", "settings": { "label": "Cruelty\nFree" } },
         { "type": "trust_badge", "settings": { "label": "Plant-Based\nIngredients" } },
         { "type": "trust_badge", "settings": { "label": "Phthalate\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Vegan" } },
-        { "type": "trust_badge", "settings": { "label": "U.S. Patent\n11,857,668" } }
+        { "type": "trust_badge", "settings": { "label": "Vegan" } }
       ]
     }
   ],
