@@ -1,0 +1,92 @@
+{% doc %}
+  Renders the shared patent stamp for product and bundle sections.
+  Uses the parent section's --patent-stamp-* CSS variables.
+
+  @param {object} stamp_settings - Section settings for the heading and patent number.
+
+  @example
+  {% render 'patent-stamp', stamp_settings: section.settings %}
+{% enddoc %}
+
+<div
+  class="patent-stamp"
+  role="note"
+  aria-label="{{ stamp_settings.patent_stamp_heading | escape }} {{ stamp_settings.patent_stamp_number | escape }}">
+  <span class="patent-stamp__content">
+    {%- if stamp_settings.patent_stamp_heading != blank -%}
+      <span class="patent-stamp__heading">{{ stamp_settings.patent_stamp_heading | escape }}</span>
+    {%- endif -%}
+    {%- if stamp_settings.patent_stamp_number != blank -%}
+      <span class="patent-stamp__number">{{ stamp_settings.patent_stamp_number | escape }}</span>
+    {%- endif -%}
+  </span>
+</div>
+
+{% stylesheet %}
+  .patent-stamp {
+    width: var(--patent-stamp-mobile-size);
+    height: var(--patent-stamp-mobile-size);
+    box-sizing: border-box;
+    border-radius: 50%;
+    position: relative;
+    text-align: center;
+    color: var(--patent-stamp-text);
+    background: var(--patent-stamp-background);
+    transform: rotate(var(--patent-stamp-rotation));
+    flex-shrink: 0;
+  }
+
+  .patent-stamp__content {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px;
+    text-align: center;
+    transform: translateY(2px);
+  }
+
+  .patent-stamp__heading,
+  .patent-stamp__number {
+    display: block;
+    width: 100%;
+    font-family: var(--font-sweet-sans);
+    line-height: 1.08;
+    text-transform: uppercase;
+  }
+
+  .patent-stamp__heading {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+
+  .patent-stamp__number {
+    font-weight: 500;
+    font-size: 7px;
+    letter-spacing: 0.01em;
+  }
+
+  @media (min-width: 1024px) {
+    .patent-stamp {
+      width: var(--patent-stamp-size);
+      height: var(--patent-stamp-size);
+    }
+
+    .patent-stamp__content {
+      transform: translateY(3px);
+    }
+
+    .patent-stamp__heading {
+      font-size: 13px;
+    }
+
+    .patent-stamp__number {
+      font-size: 9px;
+    }
+  }
+{% endstylesheet %}
