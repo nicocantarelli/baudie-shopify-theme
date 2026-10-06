@@ -172,25 +172,78 @@
       %}
     {% endif %}
 
+    {%- liquid
+      # Distinguish a true out-of-stock from an in-stock variant that simply
+      # isn't purchasable in the visitor's market/region (Shopify Markets).
+      # Only show the Klaviyo notify-me form for genuine restock scenarios.
+      assign inventory_tracked = false
+      if current_variant.inventory_management != blank
+        assign inventory_tracked = true
+      endif
+      assign is_out_of_stock = false
+      if inventory_tracked and current_variant.inventory_quantity <= 0
+        assign is_out_of_stock = true
+      endif
+
+      assign can_purchase = true
+      if is_coming_soon or is_out_of_stock
+        assign can_purchase = false
+      elsif current_variant.available == false
+        assign can_purchase = false
+      endif
+
+      comment
+        Subscriptions (Appstle selling plans). Products only get the purchase
+        options when they're assigned to a plan in Appstle; everything else
+        renders exactly as before. A product that requires a plan always shows
+        them, otherwise it couldn't be added to the cart at all.
+        `?selling_plan=` in the URL preselects that plan, else the first one.
+      endcomment
+      assign form_id = 'ProductForm-' | append: section.id
+      assign selected_allocation = nil
+      if can_purchase and current_variant.selling_plan_allocations.size > 0
+        if section.settings.show_purchase_options or product.requires_selling_plan
+          assign selected_allocation = current_variant.selected_selling_plan_allocation | default: current_variant.selling_plan_allocations.first
+        endif
+      endif
+    -%}
+
     {%- comment -%} Purchase group: price, button, and upsell share the same width {%- endcomment -%}
-    <div class="product-main__purchase-group">
+    <div class="product-main__purchase-group{% if selected_allocation %} product-main__purchase-group--subscription{% endif %}">
+      {%- if selected_allocation -%}
+        {% render 'purchase-options',
+          product: product,
+          variant: current_variant,
+          selected_allocation: selected_allocation,
+          form_id: form_id,
+          perk_1: section.settings.subscription_perk_1,
+          perk_2: section.settings.subscription_perk_2,
+          perk_3: section.settings.subscription_perk_3
+        %}
+      {%- endif -%}
       <div class="product-main__price-block">
-        <p class="product-main__price">{{ current_variant.price | money }}</p>
+        {%- if selected_allocation -%}
+          {%- liquid
+            assign price_has_compare = false
+            if selected_allocation.compare_at_price > selected_allocation.price
+              assign price_has_compare = true
+            endif
+          -%}
+          <p class="product-main__price" data-purchase-price-for="{{ form_id }}">
+            <span class="visually-hidden" data-sale-label{% unless price_has_compare %} hidden{% endunless %}>
+              {{- 'products.sale_price' | t }}:
+            </span>
+            <span data-price-amount>{{ selected_allocation.price | money }}</span>
+            <s class="product-main__price-compare" data-compare-price{% unless price_has_compare %} hidden{% endunless %}>
+              <span class="visually-hidden">{{ 'products.regular_price' | t }}:</span>
+              <span data-compare-amount>{{ selected_allocation.compare_at_price | money }}</span>
+            </s>
+          </p>
+        {%- else -%}
+          <p class="product-main__price">{{ current_variant.price | money }}</p>
+        {%- endif -%}
         {%- if is_final_sale and final_sale_placement == 'price' -%}{{ final_sale_mark }}{%- endif -%}
       </div>
-      {%- liquid
-        # Distinguish a true out-of-stock from an in-stock variant that simply
-        # isn't purchasable in the visitor's market/region (Shopify Markets).
-        # Only show the Klaviyo notify-me form for genuine restock scenarios.
-        assign inventory_tracked = false
-        if current_variant.inventory_management != blank
-          assign inventory_tracked = true
-        endif
-        assign is_out_of_stock = false
-        if inventory_tracked and current_variant.inventory_quantity <= 0
-          assign is_out_of_stock = true
-        endif
-      -%}
       {%- if is_coming_soon or is_out_of_stock -%}
         {% render 'notify-me-form',
           variant: current_variant,
@@ -202,7 +255,7 @@
           <span>{{ 'products.unavailable_region' | t }}</span>
         </button>
       {%- else -%}
-        {% form 'product', product, class: 'product-main__form' %}
+        {% form 'product', product, id: form_id, class: 'product-main__form' %}
           <input type="hidden" name="id" value="{{ current_variant.id }}">
           <button
             type="submit"
@@ -836,6 +889,13 @@
     white-space: nowrap;
   }
 
+  .product-main__price-compare {
+    margin-left: 6px;
+    font-size: 16px;
+    letter-spacing: -0.16px;
+    opacity: 0.5;
+  }
+
   .product-main__final-sale {
     display: inline-block;
     margin-top: 6px;
@@ -1392,6 +1452,20 @@
       min-width: 200px;
     }
 
+    /*
+      Subscription products: give the group a fixed width so the purchase
+      options toggle has room, with the button filling what the price leaves.
+    */
+    .product-main__purchase-group--subscription {
+      grid-template-columns: max-content minmax(200px, 1fr);
+      width: min(100%, 420px);
+    }
+
+    .product-main__purchase-group > .purchase-options {
+      grid-column: 1 / -1;
+      min-width: 0;
+    }
+
     .product-main__bundle-upsell,
     .product-main__scent-dropdown {
       grid-column: 1 / -1;
@@ -1666,6 +1740,33 @@
         { "value": "title", "label": "t:sections.product.final_sale_placement_title" }
       ],
       "default": "price"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product.subscription_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_purchase_options",
+      "label": "t:sections.product.show_purchase_options",
+      "info": "t:sections.product.show_purchase_options_info",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "subscription_perk_1",
+      "label": "t:sections.product.subscription_perk_1",
+      "info": "t:sections.product.subscription_perk_info"
+    },
+    {
+      "type": "text",
+      "id": "subscription_perk_2",
+      "label": "t:sections.product.subscription_perk_2"
+    },
+    {
+      "type": "text",
+      "id": "subscription_perk_3",
+      "label": "t:sections.product.subscription_perk_3"
     }
   ],
   "blocks": [

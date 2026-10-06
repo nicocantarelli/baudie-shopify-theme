@@ -125,7 +125,15 @@
     "notify_me_submit": "Notify me",
     "notify_me_success": "You're on the list! We'll email you when it's back.",
     "notify_me_error": "Something went wrong. Please try again.",
-    "notify_me_invalid": "Please enter a valid email address."
+    "notify_me_invalid": "Please enter a valid email address.",
+    "subscription": {
+      "legend": "Purchase options",
+      "one_time": "One-time purchase",
+      "subscribe": "Subscribe & save",
+      "save_percent": "Save {{ percent }}%",
+      "frequency_label": "Delivery frequency",
+      "discount_perk": "{{ percent }}% off every order"
+    }
   },
   "search": {
     "title": "Search",
@@ -444,7 +452,8 @@
     "remove_item": "Remove",
     "quantity": "Quantity",
     "stock_warning": "Only COUNT available",
-    "includes": "Includes"
+    "includes": "Includes",
+    "subscription": "Subscription · {{ plan }}"
   },
   "breadcrumbs": {
     "navigation": "Breadcrumb navigation",

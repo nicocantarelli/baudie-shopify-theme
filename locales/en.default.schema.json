@@ -475,7 +475,14 @@
       "final_sale_info": "Only shows on products tagged \"final-sale\". Add the tag in the product's admin page.",
       "final_sale_placement_price": "Next to price",
       "final_sale_placement_button": "Bottom of buy area",
-      "final_sale_placement_title": "By the title"
+      "final_sale_placement_title": "By the title",
+      "subscription_header": "Subscriptions",
+      "show_purchase_options": "Show subscription options",
+      "show_purchase_options_info": "Shows \"One-time purchase\" and \"Subscribe & save\" on products that have an Appstle subscription plan. Eligible products, the discount and delivery frequencies are managed in Appstle.",
+      "subscription_perk_1": "Subscription perk 1",
+      "subscription_perk_2": "Subscription perk 2",
+      "subscription_perk_3": "Subscription perk 3",
+      "subscription_perk_info": "Optional. Listed under \"Subscribe & save\". The discount line (e.g. \"15% off every order\") is added automatically from Appstle."
     },
     "how_to_use": {
       "name": "How to use",

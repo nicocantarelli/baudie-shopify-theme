@@ -17,7 +17,7 @@
   @param {number} group_final_line_price - Combined charged price (cents)
   @param {number} group_original_line_price - Combined pre-discount price (cents)
   @param {number} group_line_count - How many Shopify lines this card represents
-  @param {string} group_signature - variant_id + properties signature (targeting key)
+  @param {string} group_signature - variant_id + properties (+ selling plan) signature (targeting key)
 {% enddoc %}
 
 {%- liquid
@@ -76,18 +76,30 @@
     assign companion_image = bundle_companion.metafields.custom.card_image | default: bundle_companion.featured_image
   endif
 
+  comment
+    Subscription (selling plan) lines are priced by the plan itself rather than
+    by a discount, so original_line_price already includes the saving. Strike
+    through the one-time price (the allocation's compare_at_price) instead.
+  endcomment
+  assign compare_at_unit = item.variant.compare_at_price | default: 0
+  assign compare_reference_unit = item.variant.price
+  if item.selling_plan_allocation.compare_at_price > item.selling_plan_allocation.price
+    assign compare_at_unit = item.selling_plan_allocation.compare_at_price
+    assign compare_reference_unit = item.selling_plan_allocation.price
+  endif
+
   assign has_compare_price = false
   assign compare_price = 0
   if item_original > item_price
     assign has_compare_price = true
     assign compare_price = item_original
-  elsif item.variant.compare_at_price > item.variant.price
+  elsif compare_at_unit > compare_reference_unit
     assign has_compare_price = true
-    assign compare_price = item.variant.compare_at_price | times: item_quantity
+    assign compare_price = compare_at_unit | times: item_quantity
   endif
 -%}
 
-<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ item.variant.compare_at_price | default: 0 }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
+<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ compare_at_unit }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if bundle_has_bottles -%}
       <div class="sidecart-item__bundle-bottles{% if companion_image != blank %} sidecart-item__bundle-bottles--with-companion{% endif %}">
@@ -139,6 +151,15 @@
       </h3>
       {%- if item_variant != 'Default Title' -%}
         <p class="sidecart-item__variant">{{ item_variant }}</p>
+      {%- endif -%}
+      {%- if item.selling_plan_allocation -%}
+        <p class="sidecart-item__subscription">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M10.25 5.25A4.25 4.25 0 0 0 2.6 3M1.75 6.75A4.25 4.25 0 0 0 9.4 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M2.25 1.25V3.25H4.25M9.75 10.75V8.75H7.75" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>{{ 'sidecart.subscription' | t: plan: item.selling_plan_allocation.selling_plan.name }}</span>
+        </p>
       {%- endif -%}
       {%- if has_bundle_scents -%}
         <ul class="sidecart-item__bundle-list">

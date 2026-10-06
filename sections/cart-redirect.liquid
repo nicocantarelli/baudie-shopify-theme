@@ -12,7 +12,11 @@
       {% if cart.item_count > 0 %}
         <ul>
           {% for item in cart.items %}
-            <li>{{ item.product.title }} &times; {{ item.quantity }} — {{ item.final_line_price | money }}</li>
+            <li>
+              {{ item.product.title }}
+              {%- if item.selling_plan_allocation %} ({{ item.selling_plan_allocation.selling_plan.name | escape }}){% endif %}
+              &times; {{ item.quantity }} — {{ item.final_line_price | money }}
+            </li>
           {% endfor %}
         </ul>
         <p><strong>{{ 'sidecart.subtotal' | t }}: {{ cart.total_price | money }}</strong></p>

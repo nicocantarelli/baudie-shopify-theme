@@ -125,8 +125,10 @@
     A Buy-X-Get-Y discount splits one variant into several line items at
     different prices. Group cart.items by variant_id + properties so the same
     product is shown as ONE merged card. The signature MUST match the JS
-    signatureOf() in this section's script: variant_id then `@first=last` per
-    property, in cart order. A bracket wrapper guards against prefix collisions.
+    signatureOfLine() in this section's script: variant_id then `@first=last` per
+    property, in cart order, then `~sp<id>` for a subscription (selling plan)
+    line so it never merges with a one-time line of the same variant. A bracket
+    wrapper guards against prefix collisions.
   {%- endcomment -%}
   {%- assign rendered_sigs = '' -%}
   {%- for item in cart.items -%}
@@ -440,6 +442,22 @@
   color: var(--sidecart-text);
   opacity: 0.7;
   margin: 0;
+}
+
+.sidecart-item__subscription {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0 0;
+  font-family: var(--font-manrope);
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--sidecart-text);
+  opacity: 0.7;
+}
+
+.sidecart-item__subscription svg {
+  flex: 0 0 auto;
 }
 
 .sidecart-item__properties {
@@ -1187,7 +1205,8 @@ class Sidecart {
 
   // ---- Signature + discount helpers --------------------------------------
   // signatureOfLine MUST match the Liquid grouping in this section:
-  // variant_id, then `@first=last` for each property, in cart order.
+  // variant_id, then `@first=last` for each property, in cart order, then
+  // `~sp<id>` for a subscription (selling plan) line.
   //
   // Liquid exposes line-item property keys/values HTML-escaped (e.g. a bundle's
   // "_bundle_selection" value "A <> B" comes through as "A &lt;&gt; B"), and the
@@ -1935,7 +1954,7 @@ class Sidecart {
 
     const titleEl = card.querySelector('.sidecart-item__title');
     if (titleEl) titleEl.textContent = title;
-    ['.sidecart-item__variant', '.sidecart-item__bundle-list', '.sidecart-item__properties', '.sidecart-item__bundle-bottles']
+    ['.sidecart-item__variant', '.sidecart-item__subscription', '.sidecart-item__bundle-list', '.sidecart-item__properties', '.sidecart-item__bundle-bottles']
       .forEach((sel) => { const el = card.querySelector(sel); if (el) el.remove(); });
 
     const input = card.querySelector('[data-quantity]');

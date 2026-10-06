@@ -1,0 +1,596 @@
+{% doc %}
+  Renders the "One-time purchase" / "Subscribe & save" toggle for a product
+  sold with selling plans (created and managed in Appstle Subscriptions).
+
+  Everything subscription-related comes from the selling plan group of
+  `selected_allocation`: which products are eligible, the discount and the
+  delivery frequencies are all edited in Appstle, never here. Frequencies are
+  listed in the group's plan order.
+
+  The chosen plan id is written to a hidden `selling_plan` input that belongs
+  to the product form through its `form` attribute, so it is submitted by the
+  native form and by the sidecart's AJAX add (sections/sidecart.liquid reads
+  it from FormData). An empty value adds a one-time purchase.
+
+  Price displays elsewhere opt in to live updates with
+  `data-purchase-price-for="{{ form_id }}"` and the child hooks
+  `[data-price-amount]`, `[data-sale-label]`, `[data-compare-price]` and
+  `[data-compare-amount]`. A bubbling `purchase-options:change` event is also
+  dispatched with `{ sellingPlanId, price, compareAtPrice }`.
+
+  @param {product} product - The product being purchased
+  @param {variant} variant - The variant being purchased
+  @param {selling_plan_allocation} selected_allocation - Initially selected allocation of `variant`
+  @param {string} form_id - ID of the product form the selection is submitted with
+  @param {string} [perk_1] - Optional extra perk listed under Subscribe & save
+  @param {string} [perk_2] - Optional extra perk listed under Subscribe & save
+  @param {string} [perk_3] - Optional extra perk listed under Subscribe & save
+
+  @example
+  {% render 'purchase-options',
+    product: product,
+    variant: current_variant,
+    selected_allocation: selected_allocation,
+    form_id: form_id,
+    perk_1: section.settings.subscription_perk_1
+  %}
+{% enddoc %}
+
+{%- liquid
+  assign plan_group = product.selling_plan_groups | where: 'id', selected_allocation.selling_plan_group_id | first
+  assign radio_name = 'purchase-option-' | append: form_id
+  assign frequency_id = 'purchase-frequency-' | append: form_id
+
+  assign selected_has_compare = false
+  if selected_allocation.compare_at_price > selected_allocation.price
+    assign selected_has_compare = true
+  endif
+-%}
+
+{%- if plan_group -%}
+  {%- capture frequency_options -%}
+    {%- for plan in plan_group.selling_plans -%}
+      {%- for allocation in variant.selling_plan_allocations -%}
+        {%- if allocation.selling_plan.id == plan.id -%}
+          {%- liquid
+            assign plan_percent = 0
+            assign plan_adjustment = plan.price_adjustments.first
+            if plan_adjustment.value_type == 'percentage'
+              assign plan_percent = plan_adjustment.value
+            elsif allocation.compare_at_price > allocation.price
+              assign plan_percent = allocation.compare_at_price | minus: allocation.price | times: 100 | divided_by: allocation.compare_at_price
+            endif
+
+            assign plan_compare_price = ''
+            if allocation.compare_at_price > allocation.price
+              assign plan_compare_price = allocation.compare_at_price | money
+            endif
+
+            assign plan_badge = ''
+            assign plan_perk = ''
+            if plan_percent > 0
+              assign plan_badge = 'products.subscription.save_percent' | t: percent: plan_percent
+              comment
+                "Every order" is only true when the discount never changes,
+                i.e. the plan has a single price adjustment.
+              endcomment
+              if plan.price_adjustments.size == 1
+                assign plan_perk = 'products.subscription.discount_perk' | t: percent: plan_percent
+              endif
+            endif
+
+            if plan.id == selected_allocation.selling_plan.id
+              assign selected_badge = plan_badge
+              assign selected_perk = plan_perk
+            endif
+          -%}
+          <option
+            value="{{ plan.id }}"
+            data-price="{{ allocation.price | money | escape }}"
+            data-compare-price="{{ plan_compare_price | escape }}"
+            data-badge="{{ plan_badge | escape }}"
+            data-perk="{{ plan_perk | escape }}"
+            {% if plan.id == selected_allocation.selling_plan.id %}
+              selected
+            {% endif %}
+          >
+            {{- plan.name | escape -}}
+          </option>
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  {%- capture check_icon -%}
+    <svg
+      class="purchase-options__perk-icon"
+      aria-hidden="true"
+      focusable="false"
+      xmlns="http://www.w3.org/2000/svg"
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+    >
+      <path d="M2 6.5L4.5 9L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- endcapture -%}
+
+  <purchase-options
+    class="purchase-options is-subscription{% if product.requires_selling_plan %} purchase-options--subscription-only{% endif %}"
+    data-form-id="{{ form_id }}"
+  >
+    <span class="purchase-options__badge" data-subscription-badge{% if selected_badge == blank %} hidden{% endif %}>
+      {{- selected_badge -}}
+    </span>
+
+    <fieldset class="purchase-options__fieldset">
+      <legend class="visually-hidden">{{ 'products.subscription.legend' | t }}</legend>
+
+      <div class="purchase-options__track">
+        <span class="purchase-options__marker" aria-hidden="true"></span>
+
+        {%- unless product.requires_selling_plan -%}
+          <div class="purchase-options__option" data-purchase-option>
+            <label class="purchase-options__label">
+              <input
+                type="radio"
+                class="purchase-options__radio"
+                name="{{ radio_name }}"
+                value="one_time"
+                data-price="{{ variant.price | money | escape }}"
+                data-purchase-radio
+              >
+              <span class="purchase-options__title">{{ 'products.subscription.one_time' | t }}</span>
+              <span class="purchase-options__price">{{ variant.price | money }}</span>
+            </label>
+          </div>
+        {%- endunless -%}
+
+        <div class="purchase-options__option is-selected" data-purchase-option>
+          <label class="purchase-options__label">
+            <input
+              type="radio"
+              class="purchase-options__radio"
+              name="{{ radio_name }}"
+              value="subscription"
+              checked
+              data-purchase-radio
+            >
+            <span class="purchase-options__title">{{ 'products.subscription.subscribe' | t }}</span>
+            <span class="purchase-options__price">
+              <span class="visually-hidden" data-subscription-sale-label{% unless selected_has_compare %} hidden{% endunless %}>
+                {{- 'products.sale_price' | t }}:
+              </span>
+              <span data-subscription-price>{{ selected_allocation.price | money }}</span>
+              <s class="purchase-options__compare" data-subscription-compare{% unless selected_has_compare %} hidden{% endunless %}>
+                <span class="visually-hidden">{{ 'products.regular_price' | t }}:</span>
+                <span data-subscription-compare-amount>{{ selected_allocation.compare_at_price | money }}</span>
+              </s>
+            </span>
+          </label>
+
+          <div class="purchase-options__details" data-subscription-details>
+            <div class="purchase-options__details-inner">
+              <ul class="purchase-options__perks" role="list">
+                <li class="purchase-options__perk" data-subscription-perk{% if selected_perk == blank %} hidden{% endif %}>
+                  {{ check_icon }}
+                  <span data-subscription-perk-text>{{ selected_perk }}</span>
+                </li>
+                {%- for perk in (1..3) -%}
+                  {%- liquid
+                    case perk
+                      when 1
+                        assign perk_text = perk_1
+                      when 2
+                        assign perk_text = perk_2
+                      when 3
+                        assign perk_text = perk_3
+                    endcase
+                  -%}
+                  {%- if perk_text != blank -%}
+                    <li class="purchase-options__perk">
+                      {{ check_icon }}
+                      <span>{{ perk_text | escape }}</span>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+
+              <label class="purchase-options__frequency-label" for="{{ frequency_id }}">
+                {{- 'products.subscription.frequency_label' | t -}}
+              </label>
+              <div class="purchase-options__select-wrapper">
+                <select id="{{ frequency_id }}" class="purchase-options__select" data-frequency>
+                  {{ frequency_options }}
+                </select>
+                <svg
+                  class="purchase-options__chevron"
+                  aria-hidden="true"
+                  focusable="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="10"
+                  height="5"
+                  viewBox="0 0 12 6"
+                  fill="none"
+                >
+                  <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <input
+      type="hidden"
+      name="selling_plan"
+      value="{{ selected_allocation.selling_plan.id }}"
+      form="{{ form_id }}"
+      data-selling-plan-input
+    >
+  </purchase-options>
+{%- endif -%}
+
+{% stylesheet %}
+  /*
+    Segmented toggle: two columns on a tinted track, with a white marker that
+    slides behind the selected option. When "Subscribe & save" is selected its
+    column expands to reveal the delivery frequency and perks.
+  */
+  .purchase-options {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding-top: 8px; /* room for the badge straddling the track's top edge */
+    color: var(--product-text, #3e2027);
+  }
+
+  .purchase-options__fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .purchase-options__track {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 4px;
+    background-color: color-mix(in srgb, var(--product-text, #3e2027) 8%, transparent);
+  }
+
+  .purchase-options--subscription-only .purchase-options__track {
+    grid-template-columns: 1fr;
+  }
+
+  .purchase-options__marker {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    background-color: #ffffff;
+    transition: transform 0.3s ease;
+  }
+
+  .purchase-options.is-subscription .purchase-options__marker {
+    transform: translateX(100%);
+  }
+
+  .purchase-options--subscription-only .purchase-options__marker,
+  .purchase-options--subscription-only.is-subscription .purchase-options__marker {
+    width: calc(100% - 8px);
+    transform: none;
+  }
+
+  .purchase-options__option {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+  }
+
+  .purchase-options__option:has(.purchase-options__radio:focus-visible) {
+    outline: 2px solid var(--product-text, #3e2027);
+    outline-offset: -2px;
+  }
+
+  .purchase-options__label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
+  .purchase-options__option.is-selected .purchase-options__label,
+  .purchase-options__label:hover {
+    opacity: 1;
+  }
+
+  .purchase-options__radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .purchase-options__title,
+  .purchase-options__price {
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+  }
+
+  .purchase-options__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .purchase-options__compare {
+    opacity: 0.5;
+  }
+
+  .purchase-options__compare[hidden] {
+    display: none;
+  }
+
+  .purchase-options__badge {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    z-index: 2;
+    padding: 3px 6px;
+    background-color: var(--product-text, #3e2027);
+    color: #ffffff;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: normal;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .purchase-options__badge[hidden] {
+    display: none;
+  }
+
+  /* Collapsible frequency + perks (0fr -> 1fr row animates the height). */
+  .purchase-options__details {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows 0.3s ease, visibility 0s linear 0.3s;
+  }
+
+  .purchase-options.is-subscription .purchase-options__details {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition: grid-template-rows 0.3s ease, visibility 0s linear 0s;
+  }
+
+  .purchase-options__details-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 14px;
+    opacity: 0;
+    transition: opacity 0.2s ease, padding 0.3s ease;
+  }
+
+  .purchase-options.is-subscription .purchase-options__details-inner {
+    padding-bottom: 14px;
+    opacity: 1;
+    transition: opacity 0.2s ease 0.15s, padding 0.3s ease;
+  }
+
+  .purchase-options__frequency-label {
+    margin-top: 4px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 11px;
+    line-height: normal;
+    letter-spacing: -0.11px;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .purchase-options__select-wrapper {
+    position: relative;
+  }
+
+  .purchase-options__select {
+    appearance: none;
+    width: 100%;
+    height: 34px;
+    margin: 0;
+    padding: 0 30px 0 10px;
+    border: none;
+    border-radius: 0;
+    background-color: color-mix(in srgb, var(--product-text, #3e2027) 7%, #ffffff);
+    color: var(--product-text, #3e2027);
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+
+  .purchase-options__select:focus-visible {
+    outline: 2px solid var(--product-text, #3e2027);
+    outline-offset: 2px;
+  }
+
+  .purchase-options__chevron {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .purchase-options__perks {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 6px 0; /* even breathing room between the price and the frequency */
+    padding: 0;
+    list-style: none;
+  }
+
+  .purchase-options__perk {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-family: var(--font-jokker);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .purchase-options__perk[hidden] {
+    display: none;
+  }
+
+  /* No visible perks (no discount line, no editor perks): drop the empty list's gap. */
+  .purchase-options__perks:not(:has(.purchase-options__perk:not([hidden]))) {
+    display: none;
+  }
+
+  .purchase-options__perk-icon {
+    flex: 0 0 auto;
+    margin-top: 3px;
+  }
+
+  /* Same helper several sections define; the product page has no own copy. */
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .purchase-options__marker,
+    .purchase-options__label,
+    .purchase-options__details,
+    .purchase-options__details-inner {
+      transition: none !important;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('purchase-options')) {
+    class PurchaseOptions extends HTMLElement {
+      connectedCallback() {
+        this.input = this.querySelector('[data-selling-plan-input]');
+        this.select = this.querySelector('[data-frequency]');
+        this.details = this.querySelector('[data-subscription-details]');
+        this.handleChange = this.handleChange.bind(this);
+        this.addEventListener('change', this.handleChange);
+
+        // The browser may restore a different radio/select state on back
+        // navigation than the server rendered; sync everything to it.
+        this.update();
+      }
+
+      disconnectedCallback() {
+        this.removeEventListener('change', this.handleChange);
+      }
+
+      handleChange(event) {
+        if (event.target.matches('[data-purchase-radio], [data-frequency]')) this.update();
+      }
+
+      update() {
+        const checked = this.querySelector('[data-purchase-radio]:checked');
+        if (!checked || !this.input) return;
+
+        const plan = this.select ? this.select.options[this.select.selectedIndex] : null;
+        const isSubscription = checked.value === 'subscription' && Boolean(plan);
+
+        this.classList.toggle('is-subscription', isSubscription);
+        this.querySelectorAll('[data-purchase-option]').forEach((option) => {
+          option.classList.toggle('is-selected', option.contains(checked));
+        });
+        // Keep the collapsed frequency select out of the tab order.
+        if (this.details) this.details.inert = !isSubscription;
+        if (plan) this.renderPlan(plan.dataset);
+
+        this.input.value = isSubscription ? plan.value : '';
+
+        const source = isSubscription ? plan.dataset : checked.dataset;
+        const detail = {
+          sellingPlanId: this.input.value || null,
+          price: source.price || '',
+          compareAtPrice: source.comparePrice || '',
+        };
+        this.renderPriceTargets(detail);
+        this.dispatchEvent(new CustomEvent('purchase-options:change', { bubbles: true, detail }));
+      }
+
+      // Subscribe option: price, struck-through one-time price, badge and perk of the chosen frequency.
+      renderPlan(data) {
+        const price = this.querySelector('[data-subscription-price]');
+        const compare = this.querySelector('[data-subscription-compare]');
+        const compareAmount = this.querySelector('[data-subscription-compare-amount]');
+        const saleLabel = this.querySelector('[data-subscription-sale-label]');
+        const badge = this.querySelector('[data-subscription-badge]');
+        const perk = this.querySelector('[data-subscription-perk]');
+        const perkText = this.querySelector('[data-subscription-perk-text]');
+
+        if (price) price.textContent = data.price || '';
+        if (compareAmount) compareAmount.textContent = data.comparePrice || '';
+        if (compare) compare.hidden = !data.comparePrice;
+        if (saleLabel) saleLabel.hidden = !data.comparePrice;
+        if (badge) {
+          badge.textContent = data.badge || '';
+          badge.hidden = !data.badge;
+        }
+        if (perkText) perkText.textContent = data.perk || '';
+        if (perk) perk.hidden = !data.perk;
+      }
+
+      renderPriceTargets({ price, compareAtPrice }) {
+        const formId = this.dataset.formId;
+        if (!formId) return;
+
+        document.querySelectorAll(`[data-purchase-price-for="${CSS.escape(formId)}"]`).forEach((target) => {
+          const amount = target.querySelector('[data-price-amount]');
+          const saleLabel = target.querySelector('[data-sale-label]');
+          const compare = target.querySelector('[data-compare-price]');
+          const compareAmount = target.querySelector('[data-compare-amount]');
+
+          if (amount) amount.textContent = price;
+          if (saleLabel) saleLabel.hidden = !compareAtPrice;
+          if (compare) compare.hidden = !compareAtPrice;
+          if (compareAmount) compareAmount.textContent = compareAtPrice;
+        });
+      }
+    }
+
+    customElements.define('purchase-options', PurchaseOptions);
+  }
+{% endjavascript %}
