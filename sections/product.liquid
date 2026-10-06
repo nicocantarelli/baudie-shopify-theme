@@ -218,7 +218,8 @@
           form_id: form_id,
           perk_1: section.settings.subscription_perk_1,
           perk_2: section.settings.subscription_perk_2,
-          perk_3: section.settings.subscription_perk_3
+          perk_3: section.settings.subscription_perk_3,
+          terms: section.settings.subscription_terms
         %}
       {%- endif -%}
       <div class="product-main__price-block">
@@ -1767,6 +1768,13 @@
       "type": "text",
       "id": "subscription_perk_3",
       "label": "t:sections.product.subscription_perk_3"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subscription_terms",
+      "label": "t:sections.product.subscription_terms",
+      "info": "t:sections.product.subscription_terms_info",
+      "default": "Billed [price] per delivery, [frequency]. Renews automatically until you cancel. Skip, pause or cancel anytime from your account."
     }
   ],
   "blocks": [

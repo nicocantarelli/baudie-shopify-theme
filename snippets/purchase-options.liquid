@@ -25,6 +25,7 @@
   @param {string} [perk_1] - Optional extra perk listed under Subscribe & save
   @param {string} [perk_2] - Optional extra perk listed under Subscribe & save
   @param {string} [perk_3] - Optional extra perk listed under Subscribe & save
+  @param {string} [terms] - Optional subscription terms (rich text) shown while Subscribe & save is selected. `[price]` and `[frequency]` are replaced with the chosen plan's price and (lowercased) name
 
   @example
   {% render 'purchase-options',
@@ -40,6 +41,7 @@
   assign plan_group = product.selling_plan_groups | where: 'id', selected_allocation.selling_plan_group_id | first
   assign radio_name = 'purchase-option-' | append: form_id
   assign frequency_id = 'purchase-frequency-' | append: form_id
+  assign terms_id = 'purchase-terms-' | append: form_id
 
   assign selected_has_compare = false
   if selected_allocation.compare_at_price > selected_allocation.price
@@ -79,9 +81,17 @@
               endif
             endif
 
+            assign plan_terms = ''
+            if terms != blank
+              assign plan_price = allocation.price | money
+              assign plan_frequency = plan.name | downcase | escape
+              assign plan_terms = terms | replace: '[price]', plan_price | replace: '[frequency]', plan_frequency
+            endif
+
             if plan.id == selected_allocation.selling_plan.id
               assign selected_badge = plan_badge
               assign selected_perk = plan_perk
+              assign selected_terms = plan_terms
             endif
           -%}
           <option
@@ -90,6 +100,7 @@
             data-compare-price="{{ plan_compare_price | escape }}"
             data-badge="{{ plan_badge | escape }}"
             data-perk="{{ plan_perk | escape }}"
+            data-terms="{{ plan_terms | escape }}"
             {% if plan.id == selected_allocation.selling_plan.id %}
               selected
             {% endif %}
@@ -202,7 +213,14 @@
                 {{- 'products.subscription.frequency_label' | t -}}
               </label>
               <div class="purchase-options__select-wrapper">
-                <select id="{{ frequency_id }}" class="purchase-options__select" data-frequency>
+                <select
+                  id="{{ frequency_id }}"
+                  class="purchase-options__select"
+                  {% if terms != blank %}
+                    aria-describedby="{{ terms_id }}"
+                  {% endif %}
+                  data-frequency
+                >
                   {{ frequency_options }}
                 </select>
                 <svg
@@ -223,6 +241,10 @@
         </div>
       </div>
     </fieldset>
+
+    {%- if terms != blank -%}
+      <p class="purchase-options__terms" id="{{ terms_id }}" data-subscription-terms>{{ selected_terms }}</p>
+    {%- endif -%}
 
     <input
       type="hidden"
@@ -478,6 +500,25 @@
     margin-top: 3px;
   }
 
+  /* Subscription terms: full width under the toggle, only while subscribing. */
+  .purchase-options__terms {
+    margin: 10px 0 0;
+    font-family: var(--font-jokker);
+    font-size: 12px;
+    line-height: 1.4;
+    opacity: 0.7;
+  }
+
+  .purchase-options:not(.is-subscription) .purchase-options__terms,
+  .purchase-options__terms:empty {
+    display: none;
+  }
+
+  .purchase-options__terms a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
   /* Same helper several sections define; the product page has no own copy. */
   .visually-hidden {
     position: absolute !important;
@@ -551,8 +592,12 @@
         this.dispatchEvent(new CustomEvent('purchase-options:change', { bubbles: true, detail }));
       }
 
-      // Subscribe option: price, struck-through one-time price, badge and perk of the chosen frequency.
+      // Subscribe option: price, struck-through one-time price, badge, perk and terms of the chosen frequency.
       renderPlan(data) {
+        // Terms are merchant rich text (may contain links), pre-rendered per plan in Liquid.
+        const terms = this.querySelector('[data-subscription-terms]');
+        if (terms) terms.innerHTML = data.terms || '';
+
         const price = this.querySelector('[data-subscription-price]');
         const compare = this.querySelector('[data-subscription-compare]');
         const compareAmount = this.querySelector('[data-subscription-compare-amount]');

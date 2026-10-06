@@ -482,7 +482,9 @@
       "subscription_perk_1": "Subscription perk 1",
       "subscription_perk_2": "Subscription perk 2",
       "subscription_perk_3": "Subscription perk 3",
-      "subscription_perk_info": "Optional. Listed under \"Subscribe & save\". The discount line (e.g. \"15% off every order\") is added automatically from Appstle."
+      "subscription_perk_info": "Optional. Listed under \"Subscribe & save\". The discount line (e.g. \"15% off every order\") is added automatically from Appstle.",
+      "subscription_terms": "Subscription terms",
+      "subscription_terms_info": "Shown below the options while \"Subscribe & save\" is selected. [price] and [frequency] are replaced with the selected plan's price and delivery frequency. Leave blank to hide."
     },
     "how_to_use": {
       "name": "How to use",
