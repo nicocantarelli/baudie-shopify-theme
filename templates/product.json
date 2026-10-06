@@ -75,8 +75,6 @@
         "show_watch_in_action": true,
         "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
         "popup_text_color": "#3e2027",
-        "bundle_upsell_bg_color": "#ffffff",
-        "bundle_upsell_text_color": "#3e2027",
         "show_patent_stamp": true,
         "patent_stamp_position": "image_bottom_right",
         "patent_stamp_heading": "PATENTED FORMULA",
@@ -85,7 +83,13 @@
         "patent_stamp_rotation": 0,
         "patent_stamp_background": "#3e2027",
         "patent_stamp_text_color": "#fcf5de",
-        "final_sale_placement": "title"
+        "bundle_upsell_bg_color": "#ffffff",
+        "bundle_upsell_text_color": "#3e2027",
+        "final_sale_placement": "title",
+        "show_purchase_options": false,
+        "subscription_perk_1": "Pause or cancel anytime",
+        "subscription_perk_2": "",
+        "subscription_perk_3": ""
       }
     },
     "1772843462a5334ed3": {

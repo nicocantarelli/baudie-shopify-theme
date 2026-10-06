@@ -1,0 +1,711 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero_product_tkHfVy": {
+      "type": "hero-product",
+      "name": "Hero Section",
+      "settings": {
+        "heading": "Helps men’s deo last longer + helps sweat stay odorless.",
+        "heading_color": "#ffffff",
+        "hero_products": [
+          "deep-ritual",
+          "capri-seaside",
+          "barely-there"
+        ],
+        "use_default_colors": false,
+        "default_card_text_color": "#3e2027",
+        "default_card_button_color": "#3e2027",
+        "use_static_image": true,
+        "static_hero_image": "shopify://shop_images/Deep_Ritual_11_copy.png",
+        "static_hero_image_alt": "",
+        "desktop_overlay_enable": true,
+        "desktop_overlay_color": "#000000",
+        "desktop_overlay_opacity": 10,
+        "mobile_heading": "Helps men’s deo last longer + helps sweat stay odorless.",
+        "mobile_hero_image": "shopify://shop_images/Deep_Ritual_11_copy.png",
+        "mobile_hero_image_alt": "",
+        "mobile_content_position": "center",
+        "mobile_heading_gap": 6,
+        "mobile_overlay_enable": true,
+        "mobile_overlay_color": "#3e2027",
+        "mobile_overlay_opacity": 25,
+        "mobile_title": "",
+        "mobile_subtitle": "Not deodorant. A boost that turns your deodorant into superman.",
+        "mobile_button_text": "SHOP",
+        "mobile_button_url": "shopify://products/deep-ritual"
+      }
+    },
+    "in_press_9ChkGH": {
+      "type": "in-press",
+      "blocks": {
+        "press_logo_pqQMPB": {
+          "type": "press_logo",
+          "name": "Popsugar Logo",
+          "settings": {
+            "logo": "shopify://shop_images/1.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_rih9t3": {
+          "type": "press_logo",
+          "name": "NewBeauty Logo",
+          "settings": {
+            "logo": "shopify://shop_images/2.png",
+            "alt_text": "Press logo"
+          }
+        },
+        "press_logo_ghD8X7": {
+          "type": "press_logo",
+          "name": "Vogue Logo",
+          "settings": {
+            "logo": "shopify://shop_images/6.png",
+            "alt_text": "Goop Logo"
+          }
+        },
+        "press_logo_YXxpJy": {
+          "type": "press_logo",
+          "name": "Byrdie Logo",
+          "settings": {
+            "logo": "shopify://shop_images/3.png",
+            "alt_text": "The New Yorker Logo"
+          }
+        },
+        "press_logo_Acaiwg": {
+          "type": "press_logo",
+          "name": "Instyle Logo",
+          "settings": {
+            "logo": "shopify://shop_images/4.png",
+            "alt_text": "Vice Logo"
+          }
+        },
+        "press_logo_aKkAft": {
+          "type": "press_logo",
+          "name": "Cosmopolitan Logo",
+          "settings": {
+            "logo": "shopify://shop_images/5.png",
+            "alt_text": "Bustle Logo"
+          }
+        }
+      },
+      "block_order": [
+        "press_logo_pqQMPB",
+        "press_logo_rih9t3",
+        "press_logo_ghD8X7",
+        "press_logo_YXxpJy",
+        "press_logo_Acaiwg",
+        "press_logo_aKkAft"
+      ],
+      "disabled": true,
+      "name": "t:general.in_press",
+      "settings": {
+        "title": "IN PRESS",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027",
+        "divider_color": "#3e2027"
+      }
+    },
+    "product_features_aNgxYb": {
+      "type": "product-features",
+      "blocks": {
+        "feature_badge_CqEEJL": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/aluminium-free-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Aluminum\nFree"
+          }
+        },
+        "feature_badge_ixpCFW": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/paraben-free-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Paraben\nFree"
+          }
+        },
+        "feature_badge_p6j3w9": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/sulfate-free-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Sulfate\nFree"
+          }
+        },
+        "feature_badge_VGJeea": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/cruelty-free-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Cruelty\nFree"
+          }
+        },
+        "feature_badge_n4Krwt": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/phthalate-free-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Phthalate\nFree"
+          }
+        },
+        "feature_badge_FjKLgd": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/plant-based-ingredients-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Plant-Based\nIngredients"
+          }
+        },
+        "feature_badge_PcNFYW": {
+          "type": "feature_badge",
+          "settings": {
+            "icon": "shopify://shop_images/vegan-icon.png",
+            "icon_alt": "Feature icon",
+            "text": "Vegan"
+          }
+        }
+      },
+      "block_order": [
+        "feature_badge_CqEEJL",
+        "feature_badge_ixpCFW",
+        "feature_badge_p6j3w9",
+        "feature_badge_VGJeea",
+        "feature_badge_n4Krwt",
+        "feature_badge_FjKLgd",
+        "feature_badge_PcNFYW"
+      ],
+      "name": "t:sections.product_features.name",
+      "settings": {
+        "background_color": "#3e2027",
+        "text_color": "#ffffff",
+        "icon_color": "#ffffff"
+      }
+    },
+    "reviews_dYznef": {
+      "type": "reviews",
+      "blocks": {
+        "review_PCyCde": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Steve M.",
+            "review_date": "02/2026",
+            "review_text": "I work in construction and this is the only product that helps me not smell. I use it before my deodorant, it's great."
+          }
+        },
+        "review_VyrKqg": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Lucas M.",
+            "review_date": "03/2026",
+            "review_text": "I actually saw my wife using a different scent of this, I tried it, and she was shocked how it got rid of my body odor."
+          }
+        },
+        "review_kKwxjz": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Colt G.",
+            "review_date": "03/2026",
+            "review_text": "I have hair under my arms so I was not sure if this would work for me. It does thought. Zero smell when I pair this with my Old Spice."
+          }
+        },
+        "review_LTwcDk": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Jalen G.",
+            "review_date": "07/2026",
+            "review_text": "I am a personal trainer so I am in peoples space all day. I use this every morning so that my deodorant can hold up all day. It works guys."
+          }
+        }
+      },
+      "block_order": [
+        "review_PCyCde",
+        "review_VyrKqg",
+        "review_kKwxjz",
+        "review_LTwcDk"
+      ],
+      "name": "t:general.reviews",
+      "settings": {
+        "heading": "Reviews",
+        "yotpo_app_key": "",
+        "product_id": "",
+        "background_color": "#fce9ec",
+        "card_background_color": "#dcebff",
+        "text_color": "#3e2027"
+      }
+    },
+    "product_details_XyZ123": {
+      "type": "product-details",
+      "settings": {
+        "heading": "<p>Men, does your deo quit by lunch?<br/>Body odor affecting your confidence?<br/>Tired of covering up body odor?<br/></p>",
+        "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
+        "product_image": "shopify://shop_images/Deep_Ritual_14.png",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "how_to_use_centered_dVWHnx": {
+      "type": "how-to-use-centered",
+      "blocks": {
+        "step_jXTRgr": {
+          "type": "step",
+          "settings": {
+            "label": "Spray"
+          }
+        },
+        "step_jfMMgB": {
+          "type": "step",
+          "settings": {
+            "label": "Wipe"
+          }
+        },
+        "step_aWRaMr": {
+          "type": "step",
+          "settings": {
+            "label": "Apply Deo"
+          }
+        },
+        "step_K7PzRA": {
+          "type": "step",
+          "settings": {
+            "label": "Stay fresh"
+          }
+        },
+        "dosage_pQE9Dn": {
+          "type": "dosage",
+          "settings": {
+            "label": "I smell a little",
+            "drops": 4,
+            "amount": "4-5"
+          }
+        },
+        "dosage_UCyqQm": {
+          "type": "dosage",
+          "settings": {
+            "label": "It's... Noticeable",
+            "drops": 6,
+            "amount": "5-8 Sprays"
+          }
+        },
+        "dosage_3niNbK": {
+          "type": "dosage",
+          "settings": {
+            "label": "I'm really stinky",
+            "drops": 8,
+            "amount": "8–12 Sprays"
+          }
+        }
+      },
+      "block_order": [
+        "step_jXTRgr",
+        "step_jfMMgB",
+        "step_aWRaMr",
+        "step_K7PzRA",
+        "dosage_pQE9Dn",
+        "dosage_UCyqQm",
+        "dosage_3niNbK"
+      ],
+      "name": "How to use (centered)",
+      "settings": {
+        "title": "How to use",
+        "mobile_description": "",
+        "description": "",
+        "sprays_title": "How many sprays do i need?",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "product_faq_AN4MX6": {
+      "type": "product-faq",
+      "blocks": {
+        "faq_item_pjbt7r": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Full Ingredient List",
+            "answer": "<p><strong>INGREDIENTS</strong>: Water (Aqua), Rosa Damascena (Rose) Flower Water, Glycerin, Chamomilla Recutita (Chamomile) Flower Water, Melissa Officinalis (Lemon Balm) Leaf Water, Lactobacillus Ferment, Lactobacillus, Lactic Acid (plant based), Sorbitan Oleate Decylglucoside Crosspolymer (plant-based), Cananga Odorata (Ylang Ylang) Flower Water, Cocos Nucifera (Coconut) Fruit Extract, Aloe Barbadensis Leaf Juice, Citrus Grandis (Grapefruit) Seed Extract, Chamomilla Recutita (Chamomile) Flower Extract, Citrullus Lanatus (Watermelon) Seed Extract, Citrus Limon (Lemon) Peel Oil, Salvia Sclarea (Clary) Oil, Santalum Album (Sandalwood) Oil, Simmondsia Chinensis (Jojoba) Oil, Lavandula Angustifolia (Lavender) Oil, Eucalyptus Globulus (Eucalyptus) Leaf Oil, Rosmarinus Officinalis (Rosemary) Oil, Fragrance, Linalool, Limonene, Citral, Beta-caryophyllene, Linalyl Acetate, Pinene Camphor, Acetyl Cedrene, Cedrus Atlantica Oil/Extract, ISO E SUPER, Juniperus Virginiana Oil.<br/><br/>Scent: The word “fragrance” on our label represents a sophisticated composition of essential oils, natural extracts, and isolates. Each element in our ingredient list is chosen for performance and safety. Our formulas are made without parabens and phthalates. Our blends follow IFRA + EU allergen standards ensuring the highest benchmarks for skin compatibility. We believe scent should enhance your experience, not compromise your health or the planet.</p>"
+          }
+        },
+        "faq_item_iiwfCJ": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is Baudie a deodorant?",
+            "answer": ""
+          }
+        },
+        "faq_item_eJmCaT": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I use it?",
+            "answer": ""
+          }
+        },
+        "faq_item_HeGWnp": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Why do I need a pre-deodorant?",
+            "answer": ""
+          }
+        },
+        "faq_item_DzNe6C": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What does \"odor-eliminating bacterial technology\" mean?",
+            "answer": ""
+          }
+        },
+        "faq_item_H6L7UW": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Will the enhancer scent mix with my deodorant or perfume?",
+            "answer": ""
+          }
+        },
+        "faq_item_4fWgX7": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I use Baudie without deodorant?",
+            "answer": ""
+          }
+        },
+        "faq_item_X6xk6E": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I use it before workouts?",
+            "answer": ""
+          }
+        },
+        "faq_item_PfBtgn": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is it suitable for sensitive skin?",
+            "answer": ""
+          }
+        },
+        "faq_item_Y7mqYD": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can teens use Baudie?",
+            "answer": ""
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_pjbt7r",
+        "faq_item_iiwfCJ",
+        "faq_item_eJmCaT",
+        "faq_item_HeGWnp",
+        "faq_item_DzNe6C",
+        "faq_item_H6L7UW",
+        "faq_item_4fWgX7",
+        "faq_item_X6xk6E",
+        "faq_item_PfBtgn",
+        "faq_item_Y7mqYD"
+      ],
+      "name": "Product FAQ",
+      "settings": {
+        "title": "Frequently Asked Questions",
+        "intro": "",
+        "top_padding": 112,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "what_makes_different_tVrMDA": {
+      "type": "what-makes-different",
+      "disabled": true,
+      "name": "t:sections.what_makes_different.name",
+      "settings": {
+        "heading": "What Makes Baudie Different?",
+        "description": "",
+        "desktop_base": "shopify://shop_images/test.png",
+        "desktop_overlay": "shopify://shop_images/molecule-desktop-text.png",
+        "mobile_base": "shopify://shop_images/molecule-m.png",
+        "mobile_overlay": "shopify://shop_images/molecule-mobile-text.png",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "1790967551e505fe44": {
+      "type": "apps",
+      "settings": {}
+    },
+    "meet_scents_AbC456": {
+      "type": "meet-your-scents",
+      "blocks": {
+        "product_dniJjq": {
+          "type": "product",
+          "settings": {
+            "product": "capri-seaside",
+            "tab_color": "#ffbd8e",
+            "tab_text_color": "#fffae6"
+          }
+        },
+        "product_dHXEqJ": {
+          "type": "product",
+          "disabled": true,
+          "settings": {
+            "product": "sweet-muse",
+            "tab_color": "#f8eee0",
+            "tab_text_color": "#3e2027"
+          }
+        },
+        "product_LwTCEz": {
+          "type": "product",
+          "settings": {
+            "product": "barely-there",
+            "tab_color": "#abd99b",
+            "tab_text_color": "#fffae6"
+          }
+        },
+        "product_UKVcNb": {
+          "type": "product",
+          "disabled": true,
+          "settings": {
+            "product": "petal-kiss",
+            "tab_color": "#ffcad2",
+            "tab_text_color": "#fffae6"
+          }
+        },
+        "product_qEfH7c": {
+          "type": "product",
+          "settings": {
+            "product": "deep-ritual",
+            "tab_color": "#7f9dc3",
+            "tab_text_color": "#fffae6"
+          }
+        },
+        "product_E4JWyD": {
+          "type": "product",
+          "disabled": true,
+          "settings": {
+            "product": "st-tropez",
+            "tab_color": "#c52d5d",
+            "tab_text_color": "#fffae6"
+          }
+        }
+      },
+      "block_order": [
+        "product_dniJjq",
+        "product_dHXEqJ",
+        "product_LwTCEz",
+        "product_UKVcNb",
+        "product_qEfH7c",
+        "product_E4JWyD"
+      ],
+      "disabled": true,
+      "settings": {
+        "background_color": "#fce9ec",
+        "heading": "Meet Your Scents",
+        "side_image": "shopify://shop_images/baudie-meet-your-scents-karl-option-5.png",
+        "background_image": "shopify://shop_images/meet-your-scents-right.png"
+      }
+    },
+    "explore_sets_UjtGBG": {
+      "type": "explore-sets",
+      "blocks": {
+        "bundle_card_DJgHdm": {
+          "type": "bundle_card",
+          "settings": {
+            "product": "bundle-of-3",
+            "card_image_override": "shopify://shop_images/8.png",
+            "display_products": [],
+            "custom_title": "",
+            "custom_description": "",
+            "custom_button_text": "Choose Your Scents",
+            "card_bg_color": "#f6e8e0",
+            "show_badge": false,
+            "badge_text": "25% off"
+          }
+        },
+        "bundle_card_Y7MARn": {
+          "type": "bundle_card",
+          "settings": {
+            "product": "discovery-set",
+            "card_image_override": "shopify://shop_images/10.png",
+            "display_products": [],
+            "custom_title": "",
+            "custom_description": "",
+            "custom_button_text": "",
+            "card_bg_color": "#f6e8e0",
+            "show_badge": false,
+            "badge_text": "25% off"
+          }
+        }
+      },
+      "block_order": [
+        "bundle_card_DJgHdm",
+        "bundle_card_Y7MARn"
+      ],
+      "disabled": true,
+      "name": "t:general.explore_sets",
+      "settings": {
+        "background_image": "shopify://shop_images/baudie-explore-sets-asian-man-option-1.png",
+        "mobile_background_image": "shopify://shop_images/no-residue_6f509d96-bd92-4b5c-b10d-77a27213b9bd.png",
+        "heading": "Explore our sets",
+        "heading_color": "#ffffff",
+        "description": "<p>Our sets are thoughtfully curated to make staying fresh effortless — whether you’re discovering Baudie for the first time or stocking up on your favorites.&nbsp;</p>",
+        "description_color": "#ffffff",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "reviews_wFhWb3": {
+      "type": "reviews",
+      "blocks": {
+        "review_ALLATw": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Stephanie G.",
+            "review_date": "Verified Buyer",
+            "review_text": "This plus deodorant is the definition of heaven. Zero smell...what is this sorcery?!?"
+          }
+        },
+        "review_YntyMy": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Matt H.",
+            "review_date": "Verified Buyer",
+            "review_text": "Stole this from my wife and never gave it back. Great product."
+          }
+        },
+        "review_gdK39L": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Patrice M.",
+            "review_date": "Verified Buyer",
+            "review_text": "They used to call me onion pits before I found this enhancer. I showed them..."
+          }
+        },
+        "review_XVBWBi": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Mia T.",
+            "review_date": "Verified Buyer",
+            "review_text": "Imagine never going in for a hug because you're that self-conscious. This saved my life."
+          }
+        },
+        "review_DY7Nz8": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Sarah K.",
+            "review_date": "Verified Buyer",
+            "review_text": "If you are in perimenopause or menopause, add this to your routine and thank me later"
+          }
+        },
+        "review_TAYYY7": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Stacy T.",
+            "review_date": "Verified Buyer",
+            "review_text": "My sweaty son who plays a lot of soccer actually smells good after practice now."
+          }
+        },
+        "review_PkXwU8": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Laura R.",
+            "review_date": "Verified Buyer",
+            "review_text": "Can you believe my 80 year old dad uses this...neither can I LOL!"
+          }
+        }
+      },
+      "block_order": [
+        "review_ALLATw",
+        "review_YntyMy",
+        "review_gdK39L",
+        "review_XVBWBi",
+        "review_DY7Nz8",
+        "review_TAYYY7",
+        "review_PkXwU8"
+      ],
+      "disabled": true,
+      "name": "t:general.reviews",
+      "settings": {
+        "heading": "People Are Raving...",
+        "yotpo_app_key": "",
+        "product_id": "",
+        "background_color": "#fce9ec",
+        "card_background_color": "#ffcad2",
+        "text_color": "#3e2027"
+      }
+    },
+    "product_benefits_P36iK9": {
+      "type": "product-benefits",
+      "blocks": {
+        "benefit_EBtYzr": {
+          "type": "benefit",
+          "settings": {
+            "image": "shopify://shop_images/odor-control-formula_2d8bad52-5441-416b-9942-ccc01499c0c9.png",
+            "heading": "Unique Odor-Control Formula",
+            "description": "Clinically backed and powered by odor-eliminating bacterial technology. Targets the bacteria that cause smell — not sweat — for freshness that starts before your deodorant."
+          }
+        },
+        "benefit_9HPW3d": {
+          "type": "benefit",
+          "settings": {
+            "image": "shopify://shop_images/no-residue_6f509d96-bd92-4b5c-b10d-77a27213b9bd.png",
+            "heading": "No Residue. No Scent. No Interference.",
+            "description": "The wipe-off formula leaves your skin clean, balanced, and scent-free — ready for deodorant or perfume without overlap or irritation."
+          }
+        },
+        "benefit_4XEJRL": {
+          "type": "benefit",
+          "settings": {
+            "image": "shopify://shop_images/for-life-sweat_d4373a79-1a4c-44c8-a239-cfd848043b3f.png",
+            "heading": "For Life, Sweat & Everything In Between",
+            "description": "From yoga to long workdays, Baudie keeps odor-causing bacteria in check — so you stay fresh, confident, and completely unbothered."
+          }
+        }
+      },
+      "block_order": [
+        "benefit_EBtYzr",
+        "benefit_9HPW3d",
+        "benefit_4XEJRL"
+      ],
+      "disabled": true,
+      "name": "Product benefits",
+      "settings": {
+        "background_color": "#fce9ec",
+        "text_color": "#fffae6"
+      }
+    },
+    "newsletter_LECjXh": {
+      "type": "newsletter",
+      "name": "t:general.newsletter",
+      "settings": {
+        "klaviyo_list_id": "U6y4hf",
+        "heading": "Stay Fresh. Stay in the Loop.",
+        "description": "Be the first to know when new scents drop, bundles launch, and good pit news happens.",
+        "placeholder": "Enter your email",
+        "button_text": "SUBSCRIBE",
+        "fine_print": "<p>We'll only email you when it's worth it — new scents, early access, or something good for your pits.<br/>See our <a href=\"/pages/customer-care#privacy\" target=\"_blank\">Privacy Policy</a> and <a href=\"/pages/customer-care#terms\" target=\"_blank\">Terms</a>.</p>",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027",
+        "button_background_color": "#3e2027",
+        "button_text_color": "#fffae6"
+      }
+    }
+  },
+  "order": [
+    "hero_product_tkHfVy",
+    "in_press_9ChkGH",
+    "product_features_aNgxYb",
+    "reviews_dYznef",
+    "product_details_XyZ123",
+    "how_to_use_centered_dVWHnx",
+    "product_faq_AN4MX6",
+    "what_makes_different_tVrMDA",
+    "1790967551e505fe44",
+    "meet_scents_AbC456",
+    "explore_sets_UjtGBG",
+    "reviews_wFhWb3",
+    "product_benefits_P36iK9",
+    "newsletter_LECjXh"
+  ]
+}

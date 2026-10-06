@@ -73,7 +73,7 @@
       ],
       "settings": {
         "show_watch_in_action": true,
-        "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
+        "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5839fb4875ff54c79b1683\"></div>",
         "popup_text_color": "#3e2027",
         "bundle_upsell_bg_color": "#ffffff",
         "bundle_upsell_text_color": "#3e2027",
@@ -96,6 +96,7 @@
       "settings": {
         "title": "Frequently Asked Questions",
         "intro": "",
+        "top_padding": 112,
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }
