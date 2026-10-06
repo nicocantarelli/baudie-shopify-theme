@@ -19,10 +19,12 @@ Designed around Baudie's Deodorant Enhancer® product line, with custom sections
 ```bash
 git clone git@github.com:nicocantarelli/baudie-shopify-theme.git
 cd baudie-shopify-theme
-shopify theme dev --store baudie.myshopify.com
+shopify theme dev --store baudie-9825.myshopify.com
 ```
 
 This boots a local server with hot reload pointed at your dev theme on Shopify. First run will prompt you to authenticate and select a theme.
+
+The store's admin domain is `baudie-9825.myshopify.com` (`baudie.myshopify.com` is a different store and the CLI will refuse it). If the CLI isn't installed globally, prefix any command with `npx -y @shopify/cli@latest`, e.g. `npx -y @shopify/cli@latest theme check`.
 
 ### Useful commands
 
@@ -44,9 +46,9 @@ Standard Shopify theme structure — see [shopify.dev/docs/storefronts/themes/ar
 ├── config/         # Global theme settings + data
 ├── layout/         # theme.liquid, password.liquid
 ├── locales/        # Translations + schema translations
-├── sections/       # 45 sections — the bulk of the work lives here
-├── snippets/       # Reusable Liquid fragments (css-variables, meta-tags, prelude, etc.)
-└── templates/      # 23 JSON templates that compose sections into pages
+├── sections/       # 46 sections + 3 section groups (header, footer, overlay) — the bulk of the work lives here
+├── snippets/       # Reusable Liquid fragments (product-card, sidecart-item, purchase-options, css-variables, meta-tags, etc.)
+└── templates/      # 27 JSON templates (+ gift_card.liquid) that compose sections into pages
 ```
 
 ### Key custom sections
@@ -54,7 +56,11 @@ Standard Shopify theme structure — see [shopify.dev/docs/storefronts/themes/ar
 | Section | Purpose |
 |---|---|
 | `hero-product.liquid` | Homepage hero with product CTA |
-| `product-bundle.liquid` | Bundle product template (variants + pricing logic) |
+| `product.liquid` | Main PDP (individual scents + wipes): price, add to cart, subscription options, accordions, patent stamp, trust badges |
+| `product-bundle.liquid` | Build-your-own Bundle of 3 — custom scent picker that adds a Simple Bundles parent product with the picked scents as line-item properties |
+| `product-bundle-duo.liquid` | Duo bundle (one enhancer + fixed Cotton Dry Wipes), also via Simple Bundles |
+| `landing-hero.liquid` | Campaign landing pages (menopause / postpartum) with their own add to cart |
+| `sidecart.liquid` | The cart drawer — the only cart UI (`/cart` just reopens it via `cart-redirect.liquid`). Intercepts every product form submit and adds via AJAX |
 | `product-details.liquid` / `-features.liquid` / `-faq.liquid` / `-benefits.liquid` | PDP composition |
 | `meet-your-scents.liquid` | Scent showcase with media |
 | `what-makes-different.liquid` | Pillar grid |
@@ -68,8 +74,12 @@ Standard Shopify theme structure — see [shopify.dev/docs/storefronts/themes/ar
 Custom JSON templates live in [templates/](./templates):
 
 - `index.json` — homepage
-- `product.json` / `product.bundle.json` / `product.wipes.json` — PDPs (product-type-specific)
-- `page.our-story.json` / `page.contact.json` / `page.customer-care.json` / `page.privacy.json` / `page.terms.json`
+- `product.json` — individual scents (default PDP)
+- `product.bundle.json` / `product.bundle-duo.json` / `product.wipes.json` — bundle, duo and wipes PDPs
+- `product.menopause.json` / `product.postpartum.json` — campaign landing pages (`landing-hero`)
+- `collection.json` / `collection.bundles.json` / `collection.wipes.json` / `list-collections.json` — shop pages
+- `page.our-story.json` / `page.contact.json` / `page.customer-care.json` / `page.affiliate.json` / `page.affiliate-terms.json` / `page.cancellation.json` / `page.for-men.json` / `page.privacy.json` / `page.terms.json`
+- `cart.json` — renders `cart-redirect` only (opens the sidecart and sends the visitor back)
 - `password.json` — coming-soon / private gate
 
 ## Conventions
@@ -91,7 +101,7 @@ Follow these patterns. They're enforced informally — match the surrounding cod
   # 1. Logic block at top — assigns, defaults
 -%}
 
-{# 2. HTML markup #}
+{% # 2. HTML markup %}
 <section class="component-name full-width" style="--var: ...">
   ...
 </section>
@@ -134,7 +144,7 @@ Sentence case (only proper nouns capitalized).
 
 ### CSS
 
-- Mobile-first — base styles for mobile, `@media (min-width: 769px)` to enhance for desktop
+- Base styles for mobile, enhanced for desktop. Newer sections (product page, bundles, landing pages, how-to-use, about) use `@media (min-width: 1024px)`; older ones use `769px`, and many add `max-width` queries too — match the breakpoints of the file you're editing
 - Use `clamp()` for fluid typography
 - BEM modifiers: `.component--state` for state, `.component__element` for parts
 - CSS custom properties for dynamic values via inline `style="--var: {{ setting }}"`
@@ -145,7 +155,8 @@ Custom fonts live in [assets/](./assets). Reference via CSS variables defined in
 
 - `--font-alyona` — display headings (Alyona Regular/Bold)
 - `--font-jokker` — body copy (Jokker Regular/Semibold/Bold)
-- `--font-sweet-sans` — buttons + small caps (Sweet Sans Pro Medium/Bold)
+- `--font-sweet-sans` — buttons, prices, labels and small caps (Sweet Sans Pro Regular/Medium/Bold). Used uppercase with letter-spacing at −1% of the font size (e.g. `14px` / `-0.14px`)
+- Also defined: `--font-manrope` (sidecart secondary text), `--font-byrd`, `--font-space-grotesk`
 
 ### Accessibility
 
@@ -153,20 +164,19 @@ Custom fonts live in [assets/](./assets). Reference via CSS variables defined in
 - ARIA on interactive components (`aria-expanded`, `aria-controls`)
 - Custom Web Components for enhanced behavior over inline JS where possible
 
-### Animations
-
-Driven by data attributes — see existing `data-animate-elements-on-scroll` and `data-animate-delay="125"` usage in sections like `about-hero` and `meet-your-scents`.
-
 ## Web components
 
-The project favors lightweight custom elements scoped per-section over framework JS. Each lives inside a `{% javascript %}` block in its parent section file.
+The project favors lightweight custom elements over framework JS. Each lives inside a `{% javascript %}` block in the section or snippet that renders it. (Some older sections still use an inline `<script>` IIFE instead, e.g. `product.liquid` and `sidecart.liquid`.)
 
 | Custom element | Defined in | What it does |
 |---|---|---|
 | `<meet-scents-section>` | [sections/meet-your-scents.liquid](./sections/meet-your-scents.liquid) | Scent picker — handles selection state, image swap, and active-card sync |
 | `<related-products>` | [sections/related-products.liquid](./sections/related-products.liquid) | Related-products carousel/grid behavior |
+| `<cookie-consent>` | [sections/cookie-banner.liquid](./sections/cookie-banner.liquid) | Cookie banner and consent preferences |
+| `<notify-me-form>` | [snippets/notify-me-form.liquid](./snippets/notify-me-form.liquid) | Klaviyo back-in-stock signup shown instead of add to cart when sold out / coming soon |
+| `<purchase-options>` | [snippets/purchase-options.liquid](./snippets/purchase-options.liquid) | One-time / Subscribe & save toggle (see **Subscriptions**) |
 
-When adding new interactive sections, follow the same pattern: define the class inside `{% javascript %}`, register with `customElements.define`, and tag the section root with the matching element name.
+When adding new interactive components, follow the same pattern: define the class inside `{% javascript %}` (guarded with `if (!customElements.get(...))`), register with `customElements.define`, and tag the root element with the matching element name.
 
 ## Metafields
 
@@ -179,7 +189,11 @@ Custom product metafields used throughout the theme. All live under the `custom`
 | `card_image` | Default product card image (landscape/wide) | [snippets/product-card.liquid](./snippets/product-card.liquid), `explore-sets`, `product-bundle` |
 | `card_image_portrait` | Portrait variant of the card image | `product-card` |
 | `card_hover_image` | Hover-state image swap on cards | `product-card`, `explore-sets` |
+| `card_video` | Optional video on product cards | `product-card` |
 | `meet_scents_image` | Hero image for the scent picker | `meet-your-scents` |
+| `product_image` | Main PDP image (falls back to the featured image) | `product` |
+| `hero_image` / `hero_secondary_image` | Homepage hero images for the featured product | `hero-product` |
+| `how_to_use_image` / `how_to_use_video` | Media for the how-to-use section | `how-to-use` |
 
 ### Colors
 
@@ -187,6 +201,8 @@ Custom product metafields used throughout the theme. All live under the `custom`
 |---|---|
 | `product_card_background` | Card background color (defaults to `#FCF0D2`) |
 | `card_background_color` | Background in `meet-your-scents` (defaults to `#FFCAD2`) |
+| `hero_card_background_color` | Card background in `hero-product` (falls back to `card_background_color`) |
+| `gradient_color_1` / `gradient_color_2` / `gradient_color_3` | PDP background gradient (`product`; the duo uses 1–2) |
 | `product_text_color` | Text color override on PDP |
 | `product_title_note_color` | Optional color for the supporting line below the PDP title; defaults to `product_text_color` |
 
@@ -197,11 +213,19 @@ Custom product metafields used throughout the theme. All live under the `custom`
 | `short_description` | Truncated product blurb for cards + scent picker |
 | `bottle_size` | Bottle size string shown on PDP |
 | `product_details` | Rich text — accordion content |
+| `how_to_use` | Rich text — "How to use" accordion on the PDP |
 | `scent_notes` | Rich text — scent breakdown |
 | `key_ingredients` | Rich text — featured ingredients |
 | `full_ingredient_list` | Rich text — full INCI list |
 | `scent_name` | Display name for the scent picker (separate from product title) |
 | `product_title_note` | Optional single-line supporting copy shown directly below the PDP title |
+
+### Bundles
+
+| Key | Purpose |
+|---|---|
+| `bundle_upsell_text` / `bundle_upsell_product` | PDP button linking a scent to a bundle (replaces the "Explore other scents" dropdown when both are set) |
+| `bundle_companion` | Fixed bundle component (e.g. the duo's Cotton Dry Wipes) shown on the bundle's cart line, since Simple Bundles doesn't put it on the line itself |
 
 ### Upsell system
 
@@ -211,6 +235,18 @@ Custom product metafields used throughout the theme. All live under the `custom`
 
 The upsell is a three-part system sharing this metafield contract: the theme's [snippets/sidecart-upsell-item.liquid](./snippets/sidecart-upsell-item.liquid) (side-cart display), the [baudie-checkout-upsell](https://github.com/nicocantarelli/baudie-checkout-upsell) checkout UI extension (in-checkout offers), and the [baudie-discounts](https://github.com/nicocantarelli/baudie-discounts) Shopify Function (server-side price enforcement). The pricing rules must stay in sync across all three.
 
+## Subscriptions (Appstle)
+
+Subscribe & save runs on [Appstle Subscriptions](https://apps.shopify.com/subscriptions-by-appstle). Appstle owns everything after the purchase decision — billing, renewals, emails, payment retries, milestone gifts and the customer portal. The theme only renders the purchase choice and shows subscription lines in the cart. Appstle's own storefront widget is **not** used (its app embed stays off) so there's never a second selector.
+
+- **Managed in Appstle**, not in code — the "Subscribe & Save" plan defines which products are eligible (the individual scents), the delivery frequencies (every 1, 2 or 3 months), the 15% discount and the free gifts (orders 3, 5 and 7; order 1 is the checkout order). Any product added to a plan gets the selector automatically; labels and prices come from the plan's selling plans.
+- **Product page** — [snippets/purchase-options.liquid](./snippets/purchase-options.liquid) (`<purchase-options>`), rendered by `product.liquid` above the price. A One-time | Subscribe toggle; Subscribe is preselected and `?selling_plan=<id>` preselects a frequency. The chosen plan id goes into a hidden `selling_plan` input tied to the product form with `form="…"`, which the sidecart's AJAX add already forwards. It also updates the main price (`data-purchase-price-for`).
+- **Theme editor** — Product section → **Subscriptions**: "Show subscription options" is the kill switch (hides the toggle so everything is one-time, without touching the Appstle plan), plus three optional perk lines. The "15% off every order" line is generated from the plan, so it can't drift from what checkout charges.
+- **Cart** — [snippets/sidecart-item.liquid](./snippets/sidecart-item.liquid) shows "Subscription · {plan name}" and strikes through the one-time price. Plan pricing isn't a discount (`original_line_price` already includes the 15%), so the strikethrough comes from `selling_plan_allocation.compare_at_price`. The `~sp<id>` suffix in the sidecart's line signature keeps subscription and one-time lines of the same scent separate.
+- **Customer portal** — the store uses new customer accounts; customers reach Appstle's portal through its "Manage Subscription Button" app embed (theme editor → Checkout and customer accounts).
+- **No stacking** — the 15% must not combine with promo codes. Every Shopify discount code uses Purchase type **One-time purchase** (so a code only discounts the one-time items in a mixed cart), and Appstle's portal doesn't allow discount codes. Set that on any new code too. The upsell deal (`baudie-discounts`) only targets the wipes, which aren't subscribable; if wipes ever become subscribable, that function must skip lines with a selling plan.
+- **Not subscribable (yet)** — Discovery Set, Bundle of 3 and the duo (Simple Bundles), the wipes, and the menopause/postpartum landing pages (`landing-hero` has its own form without the selector). Before enabling bundles, check how Appstle renewals interact with Simple Bundles' cart transform and the picked-scent line properties.
+
 ## Deploy
 
 Deployment is manual via **Shopify CLI** — this repo is *not* connected to the store through Shopify's GitHub integration. (It was until mid-2026; the `Update from Shopify …` commits in the history are from that era.)
@@ -218,14 +254,24 @@ Deployment is manual via **Shopify CLI** — this repo is *not* connected to the
 ### Workflow
 
 ```bash
-shopify theme pull --store baudie.myshopify.com    # 1. ALWAYS pull the live theme first
-git diff                                            # 2. Review + commit editor changes it brought in
-shopify theme dev                                   # 3. Develop against a hot-reloading dev theme
-shopify theme push                                  # 4. Push to the selected theme when ready
-git commit && git push                              # 5. Keep the repo in sync manually
+shopify theme pull --store baudie-9825.myshopify.com   # 1. ALWAYS pull the live theme first
+git diff                                                # 2. Review + commit editor changes it brought in
+shopify theme dev --store baudie-9825.myshopify.com    # 3. Develop against a hot-reloading dev theme
+shopify theme push --only <each file you changed>       # 4. Push only what you touched (see below)
+git commit && git push                                  # 5. Keep the repo in sync manually
 ```
 
-**Pull before you push — every time.** Theme-editor changes made by the merchant (text, settings, images, colors) live in `config/settings_data.json` and `templates/*.json` and no longer flow into git automatically. Pushing stale local copies of those files overwrites the merchant's work. When pushing code-only changes, exclude them:
+**Pull before you push — every time.** Theme-editor changes made by the merchant (text, settings, images, colors) live in `config/settings_data.json` and `templates/*.json` and no longer flow into git automatically. Pushing stale local copies of those files overwrites the merchant's work.
+
+**Push only the files you changed.** The live theme is **Baudie Theme** (`shopify theme list --store baudie-9825.myshopify.com` shows its id). Pushing to it needs `--allow-live`; `--nodelete` makes sure nothing on the store is removed:
+
+```bash
+shopify theme push --store baudie-9825.myshopify.com --theme <live theme id> --allow-live --nodelete \
+  --only sections/product.liquid \
+  --only snippets/purchase-options.liquid
+```
+
+Before pushing, pull those same files into a scratch folder (`shopify theme pull --path /tmp/live --only …`) and diff them against git — locale files and sections can also be edited in the admin. If you do push the whole theme instead, at least exclude the merchant-owned files:
 
 ```bash
 shopify theme push --ignore "config/settings_data.json" --ignore "templates/*.json"
@@ -278,14 +324,14 @@ Expected — since the GitHub integration was removed, theme-editor changes exis
 Schema changes only take effect after Shopify re-validates the section. If a setting doesn't show:
 
 1. Hard-refresh the theme editor
-2. Check the section's `{% schema %}` JSON for syntax errors (`shopify theme check` will catch most)
+2. Check the section's `{% schema %}` JSON for syntax errors (`shopify theme check` will catch most — note the repo has some pre-existing offenses, so look at the files you touched)
 3. Existing template JSON files in `/templates/` may have stale data — settings with new IDs will pick up defaults; renamed IDs become orphans
 
 ### Mobile renders desktop styles (or vice versa)
 
-The breakpoint convention is **mobile-first** with `@media (min-width: 769px)` to enhance for desktop. If styles aren't applying:
+Sections don't share one breakpoint — newer ones switch to desktop at `@media (min-width: 1024px)`, older ones at `769px`, and many also use `max-width` queries. If styles aren't applying:
 
-1. Check the breakpoint direction matches the section convention
+1. Check you're using the same breakpoint (and direction) as the rest of that file
 2. Confirm there's no later rule overriding due to specificity (`.section--full .section__heading` beats `.section__heading`)
 
 ## Notes
