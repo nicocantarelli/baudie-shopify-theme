@@ -12,7 +12,7 @@
 - `baudie-discounts/extensions/discount-function/src/cart_lines_discounts_generate_run.js` — the qualifier + deal-price rule to mirror.
 - `baudie-theme/snippets/sidecart-upsell-item.liquid` — the price-display logic (`upsell_price` ×100, compare-at when lower) to mirror.
 
-**Project location:** `/Users/nicolascantarelli/Developer/lumios-digital/baudie-checkout-upsell` (sibling to `baudie-theme` and `baudie-discounts`).
+**Project location:** `/Users/nicolascantarelli/Developer/Projects/baudie-checkout-upsell` (sibling to `baudie-theme` and `baudie-discounts`).
 
 ---
 
@@ -24,7 +24,7 @@
 
 - [x] **Step 1: Create the app project**
 
-Run from `/Users/nicolascantarelli/Developer/lumios-digital`:
+Run from `/Users/nicolascantarelli/Developer/Projects`:
 
 ```bash
 shopify app init --name baudie-checkout-upsell
@@ -65,7 +65,7 @@ Edit `extensions/checkout-upsell/package.json` to add a test script:
 - [x] **Step 5: Commit**
 
 ```bash
-cd /Users/nicolascantarelli/Developer/lumios-digital/baudie-checkout-upsell
+cd /Users/nicolascantarelli/Developer/Projects/baudie-checkout-upsell
 git add -A
 git commit -m "Scaffold checkout-upsell app and extension"
 ```
@@ -627,7 +627,7 @@ git commit -m "Checkout upsell extension verified and deployed" --allow-empty
 
 ## Execution notes (2026-06-11) — Tasks 1–5 complete
 
-Implemented at `/Users/nicolascantarelli/Developer/lumios-digital/baudie-checkout-upsell` (9 commits on `main`, local only — no remote yet). 25/25 vitest tests green; esbuild bundle check clean. Every task went through spec-compliance + code-quality subagent review; all findings applied.
+Implemented at `/Users/nicolascantarelli/Developer/Projects/baudie-checkout-upsell` (9 commits on `main`, local only — no remote yet). 25/25 vitest tests green; esbuild bundle check clean. Every task went through spec-compliance + code-quality subagent review; all findings applied.
 
 ### Deviations from plan (all reviewed and approved)
 
@@ -639,7 +639,7 @@ Implemented at `/Users/nicolascantarelli/Developer/lumios-digital/baudie-checkou
 
 ### Task 6 runbook (requires interactive auth — user in the loop)
 
-From `/Users/nicolascantarelli/Developer/lumios-digital/baudie-checkout-upsell`:
+From `/Users/nicolascantarelli/Developer/Projects/baudie-checkout-upsell`:
 
 1. `shopify app config link` — create the new app on the Partner org (same org as `baudie-discounts`). This writes `client_id` (and possibly rewrites `application_url`/`redirect_urls`); first dev/deploy also writes the extension `uid` into `shopify.extension.toml`. **Commit those rewrites.**
 2. **Admin prerequisite:** the `custom.upsell_price` product metafield definition must have **Storefront API access** enabled (Settings → Custom data → Products → upsell_price), or `OFFER_QUERY` returns null metafields and offers show full price.

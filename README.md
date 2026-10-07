@@ -2,7 +2,7 @@
 
 Custom Shopify theme for [Baudie](https://baudie.com).
 
-Designed and built by Nicolas Cantarelli for Lumios Digital.
+Designed and built by Nicolas Cantarelli.
 
 Designed around Baudie's Deodorant Enhancer® product line, with custom sections for the storefront, product pages, about/our-story, and a configurable password page used during private launch and on the legacy Bella Skin Beauty store.
 
@@ -345,4 +345,4 @@ Sections don't share one breakpoint — newer ones switch to desktop at `@media 
 
 ## License
 
-Base theme code under Shopify's theme license — see [LICENSE.md](./LICENSE.md). Theme customizations by Nicolas Cantarelli / Lumios Digital; Baudie branding, content, and imagery belong to Baudie.
+Base theme code under Shopify's theme license — see [LICENSE.md](./LICENSE.md). Theme customizations by Nicolas Cantarelli; Baudie branding, content, and imagery belong to Baudie.

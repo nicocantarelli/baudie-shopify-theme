@@ -3,9 +3,9 @@
     "name": "theme_info",
     "theme_name": "Baudie",
     "theme_version": "1.0.0",
-    "theme_author": "Zonda Studio",
-    "theme_documentation_url": "https://lumiosdigital.com",
-    "theme_support_url": "https://zondastudio.com"
+    "theme_author": "Nicolas Cantarelli",
+    "theme_documentation_url": "https://github.com/nicocantarelli/baudie-shopify-theme#readme",
+    "theme_support_url": "https://github.com/nicocantarelli/baudie-shopify-theme"
   },
   {
     "name": "t:general.typography",

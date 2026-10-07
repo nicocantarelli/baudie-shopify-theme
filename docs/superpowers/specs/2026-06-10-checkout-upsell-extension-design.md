@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-10
 **Status:** Approved (pending spec review)
-**Owner:** lumiosdigital
+**Owner:** Nicolas Cantarelli
 
 ## Summary
 
