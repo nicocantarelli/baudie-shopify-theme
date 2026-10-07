@@ -15,3 +15,7 @@ node_modules/
 ## Release files
 release
 *.zip
+
+# Local AI assistant instructions (not part of the theme)
+AGENTS.md
+CLAUDE.md
