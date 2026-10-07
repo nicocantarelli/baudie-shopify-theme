@@ -466,6 +466,10 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    /* The transform makes the menu its own stacking layer, so the dropdown's
+       z-index only counts inside it. Lift the whole menu above the header's
+       bottom line (.header-wrapper--bordered::after), which is painted later. */
+    z-index: 1;
   }
 
   .header__menu-link {
