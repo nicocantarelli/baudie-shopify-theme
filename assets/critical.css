@@ -196,3 +196,18 @@ button.star-rating {
   outline: none !important;
   box-shadow: none !important;
 }
+
+/* Appstle customer portal (/apps/subscriptions).
+   Appstle mounts its "reward ladder" pill straight on <body>, outside the
+   portal box its own Custom CSS is limited to, and that CSS can't set z-index,
+   so these two live here. The rest of the portal's styling is in Appstle →
+   Customer Portal → Custom CSS. */
+.as-reward-ladder-root {
+  display: none !important;
+}
+
+/* Popups open at z-index 50, under the fixed header (100). Keep them below
+   the mobile menu (200) and cart drawer (300). */
+.as-cp-modal {
+  z-index: 150 !important;
+}
