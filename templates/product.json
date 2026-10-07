@@ -88,8 +88,9 @@
         "final_sale_placement": "title",
         "show_purchase_options": false,
         "subscription_perk_1": "Pause or cancel anytime",
-        "subscription_perk_2": "",
-        "subscription_perk_3": ""
+        "subscription_perk_2": "VIP perks + gifts",
+        "subscription_perk_3": "",
+        "subscription_terms": "Billed [price] per delivery, [frequency]. Renews automatically until you cancel. Skip, pause or cancel anytime from your account."
       }
     },
     "1772843462a5334ed3": {
