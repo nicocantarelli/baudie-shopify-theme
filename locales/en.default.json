@@ -453,7 +453,16 @@
     "quantity": "Quantity",
     "stock_warning": "Only COUNT available",
     "includes": "Includes",
-    "subscription": "Subscription · {{ plan }}"
+    "subscription": "Subscription · {{ plan }}",
+    "subscription_prefix": "Subscription",
+    "frequency_label": "Purchase option for {{ product }}",
+    "frequency_error": "Couldn't change the purchase option. Please try again.",
+    "one_time_group": "One-time purchase",
+    "one_time": "One-time",
+    "subscribe_group": "Subscribe & save",
+    "subscribe_group_percent": "Subscribe & save {{ percent }}%",
+    "subscribe_nudge": "Save with a subscription",
+    "subscribe_nudge_percent": "Save {{ percent }}% with a subscription"
   },
   "breadcrumbs": {
     "navigation": "Breadcrumb navigation",

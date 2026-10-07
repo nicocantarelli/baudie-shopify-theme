@@ -220,6 +220,13 @@
         "label": "t:cart.settings.show_dynamic_checkout",
         "default": false,
         "info": "t:cart.settings.show_dynamic_checkout_info"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_subscription_switch",
+        "label": "t:cart.settings.cart_subscription_switch",
+        "default": false,
+        "info": "t:cart.settings.cart_subscription_switch_info"
       }
     ]
   },

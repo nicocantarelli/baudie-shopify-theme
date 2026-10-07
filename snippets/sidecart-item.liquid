@@ -152,13 +152,133 @@
       {%- if item_variant != 'Default Title' -%}
         <p class="sidecart-item__variant">{{ item_variant }}</p>
       {%- endif -%}
-      {%- if item.selling_plan_allocation -%}
+      {%- liquid
+        comment
+          Purchase-option switcher. Subscription lines can move to another
+          frequency of their plan, or back to one-time (unless the product
+          requires a plan). One-time lines of products sold on a plan can switch
+          to Subscribe & save, but only while the "switch to a subscription in
+          the cart" theme setting is on: products can sit on a plan before
+          subscriptions launch.
+        endcomment
+        assign is_subscription = false
+        if item.selling_plan_allocation
+          assign is_subscription = true
+        endif
+        assign switch_group_id = nil
+        if is_subscription
+          assign switch_group_id = item.selling_plan_allocation.selling_plan_group_id
+        elsif settings.cart_subscription_switch and item.variant.selling_plan_allocations.size > 0
+          assign switch_group_id = item.variant.selling_plan_allocations.first.selling_plan_group_id
+        endif
+        assign plan_count = 0
+        assign plan_percent = 0
+        if switch_group_id
+          for allocation in item.variant.selling_plan_allocations
+            if allocation.selling_plan_group_id == switch_group_id
+              assign plan_count = plan_count | plus: 1
+              assign plan_adjustment = allocation.selling_plan.price_adjustments.first
+              if plan_percent == 0
+                if plan_adjustment.value_type == 'percentage'
+                  assign plan_percent = plan_adjustment.value
+                endif
+              endif
+            endif
+          endfor
+        endif
+        assign allow_one_time = true
+        if item.product.requires_selling_plan
+          assign allow_one_time = false
+        endif
+        assign choice_count = plan_count
+        if allow_one_time
+          assign choice_count = choice_count | plus: 1
+        endif
+      -%}
+      {%- if switch_group_id and choice_count > 1 -%}
+        <p class="sidecart-item__subscription sidecart-item__subscription--switchable{% unless is_subscription %} sidecart-item__subscription--one-time{% endunless %}">
+          {%- comment -%}
+            The label line is always there (a nudge on one-time lines) so the
+            dropdown doesn't move when a line switches purchase option.
+          {%- endcomment -%}
+          {%- liquid
+            assign text_subscribed = 'sidecart.subscription_prefix' | t
+            if plan_percent > 0
+              assign text_one_time = 'sidecart.subscribe_nudge_percent' | t: percent: plan_percent
+            else
+              assign text_one_time = 'sidecart.subscribe_nudge' | t
+            endif
+          -%}
+          <span
+            class="sidecart-item__subscription-label"
+            data-subscription-label
+            data-text-subscribed="{{ text_subscribed | escape }}"
+            data-text-one-time="{{ text_one_time | escape }}"
+          >
+            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M10.25 5.25A4.25 4.25 0 0 0 2.6 3M1.75 6.75A4.25 4.25 0 0 0 9.4 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M2.25 1.25V3.25H4.25M9.75 10.75V8.75H7.75" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="sidecart-item__subscription-text" data-subscription-text>
+              <span class="sidecart-item__subscription-word">
+                {%- if is_subscription -%}{{ text_subscribed }}{%- else -%}{{ text_one_time }}{%- endif -%}
+              </span>
+            </span>
+          </span>
+          <span class="sidecart-item__frequency-wrap">
+            {%- capture purchase_option_select -%}
+            <select
+              class="sidecart-item__frequency"
+              aria-label="{{ 'sidecart.frequency_label' | t: product: item.product.title }}"
+              data-frequency-select
+            >
+              {%- if allow_one_time -%}
+                <optgroup label="{{ 'sidecart.one_time_group' | t }}">
+                  <option
+                    value=""
+                    data-unit-price="{{ item.variant.price }}"
+                    data-unit-compare="{% if item.variant.compare_at_price > item.variant.price %}{{ item.variant.compare_at_price }}{% else %}0{% endif %}"
+                    {% unless is_subscription %}
+                      selected
+                    {% endunless %}
+                  >
+                    {{- 'sidecart.one_time' | t -}}
+                  </option>
+                </optgroup>
+              {%- endif -%}
+              <optgroup label="{% if plan_percent > 0 %}{{ 'sidecart.subscribe_group_percent' | t: percent: plan_percent }}{% else %}{{ 'sidecart.subscribe_group' | t }}{% endif %}">
+                {%- for allocation in item.variant.selling_plan_allocations -%}
+                  {%- if allocation.selling_plan_group_id == switch_group_id -%}
+                    <option
+                      value="{{ allocation.selling_plan.id }}"
+                      data-unit-price="{{ allocation.price }}"
+                      data-unit-compare="{% if allocation.compare_at_price > allocation.price %}{{ allocation.compare_at_price }}{% else %}0{% endif %}"
+                      {% if allocation.selling_plan.id == item.selling_plan_allocation.selling_plan.id %}
+                        selected
+                      {% endif %}
+                    >
+                      {{- allocation.selling_plan.name | escape -}}
+                    </option>
+                  {%- endif -%}
+                {%- endfor -%}
+              </optgroup>
+            </select>
+            {%- endcapture -%}
+            {% render 'select-menu', select: purchase_option_select %}
+            <svg class="sidecart-item__frequency-chevron" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="8" height="4" viewBox="0 0 12 6" fill="none">
+              <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </p>
+      {%- elsif is_subscription -%}
         <p class="sidecart-item__subscription">
-          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M10.25 5.25A4.25 4.25 0 0 0 2.6 3M1.75 6.75A4.25 4.25 0 0 0 9.4 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-            <path d="M2.25 1.25V3.25H4.25M9.75 10.75V8.75H7.75" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>{{ 'sidecart.subscription' | t: plan: item.selling_plan_allocation.selling_plan.name }}</span>
+          <span class="sidecart-item__subscription-label">
+            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M10.25 5.25A4.25 4.25 0 0 0 2.6 3M1.75 6.75A4.25 4.25 0 0 0 9.4 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M2.25 1.25V3.25H4.25M9.75 10.75V8.75H7.75" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {{- 'sidecart.subscription' | t: plan: item.selling_plan_allocation.selling_plan.name -}}
+          </span>
         </p>
       {%- endif -%}
       {%- if has_bundle_scents -%}

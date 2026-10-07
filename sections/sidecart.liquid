@@ -40,6 +40,7 @@
     data-item-singular="{{ 'sidecart.item' | t | escape }}"
     data-item-plural="{{ 'sidecart.items' | t | escape }}"
     data-stock-warning="{{ 'sidecart.stock_warning' | t | escape }}"
+    data-frequency-error="{{ 'sidecart.frequency_error' | t | escape }}"
     style="--sidecart-bg: {{ section.settings.background_color }}; --sidecart-text: {{ section.settings.text_color }};"
     {% if shipping_bar_enabled %}
     data-shipping-bar-enabled
@@ -448,16 +449,112 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  margin: 2px 0 0;
-  font-family: var(--font-manrope);
-  font-size: 12px;
-  line-height: 1.3;
+  margin: 0;
+  /* Same type and spacing as the bundle scent list. */
+  font-family: var(--font-jokker);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
   color: var(--sidecart-text);
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
 .sidecart-item__subscription svg {
   flex: 0 0 auto;
+}
+
+.sidecart-item__subscription-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Spin around its own centre when the purchase option changes. */
+.sidecart-item__subscription-label svg {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* One-line window for the odometer roll between the nudge and "Subscription". */
+.sidecart-item__subscription-text {
+  display: inline-grid;
+  overflow: hidden;
+}
+
+.sidecart-item__subscription-word {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+}
+
+/* Switchable: "Subscription" label on its own line, the purchase-option
+   dropdown (plain text + chevron) underneath, so the dropdown stays put when
+   a line switches between one-time and subscription. */
+.sidecart-item__subscription--switchable {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0; /* lines spaced by line-height only, like the bundle scent list */
+  opacity: 1;
+}
+
+.sidecart-item__subscription--switchable .sidecart-item__subscription-label {
+  opacity: 0.75;
+}
+
+.sidecart-item__frequency-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sidecart-item__frequency {
+  appearance: none;
+  margin: 0;
+  padding: 0 0 0 16px; /* chevron sits in a 12px slot + 4px gap, like the label's icon */
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  opacity: 0.75;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.sidecart-item__frequency:hover,
+.sidecart-item__frequency:focus-visible {
+  opacity: 1;
+}
+
+.sidecart-item__frequency:focus-visible {
+  outline: 2px solid var(--sidecart-text);
+  outline-offset: 2px;
+}
+
+/* The open list uses the select's colors in some browsers; keep it readable. */
+.sidecart-item__frequency option {
+  background-color: #ffffff;
+  color: var(--sidecart-text);
+}
+
+.sidecart-item__subscription .sidecart-item__frequency-chevron {
+  position: absolute;
+  left: 2px; /* centred in the same 12px slot as the label's icon */
+  opacity: 0.75;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.sidecart-item__frequency-wrap .select-menu.is-open + .sidecart-item__frequency-chevron {
+  transform: rotate(180deg);
+}
+
+/* Open purchase-option list: same type as the bundle scent list. */
+.sidecart-item .select-menu__list {
+  color: var(--sidecart-text);
+  font-family: var(--font-jokker);
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .sidecart-item__properties {
@@ -1261,6 +1358,13 @@ class Sidecart {
     });
 
     this.sidecart.addEventListener('change', (e) => {
+      const frequency = e.target.closest('[data-frequency-select]');
+      if (frequency) {
+        const card = frequency.closest('[data-sidecart-item]');
+        if (card) this.changeFrequency(card, frequency);
+        return;
+      }
+
       const input = e.target.closest('[data-quantity]');
       if (!input) return;
       const item = input.closest('[data-sidecart-item]');
@@ -1438,6 +1542,144 @@ class Sidecart {
     const cart = await res.json();
     this.lastCart = cart;
     return cart;
+  }
+
+  // Switch a card's purchase option: another delivery frequency (selling plan
+  // of the same group), one-time -> Subscribe & save, or back to one-time.
+  // Optimistic and non-blocking: the dropdown already shows the new value, so
+  // the card is retargeted at once and the change is saved in the background
+  // with one change.js call per line (by line key, so a stale index can never
+  // hit the wrong line). Frequency to frequency updates prices in place via the
+  // queue's applyCartMoney. Switching between one-time and subscription changes
+  // the label and price treatment, and a merge with another card changes the
+  // card set, so those re-render the drawer. On failure the queue re-renders
+  // from the real cart and a toast explains.
+  changeFrequency(card, select) {
+    const oldSignature = card.dataset.propertiesSignature || '';
+    if (!oldSignature) return;
+    // An empty value is "One-time": null removes the selling plan from the line.
+    const sellingPlan = select.value ? parseInt(select.value, 10) : null;
+    const base = oldSignature.replace(/~sp\d+$/, '');
+    const wasSubscription = base !== oldSignature;
+    const newSignature = sellingPlan ? base + '~sp' + sellingPlan : base;
+    if (newSignature === oldSignature) return;
+
+    const merges = Array.from(this.sidecart.querySelectorAll('[data-sidecart-item]'))
+      .some((other) => other !== card && other.dataset.propertiesSignature === newSignature);
+    card.dataset.propertiesSignature = newSignature;
+    // Label and price switch optimistically (animated), so only a merge with
+    // another card needs a full re-render.
+    if (merges) this.requestStructureRender();
+    this.animatePurchaseOption(card, select, wasSubscription !== Boolean(sellingPlan) ? Boolean(sellingPlan) : null);
+    this.dirty = true;
+
+    this.enqueue(async () => {
+      const matching = (cart) => cart.items.filter((line) => this.signatureOfLine(line) === oldSignature);
+      let refreshed = !(this.lastCart && matching(this.lastCart).length);
+      let cart = refreshed ? await this.fetchCart() : this.lastCart;
+      for (let step = 0; step < 10; step++) {
+        const lines = matching(cart);
+        if (!lines.length) return;
+        const res = await fetch('/cart/change.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ id: lines[0].key, quantity: lines[0].quantity, selling_plan: sellingPlan })
+        });
+        if (!res.ok) {
+          // The cached cart may be stale (e.g. its line key changed): retry once fresh.
+          if (refreshed) throw new Error('cart/change failed: ' + res.status);
+          refreshed = true;
+          cart = await this.fetchCart();
+          continue;
+        }
+        const updated = await res.json();
+        this.lastCart = updated;
+        // Guard against a change that didn't take, so we never loop on it.
+        if (matching(updated).length >= lines.length) throw new Error('Selling plan change was not applied');
+        cart = updated;
+      }
+    }).catch(() => {
+      card.dataset.propertiesSignature = oldSignature;
+      this.showToast(this.sidecart.dataset.frequencyError || 'Could not change the delivery frequency.');
+    });
+  }
+
+  // The premium bit of switching purchase option, all instant: the arrows spin,
+  // the label rolls like an odometer between the nudge and "Subscription", and
+  // the price rolls over to the new amount (subtotal + shipping bar follow).
+  // toSubscription: true/false when switching type, null for a frequency
+  // change (a quick spin only). The server result later confirms or corrects.
+  animatePurchaseOption(card, select, toSubscription) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ease = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
+    const label = card.querySelector('[data-subscription-label]');
+    const icon = label && label.querySelector('svg');
+    if (icon && icon.animate && !reduce) {
+      const turn = toSubscription === false ? -360 : 360;
+      icon.animate(
+        [{ transform: 'rotate(0deg)' }, { transform: `rotate(${turn}deg)` }],
+        { duration: toSubscription === null ? 700 : 1000, easing: ease }
+      );
+    }
+    if (toSubscription === null) return;
+
+    const dir = toSubscription ? 1 : -1; // roll up into a subscription, down back to one-time
+
+    const box = label && label.querySelector('[data-subscription-text]');
+    const text = label && (toSubscription ? label.dataset.textSubscribed : label.dataset.textOneTime);
+    if (box && text) {
+      Array.from(box.children).slice(0, -1).forEach((el) => el.remove()); // drop a roll still running
+      const previous = box.lastElementChild;
+      const next = document.createElement('span');
+      next.className = 'sidecart-item__subscription-word';
+      next.textContent = text;
+      box.appendChild(next);
+      if (reduce || !next.animate) {
+        if (previous) previous.remove();
+      } else {
+        const timing = { duration: 450, easing: ease, fill: 'both' };
+        if (previous) {
+          previous
+            .animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: `translateY(${-100 * dir}%)`, opacity: 0 }], timing)
+            .finished.then(() => previous.remove(), () => {});
+        }
+        next.animate([{ transform: `translateY(${100 * dir}%)`, opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }], timing);
+      }
+    }
+
+    const option = select.options[select.selectedIndex];
+    const unit = parseInt(option && option.dataset.unitPrice, 10);
+    if (!Number.isFinite(unit)) return;
+    const compareUnit = parseInt(option.dataset.unitCompare || '0', 10) || 0;
+    const input = card.querySelector('[data-quantity]');
+    const qty = Math.max(parseInt(input && input.value, 10) || 1, 1);
+    const previousUnit = parseInt(card.dataset.unitPrice || '0', 10) || 0;
+    const update = () => {
+      card.dataset.compareAtUnit = String(compareUnit);
+      this.renderCardPrice(card, qty, unit * qty, unit * qty);
+    };
+    this.adjustSubtotalOptimistic((unit - previousUnit) * qty);
+
+    const price = card.querySelector('.sidecart-item__price');
+    if (!price || !price.animate || reduce) {
+      update();
+      return;
+    }
+    const out = price.animate(
+      [{ transform: 'translateY(0)', opacity: 1 }, { transform: `translateY(${-35 * dir}%)`, opacity: 0 }],
+      { duration: 160, delay: 80, easing: 'ease-in', fill: 'forwards' }
+    );
+    out.finished.then(
+      () => {
+        update();
+        out.cancel();
+        price.animate(
+          [{ transform: `translateY(${35 * dir}%)`, opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }],
+          { duration: 280, easing: ease }
+        );
+      },
+      update
+    );
   }
 
   // Drive a variant+properties group to a target TOTAL quantity. Re-reads the
