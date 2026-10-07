@@ -55,6 +55,7 @@ Standard Shopify theme structure — see [shopify.dev/docs/storefronts/themes/ar
 
 | Section | Purpose |
 |---|---|
+| `header.liquid` | Header and mobile drawer. A menu item with child links (e.g. Shop → Bundles, For Men, Wipes) becomes a dropdown toggle rather than a link: hover, focus or click on desktop, tap on touch, an accordion in the drawer. The items come from the admin navigation, not code |
 | `hero-product.liquid` | Homepage hero with product CTA |
 | `product.liquid` | Main PDP (individual scents + wipes): price, add to cart, subscription options, accordions, patent stamp, trust badges |
 | `product-bundle.liquid` | Build-your-own Bundle of 3 — custom scent picker that adds a Simple Bundles parent product with the picked scents as line-item properties |
@@ -77,7 +78,7 @@ Custom JSON templates live in [templates/](./templates):
 - `product.json` — individual scents (default PDP)
 - `product.bundle.json` / `product.bundle-duo.json` / `product.wipes.json` — bundle, duo and wipes PDPs
 - `product.menopause.json` / `product.postpartum.json` — campaign landing pages (`landing-hero`)
-- `collection.json` / `collection.bundles.json` / `collection.wipes.json` / `list-collections.json` — shop pages
+- `collection.json` / `collection.bundles.json` / `collection.wipes.json` / `list-collections.json` — shop pages. The collection templates render hand-picked `collection-grid` blocks and ignore `collection.products`, so each collection needs its matching template selected in the admin
 - `page.our-story.json` / `page.contact.json` / `page.customer-care.json` / `page.affiliate.json` / `page.affiliate-terms.json` / `page.cancellation.json` / `page.for-men.json` / `page.privacy.json` / `page.terms.json`
 - `cart.json` — renders `cart-redirect` only (opens the sidecart and sends the visitor back)
 - `password.json` — coming-soon / private gate
