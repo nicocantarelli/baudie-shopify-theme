@@ -208,9 +208,55 @@
       endif
     -%}
 
+    {%- liquid
+      assign has_bundle_upsell = false
+      if bundle_upsell_text != blank and bundle_upsell_product != blank
+        assign has_bundle_upsell = true
+      endif
+    -%}
+
+    {%- comment -%}
+      "Explore other scents" dropdown. The bundle upsell button replaces it when
+      configured. Rendered above the purchase options when those show, otherwise
+      in its original spot at the bottom of the purchase group.
+    {%- endcomment -%}
+    {%- capture scent_dropdown -%}
+      {%- unless has_bundle_upsell -%}
+        {%- if collection_products.size > 1 and product.metafields.custom.scent_name != blank -%}
+          <div class="product-main__scent-dropdown" data-scent-dropdown>
+            <button
+              type="button"
+              class="product-main__scent-trigger"
+              aria-expanded="false"
+              aria-controls="scent-list-{{ section.id }}">
+              <span>{{ 'sections.product.explore_scents' | t }}</span>
+              <svg class="product-main__scent-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none" aria-hidden="true" focusable="false">
+                <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <ul
+              class="product-main__scent-list"
+              id="scent-list-{{ section.id }}"
+              aria-label="{{ 'sections.product.explore_scents' | t }}">
+              {% for item in collection_products %}
+                {% if item.id != product.id and item.metafields.custom.scent_name != blank %}
+                  <li>
+                    <a href="{{ item.url }}" class="product-main__scent-option">
+                      {{ item.title }}
+                    </a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        {%- endif -%}
+      {%- endunless -%}
+    {%- endcapture -%}
+
     {%- comment -%} Purchase group: price, button, and upsell share the same width {%- endcomment -%}
     <div class="product-main__purchase-group{% if selected_allocation %} product-main__purchase-group--subscription{% endif %}">
       {%- if selected_allocation -%}
+        {{ scent_dropdown }}
         {% render 'purchase-options',
           product: product,
           variant: current_variant,
@@ -219,7 +265,8 @@
           perk_1: section.settings.subscription_perk_1,
           perk_2: section.settings.subscription_perk_2,
           perk_3: section.settings.subscription_perk_3,
-          terms: section.settings.subscription_terms
+          terms: section.settings.subscription_terms,
+          show_badge: section.settings.show_subscription_badge
         %}
       {%- endif -%}
       <div class="product-main__price-block">
@@ -272,7 +319,7 @@
       {%- if is_final_sale and final_sale_placement == 'button' -%}{{ final_sale_mark }}{%- endif -%}
 
       {%- comment -%} Bundle Upsell Button (replaces scent dropdown when configured) {%- endcomment -%}
-      {% if bundle_upsell_text != blank and bundle_upsell_product != blank %}
+      {% if has_bundle_upsell %}
         <a href="{{ bundle_upsell_product.url }}" class="product-main__bundle-upsell" style="--bundle-upsell-bg: {{ section.settings.bundle_upsell_bg_color }}; --bundle-upsell-text: {{ section.settings.bundle_upsell_text_color }}">
           <span>{{ bundle_upsell_text }}</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
@@ -280,34 +327,9 @@
           </svg>
         </a>
 
-    {%- comment -%} Explore Other Scents Dropdown {%- endcomment -%}
-    {% elsif collection_products.size > 1 and product.metafields.custom.scent_name != blank %}
-      <div class="product-main__scent-dropdown" data-scent-dropdown>
-        <button
-          type="button"
-          class="product-main__scent-trigger"
-          aria-expanded="false"
-          aria-controls="scent-list-{{ section.id }}">
-          <span>{{ 'sections.product.explore_scents' | t }}</span>
-          <svg class="product-main__scent-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none" aria-hidden="true" focusable="false">
-            <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <ul
-          class="product-main__scent-list"
-          id="scent-list-{{ section.id }}"
-          aria-label="{{ 'sections.product.explore_scents' | t }}">
-          {% for item in collection_products %}
-            {% if item.id != product.id and item.metafields.custom.scent_name != blank %}
-              <li>
-                <a href="{{ item.url }}" class="product-main__scent-option">
-                  {{ item.title }}
-                </a>
-              </li>
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
+    {%- comment -%} Explore Other Scents Dropdown (moves above the purchase options when those show) {%- endcomment -%}
+    {% elsif selected_allocation == blank %}
+      {{ scent_dropdown }}
     {% endif %}
     </div>
 
@@ -823,6 +845,26 @@
 
   .product-main__scent-trigger[aria-expanded="true"] + .product-main__scent-list {
     display: block;
+  }
+
+  /*
+    When the subscription options show, the buttons around them get the same
+    soft corners as the options box (styling trial, scoped to that state).
+  */
+  .product-main__purchase-group--subscription .product-main__button,
+  .product-main__purchase-group--subscription .product-main__bundle-upsell,
+  .product-main__purchase-group--subscription .product-main__scent-trigger {
+    border-radius: 8px;
+  }
+
+  /* Open dropdown: trigger and list join into one rounded shape. */
+  .product-main__purchase-group--subscription .product-main__scent-trigger[aria-expanded="true"] {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .product-main__purchase-group--subscription .product-main__scent-list {
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
   }
 
   .product-main__scent-option {
@@ -1752,6 +1794,13 @@
       "label": "t:sections.product.show_purchase_options",
       "info": "t:sections.product.show_purchase_options_info",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subscription_badge",
+      "label": "t:sections.product.show_subscription_badge",
+      "info": "t:sections.product.show_subscription_badge_info",
+      "default": false
     },
     {
       "type": "text",

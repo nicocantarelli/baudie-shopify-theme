@@ -25,6 +25,7 @@
   @param {string} [perk_1] - Optional extra perk listed under Subscribe & save
   @param {string} [perk_2] - Optional extra perk listed under Subscribe & save
   @param {string} [perk_3] - Optional extra perk listed under Subscribe & save
+  @param {boolean} [show_badge] - Show the "Save X%" badge on the corner of the options
   @param {string} [terms] - Optional subscription terms (rich text) shown while Subscribe & save is selected. `[price]` and `[frequency]` are replaced with the chosen plan's price and (lowercased) name
 
   @example
@@ -88,6 +89,23 @@
               assign plan_terms = terms | replace: '[price]', plan_price | replace: '[frequency]', plan_frequency
             endif
 
+            comment
+              Short dropdown label: "Every month" -> "1 month", "Every 2 months"
+              -> "2 months". The full plan name stays everywhere else (cart,
+              checkout, emails, terms). Names not starting with "Every" are
+              shown as-is.
+            endcomment
+            assign plan_label = plan.name
+            assign plan_name_start = plan.name | downcase | slice: 0, 6
+            if plan_name_start == 'every '
+              assign plan_label = plan.name | slice: 6, 100
+              assign plan_unit = plan_label | downcase
+              case plan_unit
+                when 'day', 'week', 'month', 'year'
+                  assign plan_label = plan_label | prepend: '1 '
+              endcase
+            endif
+
             if plan.id == selected_allocation.selling_plan.id
               assign selected_badge = plan_badge
               assign selected_perk = plan_perk
@@ -105,7 +123,7 @@
               selected
             {% endif %}
           >
-            {{- plan.name | escape -}}
+            {{- plan_label | escape -}}
           </option>
           {%- break -%}
         {%- endif -%}
@@ -129,12 +147,14 @@
   {%- endcapture -%}
 
   <purchase-options
-    class="purchase-options is-subscription{% if product.requires_selling_plan %} purchase-options--subscription-only{% endif %}"
+    class="purchase-options is-subscription{% if product.requires_selling_plan %} purchase-options--subscription-only{% endif %}{% if show_badge %} purchase-options--badge{% endif %}"
     data-form-id="{{ form_id }}"
   >
-    <span class="purchase-options__badge" data-subscription-badge{% if selected_badge == blank %} hidden{% endif %}>
-      {{- selected_badge -}}
-    </span>
+    {%- if show_badge -%}
+      <span class="purchase-options__badge" data-subscription-badge{% if selected_badge == blank %} hidden{% endif %}>
+        {{- selected_badge -}}
+      </span>
+    {%- endif -%}
 
     <fieldset class="purchase-options__fieldset">
       <legend class="visually-hidden">{{ 'products.subscription.legend' | t }}</legend>
@@ -213,16 +233,19 @@
                 {{- 'products.subscription.frequency_label' | t -}}
               </label>
               <div class="purchase-options__select-wrapper">
-                <select
-                  id="{{ frequency_id }}"
-                  class="purchase-options__select"
-                  {% if terms != blank %}
-                    aria-describedby="{{ terms_id }}"
-                  {% endif %}
-                  data-frequency
-                >
-                  {{ frequency_options }}
-                </select>
+                {%- capture frequency_select -%}
+                  <select
+                    id="{{ frequency_id }}"
+                    class="purchase-options__select"
+                    {% if terms != blank %}
+                      aria-describedby="{{ terms_id }}"
+                    {% endif %}
+                    data-frequency
+                  >
+                    {{ frequency_options }}
+                  </select>
+                {%- endcapture -%}
+                {% render 'select-menu', select: frequency_select %}
                 <svg
                   class="purchase-options__chevron"
                   aria-hidden="true"
@@ -266,8 +289,11 @@
     position: relative;
     display: block;
     width: 100%;
-    padding-top: 8px; /* room for the badge straddling the track's top edge */
     color: var(--product-text, #3e2027);
+  }
+
+  .purchase-options--badge {
+    padding-top: 8px; /* room for the badge straddling the track's top edge */
   }
 
   .purchase-options__fieldset {
@@ -282,6 +308,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding: 4px;
+    border-radius: 8px;
     background-color: color-mix(in srgb, var(--product-text, #3e2027) 8%, transparent);
   }
 
@@ -295,7 +322,8 @@
     bottom: 4px;
     left: 4px;
     width: calc(50% - 4px);
-    background-color: #ffffff;
+    border-radius: 6px; /* 8px box radius minus the 4px track padding, so the curves stay parallel */
+    background-color: var(--product-text, #3e2027);
     transition: transform 0.3s ease;
   }
 
@@ -312,36 +340,71 @@
   .purchase-options__option {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
     min-width: 0;
+    border-radius: 6px;
+    transition: color 0.3s ease;
+  }
+
+  /* Inverted: the selected option sits on the product-colored marker. */
+  .purchase-options__option.is-selected {
+    color: #ffffff;
   }
 
   .purchase-options__option:has(.purchase-options__radio:focus-visible) {
     outline: 2px solid var(--product-text, #3e2027);
-    outline-offset: -2px;
+    outline-offset: 2px;
   }
 
+  /*
+    Radio "pin" beside the title, price tucked under the title. Full-strength
+    text on both options so the unselected one reads as tappable, not disabled.
+  */
   .purchase-options__label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 12px 14px;
+    display: grid;
+    grid-template-columns: 14px 1fr;
+    align-items: center;
+    align-content: start; /* keep rows tight when the label stretches */
+    gap: 4px 10px;
+    padding: 14px;
+    border-radius: 6px;
     cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
+    transition: background-color 0.2s ease;
   }
 
-  .purchase-options__option.is-selected .purchase-options__label,
-  .purchase-options__label:hover {
-    opacity: 1;
+  /*
+    An option without details (one-time) stretches to the full height of its
+    column, so the whole side is clickable while Subscribe is expanded.
+  */
+  .purchase-options__label:last-child {
+    flex: 1 1 auto;
   }
 
+  .purchase-options__option:not(.is-selected) .purchase-options__label:hover {
+    background-color: color-mix(in srgb, var(--product-text, #3e2027) 8%, transparent);
+  }
+
+  /* Empty ring when unselected, solid dot (the "pin") when selected. */
   .purchase-options__radio {
-    position: absolute;
-    width: 1px;
-    height: 1px;
+    appearance: none;
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
     margin: 0;
-    opacity: 0;
-    pointer-events: none;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    background-color: transparent;
+    color: inherit; /* form controls don't inherit text color by default */
+    cursor: pointer;
+  }
+
+  .purchase-options__radio:checked {
+    background-color: currentColor;
+  }
+
+  .purchase-options__radio:focus-visible {
+    outline: none; /* the whole option gets the focus ring instead */
   }
 
   .purchase-options__title,
@@ -355,13 +418,18 @@
   }
 
   .purchase-options__price {
+    grid-column: 2;
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 6px;
+    font-size: 14px;
+    letter-spacing: -0.14px;
   }
 
   .purchase-options__compare {
+    font-size: 12px;
+    letter-spacing: -0.12px;
     opacity: 0.5;
   }
 
@@ -375,8 +443,9 @@
     right: 10px;
     z-index: 2;
     padding: 3px 6px;
-    background-color: var(--product-text, #3e2027);
-    color: #ffffff;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: var(--product-text, #3e2027);
     font-family: var(--font-sweet-sans);
     font-weight: 500;
     font-size: 10px;
@@ -418,11 +487,14 @@
   .purchase-options.is-subscription .purchase-options__details-inner {
     padding-bottom: 14px;
     opacity: 1;
-    transition: opacity 0.2s ease 0.15s, padding 0.3s ease;
+    /* Once fully open, let the frequency dropdown's list overflow the panel. */
+    overflow: visible;
+    transition: opacity 0.2s ease 0.15s, padding 0.3s ease, overflow 0s linear 0.3s;
+    transition-behavior: allow-discrete;
   }
 
   .purchase-options__frequency-label {
-    margin-top: 4px;
+    margin-top: 6px; /* + the 8px gap = 14px between the perks and the frequency */
     font-family: var(--font-sweet-sans);
     font-weight: 500;
     font-size: 11px;
@@ -443,9 +515,9 @@
     margin: 0;
     padding: 0 30px 0 10px;
     border: none;
-    border-radius: 0;
-    background-color: color-mix(in srgb, var(--product-text, #3e2027) 7%, #ffffff);
-    color: var(--product-text, #3e2027);
+    border-radius: 4px;
+    background-color: color-mix(in srgb, #ffffff 18%, transparent);
+    color: inherit;
     font-family: var(--font-sweet-sans);
     font-weight: 500;
     font-size: 12px;
@@ -456,8 +528,14 @@
   }
 
   .purchase-options__select:focus-visible {
-    outline: 2px solid var(--product-text, #3e2027);
+    outline: 2px solid currentColor;
     outline-offset: 2px;
+  }
+
+  /* Some browsers style the open list with the select's colors; keep it readable. */
+  .purchase-options__select option {
+    background-color: #ffffff;
+    color: var(--product-text, #3e2027);
   }
 
   .purchase-options__chevron {
@@ -466,13 +544,29 @@
     right: 12px;
     transform: translateY(-50%);
     pointer-events: none;
+    transition: transform 0.2s ease;
+  }
+
+  .purchase-options__select-wrapper .select-menu.is-open + .purchase-options__chevron {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  /* Open frequency list: same type as the button, product color on white. */
+  .purchase-options .select-menu__list {
+    border-radius: 8px;
+    color: var(--product-text, #3e2027);
+    font-family: var(--font-sweet-sans);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: -0.12px;
+    text-transform: uppercase;
   }
 
   .purchase-options__perks {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    margin: 6px 0; /* even breathing room between the price and the frequency */
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -534,6 +628,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .purchase-options__marker,
+    .purchase-options__option,
     .purchase-options__label,
     .purchase-options__details,
     .purchase-options__details-inner {

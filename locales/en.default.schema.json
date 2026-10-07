@@ -479,6 +479,8 @@
       "subscription_header": "Subscriptions",
       "show_purchase_options": "Show subscription options",
       "show_purchase_options_info": "Shows \"One-time purchase\" and \"Subscribe & save\" on products that have an Appstle subscription plan. Eligible products, the discount and delivery frequencies are managed in Appstle.",
+      "show_subscription_badge": "Show savings badge",
+      "show_subscription_badge_info": "The small \"Save 15%\" tag on the corner of the options. The percentage comes from the Appstle plan.",
       "subscription_perk_1": "Subscription perk 1",
       "subscription_perk_2": "Subscription perk 2",
       "subscription_perk_3": "Subscription perk 3",
@@ -871,7 +873,9 @@
       "enable_quick_cart": "Enable quick cart drawer",
       "enable_quick_cart_info": "Opens a slide-out cart instead of going to the cart page",
       "show_dynamic_checkout": "Show dynamic checkout buttons",
-      "show_dynamic_checkout_info": "Display accelerated checkout options like Shop Pay, Apple Pay"
+      "show_dynamic_checkout_info": "Display accelerated checkout options like Shop Pay, Apple Pay",
+      "cart_subscription_switch": "Let customers switch to a subscription in the cart",
+      "cart_subscription_switch_info": "Adds a \"One-time / Subscribe & save\" dropdown to one-time items that have an Appstle subscription plan. Subscription items can always change frequency. Turn on when subscriptions launch."
     }
   },
   "sidecart": {
