@@ -219,7 +219,9 @@
     },
     "related_products": {
       "aria_label": "Related products",
-      "pagination_label": "Go to product"
+      "pagination_label": "Go to product",
+      "choose_scent": "Choose your scent",
+      "choose_scents": "Choose your scents"
     },
     "product_bundle": {
       "choose_scent": "Choose your scent",

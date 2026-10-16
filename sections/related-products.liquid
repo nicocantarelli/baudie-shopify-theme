@@ -106,6 +106,31 @@
                   </div>
                 {%- endif -%}
                 <div class="related-products__actions">
+                  {%- comment -%}
+                    Scent-pick bundles (the bundle and bundle-duo templates) link to
+                    their page instead of quick-adding. A bare variant id carries no
+                    option-group properties, so Simple Bundles can't resolve the
+                    scent and the order lands as one unexpanded line with nothing to
+                    fulfil. The duo sits in the bundles collection, so it showed up
+                    here on the Discovery Set page with a working add button.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign pick_label = blank
+                    case item.template_suffix
+                      when 'bundle'
+                        assign pick_label = 'sections.related_products.choose_scents' | t
+                      when 'bundle-duo'
+                        assign pick_label = 'sections.related_products.choose_scent' | t
+                    endcase
+                  -%}
+                  {%- if pick_label != blank -%}
+                    <a
+                      href="{{ item.url }}"
+                      class="related-products__action-btn related-products__action-btn--buy"
+                      aria-label="{{ pick_label }}: {{ item.title }}">
+                      {{ pick_label }}
+                    </a>
+                  {%- else -%}
                   {%- form 'product', item, class: 'related-products__form' -%}
                     <input type="hidden" name="id" value="{{ selected_variant.id }}">
                     <button
@@ -120,6 +145,7 @@
                       <span>{{ 'products.add_to_cart' | t }}</span>
                     </button>
                   {%- endform -%}
+                  {%- endif -%}
                 </div>
               </div>
               <div class="related-products__info">
