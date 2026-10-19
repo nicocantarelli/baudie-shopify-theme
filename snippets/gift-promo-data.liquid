@@ -1,0 +1,53 @@
+{% doc %}
+  Outputs the gift with purchase settings as JSON for the sidecart script.
+
+  The settings live in the `baudie.gift_promo` shop metafield, saved from the
+  admin (Discounts → Upsell deal → Gift with purchase) by the baudie-discounts
+  app. The same metafield drives the discount function that makes the gifts
+  free at checkout, so the drawer and checkout always agree.
+
+  Each gift gets its storefront title and availability, so the drawer can name
+  it in the progress bar and skip a gift that's sold out. Renders nothing when
+  no settings are saved, or when the promo is off and there are no VIP gifts.
+
+  @example
+  {% render 'gift-promo-data' %}
+{% enddoc %}
+
+{%- liquid
+  assign promo = shop.metafields.baudie.gift_promo.value
+  assign render_data = false
+  if promo
+    if promo.status == 'on' or promo.status == 'preview'
+      assign render_data = true
+    endif
+    if promo.vip.size > 0
+      assign render_data = true
+    endif
+  endif
+-%}
+
+{%- if render_data -%}
+  <script type="application/json" data-gift-promo>
+    {
+      "status": {{ promo.status | json }},
+      "startDate": {{ promo.startDate | json }},
+      "endDate": {{ promo.endDate | json }},
+      "timezone": {{ promo.timezone | json }},
+      "updatedAt": {{ promo.updatedAt | json }},
+      "codesBlockedMessage": {{ promo.codesBlockedMessage | json }},
+      "tiers": [
+        {%- for tier in promo.tiers -%}
+          {%- render 'gift-promo-gift-json', gift: tier -%}
+          {%- unless forloop.last %},{% endunless -%}
+        {%- endfor -%}
+      ],
+      "vip": [
+        {%- for row in promo.vip -%}
+          {%- render 'gift-promo-gift-json', gift: row -%}
+          {%- unless forloop.last %},{% endunless -%}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{%- endif -%}

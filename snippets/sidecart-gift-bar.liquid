@@ -1,0 +1,45 @@
+{% doc %}
+  Renders the gift with purchase progress bar shell in the sidecart footer.
+
+  Only rendered while a promo is On or in Preview with at least one tier
+  (settings: the `baudie.gift_promo` shop metafield). It starts hidden: the
+  sidecart script decides whether the promo is running for this cart (dates,
+  preview link) and fills in the message, the fill and one marker per tier.
+
+  @param {string} progress_message - Shown below the last tier; [amount] and [gift] are replaced
+  @param {string} success_message - Shown once every tier is reached
+  @param {string} [fill_color] - Bar fill color (shared with the free shipping bar)
+  @param {string} [track_color] - Bar track color
+  @param {string} [text_color] - Message color
+
+  @example
+  {% render 'sidecart-gift-bar',
+    progress_message: section.settings.gift_progress_message,
+    success_message: section.settings.gift_success_message
+  %}
+{% enddoc %}
+
+{%- liquid
+  assign promo = shop.metafields.baudie.gift_promo.value
+  assign render_bar = false
+  if promo.tiers.size > 0
+    if promo.status == 'on' or promo.status == 'preview'
+      assign render_bar = true
+    endif
+  endif
+-%}
+
+{%- if render_bar -%}
+  <div
+    class="sidecart__gift-bar"
+    data-gift-bar
+    data-progress-msg="{{ progress_message | escape }}"
+    data-success-msg="{{ success_message | escape }}"
+    hidden
+    style="--shipping-bar-fill: {{ fill_color }}; --shipping-bar-track: {{ track_color }}; --shipping-bar-text: {{ text_color }};">
+    <p class="sidecart__gift-bar-text" data-gift-bar-text aria-live="polite"></p>
+    <div class="sidecart__gift-bar-track" data-gift-bar-track>
+      <div class="sidecart__gift-bar-fill" data-gift-bar-fill></div>
+    </div>
+  </div>
+{%- endif -%}

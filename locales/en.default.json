@@ -464,7 +464,19 @@
     "subscribe_group": "Subscribe & save",
     "subscribe_group_percent": "Subscribe & save {{ percent }}%",
     "subscribe_nudge": "Save with a subscription",
-    "subscribe_nudge_percent": "Save {{ percent }}% with a subscription"
+    "subscribe_nudge_percent": "Save {{ percent }}% with a subscription",
+    "gift_label": "Free gift",
+    "gift_free": "Free",
+    "gift_quantity": "Qty {{ count }}",
+    "discount": {
+      "label": "Discount code",
+      "placeholder": "Discount code",
+      "apply": "Apply",
+      "remove": "Remove code CODE",
+      "invalid": "CODE can't be applied to your cart.",
+      "error": "Couldn't update your discount code. Please try again.",
+      "blocked": "Discount codes can't be used during this promotion. Save yours for your next order!"
+    }
   },
   "breadcrumbs": {
     "navigation": "Breadcrumb navigation",

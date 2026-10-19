@@ -51,6 +51,9 @@
 
     <div class="sidecart__overlay" id="sidecart-overlay"></div>
 
+    {%- comment -%} Gift with purchase settings for the script (outside the re-rendered regions). {%- endcomment -%}
+    {% render 'gift-promo-data' %}
+
     <div
       class="sidecart__drawer"
       role="dialog"
@@ -170,7 +173,8 @@
         group_final_line_price: group_final,
         group_original_line_price: group_original,
         group_line_count: group_lines,
-        group_signature: raw_sig -%}
+        group_signature: raw_sig,
+        gift_label: section.settings.gift_label -%}
     {%- endunless -%}
   {%- endfor -%}
 </ul>
@@ -181,6 +185,13 @@
     {{ section.settings.continue_button_text }}
   </a>
 </div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading, product_1: section.settings.upsell_product_1, product_2: section.settings.upsell_product_2, exclude_collection: section.settings.upsell_exclude_collection, contained_in_1: section.settings.upsell_contained_in_1, contained_in_2: section.settings.upsell_contained_in_2 %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
+{% render 'sidecart-gift-bar',
+  progress_message: section.settings.gift_progress_message,
+  success_message: section.settings.gift_success_message,
+  fill_color: section.settings.shipping_bar_fill_color,
+  track_color: section.settings.shipping_bar_track_color,
+  text_color: section.settings.shipping_bar_text_color
+%}
 {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
   <div
     class="sidecart__shipping-bar"
@@ -209,6 +220,41 @@
   </div>
   {% render 'promo-banner', location: 'sidecart-bottom' %}
 {% endif %}
+
+{%- if section.settings.show_discount_code -%}
+  {%- comment -%}
+    Codes apply to the cart here (not only at checkout) so a VIP gift code can
+    add its gift before checkout. The applied-code chips and messages are drawn
+    by the script from /cart.js.
+  {%- endcomment -%}
+  {%- comment -%} The t filter already HTML-escapes, so no extra escape (it would show &#39;). {%- endcomment -%}
+  <div
+    class="sidecart__discount"
+    data-sidecart-discount
+    data-remove-label="{{ 'sidecart.discount.remove' | t }}"
+    data-invalid-msg="{{ 'sidecart.discount.invalid' | t }}"
+    data-error-msg="{{ 'sidecart.discount.error' | t }}"
+    data-blocked-msg="{{ 'sidecart.discount.blocked' | t }}">
+    <form class="sidecart__discount-form" data-discount-form novalidate>
+      <label class="visually-hidden" for="sidecart-discount-code">{{ 'sidecart.discount.label' | t }}</label>
+      <input
+        id="sidecart-discount-code"
+        class="sidecart__discount-input"
+        type="text"
+        name="discount"
+        placeholder="{{ 'sidecart.discount.placeholder' | t }}"
+        autocomplete="off"
+        autocapitalize="characters"
+        spellcheck="false"
+        data-discount-input>
+      <button type="submit" class="sidecart__discount-apply" data-discount-apply>
+        {{- 'sidecart.discount.apply' | t -}}
+      </button>
+    </form>
+    <p class="sidecart__discount-message" data-discount-message role="status" aria-live="polite" hidden></p>
+    <ul class="sidecart__discount-codes" data-discount-codes role="list" hidden></ul>
+  </div>
+{%- endif -%}
 
 <div class="sidecart__subtotal-row">
   <span class="sidecart__subtotal-label">{{ 'sidecart.subtotal' | t }}</span>
@@ -443,6 +489,29 @@
   color: var(--sidecart-text);
   opacity: 0.7;
   margin: 0;
+}
+
+/* Free gift lines: a label instead of the purchase options, no quantity or
+   remove controls. */
+.sidecart-item__gift-label {
+  align-self: flex-start;
+  margin: 0;
+  padding: 2px 8px;
+  font-family: var(--font-sweet-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.11px;
+  text-transform: uppercase;
+  color: var(--sidecart-bg);
+  background-color: var(--sidecart-text);
+}
+
+.sidecart-item__gift-quantity {
+  margin: 0;
+  font-family: var(--font-jokker);
+  font-size: 13px;
+  color: var(--sidecart-text);
+  opacity: 0.75;
 }
 
 .sidecart-item__subscription {
@@ -896,6 +965,172 @@
   mask-position: center;
 }
 
+/* Gift with purchase progress: same look as the free shipping bar, plus a
+   marker per tier when the promo has several. */
+.sidecart__gift-bar {
+  padding: 0 0 14px;
+  color: var(--shipping-bar-text, var(--sidecart-text));
+}
+
+.sidecart__gift-bar[hidden] {
+  display: none;
+}
+
+.sidecart__gift-bar-text {
+  font-family: var(--font-sweet-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.13px;
+  margin: 0 0 14px;
+  text-align: center;
+  color: var(--shipping-bar-text, var(--sidecart-text));
+}
+
+.sidecart__gift-bar-track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--shipping-bar-track, rgba(62, 32, 39, 0.15));
+}
+
+.sidecart__gift-bar-fill {
+  width: 0;
+  height: 100%;
+  border-radius: 3px;
+  background-color: var(--shipping-bar-fill, #3E2027);
+  transition: width 0.3s ease;
+}
+
+.sidecart__gift-bar-marker {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--sidecart-bg);
+  border: 2px solid var(--shipping-bar-track, rgba(62, 32, 39, 0.15));
+  transition: background-color 0.3s ease
+  , border-color 0.3s ease;
+}
+
+.sidecart__gift-bar-marker.is-reached {
+  background-color: var(--shipping-bar-fill, #3E2027);
+  border-color: var(--shipping-bar-fill, #3E2027);
+}
+
+/* Discount code field */
+.sidecart__discount {
+  margin-bottom: 14px;
+}
+
+.sidecart__discount-form {
+  display: flex;
+  gap: 8px;
+}
+
+.sidecart__discount-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font-family: var(--font-manrope);
+  font-size: 14px;
+  color: var(--sidecart-text);
+  background-color: transparent;
+  border: 1px solid color-mix(in srgb, var(--sidecart-text) 35%, transparent);
+  border-radius: 0;
+}
+
+.sidecart__discount-input::placeholder {
+  color: color-mix(in srgb, var(--sidecart-text) 55%, transparent);
+}
+
+.sidecart__discount-input:focus-visible {
+  outline: 2px solid var(--sidecart-text);
+  outline-offset: 1px;
+}
+
+.sidecart__discount-apply {
+  padding: 10px 16px;
+  font-family: var(--font-sweet-sans);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: -0.13px;
+  text-transform: uppercase;
+  color: var(--sidecart-text);
+  background-color: transparent;
+  border: 1px solid var(--sidecart-text);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.sidecart__discount-apply:hover {
+  background-color: color-mix(in srgb, var(--sidecart-text) 10%, var(--sidecart-bg));
+}
+
+.sidecart__discount-apply:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.sidecart__discount-message {
+  margin: 8px 0 0;
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--sidecart-text);
+}
+
+.sidecart__discount-message--error {
+  color: #A12A2A;
+}
+
+.sidecart__discount-codes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sidecart__discount-codes[hidden] {
+  display: none;
+}
+
+.sidecart__discount-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 10px;
+  font-family: var(--font-sweet-sans);
+  font-size: 12px;
+  letter-spacing: -0.12px;
+  text-transform: uppercase;
+  color: var(--sidecart-text);
+  background-color: color-mix(in srgb, var(--sidecart-text) 10%, transparent);
+}
+
+.sidecart__discount-code--inactive > span {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.sidecart__discount-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 .sidecart__footer {
   padding: 20px;
   border-top: 1px solid var(--sidecart-border);
@@ -1276,6 +1511,20 @@ class Sidecart {
     // (add / external update / open) and needs the Liquid section re-render;
     // plain qty/remove only needs a fast in-place money update.
     this.renderRetries = 0; // bounded retries when a structure render's fetch fails
+    this.lastCartFresh = false; // lastCart is the cart as it is now (no outside add since)
+
+    // --- Gift with purchase --------------------------------------------------
+    // Settings come from the baudie.gift_promo shop metafield (rendered by
+    // snippets/gift-promo-data.liquid). Every time the queue drains, syncGifts
+    // brings the cart's free gift lines in line with the promo before the
+    // drawer renders: it adds earned gifts, removes ones no longer earned, and
+    // takes discount codes off while a promo runs. The baudie-discounts
+    // function makes the gifts free at checkout from the same settings.
+    this.giftPromo = this.readGiftPromo();
+    this.giftSynced = true; // cleared by every queued job, so sync runs once per drain
+    this.giftBlocked = this.loadBlockedGifts(); // gifts that came out at full price
+    this.discountMessage = null; // { text, tone } under the code box, kept across renders
+    this.pendingDiscountCode = null; // a just-applied code to report on after the render
 
     this.cacheRefs();
     this.bindEvents();
@@ -1350,11 +1599,24 @@ class Sidecart {
     document.addEventListener('keydown', (e) => this.handleKeydown(e));
 
     this.sidecart.addEventListener('click', (e) => {
+      const removeCode = e.target.closest('[data-discount-remove]');
+      if (removeCode) {
+        this.removeDiscountCode(removeCode.dataset.discountRemove);
+        return;
+      }
       const btn = e.target.closest('[data-action]');
       if (!btn) return;
       const item = btn.closest('[data-sidecart-item]');
       if (!item) return;
       this.handleAction(btn.dataset.action, item);
+    });
+
+    this.sidecart.addEventListener('submit', (e) => {
+      const form = e.target.closest('[data-discount-form]');
+      if (!form) return;
+      e.preventDefault();
+      const input = form.querySelector('[data-discount-input]');
+      this.applyDiscountCode((input && input.value ? input.value : '').trim());
     });
 
     this.sidecart.addEventListener('change', (e) => {
@@ -1457,6 +1719,9 @@ class Sidecart {
     this.subtotalCents = Math.max(0, this.subtotalCents + deltaCents);
     if (this.subtotalElement) this.subtotalElement.textContent = this.formatMoney(this.subtotalCents);
     this.updateShippingBar(this.subtotalCents);
+    // Gifts are free, so the subtotal is a fair estimate of the spend until
+    // the authoritative cart lands.
+    this.updateGiftBar(this.lastCart, this.subtotalCents);
   }
 
   parseMoney(str) {
@@ -1503,7 +1768,9 @@ class Sidecart {
   // job rejects, but the returned promise rejects so callers (e.g. add-to-cart)
   // can surface errors. A single authoritative re-render runs once the queue
   // fully drains.
-  enqueue(job) {
+  enqueue(job, { giftSync = false } = {}) {
+    // Any cart change may earn or lose a gift, so the next drain re-syncs them.
+    if (!giftSync) this.giftSynced = false;
     this.busy++;
     const run = this.chain.then(() => job());
     this.chain = run
@@ -1513,6 +1780,14 @@ class Sidecart {
       .finally(() => {
         this.busy--;
         if (this.busy === 0 && this.pendingTargets.size === 0) {
+          // Before rendering, bring the free gifts in line with the cart, once
+          // per drain. Queued (not awaited here, which would wait on itself);
+          // its own drain then renders.
+          if (this.giftPromo && !this.giftSynced) {
+            this.giftSynced = true;
+            this.enqueue(() => this.syncGifts(), { giftSync: true });
+            return;
+          }
           // Add / external update / open changes the set of cards -> full Liquid
           // re-render. Plain qty/remove -> fast in-place money update (no extra
           // network: the change.js response cart is already cached in lastCart).
@@ -1527,6 +1802,7 @@ class Sidecart {
     const res = await fetch('/cart.js', { cache: 'no-store' });
     const cart = await res.json();
     this.lastCart = cart;
+    this.lastCartFresh = true;
     return cart;
   }
 
@@ -1541,6 +1817,7 @@ class Sidecart {
     // money in place without another /cart.js round-trip.
     const cart = await res.json();
     this.lastCart = cart;
+    this.lastCartFresh = true;
     return cart;
   }
 
@@ -1797,8 +2074,9 @@ class Sidecart {
 
     this.cacheRefs();
     this.applyCartTotals(cart);
-    this.applyUpsellVisibility((cart.items || []).map((i) => String(i.product_id)));
+    this.applyUpsellVisibility(this.upsellProductIds(cart));
     this.surfaceClamps();
+    this.reportPendingDiscount(cart);
     this.needsStructureRender = false;
     this.renderRetries = 0;
     this.markContentBusy(false);
@@ -1884,8 +2162,9 @@ class Sidecart {
 
     this.cacheRefs();
     this.applyCartTotals(cart);
-    this.applyUpsellVisibility(cart.items.map((i) => String(i.product_id)));
+    this.applyUpsellVisibility(this.upsellProductIds(cart));
     this.surfaceClamps();
+    this.reportPendingDiscount(cart);
     this.markContentBusy(false);
 
     if (this.dirty) {
@@ -1921,7 +2200,12 @@ class Sidecart {
     const compareEl = card.querySelector('[data-compare-price]');
     const compareAmount = card.querySelector('[data-compare-amount]');
 
-    if (priceAmount) priceAmount.textContent = this.formatMoney(final);
+    if (priceAmount) {
+      priceAmount.textContent =
+        card.dataset.gift !== undefined && final === 0 && card.dataset.freeText
+          ? card.dataset.freeText
+          : this.formatMoney(final);
+    }
     if (currentEl) currentEl.classList.toggle('sidecart-item__current-price--sale', hasCompare);
     if (saleLabel) saleLabel.hidden = !hasCompare;
     if (compareEl) compareEl.hidden = !hasCompare;
@@ -1947,6 +2231,8 @@ class Sidecart {
       if (this.subtotalElement) this.subtotalElement.textContent = this.formatMoney(cart.total_price);
       this.updateShippingBar(cart.total_price);
     }
+    this.updateGiftBar(cart);
+    this.renderDiscountState(cart);
     if ((cart.item_count || 0) === 0) {
       this.showEmptyState();
     } else {
@@ -2018,10 +2304,12 @@ class Sidecart {
       // Ignore the events we dispatch ourselves; reconcile for external ones
       // (e.g. the product-bundle add path), which may add a card -> full render.
       if (e.detail && e.detail.fromSidecart) return;
+      this.lastCartFresh = false;
       this.requestStructureRender();
       this.enqueue(async () => {});
     });
     this.updateUpsell();
+    this.initGiftPromo();
   }
 
   // ---- Upsell visibility --------------------------------------------------
@@ -2069,7 +2357,8 @@ class Sidecart {
   // Instant: reads the cart line cards already in the drawer DOM (ignores cards
   // optimistically removed). Final truth comes from reconcileRender.
   updateUpsellFromDOM() {
-    const items = this.sidecart.querySelectorAll('[data-sidecart-item]:not([aria-hidden="true"])');
+    // Free gifts don't count as "already in the cart": the customer didn't pick them.
+    const items = this.sidecart.querySelectorAll('[data-sidecart-item]:not([aria-hidden="true"]):not([data-gift])');
     const productIds = Array.from(items)
       .map((el) => String(el.dataset.productId))
       .filter((id) => id && id !== 'undefined');
@@ -2085,7 +2374,420 @@ class Sidecart {
     } catch (e) {
       return;
     }
-    this.applyUpsellVisibility((cart.items || []).map((i) => String(i.product_id)));
+    this.applyUpsellVisibility(this.upsellProductIds(cart));
+  }
+
+  // Product ids the upsell treats as "in the cart". Free gifts are left out:
+  // the customer didn't choose them, so they shouldn't hide an offer.
+  upsellProductIds(cart) {
+    return (cart.items || []).filter((line) => !this.isGiftLine(line)).map((line) => String(line.product_id));
+  }
+
+  // ---- Gift with purchase -------------------------------------------------
+  readGiftPromo() {
+    const el = this.sidecart.querySelector('[data-gift-promo]');
+    if (!el) return null;
+    try {
+      const promo = JSON.parse(el.textContent);
+      promo.tiers = (promo.tiers || []).filter((tier) => tier.variantId);
+      promo.vip = (promo.vip || []).filter((row) => row.variantId && row.prefix);
+      return promo;
+    } catch (e) {
+      console.error('Sidecart gift settings unreadable:', e);
+      return null;
+    }
+  }
+
+  initGiftPromo() {
+    if (!this.giftPromo) return;
+    // ?gift_preview=1 (the admin's preview link) makes this browser's cart a
+    // preview cart, so a promo in Preview runs for it; ?gift_preview=0 undoes it.
+    const flag = new URLSearchParams(window.location.search).get('gift_preview');
+    if (flag === '1' || flag === '0') {
+      this.enqueue(async () => {
+        const res = await fetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ attributes: { _gift_preview: flag === '1' ? '1' : '' } })
+        });
+        if (res.ok) {
+          this.lastCart = await res.json();
+          this.lastCartFresh = true;
+        }
+      });
+      return;
+    }
+    // Otherwise sync once on load: e.g. a VIP code applied by an email link
+    // (/discount/CODE), or a promo that started since the cart was filled.
+    this.enqueue(async () => {});
+  }
+
+  isGiftLine(line) {
+    return !!(line && line.properties && line.properties._gift);
+  }
+
+  giftKey(value, variantId) {
+    return value + '|' + variantId;
+  }
+
+  // A gift that came out at full price stays off for the rest of the visit, so
+  // a misconfigured gift can never loop. Reset whenever the settings are saved.
+  loadBlockedGifts() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('baudie:gift-blocked') || 'null');
+      if (saved && this.giftPromo && saved.version === this.giftPromo.updatedAt) return new Set(saved.keys);
+    } catch (e) {}
+    return new Set();
+  }
+
+  blockGift(key) {
+    this.giftBlocked.add(key);
+    try {
+      sessionStorage.setItem(
+        'baudie:gift-blocked',
+        JSON.stringify({ version: this.giftPromo.updatedAt, keys: Array.from(this.giftBlocked) })
+      );
+    } catch (e) {}
+  }
+
+  // The store's date (YYYY-MM-DD) in its own time zone, like the function's
+  // shop.localTime.date.
+  storeToday() {
+    try {
+      return new Intl.DateTimeFormat('en-CA', {
+        timeZone: this.giftPromo.timezone || undefined,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(new Date());
+    } catch (e) {
+      return new Date().toISOString().slice(0, 10);
+    }
+  }
+
+  // Mirrors giftPromoIsRunning in the baudie-discounts function.
+  giftPromoRunning(cart) {
+    const promo = this.giftPromo;
+    if (!promo || !promo.tiers.length) return false;
+    if (promo.status === 'preview') {
+      return !!(cart && cart.attributes && cart.attributes._gift_preview === '1');
+    }
+    if (promo.status !== 'on') return false;
+    const today = this.storeToday();
+    if (promo.startDate && today < promo.startDate) return false;
+    if (promo.endDate && today > promo.endDate) return false;
+    return true;
+  }
+
+  // What the customer is spending: every line except gifts, after discounts
+  // (the wipes deal, subscription prices).
+  giftSpend(cart) {
+    return (cart.items || [])
+      .filter((line) => !this.isGiftLine(line))
+      .reduce((sum, line) => sum + (line.final_line_price || 0), 0);
+  }
+
+  // A tier's spend amount in the cart's currency, in cents.
+  giftTierCents(tier) {
+    const rate = parseFloat((window.Shopify && Shopify.currency && Shopify.currency.rate) || '1') || 1;
+    return Math.round(parseFloat(tier.minimum) * 100 * rate);
+  }
+
+  // The gift lines the cart should have, keyed by their `_gift` value:
+  // "tier:N" for each spend tier reached (promo running), or "vip:<prefix>" for
+  // a VIP code in the cart (no promo running: codes are blocked during one).
+  desiredGifts(cart) {
+    const desired = new Map();
+    const promo = this.giftPromo;
+    const want = (value, gift) => {
+      if (!gift.available) return;
+      if (this.giftBlocked.has(this.giftKey(value, gift.variantId))) return;
+      desired.set(value, { variantId: gift.variantId, quantity: gift.quantity || 1 });
+    };
+
+    if (this.giftPromoRunning(cart)) {
+      const spend = this.giftSpend(cart);
+      promo.tiers.forEach((tier, index) => {
+        if (spend >= this.giftTierCents(tier)) want('tier:' + (index + 1), tier);
+      });
+    } else {
+      (cart.discount_codes || []).forEach((entry) => {
+        const code = String(entry.code || '').toUpperCase();
+        const row = promo.vip.find((vip) => code.indexOf(String(vip.prefix).toUpperCase()) === 0);
+        if (row) want('vip:' + row.prefix, row);
+      });
+    }
+    return desired;
+  }
+
+  // Runs on the chain once per drain (see enqueue). Each step re-reads the live
+  // cart, so line indices are always current.
+  async syncGifts() {
+    try {
+      let cart = this.lastCartFresh && this.lastCart ? this.lastCart : await this.fetchCart();
+      let changed = false;
+
+      // 1. No discount codes while a promo runs (checkout rejects them too).
+      if (this.giftPromoRunning(cart) && (cart.discount_codes || []).length) {
+        cart = await this.updateCartDiscounts([]);
+        this.setDiscountMessage(this.codesBlockedMessage(), 'error');
+        changed = true;
+      }
+
+      // 2. Remove gift lines that aren't earned (or are duplicates); fix quantities.
+      for (let guard = 0; guard < 12; guard++) {
+        const step = this.nextGiftFix(cart);
+        if (!step) break;
+        cart = await this.changeLine(step.line, step.quantity);
+        changed = true;
+      }
+
+      // 3. Add the earned gifts that are missing, in one request.
+      const missing = this.missingGifts(cart);
+      if (missing.length) {
+        const res = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ items: missing })
+        });
+        if (!res.ok) {
+          // E.g. a gift sold out since the page loaded: leave those out.
+          missing.forEach((item) => this.blockGift(this.giftKey(item.properties._gift, item.id)));
+        }
+        cart = await this.fetchCart();
+        changed = true;
+      }
+
+      // 4. Safety net: a gift must be free. One that isn't (the discount is
+      // switched off, a VIP code doesn't cover that product, ...) is removed
+      // rather than charged.
+      for (let guard = 0; guard < 6; guard++) {
+        const index = (cart.items || []).findIndex((line) => this.isGiftLine(line) && line.final_line_price > 0);
+        if (index === -1) break;
+        const line = cart.items[index];
+        this.blockGift(this.giftKey(line.properties._gift, line.variant_id));
+        cart = await this.changeLine(index + 1, 0);
+        changed = true;
+      }
+
+      if (changed) {
+        this.dirty = true;
+        this.needsStructureRender = true;
+      }
+    } catch (err) {
+      console.error('Sidecart gift sync failed:', err);
+    }
+  }
+
+  // The next fix for an existing gift line, as { line, quantity } with a live
+  // 1-based line index, or null when every gift line is right.
+  nextGiftFix(cart) {
+    const desired = this.desiredGifts(cart);
+    const seen = new Set();
+    const items = cart.items || [];
+    for (let i = 0; i < items.length; i++) {
+      const line = items[i];
+      if (!this.isGiftLine(line)) continue;
+      const value = line.properties._gift;
+      const want = desired.get(value);
+      if (!want || want.variantId !== line.variant_id || seen.has(value)) return { line: i + 1, quantity: 0 };
+      seen.add(value);
+      if (line.quantity !== want.quantity) return { line: i + 1, quantity: want.quantity };
+    }
+    return null;
+  }
+
+  missingGifts(cart) {
+    const present = new Set(
+      (cart.items || []).filter((line) => this.isGiftLine(line)).map((line) => line.properties._gift)
+    );
+    const missing = [];
+    this.desiredGifts(cart).forEach((gift, value) => {
+      if (!present.has(value)) {
+        missing.push({ id: gift.variantId, quantity: gift.quantity, properties: { _gift: value } });
+      }
+    });
+    return missing;
+  }
+
+  // Progress toward the next gift tier, with a marker per tier when there are
+  // several. Hidden unless a promo runs for this cart and it has paid items.
+  updateGiftBar(cart, spendOverride) {
+    const bar = this.sidecart.querySelector('[data-gift-bar]');
+    if (!bar) return;
+    const running = !!cart && this.giftPromoRunning(cart);
+    const hasItems = !!cart && (cart.items || []).some((line) => !this.isGiftLine(line));
+    if (!running || !hasItems) {
+      bar.hidden = true;
+      return;
+    }
+
+    const tiers = this.giftPromo.tiers
+      .map((tier) => ({
+        cents: this.giftTierCents(tier),
+        label: (tier.quantity > 1 ? tier.quantity + ' × ' : '') + tier.title
+      }))
+      .sort((a, b) => a.cents - b.cents);
+    const spend = typeof spendOverride === 'number' ? spendOverride : this.giftSpend(cart);
+    const top = tiers[tiers.length - 1].cents || 1;
+
+    const track = bar.querySelector('[data-gift-bar-track]');
+    if (track && tiers.length > 1 && !track.querySelector('[data-gift-bar-marker]')) {
+      tiers.forEach((tier) => {
+        const marker = document.createElement('span');
+        marker.className = 'sidecart__gift-bar-marker';
+        marker.dataset.giftBarMarker = String(tier.cents);
+        marker.setAttribute('aria-hidden', 'true');
+        marker.style.left = Math.min(100, (tier.cents / top) * 100) + '%';
+        track.appendChild(marker);
+      });
+    }
+    bar.querySelectorAll('[data-gift-bar-marker]').forEach((marker) => {
+      marker.classList.toggle('is-reached', spend >= Number(marker.dataset.giftBarMarker));
+    });
+
+    const fill = bar.querySelector('[data-gift-bar-fill]');
+    if (fill) fill.style.width = Math.min(100, (spend / top) * 100) + '%';
+
+    const text = bar.querySelector('[data-gift-bar-text]');
+    const next = tiers.find((tier) => spend < tier.cents);
+    if (text) {
+      text.textContent = next
+        ? (bar.dataset.progressMsg || '')
+            .replace('[amount]', this.formatMoney(next.cents - spend))
+            .replace('[gift]', next.label)
+        : bar.dataset.successMsg || '';
+    }
+    bar.hidden = false;
+  }
+
+  // ---- Discount codes -----------------------------------------------------
+  // Codes are applied to the cart here, so a VIP gift code adds its gift
+  // before checkout. During a gift promo, codes can't be used at all.
+  applyDiscountCode(code) {
+    if (!code) return;
+    if (this.giftPromoRunning(this.lastCart)) {
+      this.setDiscountMessage(this.codesBlockedMessage(), 'error');
+      return;
+    }
+    this.setDiscountMessage(null);
+    this.setDiscountBusy(true);
+    this.requestStructureRender();
+    this.enqueue(async () => {
+      const cart = await this.fetchCart();
+      const codes = (cart.discount_codes || []).map((entry) => entry.code);
+      if (!codes.some((existing) => existing.toUpperCase() === code.toUpperCase())) codes.push(code);
+      await this.updateCartDiscounts(codes);
+      this.pendingDiscountCode = code;
+      this.dirty = true;
+    })
+      .catch(() => this.setDiscountMessage(this.discountText('errorMsg'), 'error'))
+      .finally(() => this.setDiscountBusy(false));
+  }
+
+  removeDiscountCode(code) {
+    if (!code) return;
+    this.setDiscountMessage(null);
+    this.requestStructureRender();
+    this.enqueue(async () => {
+      const cart = await this.fetchCart();
+      const codes = (cart.discount_codes || [])
+        .map((entry) => entry.code)
+        .filter((existing) => existing.toUpperCase() !== code.toUpperCase());
+      await this.updateCartDiscounts(codes);
+      this.dirty = true;
+    }).catch(() => this.setDiscountMessage(this.discountText('errorMsg'), 'error'));
+  }
+
+  async updateCartDiscounts(codes) {
+    const res = await fetch('/cart/update.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ discount: codes.join(',') })
+    });
+    if (!res.ok) throw new Error('cart/update failed: ' + res.status);
+    const cart = await res.json();
+    this.lastCart = cart;
+    this.lastCartFresh = true;
+    return cart;
+  }
+
+  // After the render that follows applying a code: a code the cart can't use
+  // gets a message (its chip stays, dimmed, so the customer can remove it).
+  reportPendingDiscount(cart) {
+    const code = this.pendingDiscountCode;
+    if (!code) return;
+    this.pendingDiscountCode = null;
+    const entry = (cart.discount_codes || []).find(
+      (existing) => String(existing.code).toUpperCase() === code.toUpperCase()
+    );
+    if (entry && entry.applicable) return;
+    this.setDiscountMessage(this.discountText('invalidMsg').replace('CODE', code), 'error');
+  }
+
+  codesBlockedMessage() {
+    return (this.giftPromo && this.giftPromo.codesBlockedMessage) || this.discountText('blockedMsg');
+  }
+
+  discountText(key) {
+    const box = this.sidecart.querySelector('[data-sidecart-discount]');
+    return (box && box.dataset[key]) || '';
+  }
+
+  setDiscountMessage(text, tone = 'info') {
+    this.discountMessage = text ? { text, tone } : null;
+    const box = this.sidecart.querySelector('[data-sidecart-discount]');
+    if (!box && text && tone === 'error') {
+      this.showToast(text);
+      return;
+    }
+    this.renderDiscountState(this.lastCart);
+  }
+
+  setDiscountBusy(isBusy) {
+    const box = this.sidecart.querySelector('[data-sidecart-discount]');
+    if (!box) return;
+    box.classList.toggle('is-loading', !!isBusy);
+    const apply = box.querySelector('[data-discount-apply]');
+    if (apply) apply.disabled = !!isBusy;
+  }
+
+  // Applied-code chips + the message, redrawn after every render (the footer
+  // markup is replaced on each one).
+  renderDiscountState(cart) {
+    const box = this.sidecart.querySelector('[data-sidecart-discount]');
+    if (!box) return;
+
+    const list = box.querySelector('[data-discount-codes]');
+    if (list) {
+      const codes = (cart && cart.discount_codes) || [];
+      const removeLabel = box.dataset.removeLabel || 'Remove CODE';
+      list.innerHTML = '';
+      codes.forEach((entry) => {
+        const chip = document.createElement('li');
+        chip.className = 'sidecart__discount-code' + (entry.applicable ? '' : ' sidecart__discount-code--inactive');
+        const label = document.createElement('span');
+        label.textContent = entry.code;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'sidecart__discount-remove';
+        remove.dataset.discountRemove = entry.code;
+        remove.setAttribute('aria-label', removeLabel.replace('CODE', entry.code));
+        remove.innerHTML =
+          '<svg aria-hidden="true" focusable="false" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+        chip.append(label, remove);
+        list.appendChild(chip);
+      });
+      list.hidden = codes.length === 0;
+    }
+
+    const message = box.querySelector('[data-discount-message]');
+    if (message) {
+      const current = this.discountMessage;
+      message.hidden = !current;
+      message.textContent = current ? current.text : '';
+      message.classList.toggle('sidecart__discount-message--error', !!current && current.tone === 'error');
+    }
   }
 
   // ---- Add to cart (routed through the same serialized chain) -------------
@@ -2137,7 +2839,8 @@ class Sidecart {
   // falls back to the loading spinner).
   insertPendingUpsellCard(offer) {
     const container = this.itemsContainer;
-    const template = this.sidecart.querySelector('[data-sidecart-item]:not([aria-hidden="true"])');
+    // A free gift card has no quantity or remove controls, so it can't be the template.
+    const template = this.sidecart.querySelector('[data-sidecart-item]:not([aria-hidden="true"]):not([data-gift])');
     if (!container || !template) return null;
 
     const form = offer.querySelector('form');
@@ -2227,6 +2930,8 @@ class Sidecart {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
         body
       });
+      // add.js answers with the added line only, so the cached cart is stale.
+      this.lastCartFresh = false;
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.description || data.message || 'Could not add item to cart');
@@ -2244,6 +2949,7 @@ class Sidecart {
     document.body.style.overflow = 'hidden';
     // Reconcile against the server whenever the drawer opens so a stale/ghost
     // line can never be shown (full render: the card set may have changed).
+    this.lastCartFresh = false;
     this.requestStructureRender();
     this.enqueue(async () => {});
     setTimeout(() => this.closeButton?.focus(), 100);
@@ -2509,6 +3215,37 @@ if (Shopify.designMode) {
       "id": "upsell_exclude_collection",
       "label": "t:sidecart.settings.upsell_exclude_collection.label",
       "info": "t:sidecart.settings.upsell_exclude_collection.info"
+    }, {
+      "type": "header",
+      "content": "t:sidecart.settings.gift_header"
+    }, {
+      "type": "paragraph",
+      "content": "t:sidecart.settings.gift_info"
+    }, {
+      "type": "text",
+      "id": "gift_progress_message",
+      "label": "t:sidecart.settings.gift_progress_message.label",
+      "info": "t:sidecart.settings.gift_progress_message.info",
+      "default": "Spend [amount] more to get [gift] free!"
+    }, {
+      "type": "text",
+      "id": "gift_success_message",
+      "label": "t:sidecart.settings.gift_success_message.label",
+      "default": "You've unlocked your free gifts!"
+    }, {
+      "type": "text",
+      "id": "gift_label",
+      "label": "t:sidecart.settings.gift_label.label",
+      "default": "Free gift"
+    }, {
+      "type": "header",
+      "content": "t:sidecart.settings.discount_header"
+    }, {
+      "type": "checkbox",
+      "id": "show_discount_code",
+      "label": "t:sidecart.settings.show_discount_code.label",
+      "info": "t:sidecart.settings.show_discount_code.info",
+      "default": true
     }, {
       "type": "header",
       "content": "t:labels.colors"

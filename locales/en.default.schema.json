@@ -949,6 +949,23 @@
         "label": "Exclude collection",
         "info": "Carts containing only products from this collection won't see the upsell (e.g. your Wipes collection)."
       },
+      "gift_header": "Gift with purchase",
+      "gift_info": "The gifts, spend amounts and dates are set in Discounts → Upsell deal → Gift with purchase. The bar only shows while a promo is running, using the free shipping bar's colors.",
+      "gift_progress_message": {
+        "label": "Progress message",
+        "info": "[amount] is what's left to spend, [gift] is the next gift."
+      },
+      "gift_success_message": {
+        "label": "All gifts unlocked message"
+      },
+      "gift_label": {
+        "label": "Gift label in the cart"
+      },
+      "discount_header": "Discount codes",
+      "show_discount_code": {
+        "label": "Show discount code field",
+        "info": "Lets customers apply a code in the cart, so a VIP gift code adds its gift right away. Codes can still be entered at checkout too."
+      },
       "colors_header": "Colors",
       "background_color": "Background color",
       "text_color": "Text color",

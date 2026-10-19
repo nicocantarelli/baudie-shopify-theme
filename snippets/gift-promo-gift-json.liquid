@@ -1,0 +1,43 @@
+{% doc %}
+  Outputs one gift (a spend tier or a VIP code gift) from the gift with purchase
+  settings as a JSON object, with its storefront title and availability.
+
+  @param {object} gift - A tier or VIP row from the baudie.gift_promo metafield
+    (variantId, productHandle, quantity, and minimum or prefix)
+
+  @example
+  {% render 'gift-promo-gift-json', gift: tier %}
+{% enddoc %}
+
+{%- liquid
+  assign variant_id = gift.variantId | split: '/' | last | plus: 0
+  assign product = all_products[gift.productHandle]
+  assign variant = nil
+  for candidate in product.variants
+    if candidate.id == variant_id
+      assign variant = candidate
+      break
+    endif
+  endfor
+
+  assign title = gift.title
+  if product != blank
+    assign title = product.title
+    if variant and variant.title != 'Default Title'
+      assign title = title | append: ' – ' | append: variant.title
+    endif
+  endif
+
+  assign available = false
+  if variant and variant.available
+    assign available = true
+  endif
+-%}
+{
+  "variantId": {{ variant_id }},
+  "quantity": {{ gift.quantity | default: 1 }},
+  "minimum": {{ gift.minimum | json }},
+  "prefix": {{ gift.prefix | json }},
+  "title": {{ title | json }},
+  "available": {{ available }}
+}

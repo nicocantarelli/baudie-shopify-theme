@@ -18,9 +18,21 @@
   @param {number} group_original_line_price - Combined pre-discount price (cents)
   @param {number} group_line_count - How many Shopify lines this card represents
   @param {string} group_signature - variant_id + properties (+ selling plan) signature (targeting key)
+  @param {string} [gift_label] - Label on free gift lines (defaults to the translation)
 {% enddoc %}
 
 {%- liquid
+  comment
+    Free gifts are added and removed by the sidecart script (gift with
+    purchase), which tags them with a `_gift` property. The customer can't
+    change or remove them, or switch them to a subscription.
+  endcomment
+  assign gift_value = item.properties['_gift']
+  assign is_gift = false
+  if gift_value != blank
+    assign is_gift = true
+  endif
+
   assign item_url = item.url
   assign item_image = item.product.metafields.custom.card_image_portrait | default: item.product.metafields.custom.card_image | default: item.image
   assign card_bg = item.product.metafields.custom.product_card_background | default: '#FCF0D2'
@@ -99,7 +111,7 @@
   endif
 -%}
 
-<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ compare_at_unit }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
+<li class="sidecart-item{% if is_gift %} sidecart-item--gift{% endif %}" data-sidecart-item{% if is_gift %} data-gift="{{ gift_value | escape }}" data-free-text="{{ 'sidecart.gift_free' | t }}"{% endif %} data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ compare_at_unit }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if bundle_has_bottles -%}
       <div class="sidecart-item__bundle-bottles{% if companion_image != blank %} sidecart-item__bundle-bottles--with-companion{% endif %}">
@@ -149,6 +161,15 @@
       <h3 class="sidecart-item__title">
         <a href="{{ item_url }}">{{ item_title }}</a>
       </h3>
+      {%- if is_gift -%}
+        {%- liquid
+          assign gift_label_text = gift_label
+          if gift_label_text == blank
+            assign gift_label_text = 'sidecart.gift_label' | t
+          endif
+        -%}
+        <p class="sidecart-item__gift-label">{{ gift_label_text }}</p>
+      {%- endif -%}
       {%- if item_variant != 'Default Title' -%}
         <p class="sidecart-item__variant">{{ item_variant }}</p>
       {%- endif -%}
@@ -170,6 +191,9 @@
           assign switch_group_id = item.selling_plan_allocation.selling_plan_group_id
         elsif settings.cart_subscription_switch and item.variant.selling_plan_allocations.size > 0
           assign switch_group_id = item.variant.selling_plan_allocations.first.selling_plan_group_id
+        endif
+        if is_gift
+          assign switch_group_id = nil
         endif
         assign plan_count = 0
         assign plan_percent = 0
@@ -303,6 +327,11 @@
 
     <div class="sidecart-item__controls">
       <p class="sidecart-item__stock-warning" data-stock-warning role="status" aria-live="polite" hidden></p>
+      {%- if is_gift -%}
+        {%- if item_quantity > 1 -%}
+          <p class="sidecart-item__gift-quantity">{{ 'sidecart.gift_quantity' | t: count: item_quantity }}</p>
+        {%- endif -%}
+      {%- else -%}
       <div class="sidecart-item__quantity">
         <button
           type="button"
@@ -330,6 +359,7 @@
           </svg>
         </button>
       </div>
+      {%- endif -%}
 
       <div class="sidecart-item__price">
         {%- comment -%} Stable structure: JS updates the amount spans / toggles in place on qty change (see renderCardPrice). {%- endcomment -%}
@@ -339,17 +369,25 @@
         </s>
         <span class="sidecart-item__current-price{% if has_compare_price %} sidecart-item__current-price--sale{% endif %}" data-price>
           <span class="visually-hidden" data-sale-label{% unless has_compare_price %} hidden{% endunless %}>{{ 'products.sale_price' | t }}:</span>
-          <span data-price-amount>{{ item_price | money }}</span>
+          <span data-price-amount>
+            {%- if is_gift and item_price == 0 -%}
+              {{ 'sidecart.gift_free' | t }}
+            {%- else -%}
+              {{ item_price | money }}
+            {%- endif -%}
+          </span>
         </span>
       </div>
     </div>
 
-    <button
-      type="button"
-      class="sidecart-item__remove"
-      data-action="remove"
-      aria-label="{{ 'sidecart.remove_item' | t }}: {{ item_title }}">
-      {{ 'sidecart.remove_item' | t }}
-    </button>
+    {%- unless is_gift -%}
+      <button
+        type="button"
+        class="sidecart-item__remove"
+        data-action="remove"
+        aria-label="{{ 'sidecart.remove_item' | t }}: {{ item_title }}">
+        {{ 'sidecart.remove_item' | t }}
+      </button>
+    {%- endunless -%}
   </div>
 </li>
