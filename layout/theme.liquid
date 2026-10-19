@@ -130,5 +130,26 @@
 
     {%- comment -%} AudioEye accessibility (site code from Alex, 2026-10-19) {%- endcomment -%}
     <script type="text/javascript">!function(){var b=function(){window.__AudioEyeSiteHash = "e89ff432bb8e4aec0908aaa7829f118b"; var a=document.createElement("script");a.src="https://wsv3cdn.audioeye-services.com/aem.js?h=e89ff432bb8e4aec0908aaa7829f118b";a.type="text/javascript";a.crossOrigin="anonymous";a.setAttribute("async","");document.getElementsByTagName("body")[0].appendChild(a)};"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",b):window.attachEvent&&window.attachEvent("onload",b):b()}();</script>
+    {%- comment -%}
+      AudioEye's launcher sits 24px from the bottom-right corner (an inline
+      style, not !important), right on top of the cart drawer's Checkout
+      button. While the drawer is open, move it into the drawer's header, left
+      of the close button. On mobile the drawer is an 85vh bottom sheet, so its
+      header starts 15vh down.
+    {%- endcomment -%}
+    <style>
+      body:has(#sidecart.is-open) #ae_launcher {
+        top: 8px !important;
+        bottom: auto !important;
+        right: 60px !important;
+        inset-inline-end: 60px !important;
+      }
+
+      @media (max-width: 768px) {
+        body:has(#sidecart.is-open) #ae_launcher {
+          top: calc(15vh + 8px) !important;
+        }
+      }
+    </style>
   </body>
 </html>
