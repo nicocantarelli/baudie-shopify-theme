@@ -135,7 +135,9 @@
       style, not !important), right on top of the cart drawer's Checkout
       button. While the drawer is open, move it outside the drawer: just to its
       left on desktop (over the dimmed page). On mobile the drawer is an 85vh
-      bottom sheet, so it goes in the dimmed strip above the sheet.
+      bottom sheet, so it goes in the dimmed strip above the sheet: 8px above
+      the sheet's top, which is the visible height (dvh) minus 85vh. That isn't
+      15vh on iPhone, where vh is the height with the toolbars hidden.
     {%- endcomment -%}
     <style>
       body:has(#sidecart.is-open) #ae_launcher {
@@ -146,6 +148,7 @@
       @media (max-width: 768px) {
         body:has(#sidecart.is-open) #ae_launcher {
           top: max(8px, calc(15vh - 56px)) !important;
+          top: max(8px, calc(100dvh - 85vh - 56px)) !important;
           bottom: auto !important;
           right: 16px !important;
           inset-inline-end: 16px !important;
