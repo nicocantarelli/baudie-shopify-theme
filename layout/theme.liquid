@@ -133,21 +133,22 @@
     {%- comment -%}
       AudioEye's launcher sits 24px from the bottom-right corner (an inline
       style, not !important), right on top of the cart drawer's Checkout
-      button. While the drawer is open, move it into the drawer's header, left
-      of the close button. On mobile the drawer is an 85vh bottom sheet, so its
-      header starts 15vh down.
+      button. While the drawer is open, move it outside the drawer: just to its
+      left on desktop (over the dimmed page). On mobile the drawer is an 85vh
+      bottom sheet, so it goes in the dimmed strip above the sheet.
     {%- endcomment -%}
     <style>
       body:has(#sidecart.is-open) #ae_launcher {
-        top: 8px !important;
-        bottom: auto !important;
-        right: 60px !important;
-        inset-inline-end: 60px !important;
+        right: calc(615px + 24px) !important;
+        inset-inline-end: calc(615px + 24px) !important;
       }
 
       @media (max-width: 768px) {
         body:has(#sidecart.is-open) #ae_launcher {
-          top: calc(15vh + 8px) !important;
+          top: max(8px, calc(15vh - 56px)) !important;
+          bottom: auto !important;
+          right: 16px !important;
+          inset-inline-end: 16px !important;
         }
       }
     </style>
