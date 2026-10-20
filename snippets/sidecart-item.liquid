@@ -127,6 +127,8 @@
                 src="{{ bottle_image | image_url: width: 1200 }}"
                 srcset="{{ bottle_image | image_url: width: 400 }} 400w, {{ bottle_image | image_url: width: 800 }} 800w, {{ bottle_image | image_url: width: 1200 }} 1200w"
                 sizes="120px"
+                width="{{ bottle_image.width }}"
+                height="{{ bottle_image.height }}"
                 loading="lazy"
                 class="sidecart-item__bundle-bottle"
                 alt="{{ scent_product.title | escape }}">
@@ -138,6 +140,8 @@
             src="{{ companion_image | image_url: width: 1200 }}"
             srcset="{{ companion_image | image_url: width: 400 }} 400w, {{ companion_image | image_url: width: 800 }} 800w, {{ companion_image | image_url: width: 1200 }} 1200w"
             sizes="120px"
+            width="{{ companion_image.width }}"
+            height="{{ companion_image.height }}"
             loading="lazy"
             class="sidecart-item__bundle-bottle"
             alt="{{ bundle_companion.title | escape }}">
