@@ -120,7 +120,19 @@
               {% endif %}
     </div>
   </div>
-</div>{% render 'promo-banner', location: 'sidecart-top' %}{% endif %}<div class="sidecart__content" data-sidecart-content>
+</div>{% render 'promo-banner', location: 'sidecart-top' %}{% endif %}
+{%- comment -%}
+  Gift with purchase progress: under the free shipping bar, above the items.
+  It sits outside the regions a drawer re-render replaces; the script fills it
+  in from the gift settings on every cart update.
+{%- endcomment -%}
+{% render 'sidecart-gift-bar',
+  progress_message: section.settings.gift_progress_message,
+  success_message: section.settings.gift_success_message,
+  fill_color: section.settings.shipping_bar_fill_color,
+  track_color: section.settings.shipping_bar_track_color,
+  text_color: section.settings.shipping_bar_text_color
+%}<div class="sidecart__content" data-sidecart-content>
 <ul
   class="sidecart__items{% unless has_items %} sidecart__items--hidden{% endunless %}"
   role="list"
@@ -185,13 +197,6 @@
     {{ section.settings.continue_button_text }}
   </a>
 </div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading, product_1: section.settings.upsell_product_1, product_2: section.settings.upsell_product_2, exclude_collection: section.settings.upsell_exclude_collection, contained_in_1: section.settings.upsell_contained_in_1, contained_in_2: section.settings.upsell_contained_in_2 %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
-{% render 'sidecart-gift-bar',
-  progress_message: section.settings.gift_progress_message,
-  success_message: section.settings.gift_success_message,
-  fill_color: section.settings.shipping_bar_fill_color,
-  track_color: section.settings.shipping_bar_track_color,
-  text_color: section.settings.shipping_bar_text_color
-%}
 {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
   <div
     class="sidecart__shipping-bar"
@@ -965,10 +970,12 @@
   mask-position: center;
 }
 
-/* Gift with purchase progress: same look as the free shipping bar, plus a
+/* Gift with purchase progress, under the free shipping bar: same look, plus a
    marker per tier when the promo has several. */
 .sidecart__gift-bar {
-  padding: 0 0 14px;
+  flex-shrink: 0;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--sidecart-border);
   color: var(--shipping-bar-text, var(--sidecart-text));
 }
 
@@ -2734,14 +2741,28 @@ class Sidecart {
     return (box && box.dataset[key]) || '';
   }
 
+  // A message under the code box fades after a few seconds of being seen. If
+  // it's set while the drawer is closed (e.g. a code from an email link removed
+  // during a promo), the clock starts when the drawer opens.
   setDiscountMessage(text, tone = 'info') {
     this.discountMessage = text ? { text, tone } : null;
+    clearTimeout(this.discountMessageTimer);
     const box = this.sidecart.querySelector('[data-sidecart-discount]');
     if (!box && text && tone === 'error') {
       this.showToast(text);
+      this.discountMessage = null;
       return;
     }
     this.renderDiscountState(this.lastCart);
+    if (text && this.sidecart.classList.contains('is-open')) this.startDiscountMessageTimer();
+  }
+
+  startDiscountMessageTimer() {
+    clearTimeout(this.discountMessageTimer);
+    this.discountMessageTimer = setTimeout(() => {
+      this.discountMessage = null;
+      this.renderDiscountState(this.lastCart);
+    }, 8000);
   }
 
   setDiscountBusy(isBusy) {
@@ -2952,6 +2973,7 @@ class Sidecart {
     this.lastCartFresh = false;
     this.requestStructureRender();
     this.enqueue(async () => {});
+    if (this.discountMessage) this.startDiscountMessageTimer();
     setTimeout(() => this.closeButton?.focus(), 100);
   }
 
