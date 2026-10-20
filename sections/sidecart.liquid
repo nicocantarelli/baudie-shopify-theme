@@ -169,8 +169,22 @@
     line so it never merges with a one-time line of the same variant. A bracket
     wrapper guards against prefix collisions.
   {%- endcomment -%}
+  {%- comment -%}
+    Two passes: the customer's own items first (newest first, Shopify's cart
+    order), then the free gifts. The gift sync adds those after the items that
+    earned them, so Shopify would otherwise list them on top. The order on the
+    page doesn't matter to the script: it finds lines by signature.
+  {%- endcomment -%}
   {%- assign rendered_sigs = '' -%}
+  {%- for pass in (1..2) -%}
   {%- for item in cart.items -%}
+    {%- liquid
+      assign item_pass = 1
+      if item.properties['_gift'] != blank
+        assign item_pass = 2
+      endif
+    -%}
+    {%- if item_pass != pass -%}{%- continue -%}{%- endif -%}
     {%- capture raw_sig -%}{{ item.variant_id }}{%- for p in item.properties -%}@{{ p.first }}={{ p.last }}{%- endfor -%}{%- if item.selling_plan_allocation -%}~sp{{ item.selling_plan_allocation.selling_plan.id }}{%- endif -%}{%- endcapture -%}
     {%- assign sig_token = '[' | append: raw_sig | append: ']' -%}
     {%- unless rendered_sigs contains sig_token -%}
@@ -211,6 +225,7 @@
         group_signature: raw_sig,
         gift_label: section.settings.gift_label -%}
     {%- endunless -%}
+  {%- endfor -%}
   {%- endfor -%}
 </ul>
 <div class="sidecart__empty{% if has_items %} sidecart__empty--hidden{% endif %}" data-sidecart-empty>
@@ -537,6 +552,11 @@
 
 .sidecart-item__gift-label svg {
   flex: 0 0 auto;
+}
+
+/* FREE in the price: Sweet Sans capitals run wide at this size. */
+.sidecart-item--gift .sidecart-item__current-price {
+  letter-spacing: -0.06em;
 }
 
 .sidecart-item__gift-quantity {
