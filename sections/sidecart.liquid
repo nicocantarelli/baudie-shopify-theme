@@ -94,6 +94,20 @@
         </button>
       </div>
 
+      {%- comment -%}
+        Gift with purchase progress: directly under the free shipping bar, as
+        one block with it, above the items. It sits outside the regions a
+        drawer re-render replaces; the script fills it in on every cart update.
+      {%- endcomment -%}
+      {%- capture gift_bar -%}
+        {% render 'sidecart-gift-bar',
+          progress_message: section.settings.gift_progress_message,
+          success_message: section.settings.gift_success_message,
+          fill_color: section.settings.shipping_bar_fill_color,
+          track_color: section.settings.shipping_bar_track_color,
+          text_color: section.settings.shipping_bar_text_color
+        %}
+      {%- endcapture -%}
       {% if shipping_bar_enabled and shipping_bar_position == 'top' %}
         <div
           class="sidecart__shipping-bar{% unless has_items or shipping_bar_preview %} sidecart__shipping-bar--hidden{% endunless %}"
@@ -120,19 +134,7 @@
               {% endif %}
     </div>
   </div>
-</div>{% render 'promo-banner', location: 'sidecart-top' %}{% endif %}
-{%- comment -%}
-  Gift with purchase progress: under the free shipping bar, above the items.
-  It sits outside the regions a drawer re-render replaces; the script fills it
-  in from the gift settings on every cart update.
-{%- endcomment -%}
-{% render 'sidecart-gift-bar',
-  progress_message: section.settings.gift_progress_message,
-  success_message: section.settings.gift_success_message,
-  fill_color: section.settings.shipping_bar_fill_color,
-  track_color: section.settings.shipping_bar_track_color,
-  text_color: section.settings.shipping_bar_text_color
-%}<div class="sidecart__content" data-sidecart-content>
+</div>{{ gift_bar }}{% render 'promo-banner', location: 'sidecart-top' %}{% else %}{{ gift_bar }}{% endif %}<div class="sidecart__content" data-sidecart-content>
 <ul
   class="sidecart__items{% unless has_items %} sidecart__items--hidden{% endunless %}"
   role="list"
@@ -970,11 +972,12 @@
   mask-position: center;
 }
 
-/* Gift with purchase progress, under the free shipping bar: same look, plus a
-   marker per tier when the promo has several. */
+/* Gift with purchase progress, right under the free shipping bar and joined to
+   it as one block: the same message style, then one segment per tier with the
+   gift and its spend amount underneath. */
 .sidecart__gift-bar {
   flex-shrink: 0;
-  padding: 14px 20px;
+  padding: 14px 20px 16px;
   border-bottom: 1px solid var(--sidecart-border);
   color: var(--shipping-bar-text, var(--sidecart-text));
 }
@@ -983,25 +986,42 @@
   display: none;
 }
 
+/* Joined to the shipping bar above: no divider between the two, just the
+   spacing of one block. The truck icon hangs below its track, hence the gap. */
+.sidecart__shipping-bar:has(+ .sidecart__gift-bar:not([hidden])) {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.sidecart__shipping-bar + .sidecart__gift-bar {
+  padding-top: 22px;
+}
+
 .sidecart__gift-bar-text {
   font-family: var(--font-sweet-sans);
   font-size: 13px;
   font-weight: 500;
   letter-spacing: -0.13px;
-  margin: 0 0 14px;
+  margin: 0 0 12px;
   text-align: center;
   color: var(--shipping-bar-text, var(--sidecart-text));
 }
 
-.sidecart__gift-bar-track {
-  position: relative;
-  width: 100%;
+.sidecart__gift-steps {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 6px;
+}
+
+.sidecart__gift-step-track {
   height: 6px;
   border-radius: 3px;
   background-color: var(--shipping-bar-track, rgba(62, 32, 39, 0.15));
+  overflow: hidden;
 }
 
-.sidecart__gift-bar-fill {
+.sidecart__gift-step-fill {
   width: 0;
   height: 100%;
   border-radius: 3px;
@@ -1009,22 +1029,73 @@
   transition: width 0.3s ease;
 }
 
-.sidecart__gift-bar-marker {
-  position: absolute;
-  top: 50%;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--sidecart-bg);
-  border: 2px solid var(--shipping-bar-track, rgba(62, 32, 39, 0.15));
-  transition: background-color 0.3s ease
-  , border-color 0.3s ease;
+.sidecart__gift-step-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  line-height: 1.3;
 }
 
-.sidecart__gift-bar-marker.is-reached {
+.sidecart__gift-step-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, currentColor 25%, transparent);
+}
+
+/* The gift being worked towards: a ring with a dot. */
+.sidecart__gift-step.is-current .sidecart__gift-step-icon {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--shipping-bar-fill, #3E2027);
+}
+
+.sidecart__gift-step.is-current .sidecart__gift-step-icon::after {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
   background-color: var(--shipping-bar-fill, #3E2027);
-  border-color: var(--shipping-bar-fill, #3E2027);
+}
+
+/* Unlocked: filled, with a tick. */
+.sidecart__gift-step.is-unlocked .sidecart__gift-step-icon {
+  background-color: var(--shipping-bar-fill, #3E2027);
+}
+
+.sidecart__gift-step-check {
+  display: none;
+  width: 8px;
+  height: 8px;
+  color: var(--sidecart-bg);
+}
+
+.sidecart__gift-step.is-unlocked .sidecart__gift-step-check {
+  display: block;
+}
+
+.sidecart__gift-step-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Gifts still ahead read a step quieter. */
+.sidecart__gift-step:not(.is-unlocked):not(.is-current) .sidecart__gift-step-name {
+  opacity: 0.6;
+}
+
+.sidecart__gift-step-amount {
+  margin: 2px 0 0 18px;
+  font-family: var(--font-jokker);
+  font-size: 11px;
+  opacity: 0.6;
 }
 
 /* Discount code field */
@@ -2617,8 +2688,10 @@ class Sidecart {
     return missing;
   }
 
-  // Progress toward the next gift tier, with a marker per tier when there are
-  // several. Hidden unless a promo runs for this cart and it has paid items.
+  // Progress toward the gifts: one segment per tier (1, 2 or 3, however many
+  // the promo has), each filling from the previous tier's amount to its own,
+  // with the gift and its amount underneath. Hidden unless a promo runs for
+  // this cart and it has paid items.
   updateGiftBar(cart, spendOverride) {
     const bar = this.sidecart.querySelector('[data-gift-bar]');
     if (!bar) return;
@@ -2636,25 +2709,43 @@ class Sidecart {
       }))
       .sort((a, b) => a.cents - b.cents);
     const spend = typeof spendOverride === 'number' ? spendOverride : this.giftSpend(cart);
-    const top = tiers[tiers.length - 1].cents || 1;
 
-    const track = bar.querySelector('[data-gift-bar-track]');
-    if (track && tiers.length > 1 && !track.querySelector('[data-gift-bar-marker]')) {
+    // The segments are built once: the bar lives outside the re-rendered
+    // regions, and the tiers only change with a page load.
+    const steps = bar.querySelector('[data-gift-steps]');
+    if (steps && !steps.children.length) {
       tiers.forEach((tier) => {
-        const marker = document.createElement('span');
-        marker.className = 'sidecart__gift-bar-marker';
-        marker.dataset.giftBarMarker = String(tier.cents);
-        marker.setAttribute('aria-hidden', 'true');
-        marker.style.left = Math.min(100, (tier.cents / top) * 100) + '%';
-        track.appendChild(marker);
+        const step = document.createElement('div');
+        step.className = 'sidecart__gift-step';
+        step.innerHTML =
+          '<div class="sidecart__gift-step-track" aria-hidden="true"><div class="sidecart__gift-step-fill"></div></div>' +
+          '<p class="sidecart__gift-step-label">' +
+          '<span class="sidecart__gift-step-icon" aria-hidden="true">' +
+          '<svg class="sidecart__gift-step-check" focusable="false" viewBox="0 0 8 8" fill="none"><path d="M1.5 4.2L3.2 5.8L6.5 2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+          '</span><span class="sidecart__gift-step-name"></span></p>' +
+          '<p class="sidecart__gift-step-amount"></p>';
+        step.querySelector('.sidecart__gift-step-name').textContent = tier.label;
+        step.querySelector('.sidecart__gift-step-amount').textContent = this.formatMoney(tier.cents).replace(/[.,]00(?=\D*$)/, '');
+        steps.appendChild(step);
       });
     }
-    bar.querySelectorAll('[data-gift-bar-marker]').forEach((marker) => {
-      marker.classList.toggle('is-reached', spend >= Number(marker.dataset.giftBarMarker));
-    });
 
-    const fill = bar.querySelector('[data-gift-bar-fill]');
-    if (fill) fill.style.width = Math.min(100, (spend / top) * 100) + '%';
+    let previous = 0;
+    let currentFound = false;
+    Array.from(steps ? steps.children : []).forEach((step, index) => {
+      const tier = tiers[index];
+      if (!tier) return;
+      const span = tier.cents - previous;
+      const progress = span > 0 ? Math.min(1, Math.max(0, (spend - previous) / span)) : 1;
+      const unlocked = spend >= tier.cents;
+      const current = !unlocked && !currentFound;
+      if (current) currentFound = true;
+      step.classList.toggle('is-unlocked', unlocked);
+      step.classList.toggle('is-current', current);
+      const fill = step.querySelector('.sidecart__gift-step-fill');
+      if (fill) fill.style.width = progress * 100 + '%';
+      previous = tier.cents;
+    });
 
     const text = bar.querySelector('[data-gift-bar-text]');
     const next = tiers.find((tier) => spend < tier.cents);

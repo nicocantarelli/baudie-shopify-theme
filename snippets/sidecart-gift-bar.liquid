@@ -5,7 +5,10 @@
   Only rendered while a promo is On or in Preview with at least one tier
   (settings: the `baudie.gift_promo` shop metafield). It starts hidden: the
   sidecart script decides whether the promo is running for this cart (dates,
-  preview link) and fills in the message, the fill and one marker per tier.
+  preview link) and fills in the message plus one segment per tier, each with
+  the gift's name and spend amount under it, so a 1-, 2- or 3-tier promo gets
+  1, 2 or 3 segments. Rendered right after the free shipping bar, which it
+  joins visually (see the sidecart stylesheet).
 
   @param {string} progress_message - Shown below the last tier; [amount] and [gift] are replaced
   @param {string} success_message - Shown once every tier is reached
@@ -39,8 +42,7 @@
     hidden
     style="--shipping-bar-fill: {{ fill_color }}; --shipping-bar-track: {{ track_color }}; --shipping-bar-text: {{ text_color }};">
     <p class="sidecart__gift-bar-text" data-gift-bar-text aria-live="polite"></p>
-    <div class="sidecart__gift-bar-track" data-gift-bar-track>
-      <div class="sidecart__gift-bar-fill" data-gift-bar-fill></div>
-    </div>
+    {%- comment -%} One segment + label per tier, built by the script from the gift settings. {%- endcomment -%}
+    <div class="sidecart__gift-steps" data-gift-steps></div>
   </div>
 {%- endif -%}
