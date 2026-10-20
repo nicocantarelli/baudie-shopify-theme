@@ -950,7 +950,15 @@
         "info": "Carts containing only products from this collection won't see the upsell (e.g. your Wipes collection)."
       },
       "gift_header": "Gift with purchase",
-      "gift_info": "The gifts, spend amounts and dates are set in Discounts → Upsell deal → Gift with purchase. The bar only shows while a promo is running, using the free shipping bar's colors.",
+      "gift_info": "The gifts, spend amounts and dates are set in Discounts → Upsell deal → Gift with purchase. The gift progress only shows while a promo is running, in the free shipping bar's colors.",
+      "gift_progress_style": {
+        "label": "Gift progress style",
+        "info": "List shows each gift with what's left to unlock it. Bar shows one progress segment per gift under the free shipping bar.",
+        "options": {
+          "list": "List",
+          "bar": "Bar"
+        }
+      },
       "gift_progress_message": {
         "label": "Progress message",
         "info": "[amount] is what's left to spend, [gift] is the next gift."

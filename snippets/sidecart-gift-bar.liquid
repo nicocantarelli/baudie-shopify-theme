@@ -1,23 +1,32 @@
 {% doc %}
-  Renders the gift with purchase progress bar shell at the top of the sidecart,
+  Renders the gift with purchase progress shell at the top of the sidecart,
   under the free shipping bar and above the items.
 
   Only rendered while a promo is On or in Preview with at least one tier
   (settings: the `baudie.gift_promo` shop metafield). It starts hidden: the
   sidecart script decides whether the promo is running for this cart (dates,
-  preview link) and fills in the message plus one segment per tier, each with
-  the gift's name and spend amount under it, so a 1-, 2- or 3-tier promo gets
-  1, 2 or 3 segments. Rendered right after the free shipping bar, which it
-  joins visually (see the sidecart stylesheet).
+  preview link) and fills it in for however many tiers the promo has, in one
+  of two layouts:
 
-  @param {string} progress_message - Shown below the last tier; [amount] and [gift] are replaced
-  @param {string} success_message - Shown once every tier is reached
-  @param {string} [fill_color] - Bar fill color (shared with the free shipping bar)
-  @param {string} [track_color] - Bar track color
-  @param {string} [text_color] - Message color
+  - list: a heading with how many gifts are unlocked, then one row per gift
+    with a tick once it's unlocked (its number until then), the spend it
+    unlocks at, and FREE or what's left to spend. The next gift is tinted.
+    Rendered at the top of the sidecart's scrolling items area.
+  - bar: a message, then one progress segment per tier with the gift's name
+    and spend amount under it. Rendered right after the free shipping bar,
+    which it joins visually (see the sidecart stylesheet).
+
+  @param {string} [layout] - 'list' (default) or 'bar'
+  @param {string} [progress_message] - Bar layout: shown below the last tier; [amount] and [gift] are replaced
+  @param {string} [success_message] - Bar layout: shown once every tier is reached
+  @param {string} [fill_color] - Bar fill and unlocked tick color (shared with the free shipping bar)
+  @param {string} [track_color] - Bar layout: track color
+  @param {string} [text_color] - Text color
 
   @example
+  {% render 'sidecart-gift-bar', layout: 'list' %}
   {% render 'sidecart-gift-bar',
+    layout: 'bar',
     progress_message: section.settings.gift_progress_message,
     success_message: section.settings.gift_success_message
   %}
@@ -34,15 +43,37 @@
 -%}
 
 {%- if render_bar -%}
-  <div
-    class="sidecart__gift-bar"
-    data-gift-bar
-    data-progress-msg="{{ progress_message | escape }}"
-    data-success-msg="{{ success_message | escape }}"
-    hidden
-    style="--shipping-bar-fill: {{ fill_color }}; --shipping-bar-track: {{ track_color }}; --shipping-bar-text: {{ text_color }};">
-    <p class="sidecart__gift-bar-text" data-gift-bar-text aria-live="polite"></p>
-    {%- comment -%} One segment + label per tier, built by the script from the gift settings. {%- endcomment -%}
-    <div class="sidecart__gift-steps" data-gift-steps></div>
-  </div>
+  {%- if layout == 'bar' -%}
+    <div
+      class="sidecart__gift-bar sidecart__gift-bar--bar"
+      data-gift-bar
+      data-gift-layout="bar"
+      data-progress-msg="{{ progress_message | escape }}"
+      data-success-msg="{{ success_message | escape }}"
+      hidden
+      style="--shipping-bar-fill: {{ fill_color }}; --shipping-bar-track: {{ track_color }}; --shipping-bar-text: {{ text_color }};">
+      <p class="sidecart__gift-bar-text" data-gift-bar-text aria-live="polite"></p>
+      {%- comment -%} One segment + label per tier, built by the script from the gift settings. {%- endcomment -%}
+      <div class="sidecart__gift-steps" data-gift-steps></div>
+    </div>
+  {%- else -%}
+    <div
+      class="sidecart__gift-bar sidecart__gift-bar--list"
+      data-gift-bar
+      data-gift-layout="list"
+      data-count-msg="{{ 'sidecart.gift_list.count' | t }}"
+      data-unlocked-msg="{{ 'sidecart.gift_list.unlocked' | t }}"
+      data-unlocks-at-msg="{{ 'sidecart.gift_list.unlocks_at' | t }}"
+      data-free-msg="{{ 'sidecart.gift_list.free' | t }}"
+      data-left-msg="{{ 'sidecart.gift_list.left' | t }}"
+      hidden
+      style="--shipping-bar-fill: {{ fill_color }}; --shipping-bar-text: {{ text_color }};">
+      <div class="sidecart__gift-list-head">
+        <p class="sidecart__gift-list-heading">{{ 'sidecart.gift_list.heading' | t: count: promo.tiers.size }}</p>
+        <p class="sidecart__gift-list-count" data-gift-list-count aria-live="polite"></p>
+      </div>
+      {%- comment -%} One row per tier, built by the script from the gift settings. {%- endcomment -%}
+      <ul class="sidecart__gift-list" role="list" data-gift-list></ul>
+    </div>
+  {%- endif -%}
 {%- endif -%}

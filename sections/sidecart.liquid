@@ -95,18 +95,32 @@
       </div>
 
       {%- comment -%}
-        Gift with purchase progress: directly under the free shipping bar, as
-        one block with it, above the items. It sits outside the regions a
-        drawer re-render replaces; the script fills it in on every cart update.
+        Gift with purchase progress, under the free shipping bar and above the
+        items (Gift progress style setting):
+        - list: at the top of the scrolling items area, so on a phone it
+          scrolls out of the way of the items. It's re-rendered with them and
+          the script fills it straight back in.
+        - bar: joined to the shipping bar, outside the regions a re-render
+          replaces.
+        Both start hidden; the script fills them in on every cart update.
       {%- endcomment -%}
+      {%- liquid
+        assign gift_layout = 'list'
+        if section.settings.gift_progress_style == 'bar'
+          assign gift_layout = 'bar'
+        endif
+      -%}
       {%- capture gift_bar -%}
-        {% render 'sidecart-gift-bar',
-          progress_message: section.settings.gift_progress_message,
-          success_message: section.settings.gift_success_message,
-          fill_color: section.settings.shipping_bar_fill_color,
-          track_color: section.settings.shipping_bar_track_color,
-          text_color: section.settings.shipping_bar_text_color
-        %}
+        {%- if gift_layout == 'bar' -%}
+          {% render 'sidecart-gift-bar',
+            layout: 'bar',
+            progress_message: section.settings.gift_progress_message,
+            success_message: section.settings.gift_success_message,
+            fill_color: section.settings.shipping_bar_fill_color,
+            track_color: section.settings.shipping_bar_track_color,
+            text_color: section.settings.shipping_bar_text_color
+          %}
+        {%- endif -%}
       {%- endcapture -%}
       {% if shipping_bar_enabled and shipping_bar_position == 'top' %}
         <div
@@ -135,6 +149,13 @@
     </div>
   </div>
 </div>{{ gift_bar }}{% render 'promo-banner', location: 'sidecart-top' %}{% else %}{{ gift_bar }}{% endif %}<div class="sidecart__content" data-sidecart-content>
+{%- if gift_layout == 'list' -%}
+  {% render 'sidecart-gift-bar',
+    layout: 'list',
+    fill_color: section.settings.shipping_bar_fill_color,
+    text_color: section.settings.shipping_bar_text_color
+  %}
+{%- endif %}
 <ul
   class="sidecart__items{% unless has_items %} sidecart__items--hidden{% endunless %}"
   role="list"
@@ -972,9 +993,8 @@
   mask-position: center;
 }
 
-/* Gift with purchase progress, right under the free shipping bar and joined to
-   it as one block: the same message style, then one segment per tier with the
-   gift and its spend amount underneath. */
+/* Gift with purchase progress, right under the free shipping bar: a list of
+   the gifts, or the segmented bar (Gift progress style setting). */
 .sidecart__gift-bar {
   flex-shrink: 0;
   padding: 14px 20px 16px;
@@ -986,14 +1006,182 @@
   display: none;
 }
 
-/* Joined to the shipping bar above: no divider between the two, just the
-   spacing of one block. The truck icon hangs below its track, hence the gap. */
-.sidecart__shipping-bar:has(+ .sidecart__gift-bar:not([hidden])) {
+/* List: a heading with the unlocked count, then one row per gift: a tick
+   once it's unlocked (its number until then), the spend it unlocks at, and
+   FREE or what's left to spend. The gift being worked towards is tinted.
+   It opens the scrolling items area, edge to edge, with the items after its
+   divider. */
+.sidecart__gift-bar--list {
+  margin: -15px -20px 0;
+  padding: 14px 20px 10px;
+}
+
+.sidecart__gift-bar--list:not([hidden]) + .sidecart__items {
+  margin-top: 0;
+}
+
+.sidecart__gift-list-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.sidecart__gift-list-heading {
+  margin: 0;
+  font-family: var(--font-sweet-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.13px;
+  text-transform: uppercase;
+}
+
+.sidecart__gift-list-count {
+  margin: 0;
+  font-family: var(--font-sweet-sans);
+  font-size: 11px;
+  letter-spacing: -0.11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.6;
+}
+
+/* The rows run 10px past the text on both sides, so the tint has room while
+   the ticks and amounts line up with the heading. */
+.sidecart__gift-list {
+  list-style: none;
+  margin: 0 -10px;
+  padding: 0;
+}
+
+.sidecart__gift-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 10px;
+}
+
+.sidecart__gift-row.is-current {
+  background-color: color-mix(in srgb, var(--shipping-bar-fill, #3E2027) 7%, transparent);
+}
+
+.sidecart__gift-row-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  font-family: var(--font-sweet-sans);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.sidecart__gift-row.is-current .sidecart__gift-row-icon {
+  background-color: var(--sidecart-bg);
+}
+
+.sidecart__gift-row.is-unlocked .sidecart__gift-row-icon {
+  border-color: var(--shipping-bar-fill, #3E2027);
+  background-color: var(--shipping-bar-fill, #3E2027);
+  color: var(--sidecart-bg);
+}
+
+.sidecart__gift-row-check {
+  display: none;
+  width: 10px;
+  height: 10px;
+}
+
+.sidecart__gift-row.is-unlocked .sidecart__gift-row-check {
+  display: block;
+}
+
+.sidecart__gift-row.is-unlocked .sidecart__gift-row-number {
+  display: none;
+}
+
+.sidecart__gift-row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sidecart__gift-row-name {
+  font-family: var(--font-sweet-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.13px;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.sidecart__gift-row-status {
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.sidecart__gift-row-value {
+  flex: 0 0 auto;
+  font-family: var(--font-sweet-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.13px;
+  white-space: nowrap;
+}
+
+/* Gifts past the next one read a step quieter. */
+.sidecart__gift-row:not(.is-unlocked):not(.is-current) .sidecart__gift-row-info,
+.sidecart__gift-row:not(.is-unlocked):not(.is-current) .sidecart__gift-row-value {
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .sidecart__gift-bar--list {
+    padding: 12px 20px 8px;
+  }
+
+  .sidecart__gift-list-head {
+    margin-bottom: 4px;
+  }
+
+  .sidecart__gift-row {
+    gap: 10px;
+    padding: 5px 10px;
+  }
+
+  .sidecart__gift-row-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .sidecart__gift-row-name,
+  .sidecart__gift-row-value {
+    font-size: 12px;
+  }
+
+  .sidecart__gift-row-status {
+    font-size: 11px;
+  }
+}
+
+/* Bar: joined to the shipping bar above as one block, with the same message
+   style, then one segment per tier with the gift and its spend amount
+   underneath. No divider between the two, just the spacing of one block; the
+   truck icon hangs below its track, hence the gap. */
+.sidecart__shipping-bar:has(+ .sidecart__gift-bar--bar:not([hidden])) {
   padding-bottom: 0;
   border-bottom: none;
 }
 
-.sidecart__shipping-bar + .sidecart__gift-bar {
+.sidecart__shipping-bar + .sidecart__gift-bar--bar {
   padding-top: 22px;
 }
 
@@ -2688,10 +2876,9 @@ class Sidecart {
     return missing;
   }
 
-  // Progress toward the gifts: one segment per tier (1, 2 or 3, however many
-  // the promo has), each filling from the previous tier's amount to its own,
-  // with the gift and its amount underneath. Hidden unless a promo runs for
-  // this cart and it has paid items.
+  // Progress toward the gifts, for however many tiers the promo has (1, 2 or
+  // 3), as a list or a segmented bar (the Gift progress style setting).
+  // Hidden unless a promo runs for this cart and it has paid items.
   updateGiftBar(cart, spendOverride) {
     const bar = this.sidecart.querySelector('[data-gift-bar]');
     if (!bar) return;
@@ -2703,13 +2890,87 @@ class Sidecart {
     }
 
     const tiers = this.giftPromo.tiers
-      .map((tier) => ({
+      .map((tier, index) => ({
         cents: this.giftTierCents(tier),
-        label: (tier.quantity > 1 ? tier.quantity + ' × ' : '') + tier.title
+        label: (tier.quantity > 1 ? tier.quantity + ' × ' : '') + tier.title,
+        // Same test as desiredGifts: a gift that won't be added isn't offered.
+        offered: tier.available && !this.giftBlocked.has(this.giftKey('tier:' + (index + 1), tier.variantId))
       }))
       .sort((a, b) => a.cents - b.cents);
     const spend = typeof spendOverride === 'number' ? spendOverride : this.giftSpend(cart);
 
+    if (bar.dataset.giftLayout === 'list') {
+      bar.hidden = !this.updateGiftList(bar, tiers, spend);
+    } else {
+      this.updateGiftSteps(bar, tiers, spend);
+      bar.hidden = false;
+    }
+  }
+
+  // List layout: a row per gift on offer, numbered in spend order. Each row is
+  // unlocked (a tick, FREE), the next gift (tinted) or still ahead, with the
+  // spend it unlocks at and what's left. The rows are rebuilt only when the
+  // gifts on offer change (a gift sold out at page load or blocked since).
+  // Returns false when there's no gift to show.
+  updateGiftList(bar, tiers, spend) {
+    const list = bar.querySelector('[data-gift-list]');
+    if (!list) return false;
+    const shown = tiers.filter((tier) => tier.offered);
+    const signature = shown.map((tier) => tier.cents + ':' + tier.label).join('|');
+    if (list.dataset.gifts !== signature) {
+      list.dataset.gifts = signature;
+      list.replaceChildren(
+        ...shown.map((tier, index) => {
+          const row = document.createElement('li');
+          row.className = 'sidecart__gift-row';
+          row.innerHTML =
+            '<span class="sidecart__gift-row-icon" aria-hidden="true">' +
+            '<span class="sidecart__gift-row-number"></span>' +
+            '<svg class="sidecart__gift-row-check" focusable="false" viewBox="0 0 10 10" fill="none"><path d="M2 5.3L4.1 7.3L8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+            '</span>' +
+            '<span class="sidecart__gift-row-info">' +
+            '<span class="sidecart__gift-row-name"></span><span class="sidecart__gift-row-status"></span>' +
+            '</span>' +
+            '<span class="sidecart__gift-row-value"></span>';
+          row.querySelector('.sidecart__gift-row-number').textContent = index + 1;
+          row.querySelector('.sidecart__gift-row-name').textContent = tier.label;
+          return row;
+        })
+      );
+    }
+
+    let unlockedCount = 0;
+    let currentFound = false;
+    Array.from(list.children).forEach((row, index) => {
+      const tier = shown[index];
+      const unlocked = spend >= tier.cents;
+      const current = !unlocked && !currentFound;
+      if (current) currentFound = true;
+      if (unlocked) unlockedCount += 1;
+      row.classList.toggle('is-unlocked', unlocked);
+      row.classList.toggle('is-current', current);
+      row.querySelector('.sidecart__gift-row-status').textContent = unlocked
+        ? bar.dataset.unlockedMsg || ''
+        : (bar.dataset.unlocksAtMsg || '').replace('AMOUNT', this.formatMoney(tier.cents).replace(/[.,]00(?=\D*$)/, ''));
+      row.querySelector('.sidecart__gift-row-value').textContent = unlocked
+        ? bar.dataset.freeMsg || ''
+        : (bar.dataset.leftMsg || '').replace('AMOUNT', this.formatMoney(tier.cents - spend));
+    });
+
+    // "2 of 3 unlocked". A single gift's row says it all.
+    const count = bar.querySelector('[data-gift-list-count]');
+    if (count) {
+      count.textContent =
+        shown.length > 1
+          ? (bar.dataset.countMsg || '').replace('COUNT', unlockedCount).replace('TOTAL', shown.length)
+          : '';
+    }
+    return shown.length > 0;
+  }
+
+  // Bar layout: a message, then one segment per tier, each filling from the
+  // previous tier's amount to its own, with the gift and its amount underneath.
+  updateGiftSteps(bar, tiers, spend) {
     // The segments are built once: the bar lives outside the re-rendered
     // regions, and the tiers only change with a page load.
     const steps = bar.querySelector('[data-gift-steps]');
@@ -2756,7 +3017,6 @@ class Sidecart {
             .replace('[gift]', next.label)
         : bar.dataset.successMsg || '';
     }
-    bar.hidden = false;
   }
 
   // ---- Discount codes -----------------------------------------------------
@@ -3335,16 +3595,33 @@ if (Shopify.designMode) {
       "type": "paragraph",
       "content": "t:sidecart.settings.gift_info"
     }, {
+      "type": "select",
+      "id": "gift_progress_style",
+      "label": "t:sidecart.settings.gift_progress_style.label",
+      "info": "t:sidecart.settings.gift_progress_style.info",
+      "options": [
+        {
+          "value": "list",
+          "label": "t:sidecart.settings.gift_progress_style.options.list"
+        }, {
+          "value": "bar",
+          "label": "t:sidecart.settings.gift_progress_style.options.bar"
+        }
+      ],
+      "default": "list"
+    }, {
       "type": "text",
       "id": "gift_progress_message",
       "label": "t:sidecart.settings.gift_progress_message.label",
       "info": "t:sidecart.settings.gift_progress_message.info",
-      "default": "Spend [amount] more to get [gift] FREE!"
+      "default": "Spend [amount] more to get [gift] FREE!",
+      "visible_if": "{{ section.settings.gift_progress_style == 'bar' }}"
     }, {
       "type": "text",
       "id": "gift_success_message",
       "label": "t:sidecart.settings.gift_success_message.label",
-      "default": "You've unlocked your FREE gifts!"
+      "default": "You've unlocked your FREE gifts!",
+      "visible_if": "{{ section.settings.gift_progress_style == 'bar' }}"
     }, {
       "type": "text",
       "id": "gift_label",

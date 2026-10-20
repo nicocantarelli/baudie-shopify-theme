@@ -468,6 +468,17 @@
     "gift_label": "Free gift",
     "gift_free": "Free",
     "gift_quantity": "Qty {{ count }}",
+    "gift_list": {
+      "heading": {
+        "one": "Your free gift",
+        "other": "Your free gifts"
+      },
+      "count": "COUNT of TOTAL unlocked",
+      "unlocked": "Unlocked",
+      "unlocks_at": "Unlocks at AMOUNT",
+      "free": "FREE",
+      "left": "AMOUNT left"
+    },
     "discount": {
       "label": "Discount code",
       "placeholder": "Discount code",
