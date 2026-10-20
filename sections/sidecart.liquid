@@ -103,8 +103,7 @@
           the script fills it straight back in.
         - bar: joined to the shipping bar, outside the regions a re-render
           replaces.
-        - cards: in the items area like the list; customers add each
-          unlocked gift themselves.
+        - cards: in the items area like the list.
         All start hidden; the script fills them in on every cart update.
       {%- endcomment -%}
       {%- liquid
@@ -113,11 +112,6 @@
           assign gift_layout = 'bar'
         elsif section.settings.gift_progress_style == 'cards'
           assign gift_layout = 'cards'
-        endif
-        # Customers add the gifts themselves with the cards, so they can take one out again too.
-        assign gift_removable = false
-        if gift_layout == 'cards'
-          assign gift_removable = true
         endif
       -%}
       {%- capture gift_bar -%}
@@ -234,8 +228,7 @@
         group_original_line_price: group_original,
         group_line_count: group_lines,
         group_signature: raw_sig,
-        gift_label: section.settings.gift_label,
-        gift_removable: gift_removable -%}
+        gift_label: section.settings.gift_label -%}
     {%- endunless -%}
   {%- endfor -%}
   {%- endfor -%}
@@ -1234,7 +1227,7 @@
 
 /* Cards: a heading with the unlocked count, then a row of gift cards to
    scroll through (swipe on a phone), one per gift: photo, worth, its own
-   progress bar, then what's left, an Add to bag button, or Added in green.
+   progress bar, then what's left or Added to cart in green.
    It opens the scrolling items area edge to edge, like the list. */
 .sidecart__gift-bar--cards {
   --gift-added-bg: #DFE9D8;
@@ -1415,10 +1408,6 @@
   padding-right: 20px;
   padding-left: 20px;
   background-color: color-mix(in srgb, var(--sidecart-text) 5%, transparent);
-}
-
-.sidecart__items--gift-cards .sidecart-item--gift .sidecart-item__remove {
-  right: 20px;
 }
 
 @media (max-width: 768px) {
@@ -2096,7 +2085,7 @@ class Sidecart {
     this.giftSynced = true; // cleared by every queued job, so sync runs once per drain
     this.giftBlocked = this.loadBlockedGifts(); // gifts that came out at full price
     this.checkingOut = false; // checkout clicked, waiting for the cart to settle
-    this.giftAdding = new Set(); // Cards: gifts whose Add to bag is on its way
+    this.giftAdding = new Set(); // Cards: gifts whose Add to cart is on its way
     this.discountOpen = false; // the discount code fold-out, kept across re-renders
     this.discountMessage = null; // { text, tone } under the code box, kept across renders
     this.pendingDiscountCode = null; // a just-applied code to report on after the render
@@ -2265,7 +2254,7 @@ class Sidecart {
     const input = item.querySelector('[data-quantity]');
     // defaultValue tracks the last known quantity; input.value may already hold
     // the freshly typed value by the time a `change` event fires.
-    const oldQty = parseInt((input && (input.defaultValue || input.value)) || item.dataset.giftQuantity || '1', 10);
+    const oldQty = parseInt((input && (input.defaultValue || input.value)) || '1', 10);
     const unitPrice = parseInt(item.dataset.unitPrice || '0', 10);
 
     this.dirty = true;
@@ -3263,27 +3252,12 @@ class Sidecart {
     });
   }
 
-  // The Cards gift style: customers add each unlocked gift themselves, so the
-  // sync never adds tier gifts (it still removes the ones no longer earned).
-  // The layout only changes with a page load.
-  giftOptIn() {
-    if (this.giftLayout === undefined) {
-      const bar = this.sidecart.querySelector('[data-gift-bar]');
-      this.giftLayout = bar ? bar.dataset.giftLayout : null;
-    }
-    return this.giftLayout === 'cards';
-  }
-
   missingGifts(cart) {
     const present = new Set(
       (cart.items || []).filter((line) => this.isGiftLine(line)).map((line) => line.properties._gift)
     );
     const missing = [];
-    const optIn = this.giftOptIn();
     this.desiredGifts(cart).forEach((gift, value) => {
-      // With the cards, customers add tier gifts themselves (VIP gifts come
-      // with their code, so those are still added).
-      if (optIn && value.indexOf('tier:') === 0) return;
       if (!present.has(value)) {
         missing.push({ id: gift.variantId, quantity: gift.quantity, properties: { _gift: value } });
       }
@@ -3396,8 +3370,9 @@ class Sidecart {
 
   // Cards layout: a card per gift on offer, in spend order, rebuilt only when
   // the gifts on offer change. Each shows its own progress toward its spend
-  // amount and one of three states: what's left to spend, an Add to bag
-  // button once it's unlocked, or Added once its gift line is in the cart.
+  // amount and one of three states: what's left to spend, Added to cart once
+  // its gift line is in, or in between (unlocked, the sync about to add it)
+  // an Add to cart button, which also adds it by hand.
   // Returns false when there's no gift to show.
   updateGiftCards(bar, tiers, spend, cart) {
     const list = bar.querySelector('[data-gift-cards]');
@@ -3485,11 +3460,12 @@ class Sidecart {
     return shown.length > 0;
   }
 
-  // Cards: put an unlocked gift in the cart, as its own line tagged with
-  // `_gift`. It's checked against the live cart first (a quantity change may
-  // have landed since the button showed). The drain after it runs the gift
-  // sync, whose safety net takes the gift out again if it doesn't come out
-  // free, then re-renders the drawer with it.
+  // Cards: the Add to cart button. Puts an unlocked gift in the cart now,
+  // rather than on the sync after the next change, as its own line tagged
+  // with `_gift`. It's checked against the live cart first (a quantity change
+  // may have landed since the button showed). The drain after it runs the
+  // gift sync, whose safety net takes the gift out again if it doesn't come
+  // out free, then re-renders the drawer with it.
   addGift(value) {
     if (!this.giftPromo || !value || this.giftAdding.has(value)) return;
     this.giftAdding.add(value);
@@ -4223,7 +4199,7 @@ if (Shopify.designMode) {
           "label": "t:sidecart.settings.gift_progress_style.options.cards"
         }
       ],
-      "default": "list"
+      "default": "cards"
     }, {
       "type": "text",
       "id": "gift_progress_message",

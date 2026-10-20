@@ -953,7 +953,7 @@
       "gift_info": "The gifts, spend amounts and dates are set in Discounts → Upsell deal → Gift with purchase. The gift progress only shows while a promo is running, in the free shipping bar's colors.",
       "gift_progress_style": {
         "label": "Gift progress style",
-        "info": "List shows each gift with what's left to unlock it. Bar shows one progress segment per gift under the free shipping bar. With both, unlocked gifts are added to the cart automatically. Cards shows a row of gift cards to scroll through, and customers add each unlocked gift themselves with its Add to bag button.",
+        "info": "List shows each gift with what's left to unlock it. Bar shows one progress segment per gift under the free shipping bar. Cards shows a row of gift cards to scroll through, with each gift's photo and what's left to unlock it. In every style, unlocked gifts are added to the cart automatically.",
         "options": {
           "list": "List",
           "bar": "Bar",
