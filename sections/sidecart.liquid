@@ -311,7 +311,7 @@
 </div>
 
 <div class="sidecart__actions sidecart__actions--single">
-  <a href="/checkout" class="sidecart__btn sidecart__btn--primary">
+  <a href="/checkout" class="sidecart__btn sidecart__btn--primary" data-sidecart-checkout>
     {{ 'sidecart.checkout' | t }}
   </a>
 </div>
@@ -1507,6 +1507,13 @@
   border: none;
 }
 
+/* Checkout waiting for the cart to settle (see goToCheckout). On the drawer,
+   not the button, since a re-render replaces the footer meanwhile. */
+.sidecart.is-checking-out [data-sidecart-checkout] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 .sidecart__btn--secondary {
   background-color: transparent;
   color: var(--sidecart-text);
@@ -1820,6 +1827,7 @@ class Sidecart {
     this.giftPromo = this.readGiftPromo();
     this.giftSynced = true; // cleared by every queued job, so sync runs once per drain
     this.giftBlocked = this.loadBlockedGifts(); // gifts that came out at full price
+    this.checkingOut = false; // checkout clicked, waiting for the cart to settle
     this.discountMessage = null; // { text, tone } under the code box, kept across renders
     this.pendingDiscountCode = null; // a just-applied code to report on after the render
 
@@ -1894,8 +1902,18 @@ class Sidecart {
     this.closeButton?.addEventListener('click', () => this.close());
     this.overlay?.addEventListener('click', () => this.close());
     document.addEventListener('keydown', (e) => this.handleKeydown(e));
+    // Back from checkout (page restored from the back-forward cache): the
+    // checkout button works again.
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) this.endCheckoutWait();
+    });
 
     this.sidecart.addEventListener('click', (e) => {
+      const checkout = e.target.closest('[data-sidecart-checkout]');
+      if (checkout) {
+        this.handleCheckoutClick(e, checkout);
+        return;
+      }
       const removeCode = e.target.closest('[data-discount-remove]');
       if (removeCode) {
         this.removeDiscountCode(removeCode.dataset.discountRemove);
@@ -2016,9 +2034,13 @@ class Sidecart {
     this.subtotalCents = Math.max(0, this.subtotalCents + deltaCents);
     if (this.subtotalElement) this.subtotalElement.textContent = this.formatMoney(this.subtotalCents);
     this.updateShippingBar(this.subtotalCents);
-    // Gifts are free, so the subtotal is a fair estimate of the spend until
-    // the authoritative cart lands.
-    this.updateGiftBar(this.lastCart, this.subtotalCents);
+    // Gifts are free, so the spend moves with the subtotal until the
+    // authoritative cart lands: the last known spend plus the change since.
+    const spend = this.lastCart
+      ? this.giftSpend(this.lastCart) + (this.subtotalCents - (this.lastCart.total_price || 0))
+      : this.subtotalCents;
+    this.updateGiftBar(this.lastCart, spend);
+    this.previewGiftCards(spend);
   }
 
   parseMoney(str) {
@@ -2831,11 +2853,11 @@ class Sidecart {
         changed = true;
       }
 
-      // 2. Remove gift lines that aren't earned (or are duplicates); fix quantities.
-      for (let guard = 0; guard < 12; guard++) {
-        const step = this.nextGiftFix(cart);
-        if (!step) break;
-        cart = await this.changeLine(step.line, step.quantity);
+      // 2. Remove gift lines that aren't earned (or are duplicates) and fix
+      // quantities, all in one request.
+      const fixes = this.giftFixes(cart);
+      if (Object.keys(fixes).length) {
+        cart = await this.updateLines(fixes);
         changed = true;
       }
 
@@ -2858,12 +2880,14 @@ class Sidecart {
       // 4. Safety net: a gift must be free. One that isn't (the discount is
       // switched off, a VIP code doesn't cover that product, ...) is removed
       // rather than charged.
-      for (let guard = 0; guard < 6; guard++) {
-        const index = (cart.items || []).findIndex((line) => this.isGiftLine(line) && line.final_line_price > 0);
-        if (index === -1) break;
-        const line = cart.items[index];
+      const charged = {};
+      (cart.items || []).forEach((line) => {
+        if (!this.isGiftLine(line) || line.final_line_price <= 0) return;
         this.blockGift(this.giftKey(line.properties._gift, line.variant_id));
-        cart = await this.changeLine(index + 1, 0);
+        charged[line.key] = 0;
+      });
+      if (Object.keys(charged).length) {
+        cart = await this.updateLines(charged);
         changed = true;
       }
 
@@ -2876,22 +2900,81 @@ class Sidecart {
     }
   }
 
-  // The next fix for an existing gift line, as { line, quantity } with a live
-  // 1-based line index, or null when every gift line is right.
-  nextGiftFix(cart) {
+  // The fixes the existing gift lines need, as /cart/update.js updates keyed by
+  // line key ({} when every gift line is right): 0 for a gift that isn't
+  // earned or is a duplicate, otherwise its quantity when that's off.
+  giftFixes(cart) {
     const desired = this.desiredGifts(cart);
     const seen = new Set();
-    const items = cart.items || [];
-    for (let i = 0; i < items.length; i++) {
-      const line = items[i];
-      if (!this.isGiftLine(line)) continue;
+    const updates = {};
+    (cart.items || []).forEach((line) => {
+      if (!this.isGiftLine(line)) return;
       const value = line.properties._gift;
       const want = desired.get(value);
-      if (!want || want.variantId !== line.variant_id || seen.has(value)) return { line: i + 1, quantity: 0 };
+      if (!want || want.variantId !== line.variant_id || seen.has(value)) {
+        updates[line.key] = 0;
+        return;
+      }
       seen.add(value);
-      if (line.quantity !== want.quantity) return { line: i + 1, quantity: want.quantity };
-    }
-    return null;
+      if (line.quantity !== want.quantity) updates[line.key] = want.quantity;
+    });
+    return updates;
+  }
+
+  // Several lines in one request, by line key (a gift and a paid line of the
+  // same product are separate lines, so variant ids won't do).
+  async updateLines(updates) {
+    const res = await fetch('/cart/update.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ updates })
+    });
+    if (!res.ok) throw new Error('cart/update failed: ' + res.status);
+    const cart = await res.json();
+    this.lastCart = cart;
+    this.lastCartFresh = true;
+    return cart;
+  }
+
+  // True when the cart's gift lines don't match what it earns: one to remove
+  // or fix, one missing, or one that isn't free.
+  giftsOutOfSync(cart) {
+    return (
+      Object.keys(this.giftFixes(cart)).length > 0 ||
+      this.missingGifts(cart).length > 0 ||
+      (cart.items || []).some((line) => this.isGiftLine(line) && line.final_line_price > 0)
+    );
+  }
+
+  // Optimistic, while a quantity change is on its way: hide the gift cards the
+  // new spend no longer earns (and take them off the item count, which shows
+  // the empty cart if nothing else is left), so a gift never lingers while the
+  // sync removes it. A spend that climbs back shows them again; the next
+  // render shows the real cart either way. VIP gifts don't depend on spend.
+  previewGiftCards(spend) {
+    if (!this.giftPromo || !this.lastCart || !this.giftPromoRunning(this.lastCart)) return;
+    const earned = new Set();
+    this.giftPromo.tiers.forEach((tier, index) => {
+      if (spend >= this.giftTierCents(tier)) earned.add('tier:' + (index + 1));
+    });
+    this.sidecart.querySelectorAll('[data-sidecart-item][data-gift^="tier:"]').forEach((card) => {
+      const leaving = !earned.has(card.dataset.gift);
+      if (leaving === card.hasAttribute('data-gift-leaving')) return;
+      // Already hidden for another reason: leave it be.
+      if (leaving && card.getAttribute('aria-hidden') === 'true') return;
+      const quantity = (this.lastCart.items || [])
+        .filter((line) => this.isGiftLine(line) && line.properties._gift === card.dataset.gift)
+        .reduce((sum, line) => sum + line.quantity, 0);
+      card.toggleAttribute('data-gift-leaving', leaving);
+      if (leaving) {
+        card.setAttribute('aria-hidden', 'true');
+        card.style.display = 'none';
+      } else {
+        card.removeAttribute('aria-hidden');
+        card.style.display = '';
+      }
+      this.adjustCountBadge(leaving ? -quantity : quantity);
+    });
   }
 
   missingGifts(cart) {
@@ -2914,7 +2997,12 @@ class Sidecart {
     const bar = this.sidecart.querySelector('[data-gift-bar]');
     if (!bar) return;
     const running = !!cart && this.giftPromoRunning(cart);
-    const hasItems = !!cart && (cart.items || []).some((line) => !this.isGiftLine(line));
+    let hasItems = !!cart && (cart.items || []).some((line) => !this.isGiftLine(line));
+    // Optimistic update (the cart is the one before the change): go by the
+    // cards still showing, so removing the last item hides it straight away.
+    if (hasItems && typeof spendOverride === 'number') {
+      hasItems = !!this.sidecart.querySelector('[data-sidecart-item]:not([aria-hidden="true"]):not([data-gift])');
+    }
     if (!running || !hasItems) {
       bar.hidden = true;
       return;
@@ -3048,6 +3136,64 @@ class Sidecart {
             .replace('[gift]', next.label)
         : bar.dataset.successMsg || '';
     }
+  }
+
+  // ---- Checkout -----------------------------------------------------------
+  // Checkout waits for the cart to settle. A quantity change still on its way,
+  // or the gift sync after it, would otherwise reach checkout with gifts the
+  // cart no longer earns, which checkout charges at full price. While a gift
+  // promo is set up, the gifts are also checked once more against the live
+  // cart (it may have changed in another tab). New-tab clicks go straight
+  // through.
+  handleCheckoutClick(e, link) {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    if (this.checkingOut) return;
+    this.goToCheckout(link.href);
+  }
+
+  async goToCheckout(href) {
+    this.checkingOut = true;
+    this.sidecart.classList.add('is-checking-out');
+    try {
+      // A quantity change still in its debounce goes out now.
+      if (this.pendingTargets.size) {
+        clearTimeout(this.flushTimer);
+        this.flush();
+      }
+      await this.cartSettled();
+      if (this.giftPromo && this.giftsOutOfSync(await this.fetchCart())) {
+        await this.enqueue(() => this.syncGifts(), { giftSync: true });
+        await this.cartSettled();
+      }
+    } catch (err) {
+      console.error('Sidecart checkout check failed:', err);
+    }
+    window.location.href = href;
+    // Still here a while later (navigation cancelled): let them try again.
+    setTimeout(() => this.endCheckoutWait(), 8000);
+  }
+
+  endCheckoutWait() {
+    this.checkingOut = false;
+    this.sidecart.classList.remove('is-checking-out');
+  }
+
+  // Resolves once no cart write, debounced quantity change or gift sync is
+  // pending (the re-render after them may still be running), or after the
+  // timeout, so checkout is never held up for good.
+  cartSettled(timeout = 10000) {
+    const start = Date.now();
+    return new Promise((resolve) => {
+      const check = () => {
+        // Without gift settings on the page the sync never runs (giftSynced
+        // stays false), so there's nothing to wait for there.
+        const idle = this.busy === 0 && this.pendingTargets.size === 0 && (this.giftSynced || !this.giftPromo);
+        if (idle || Date.now() - start > timeout) resolve();
+        else setTimeout(check, 50);
+      };
+      check();
+    });
   }
 
   // ---- Discount codes -----------------------------------------------------
