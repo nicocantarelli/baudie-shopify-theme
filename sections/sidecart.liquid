@@ -519,19 +519,24 @@
   margin: 0;
 }
 
-/* Free gift lines: a label instead of the purchase options, no quantity or
-   remove controls. */
+/* Free gift lines: a gift line in place of the purchase options (same type as
+   the subscription line), no quantity or remove controls. The price says
+   FREE, so the label doesn't. */
 .sidecart-item__gift-label {
-  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   margin: 0;
-  padding: 2px 8px;
-  font-family: var(--font-sweet-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: -0.11px;
-  text-transform: uppercase;
-  color: var(--sidecart-bg);
-  background-color: var(--sidecart-text);
+  font-family: var(--font-jokker);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--sidecart-text);
+  opacity: 0.75;
+}
+
+.sidecart-item__gift-label svg {
+  flex: 0 0 auto;
 }
 
 .sidecart-item__gift-quantity {
@@ -3626,7 +3631,7 @@ if (Shopify.designMode) {
       "type": "text",
       "id": "gift_label",
       "label": "t:sidecart.settings.gift_label.label",
-      "default": "Free gift"
+      "default": "Gift with purchase"
     }, {
       "type": "header",
       "content": "t:sidecart.settings.discount_header"
