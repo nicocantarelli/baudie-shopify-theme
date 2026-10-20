@@ -559,12 +559,18 @@
   letter-spacing: -0.06em;
 }
 
+/* On its own line, just above the price. */
 .sidecart-item__gift-quantity {
+  flex-basis: 100%;
   margin: 0;
   font-family: var(--font-jokker);
   font-size: 13px;
   color: var(--sidecart-text);
   opacity: 0.75;
+}
+
+.sidecart-item--gift .sidecart-item__controls {
+  row-gap: 4px;
 }
 
 .sidecart-item__subscription {
