@@ -477,9 +477,15 @@
       "unlocked": "Unlocked",
       "unlocks_at": "Unlocks at AMOUNT",
       "free": "FREE",
-      "left": "AMOUNT left"
+      "left": "AMOUNT left",
+      "card_detail": "Worth WORTH, FREE over AMOUNT",
+      "card_locked": "Spend AMOUNT more to unlock",
+      "card_add": "Add to bag",
+      "card_add_label": "Add GIFT to your bag",
+      "card_added": "Added to bag"
     },
     "discount": {
+      "toggle": "Discount code",
       "label": "Discount code",
       "placeholder": "Discount code",
       "apply": "Apply",

@@ -19,13 +19,15 @@
   @param {number} group_line_count - How many Shopify lines this card represents
   @param {string} group_signature - variant_id + properties (+ selling plan) signature (targeting key)
   @param {string} [gift_label] - Label on free gift lines (defaults to the translation)
+  @param {boolean} [gift_removable] - Give free gift lines a Remove button (the Cards gift style, where customers add gifts themselves)
 {% enddoc %}
 
 {%- liquid
   comment
     Free gifts are added and removed by the sidecart script (gift with
     purchase), which tags them with a `_gift` property. The customer can't
-    change or remove them, or switch them to a subscription.
+    change their quantity or switch them to a subscription, and can only
+    remove them with the Cards gift style, where they added them.
   endcomment
   assign gift_value = item.properties['_gift']
   assign is_gift = false
@@ -111,7 +113,7 @@
   endif
 -%}
 
-<li class="sidecart-item{% if is_gift %} sidecart-item--gift{% endif %}" data-sidecart-item{% if is_gift %} data-gift="{{ gift_value | escape }}" data-free-text="{{ 'sidecart.gift_free' | t }}"{% endif %} data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ compare_at_unit }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
+<li class="sidecart-item{% if is_gift %} sidecart-item--gift{% endif %}" data-sidecart-item{% if is_gift %} data-gift="{{ gift_value | escape }}" data-gift-quantity="{{ item_quantity }}" data-free-text="{{ 'sidecart.gift_free' | t }}"{% endif %} data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ compare_at_unit }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if bundle_has_bottles -%}
       <div class="sidecart-item__bundle-bottles{% if companion_image != blank %} sidecart-item__bundle-bottles--with-companion{% endif %}">
@@ -386,7 +388,7 @@
       </div>
     </div>
 
-    {%- unless is_gift -%}
+    {%- if is_gift == false or gift_removable -%}
       <button
         type="button"
         class="sidecart-item__remove"
@@ -394,6 +396,6 @@
         aria-label="{{ 'sidecart.remove_item' | t }}: {{ item_title }}">
         {{ 'sidecart.remove_item' | t }}
       </button>
-    {%- endunless -%}
+    {%- endif -%}
   </div>
 </li>
