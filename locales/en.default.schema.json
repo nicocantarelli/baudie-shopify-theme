@@ -960,6 +960,12 @@
           "cards": "Cards"
         }
       },
+      "gift_card_color": {
+        "label": "Gift card color"
+      },
+      "gift_card_bar_color": {
+        "label": "Gift card progress bar color"
+      },
       "gift_progress_message": {
         "label": "Progress message",
         "info": "[amount] is what's left to spend, [gift] is the next gift."

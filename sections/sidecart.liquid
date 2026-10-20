@@ -158,7 +158,9 @@
     layout: gift_layout,
     fill_color: section.settings.shipping_bar_fill_color,
     track_color: section.settings.shipping_bar_track_color,
-    text_color: section.settings.shipping_bar_text_color
+    text_color: section.settings.shipping_bar_text_color,
+    card_color: section.settings.gift_card_color,
+    card_bar_color: section.settings.gift_card_bar_color
   %}
 {%- endunless %}
 <ul
@@ -1225,9 +1227,10 @@
   }
 }
 
-/* Cards: a heading with the unlocked count, then a row of gift cards to
-   scroll through (swipe on a phone), one per gift: photo, worth, its own
-   progress bar, then what's left or Added to cart in green.
+/* Cards: a heading with the unlocked count, then a row of pink gift cards
+   to scroll through (swipe on a phone), one per gift: photo, worth, its own
+   pink progress bar, then what's left or Added to cart in green. The two
+   pinks are theme editor settings (--gift-card-bg, --gift-card-bar).
    It opens the scrolling items area edge to edge, like the list. */
 .sidecart__gift-bar--cards {
   --gift-added-bg: #DFE9D8;
@@ -1270,18 +1273,12 @@
   gap: 10px;
   box-sizing: border-box;
   padding: 12px;
-  border: 1px solid var(--sidecart-border);
-  background-color: color-mix(in srgb, #FFFFFF 45%, var(--sidecart-bg));
+  background-color: var(--gift-card-bg, #F8D9E0);
   scroll-snap-align: start;
-  transition: border-color 0.2s ease;
 }
 
 .sidecart__gift-card:only-child {
   flex-basis: 100%;
-}
-
-.sidecart__gift-card.is-added {
-  border-color: color-mix(in srgb, var(--gift-added-text) 30%, transparent);
 }
 
 .sidecart__gift-card-top {
@@ -1331,7 +1328,7 @@
 .sidecart__gift-card-track {
   height: 4px;
   border-radius: 2px;
-  background-color: var(--shipping-bar-track, rgba(62, 32, 39, 0.15));
+  background-color: rgba(255, 255, 255, 0.7);
   overflow: hidden;
 }
 
@@ -1339,16 +1336,11 @@
   width: 0;
   height: 100%;
   border-radius: 2px;
-  background-color: var(--shipping-bar-fill, #3E2027);
+  background-color: var(--gift-card-bar, #E58BA3);
   transition: width 0.3s ease;
 }
 
-.sidecart__gift-card.is-added .sidecart__gift-card-fill {
-  background-color: var(--gift-added-text);
-}
-
-.sidecart__gift-card-chip,
-.sidecart__gift-card-add {
+.sidecart__gift-card-chip {
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
@@ -1361,7 +1353,7 @@
   font-family: var(--font-jokker);
   font-size: 12px;
   line-height: 1.2;
-  background-color: color-mix(in srgb, var(--sidecart-text) 7%, transparent);
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
 .sidecart__gift-card-chip--added {
@@ -1369,36 +1361,7 @@
   background-color: var(--gift-added-bg);
 }
 
-.sidecart__gift-card-add {
-  padding: 6px 12px;
-  font-family: var(--font-sweet-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: -0.11px;
-  text-transform: uppercase;
-  color: var(--sidecart-text);
-  background-color: transparent;
-  border: 1px solid var(--sidecart-text);
-  cursor: pointer;
-  transition: background-color 0.15s ease, opacity 0.15s ease;
-}
-
-.sidecart__gift-card-add:hover {
-  background-color: color-mix(in srgb, var(--sidecart-text) 8%, transparent);
-}
-
-.sidecart__gift-card-add:focus-visible {
-  outline: 2px solid var(--sidecart-text);
-  outline-offset: 2px;
-}
-
-.sidecart__gift-card-add:disabled {
-  opacity: 0.6;
-  cursor: progress;
-}
-
-.sidecart__gift-card-chip[hidden],
-.sidecart__gift-card-add[hidden] {
+.sidecart__gift-card-chip[hidden] {
   display: none;
 }
 
@@ -2085,7 +2048,7 @@ class Sidecart {
     this.giftSynced = true; // cleared by every queued job, so sync runs once per drain
     this.giftBlocked = this.loadBlockedGifts(); // gifts that came out at full price
     this.checkingOut = false; // checkout clicked, waiting for the cart to settle
-    this.giftAdding = new Set(); // Cards: gifts whose Add to cart is on its way
+    this.giftCardsScroll = 0; // Cards: how far the row is scrolled, kept across re-renders
     this.discountOpen = false; // the discount code fold-out, kept across re-renders
     this.discountMessage = null; // { text, tone } under the code box, kept across renders
     this.pendingDiscountCode = null; // a just-applied code to report on after the render
@@ -2166,17 +2129,20 @@ class Sidecart {
     window.addEventListener('pageshow', (e) => {
       if (e.persisted) this.endCheckoutWait();
     });
+    // Cards: remember the row's scroll, so a re-render (a gift going in)
+    // doesn't send it back to the first card.
+    this.sidecart.addEventListener(
+      'scroll',
+      (e) => {
+        if (e.target.matches && e.target.matches('[data-gift-cards]')) this.giftCardsScroll = e.target.scrollLeft;
+      },
+      true
+    );
 
     this.sidecart.addEventListener('click', (e) => {
       const checkout = e.target.closest('[data-sidecart-checkout]');
       if (checkout) {
         this.handleCheckoutClick(e, checkout);
-        return;
-      }
-      const giftAdd = e.target.closest('[data-gift-add]');
-      if (giftAdd) {
-        giftAdd.disabled = true;
-        this.addGift(giftAdd.dataset.giftAdd);
         return;
       }
       const discountToggle = e.target.closest('[data-discount-toggle]');
@@ -3300,7 +3266,12 @@ class Sidecart {
     if (bar.dataset.giftLayout === 'list') {
       bar.hidden = !this.updateGiftList(bar, tiers, spend);
     } else if (bar.dataset.giftLayout === 'cards') {
-      bar.hidden = !this.updateGiftCards(bar, tiers, spend, cart);
+      bar.hidden = !this.updateGiftCards(bar, tiers, spend);
+      const row = bar.querySelector('[data-gift-cards][data-restore-scroll]');
+      if (row && !bar.hidden) {
+        delete row.dataset.restoreScroll;
+        row.scrollLeft = this.giftCardsScroll;
+      }
     } else {
       this.updateGiftSteps(bar, tiers, spend);
       bar.hidden = false;
@@ -3369,12 +3340,12 @@ class Sidecart {
   }
 
   // Cards layout: a card per gift on offer, in spend order, rebuilt only when
-  // the gifts on offer change. Each shows its own progress toward its spend
-  // amount and one of three states: what's left to spend, Added to cart once
-  // its gift line is in, or in between (unlocked, the sync about to add it)
-  // an Add to cart button, which also adds it by hand.
-  // Returns false when there's no gift to show.
-  updateGiftCards(bar, tiers, spend, cart) {
+  // the gifts on offer change (or the drawer re-renders, which replaces them:
+  // the row goes back to where the customer had scrolled it). Each shows its
+  // own progress toward its spend amount, then what's left to spend or, once
+  // unlocked, Added to cart (the sync adds it). Returns false when there's no
+  // gift to show.
+  updateGiftCards(bar, tiers, spend) {
     const list = bar.querySelector('[data-gift-cards]');
     if (!list) return false;
     const shown = tiers.filter((tier) => tier.offered);
@@ -3396,7 +3367,6 @@ class Sidecart {
             '</div>' +
             '<div class="sidecart__gift-card-track" aria-hidden="true"><div class="sidecart__gift-card-fill"></div></div>' +
             '<p class="sidecart__gift-card-chip" data-gift-card-locked></p>' +
-            '<button type="button" class="sidecart__gift-card-add" data-gift-add hidden></button>' +
             '<p class="sidecart__gift-card-chip sidecart__gift-card-chip--added" data-gift-card-added hidden>' +
             '<svg aria-hidden="true" focusable="false" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5.3L4.1 7.3L8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
             '<span></span></p>';
@@ -3415,38 +3385,26 @@ class Sidecart {
           card.querySelector('.sidecart__gift-card-detail').textContent = (bar.dataset.detailMsg || '')
             .replace('WORTH', noDecimals(tier.worth || 0))
             .replace('AMOUNT', noDecimals(tier.cents));
-          const add = card.querySelector('[data-gift-add]');
-          add.dataset.giftAdd = tier.value;
-          add.textContent = bar.dataset.addMsg || '';
-          add.setAttribute('aria-label', (bar.dataset.addLabel || '').replace('GIFT', tier.label));
           card.querySelector('[data-gift-card-added] span').textContent = bar.dataset.addedMsg || '';
           return card;
         })
       );
+      // Scrolled back once the panel shows (see updateGiftBar): a hidden row can't scroll.
+      list.dataset.restoreScroll = '';
     }
 
-    const inCart = new Set(
-      ((cart && cart.items) || []).filter((line) => this.isGiftLine(line)).map((line) => line.properties._gift)
-    );
     let unlockedCount = 0;
     Array.from(list.children).forEach((card, index) => {
       const tier = shown[index];
       const unlocked = spend >= tier.cents;
       if (unlocked) unlockedCount += 1;
-      // A gift card already hidden on its way out (previewGiftCards) isn't added.
-      const leaving = !!this.sidecart.querySelector('[data-sidecart-item][data-gift="' + tier.value + '"][data-gift-leaving]');
-      const added = unlocked && inCart.has(tier.value) && !leaving;
       card.classList.toggle('is-unlocked', unlocked);
-      card.classList.toggle('is-added', added);
       const fill = card.querySelector('.sidecart__gift-card-fill');
       if (fill) fill.style.width = (tier.cents > 0 ? Math.min(1, Math.max(0, spend / tier.cents)) : 1) * 100 + '%';
       const locked = card.querySelector('[data-gift-card-locked]');
       locked.hidden = unlocked;
       if (!unlocked) locked.textContent = (bar.dataset.lockedMsg || '').replace('AMOUNT', this.formatMoney(tier.cents - spend));
-      const add = card.querySelector('[data-gift-add]');
-      add.hidden = !unlocked || added;
-      add.disabled = this.giftAdding.has(tier.value);
-      card.querySelector('[data-gift-card-added]').hidden = !added;
+      card.querySelector('[data-gift-card-added]').hidden = !unlocked;
     });
 
     // "2 of 3 unlocked". A single gift's card says it all.
@@ -3458,36 +3416,6 @@ class Sidecart {
           : '';
     }
     return shown.length > 0;
-  }
-
-  // Cards: the Add to cart button. Puts an unlocked gift in the cart now,
-  // rather than on the sync after the next change, as its own line tagged
-  // with `_gift`. It's checked against the live cart first (a quantity change
-  // may have landed since the button showed). The drain after it runs the
-  // gift sync, whose safety net takes the gift out again if it doesn't come
-  // out free, then re-renders the drawer with it.
-  addGift(value) {
-    if (!this.giftPromo || !value || this.giftAdding.has(value)) return;
-    this.giftAdding.add(value);
-    this.dirty = true;
-    this.requestStructureRender();
-    this.enqueue(async () => {
-      try {
-        const cart = await this.fetchCart();
-        const gift = this.desiredGifts(cart).get(value);
-        const present = (cart.items || []).some((line) => this.isGiftLine(line) && line.properties._gift === value);
-        if (!gift || present) return;
-        const res = await fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ items: [{ id: gift.variantId, quantity: gift.quantity, properties: { _gift: value } }] })
-        });
-        if (!res.ok) this.blockGift(this.giftKey(value, gift.variantId));
-        await this.fetchCart();
-      } finally {
-        this.giftAdding.delete(value);
-      }
-    });
   }
 
   // Bar layout: a message, then one segment per tier, each filling from the
@@ -4200,6 +4128,18 @@ if (Shopify.designMode) {
         }
       ],
       "default": "cards"
+    }, {
+      "type": "color",
+      "id": "gift_card_color",
+      "label": "t:sidecart.settings.gift_card_color.label",
+      "default": "#F8D9E0",
+      "visible_if": "{{ section.settings.gift_progress_style == 'cards' }}"
+    }, {
+      "type": "color",
+      "id": "gift_card_bar_color",
+      "label": "t:sidecart.settings.gift_card_bar_color.label",
+      "default": "#E58BA3",
+      "visible_if": "{{ section.settings.gift_progress_style == 'cards' }}"
     }, {
       "type": "text",
       "id": "gift_progress_message",

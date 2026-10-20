@@ -17,7 +17,7 @@
     which it joins visually (see the sidecart stylesheet).
   - cards: a heading with the unlocked count, then a row of cards to scroll
     through, one per gift: its photo, what it's worth, its own progress bar,
-    and what's left to spend, or Added to cart once it's in. Rendered at the
+    and what's left to spend, or Added to cart once it's unlocked. Rendered at the
     top of the scrolling items area, like the list.
 
   @param {string} [layout] - 'list' (default), 'bar' or 'cards'
@@ -26,6 +26,8 @@
   @param {string} [fill_color] - Bar fill and unlocked tick color (shared with the free shipping bar)
   @param {string} [track_color] - Bar layout: track color
   @param {string} [text_color] - Text color
+  @param {string} [card_color] - Cards layout: card background
+  @param {string} [card_bar_color] - Cards layout: progress bar color
 
   @example
   {% render 'sidecart-gift-bar', layout: 'list' %}
@@ -68,11 +70,9 @@
       data-count-msg="{{ 'sidecart.gift_list.count' | t }}"
       data-detail-msg="{{ 'sidecart.gift_list.card_detail' | t }}"
       data-locked-msg="{{ 'sidecart.gift_list.card_locked' | t }}"
-      data-add-msg="{{ 'sidecart.gift_list.card_add' | t }}"
-      data-add-label="{{ 'sidecart.gift_list.card_add_label' | t }}"
       data-added-msg="{{ 'sidecart.gift_list.card_added' | t }}"
       hidden
-      style="--shipping-bar-fill: {{ fill_color }}; --shipping-bar-track: {{ track_color }}; --shipping-bar-text: {{ text_color }};">
+      style="--shipping-bar-text: {{ text_color }}; --gift-card-bg: {{ card_color | default: '#F8D9E0' }}; --gift-card-bar: {{ card_bar_color | default: '#E58BA3' }};">
       <div class="sidecart__gift-list-head">
         <p class="sidecart__gift-list-heading">{{ 'sidecart.gift_list.heading' | t: count: promo.tiers.size }}</p>
         <p class="sidecart__gift-list-count" data-gift-list-count aria-live="polite"></p>
