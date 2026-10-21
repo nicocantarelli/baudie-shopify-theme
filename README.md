@@ -237,6 +237,13 @@ Custom product metafields used throughout the theme. All live under the `custom`
 
 The upsell is a three-part system sharing this metafield contract: the theme's [snippets/sidecart-upsell-item.liquid](./snippets/sidecart-upsell-item.liquid) (side-cart display), the [baudie-checkout-upsell](https://github.com/nicocantarelli/baudie-checkout-upsell) checkout UI extension (in-checkout offers), and the [baudie-discounts](https://github.com/nicocantarelli/baudie-discounts) Shopify Function (server-side price enforcement). The pricing rules must stay in sync across all three.
 
+Everything about the deal is managed in one place, the admin's **Apps → Baudie Gifts & Deals → Upsell deals** page: the deal prices (this metafield) and which deal products the drawer and checkout offer. The offers are saved to the **`baudie.upsell_offers` shop metafield** (JSON), which [snippets/sidecart-upsell.liquid](./snippets/sidecart-upsell.liquid) and the checkout extension both read:
+
+- `offers` — the offered products in order (`productHandle`, resolved with `all_products`, and `variantId`), each with `containedIn`: the bundles that already include it (from their `bundle_companion`), so the offer hides when one is in the cart
+- `dealProductIds` — every deal product; the drawer hides its offers when the cart holds only these, since the deal needs a regular product too
+
+The theme editor's Cart drawer → Upsell only has the on/off switch and the heading.
+
 ## Subscriptions (Appstle)
 
 Subscribe & save runs on [Appstle Subscriptions](https://apps.shopify.com/subscriptions-by-appstle). Appstle owns everything after the purchase decision — billing, renewals, emails, payment retries and the customer portal. The theme only renders the purchase choice and shows subscription lines in the cart. Appstle's own storefront widget is **not** used (its app embed stays off) so there's never a second selector.

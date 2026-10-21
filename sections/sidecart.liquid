@@ -243,7 +243,7 @@
   <a href="{{ routes.all_products_collection_url }}" class="sidecart__continue-btn">
     {{ section.settings.continue_button_text }}
   </a>
-</div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading, product_1: section.settings.upsell_product_1, product_2: section.settings.upsell_product_2, exclude_collection: section.settings.upsell_exclude_collection, contained_in_1: section.settings.upsell_contained_in_1, contained_in_2: section.settings.upsell_contained_in_2 %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
+</div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
 {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
   <div
     class="sidecart__shipping-bar"
@@ -2904,13 +2904,15 @@ class Sidecart {
       return;
     }
 
-    const excludeIds = (region.dataset.excludeIds || '')
+    // A cart of only deal products gets no deal (it needs a regular product
+    // too), so offering another one at the deal price would be misleading.
+    const dealIds = (region.dataset.dealIds || '')
       .split(',')
       .map((s) => s.trim())
       .filter(Boolean);
 
-    const allExcluded = excludeIds.length > 0 && productIds.every((id) => excludeIds.includes(id));
-    if (allExcluded) {
+    const onlyDeals = dealIds.length > 0 && productIds.every((id) => dealIds.includes(id));
+    if (onlyDeals) {
       region.hidden = true;
       return;
     }
@@ -4142,6 +4144,9 @@ if (Shopify.designMode) {
       "type": "header",
       "content": "t:sidecart.settings.upsell_header"
     }, {
+      "type": "paragraph",
+      "content": "t:sidecart.settings.upsell_info"
+    }, {
       "type": "checkbox",
       "id": "enable_upsell",
       "label": "t:sidecart.settings.enable_upsell.label",
@@ -4151,29 +4156,6 @@ if (Shopify.designMode) {
       "id": "upsell_heading",
       "label": "t:sidecart.settings.upsell_heading.label",
       "default": "Complete your order"
-    }, {
-      "type": "product",
-      "id": "upsell_product_1",
-      "label": "t:sidecart.settings.upsell_product_1.label"
-    }, {
-      "type": "product_list",
-      "id": "upsell_contained_in_1",
-      "label": "t:sidecart.settings.upsell_contained_in_1.label",
-      "info": "t:sidecart.settings.upsell_contained_in.info"
-    }, {
-      "type": "product",
-      "id": "upsell_product_2",
-      "label": "t:sidecart.settings.upsell_product_2.label"
-    }, {
-      "type": "product_list",
-      "id": "upsell_contained_in_2",
-      "label": "t:sidecart.settings.upsell_contained_in_2.label",
-      "info": "t:sidecart.settings.upsell_contained_in.info"
-    }, {
-      "type": "collection",
-      "id": "upsell_exclude_collection",
-      "label": "t:sidecart.settings.upsell_exclude_collection.label",
-      "info": "t:sidecart.settings.upsell_exclude_collection.info"
     }, {
       "type": "header",
       "content": "t:sidecart.settings.gift_header"

@@ -29,13 +29,6 @@
         "shipping_bar_icon_color": "#3e2027",
         "enable_upsell": true,
         "upsell_heading": "Complete your order",
-        "upsell_product_1": "cotton-dry-wipes",
-        "upsell_contained_in_1": [
-          "scent-wipes-pack"
-        ],
-        "upsell_product_2": "cotton-dry-wipes-3-pack",
-        "upsell_contained_in_2": [],
-        "upsell_exclude_collection": "wipes-collection",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
       }

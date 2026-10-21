@@ -927,27 +927,12 @@
         "label": "Bar icon color"
       },
       "upsell_header": "Upsell",
+      "upsell_info": "The products offered here, and their deal prices, are set in the admin under Apps → Baudie Gifts & Deals → Upsell deals. The checkout offers the same products.",
       "enable_upsell": {
         "label": "Enable cart upsell"
       },
       "upsell_heading": {
         "label": "Upsell heading"
-      },
-      "upsell_product_1": {
-        "label": "Upsell product 1"
-      },
-      "upsell_contained_in_1": {
-        "label": "Bundles already containing upsell 1"
-      },
-      "upsell_product_2": {
-        "label": "Upsell product 2"
-      },
-      "upsell_contained_in_2": {
-        "label": "Bundles already containing upsell 2"
-      },
-      "upsell_exclude_collection": {
-        "label": "Exclude collection",
-        "info": "Carts containing only products from this collection won't see the upsell (e.g. your Wipes collection)."
       },
       "gift_header": "Gift with purchase",
       "gift_info": "The gifts, spend amounts and dates are set in the admin under Apps → Baudie Gifts & Deals. The gift progress only shows while a promo is running.",
@@ -987,10 +972,7 @@
       },
       "colors_header": "Colors",
       "background_color": "Background color",
-      "text_color": "Text color",
-      "upsell_contained_in": {
-        "info": "Bundle products that already include this upsell (e.g. the Scent & Wipes Pack contains the Cotton Dry Wipes). A bundle is a single cart line until checkout, so its contents are invisible to the \"already in cart\" check — list them here and the offer hides when one is in the cart."
-      }
+      "text_color": "Text color"
     }
   }
 }
