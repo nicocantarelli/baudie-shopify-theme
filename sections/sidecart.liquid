@@ -1265,6 +1265,20 @@
   display: none;
 }
 
+/* With a mouse, the row can be dragged (startGiftCardsDrag): an open hand
+   when there's more than one card to move through, a closed one mid-drag. */
+@media (hover: hover) and (pointer: fine) {
+  .sidecart__gift-cards:has(> :nth-child(2)) {
+    cursor: grab;
+  }
+}
+
+.sidecart__gift-cards.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  user-select: none;
+}
+
 /* The next card peeks in from the right, so it reads as a row to scroll. */
 .sidecart__gift-card {
   flex: 0 0 78%;
@@ -2138,6 +2152,7 @@ class Sidecart {
       },
       true
     );
+    this.sidecart.addEventListener('pointerdown', (e) => this.startGiftCardsDrag(e));
 
     this.sidecart.addEventListener('click', (e) => {
       const checkout = e.target.closest('[data-sidecart-checkout]');
@@ -3379,6 +3394,7 @@ class Sidecart {
             img.loading = 'lazy';
             img.width = 52;
             img.height = 52;
+            img.draggable = false;
             image.appendChild(img);
           }
           card.querySelector('.sidecart__gift-card-name').textContent = tier.label;
@@ -3416,6 +3432,49 @@ class Sidecart {
           : '';
     }
     return shown.length > 0;
+  }
+
+  // Cards: click and drag the row with a mouse (touch screens swipe it
+  // natively, so only the mouse is handled). Snapping is off while dragging;
+  // on release the row glides to the nearest card and snapping comes back.
+  startGiftCardsDrag(e) {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    const row = e.target.closest('[data-gift-cards]');
+    if (!row || row.scrollWidth <= row.clientWidth) return;
+    e.preventDefault(); // no text selection or image dragging
+    const startX = e.clientX;
+    const startScroll = row.scrollLeft;
+    let dragging = false;
+    const move = (ev) => {
+      const dx = ev.clientX - startX;
+      if (!dragging) {
+        if (Math.abs(dx) < 4) return;
+        dragging = true;
+        row.classList.add('is-dragging');
+      }
+      row.scrollLeft = startScroll - dx;
+    };
+    const end = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+      if (!dragging) return;
+      const rowLeft = row.getBoundingClientRect().left;
+      const padding = parseFloat(getComputedStyle(row).scrollPaddingLeft) || 0;
+      const max = row.scrollWidth - row.clientWidth;
+      const stops = Array.from(row.children).map((card) =>
+        Math.min(max, Math.max(0, row.scrollLeft + card.getBoundingClientRect().left - rowLeft - padding))
+      );
+      const target = stops.reduce(
+        (best, stop) => (Math.abs(stop - row.scrollLeft) < Math.abs(best - row.scrollLeft) ? stop : best),
+        stops[0] || 0
+      );
+      row.scrollTo({ left: target, behavior: 'smooth' });
+      setTimeout(() => row.classList.remove('is-dragging'), 450);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
   }
 
   // Bar layout: a message, then one segment per tier, each filling from the
