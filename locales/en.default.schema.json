@@ -966,6 +966,10 @@
       "gift_card_bar_color": {
         "label": "Gift card progress bar color"
       },
+      "gift_card_label_color": {
+        "label": "Added to cart label color",
+        "info": "The label's text is white, so keep this dark enough to read."
+      },
       "gift_progress_message": {
         "label": "Progress message",
         "info": "[amount] is what's left to spend, [gift] is the next gift."

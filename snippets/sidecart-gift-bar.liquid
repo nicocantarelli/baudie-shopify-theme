@@ -28,6 +28,7 @@
   @param {string} [text_color] - Text color
   @param {string} [card_color] - Cards layout: card background
   @param {string} [card_bar_color] - Cards layout: progress bar color
+  @param {string} [card_label_color] - Cards layout: Added to cart label background (white text)
 
   @example
   {% render 'sidecart-gift-bar', layout: 'list' %}
@@ -72,7 +73,7 @@
       data-locked-msg="{{ 'sidecart.gift_list.card_locked' | t }}"
       data-added-msg="{{ 'sidecart.gift_list.card_added' | t }}"
       hidden
-      style="--shipping-bar-text: {{ text_color }}; --gift-card-bg: {{ card_color | default: '#F8D9E0' }}; --gift-card-bar: {{ card_bar_color | default: '#E58BA3' }};">
+      style="--shipping-bar-text: {{ text_color }}; --gift-card-bg: {{ card_color | default: '#F8D9E0' }}; --gift-card-bar: {{ card_bar_color | default: '#E58BA3' }}; --gift-added-bg: {{ card_label_color | default: '#B4506D' }};">
       <div class="sidecart__gift-list-head">
         <p class="sidecart__gift-list-heading">{{ 'sidecart.gift_list.heading' | t: count: promo.tiers.size }}</p>
         <p class="sidecart__gift-list-count" data-gift-list-count aria-live="polite"></p>

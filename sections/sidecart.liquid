@@ -160,7 +160,8 @@
     track_color: section.settings.shipping_bar_track_color,
     text_color: section.settings.shipping_bar_text_color,
     card_color: section.settings.gift_card_color,
-    card_bar_color: section.settings.gift_card_bar_color
+    card_bar_color: section.settings.gift_card_bar_color,
+    card_label_color: section.settings.gift_card_label_color
   %}
 {%- endunless %}
 <ul
@@ -1229,12 +1230,11 @@
 
 /* Cards: a heading with the unlocked count, then a row of pink gift cards
    to scroll through (swipe on a phone), one per gift: photo, worth, its own
-   pink progress bar, then what's left or Added to cart in green. The two
-   pinks are theme editor settings (--gift-card-bg, --gift-card-bar).
+   pink progress bar, then what's left or a rose Added to cart. The card,
+   bar and label colors are theme editor settings (--gift-card-bg,
+   --gift-card-bar, --gift-added-bg).
    It opens the scrolling items area edge to edge, like the list. */
 .sidecart__gift-bar--cards {
-  --gift-added-bg: #DFE9D8;
-  --gift-added-text: #3F5E3A;
   margin: -15px -20px 0;
   padding: 14px 0 16px;
 }
@@ -1357,8 +1357,8 @@
 }
 
 .sidecart__gift-card-chip--added {
-  color: var(--gift-added-text);
-  background-color: var(--gift-added-bg);
+  color: #FFFFFF;
+  background-color: var(--gift-added-bg, #B4506D);
 }
 
 .sidecart__gift-card-chip[hidden] {
@@ -4139,6 +4139,13 @@ if (Shopify.designMode) {
       "id": "gift_card_bar_color",
       "label": "t:sidecart.settings.gift_card_bar_color.label",
       "default": "#E58BA3",
+      "visible_if": "{{ section.settings.gift_progress_style == 'cards' }}"
+    }, {
+      "type": "color",
+      "id": "gift_card_label_color",
+      "label": "t:sidecart.settings.gift_card_label_color.label",
+      "info": "t:sidecart.settings.gift_card_label_color.info",
+      "default": "#B4506D",
       "visible_if": "{{ section.settings.gift_progress_style == 'cards' }}"
     }, {
       "type": "text",
