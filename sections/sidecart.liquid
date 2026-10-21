@@ -166,6 +166,7 @@
 {%- endunless %}
 <ul
   class="sidecart__items{% unless has_items %} sidecart__items--hidden{% endunless %}{% if gift_layout == 'cards' %} sidecart__items--gift-cards{% endif %}"
+  {%- if gift_layout == 'cards' %} style="--gift-free-color: {{ section.settings.gift_card_label_color | default: '#B4506D' }};"{% endif %}
   role="list"
   data-sidecart-items>
   {%- comment -%}
@@ -1385,6 +1386,12 @@
   padding-right: 20px;
   padding-left: 20px;
   background-color: color-mix(in srgb, var(--sidecart-text) 5%, transparent);
+}
+
+/* Its FREE price in the same rose as the cards' bar and Added to cart label
+   (the Added to cart label color setting), instead of the sale color. */
+.sidecart__items--gift-cards .sidecart-item--gift .sidecart-item__current-price {
+  color: var(--gift-free-color, #B4506D);
 }
 
 @media (max-width: 768px) {

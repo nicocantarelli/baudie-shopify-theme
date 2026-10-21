@@ -968,7 +968,7 @@
       },
       "gift_card_label_color": {
         "label": "Added to cart label color",
-        "info": "The label's text is white, so keep this dark enough to read."
+        "info": "Also used for FREE on gift lines in the cart. The label's text is white, so keep this dark enough to read."
       },
       "gift_progress_message": {
         "label": "Progress message",
