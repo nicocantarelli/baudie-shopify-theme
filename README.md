@@ -254,7 +254,7 @@ Subscribe & save runs on [Appstle Subscriptions](https://apps.shopify.com/subscr
 
 ## Gift with purchase
 
-Free gifts that drop into the cart drawer on their own: spend-tier promos (up to 3 tiers, every tier reached earns its gift) and VIP code gifts (a Klaviyo code starting with a set prefix adds its gift). The merchant runs it all from **Discounts → Upsell deal → Gift with purchase**, the settings panel of the [baudie-discounts](https://github.com/nicocantarelli/baudie-discounts) app.
+Free gifts that drop into the cart drawer on their own: spend-tier promos (up to 3 tiers, every tier reached earns its gift) and VIP code gifts (a Klaviyo code starting with a set prefix adds its gift). The merchant runs it all from the app's own page in the admin (**Apps → Baudie Gifts & Deals**), part of the [baudie-discounts](https://github.com/nicocantarelli/baudie-discounts) app.
 
 - **One source of truth** — the panel saves everything to the `baudie.gift_promo` shop metafield (JSON): status, dates, tiers (sorted by spend), VIP prefixes and the blocked-code message. The theme reads it ([snippets/gift-promo-data.liquid](./snippets/gift-promo-data.liquid), which adds each gift's storefront title and availability), and the baudie-discounts function reads the same metafield at checkout. It makes a gift line free only when its tier is reached, and rejects every discount code while a promo runs. Pricing never depends on the theme.
 - **Status** — *Off*, *On* (optionally between a start and end date, whole days in the store's time zone), or *Preview*: the promo then only runs for carts carrying the `_gift_preview` cart attribute, which `?gift_preview=1` sets (and `?gift_preview=0` clears). That's how a promo is tried on the live site before customers see it.
