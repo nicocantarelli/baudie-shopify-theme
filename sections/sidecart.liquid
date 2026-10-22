@@ -56,6 +56,20 @@
     {%- comment -%} Gift with purchase settings for the script (outside the re-rendered regions). {%- endcomment -%}
     {% render 'gift-promo-data' %}
 
+    {%- comment -%}
+      The card of a VIP gift the customer picks the scent of, for while its
+      code is on the cart and no scent is picked yet. Liquid's cart doesn't
+      list a code that applies to nothing in it, so the script puts the card
+      in from here (see renderGiftChoices).
+    {%- endcomment -%}
+    {%- for row in shop.metafields.baudie.gift_promo.value.vip -%}
+      {%- if row.prefix != blank and all_products[row.productHandle].variants.size > 1 -%}
+        <template data-gift-choice-template="vip:{{ row.prefix | escape }}">
+          {%- render 'sidecart-gift-choice', gift: row, gift_label: section.settings.gift_label -%}
+        </template>
+      {%- endif -%}
+    {%- endfor -%}
+
     <div
       class="sidecart__drawer"
       role="dialog"
@@ -610,6 +624,85 @@
   font-weight: 400;
   line-height: 1.5;
   color: var(--sidecart-text);
+}
+
+/* Right under the label, with no gap between them (the purchase-option
+   dropdown shares its label's line box): this takes back the info column's
+   8px gap. */
+.sidecart-item__gift-label + .sidecart-item__gift-choice {
+  margin-top: -8px;
+}
+
+/* While a picked scent goes in, the dropdown waits: the render that follows
+   replaces the card, which would close it again under the customer's hand. */
+.sidecart-item.is-choosing .sidecart-item__frequency-wrap {
+  opacity: 0.5;
+}
+
+.sidecart-item.is-choosing .sidecart-item__frequency {
+  cursor: progress;
+}
+
+/* The VIP scent gift before a scent is picked (snippets/sidecart-gift-choice.liquid):
+   a gift icon on the plain card until then, and "Choose your scent" at full
+   strength, since it asks for the pick. */
+.sidecart-item--gift-pending .sidecart-item__image-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sidecart-text);
+}
+
+.sidecart-item__pending-icon {
+  opacity: 0.35;
+}
+
+/* The reset makes every img a block, which would beat [hidden]. */
+.sidecart-item__image[hidden] {
+  display: none;
+}
+
+.sidecart-item--gift-pending .sidecart-item__frequency,
+.sidecart-item--gift-pending .sidecart-item__frequency-chevron {
+  opacity: 1;
+}
+
+.sidecart-item__gift-choice-error {
+  margin: 0;
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  line-height: 1.4;
+  color: #A12A2A; /* the discount code error's red */
+}
+
+.sidecart-item__gift-choice-error[hidden] {
+  display: none;
+}
+
+/* Checkout clicked before a scent is picked: the dropdown gives a nudge. */
+.sidecart-item--gift-pending.is-prompted .sidecart-item__gift-choice {
+  animation: sidecart-gift-nudge 0.5s ease;
+}
+
+@keyframes sidecart-gift-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidecart-item--gift-pending.is-prompted .sidecart-item__gift-choice {
+    animation: none;
+  }
 }
 
 .sidecart-item__subscription {
@@ -1582,6 +1675,11 @@
   background-color: color-mix(in srgb, var(--sidecart-text) 5%, transparent);
 }
 
+/* Remove in line with the other cards', inside the tint's padding. */
+.sidecart__items--gift-cards .sidecart-item--gift .sidecart-item__remove {
+  right: 20px;
+}
+
 /* Its FREE price in the same rose as the cards' bar and Added to cart label
    (the Added to cart label color setting), instead of the sale color. */
 .sidecart__items--gift-cards .sidecart-item--gift .sidecart-item__current-price {
@@ -1949,6 +2047,12 @@
   pointer-events: none;
 }
 
+/* A gift waits for its scent: checkout asks for it first (see
+   promptGiftChoice), so it still takes the click. */
+.sidecart.is-gift-choice-pending [data-sidecart-checkout] {
+  opacity: 0.5;
+}
+
 .sidecart__btn--secondary {
   background-color: transparent;
   color: var(--sidecart-text);
@@ -2269,11 +2373,15 @@ class Sidecart {
     this.giftBlocked = this.loadBlockedGifts(); // gifts that came out at full price
     this.openOnEmailCode = false; // the load sync opens the drawer for an email link's VIP gift or shipping code
     this.giftChoices = new Map(); // gift value -> the variant picked in the drawer (see pickGiftChoice)
+    this.giftChoicesPending = 0; // waiting gift cards showing ("Choose your scent", see renderGiftChoices)
+    this.giftChoicePrompted = false; // checkout was clicked before the pick: the cards say so
+    this.refocusGift = null; // gift value whose dropdown gets focus back after the render a pick causes
     this.checkingOut = false; // checkout clicked, waiting for the cart to settle
     this.giftCardsScroll = 0; // Cards: how far the row is scrolled, kept across re-renders
     this.discountOpen = false; // the discount code fold-out, kept across re-renders
     this.discountMessage = null; // { text, tone } under the code box, kept across renders
     this.pendingDiscountCode = null; // a just-applied code to report on after the render
+    this.removingCodes = new Set(); // codes on their way off the cart (their chips already gone)
 
     this.cacheRefs();
     this.bindEvents();
@@ -2383,6 +2491,12 @@ class Sidecart {
         this.removeDiscountCode(removeCode.dataset.discountRemove);
         return;
       }
+      const removeGift = e.target.closest('[data-gift-remove]');
+      if (removeGift) {
+        const card = removeGift.closest('[data-gift]');
+        if (card) this.removeGift(card);
+        return;
+      }
       const btn = e.target.closest('[data-action]');
       if (!btn) return;
       const item = btn.closest('[data-sidecart-item]');
@@ -2408,7 +2522,7 @@ class Sidecart {
 
       const giftChoice = e.target.closest('[data-gift-choice-select]');
       if (giftChoice) {
-        const card = giftChoice.closest('[data-sidecart-item]');
+        const card = giftChoice.closest('[data-sidecart-item], [data-gift-pending]');
         if (card) this.chooseGift(card, giftChoice);
         return;
       }
@@ -2612,8 +2726,10 @@ class Sidecart {
   }
 
   // A gift with a choice (the VIP scent gift): picking a scent shows its
-  // bottle at once, and the gift sync swaps the line for that variant (still
-  // free, same `_gift`), so the order carries that scent's own SKU.
+  // bottle at once, and the gift sync adds that variant, or swaps the line for
+  // it (still free, same `_gift`), so the order carries that scent's own SKU.
+  // The dropdown waits until the render that follows has replaced the card,
+  // which then gets the focus back if this one had it.
   chooseGift(card, select) {
     const value = card.dataset.gift;
     const variantId = parseInt(select.value, 10);
@@ -2624,11 +2740,58 @@ class Sidecart {
     if (option && image && option.dataset.image) {
       image.removeAttribute('srcset');
       image.src = option.dataset.image;
+      image.hidden = false;
+      card.querySelector('.sidecart-item__pending-icon')?.remove();
     }
     const imageLink = card.querySelector('.sidecart-item__image-link');
     if (option && imageLink && option.dataset.cardBg) imageLink.style.backgroundColor = option.dataset.cardBg;
+    if (card.contains(document.activeElement)) this.refocusGift = value;
+    select.disabled = true; // a disabled select's dropdown doesn't open (assets/select-menu.js)
+    card.classList.add('is-choosing');
+    card.setAttribute('aria-busy', 'true');
+    if (card.hasAttribute('data-gift-pending')) {
+      card.setAttribute('data-gift-picked', '');
+      const error = card.querySelector('[data-gift-choice-error]');
+      if (error) error.hidden = true;
+      this.updateGiftChoiceBlock();
+    }
     this.requestStructureRender();
     this.enqueue(async () => {});
+  }
+
+  // Remove on a VIP gift, or on its card waiting for a scent, takes the gift's
+  // code off the cart, like the code's X (see removeDiscountCodes).
+  removeGift(card) {
+    const row = this.vipRow(card.dataset.gift);
+    if (!row) return;
+    this.hideGiftCards(card.dataset.gift);
+    this.removeDiscountCodes((code) => this.vipRowForCode(code) === row);
+  }
+
+  // Takes a gift's cards out of the drawer at once, ahead of the cart, moving
+  // the focus off them first.
+  hideGiftCards(value) {
+    const cards = Array.from(this.sidecart.querySelectorAll('[data-gift]')).filter(
+      (card) => card.dataset.gift === value && card.getAttribute('aria-hidden') !== 'true'
+    );
+    cards.forEach((card) => {
+      if (card.contains(document.activeElement)) {
+        const others = Array.from(
+          this.sidecart.querySelectorAll('[data-sidecart-item]:not([aria-hidden="true"])')
+        ).filter((el) => el !== card);
+        const focusTarget = (others[0] && others[0].querySelector('[data-action="remove"]')) || this.closeButton;
+        focusTarget?.focus();
+      }
+      card.setAttribute('aria-hidden', 'true');
+      card.style.display = 'none';
+      const quantity = card.hasAttribute('data-gift-pending')
+        ? (this.vipRow(value) || {}).quantity || 1
+        : ((this.lastCart && this.lastCart.items) || [])
+            .filter((line) => this.isGiftLine(line) && line.properties._gift === value)
+            .reduce((sum, line) => sum + line.quantity, 0);
+      this.adjustCountBadge(-quantity);
+    });
+    this.updateGiftChoiceBlock();
   }
 
   // Switch a card's purchase option: another delivery frequency (selling plan
@@ -2875,6 +3038,7 @@ class Sidecart {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const newContent = doc.querySelector('[data-sidecart-content]');
     const newFooter = doc.querySelector('[data-sidecart-footer]');
+    const openMenu = this.openMenuKey();
     if (newContent && this.content) this.content.innerHTML = newContent.innerHTML;
     if (newFooter && this.footer) this.footer.innerHTML = newFooter.innerHTML;
 
@@ -2893,6 +3057,8 @@ class Sidecart {
     this.applyUpsellVisibility(this.upsellProductIds(cart));
     this.surfaceClamps();
     this.reportPendingDiscount(cart);
+    this.restoreGiftFocus();
+    this.reopenMenu(openMenu);
     this.needsStructureRender = false;
     this.renderRetries = 0;
     this.markContentBusy(false);
@@ -2904,6 +3070,51 @@ class Sidecart {
       this.dirty = false;
       document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart, fromSidecart: true } }));
     }
+  }
+
+  // The dropdown open in the drawer (a scent or a purchase option), as its
+  // card and kind, so a render that rebuilds the card can open it again.
+  openMenuKey() {
+    const menu = this.content && this.content.querySelector('select-menu.is-open');
+    const card = menu && menu.closest('[data-sidecart-item], [data-gift-pending]');
+    const select = menu && menu.querySelector('select');
+    if (!card || !select) return null;
+    return {
+      signature: card.dataset.propertiesSignature || null,
+      gift: card.dataset.gift || null,
+      select: select.hasAttribute('data-gift-choice-select') ? '[data-gift-choice-select]' : '[data-frequency-select]',
+      focused: menu.contains(document.activeElement)
+    };
+  }
+
+  // A render rebuilt the card whose dropdown was open (e.g. the one that
+  // follows opening the drawer): it opens again on the new card, in the same
+  // frame, so it never shuts under the customer's hand.
+  reopenMenu(key) {
+    if (!key || !this.sidecart.classList.contains('is-open')) return;
+    const card = Array.from(this.sidecart.querySelectorAll('[data-sidecart-item], [data-gift-pending]')).find(
+      (el) =>
+        el.getAttribute('aria-hidden') !== 'true' &&
+        (key.signature ? el.dataset.propertiesSignature === key.signature : el.dataset.gift === key.gift)
+    );
+    const menu = card && card.querySelector(key.select)?.closest('select-menu');
+    if (!menu || !menu.button || menu.isOpen) return;
+    if (key.focused) menu.button.focus({ preventScroll: true });
+    menu.open();
+  }
+
+  // After a scent is picked, the render replaces the card whose dropdown had
+  // the focus: it goes to the new card's dropdown, unless it has moved on.
+  restoreGiftFocus() {
+    const value = this.refocusGift;
+    this.refocusGift = null;
+    if (!value || !this.sidecart.classList.contains('is-open')) return;
+    const active = document.activeElement;
+    if (active && active !== document.body && this.sidecart.contains(active)) return;
+    const card = Array.from(this.sidecart.querySelectorAll('[data-gift]')).find(
+      (el) => el.dataset.gift === value && el.getAttribute('aria-hidden') !== 'true'
+    );
+    if (card) this.giftChoiceControl(card)?.focus({ preventScroll: true });
   }
 
   // Warn on any group whose increase the server could not fully honour (stock
@@ -3030,8 +3241,11 @@ class Sidecart {
 
   // Count badge only (header + any [data-cart-count] outside the drawer). These
   // survive the section innerHTML replace, so they're safe to update early.
+  // A gift waiting for its scent shows as a card, so it counts too.
   applyCartCount(cart) {
-    const count = cart.item_count || 0;
+    const count =
+      (cart.item_count || 0) +
+      this.pendingGiftChoices(cart).reduce((sum, gift) => sum + (gift.row.quantity || 1), 0);
     if (this.countElement) this.countElement.textContent = count;
     this.updateItemsLabel(count);
     document.querySelectorAll('[data-cart-count]').forEach((el) => {
@@ -3041,6 +3255,7 @@ class Sidecart {
   }
 
   applyCartTotals(cart) {
+    this.renderGiftChoices(cart);
     this.applyCartCount(cart);
     this.trackShippingCode(cart);
     if (typeof cart.total_price === 'number') {
@@ -3050,7 +3265,7 @@ class Sidecart {
     }
     this.updateGiftBar(cart);
     this.renderDiscountState(cart);
-    if ((cart.item_count || 0) === 0) {
+    if ((cart.item_count || 0) === 0 && !this.giftChoicesPending) {
       this.showEmptyState();
     } else {
       this.hideEmptyState();
@@ -3332,10 +3547,23 @@ class Sidecart {
     return value + '|' + variantId;
   }
 
+  // The VIP row of a gift value ("vip:<prefix>"), or null.
+  vipRow(value) {
+    if (!this.giftPromo || !this.isVipGiftValue(value)) return null;
+    return this.giftPromo.vip.find((vip) => 'vip:' + vip.prefix === value) || null;
+  }
+
+  // The VIP row a discount code belongs to (its code starts with the row's
+  // prefix), or null.
+  vipRowForCode(code) {
+    const upper = String(code || '').toUpperCase();
+    return this.giftPromo.vip.find((vip) => upper.indexOf(String(vip.prefix).toUpperCase()) === 0) || null;
+  }
+
   // True for a gift the customer picks the variant of in the drawer: a VIP
   // gift whose product has several (the scent gift; see pickGiftChoice).
   giftHasChoice(value) {
-    const row = this.isVipGiftValue(value) && this.giftPromo.vip.find((vip) => 'vip:' + vip.prefix === value);
+    const row = this.vipRow(value);
     return !!(row && row.choices);
   }
 
@@ -3421,34 +3649,146 @@ class Sidecart {
       });
     } else {
       (cart.discount_codes || []).forEach((entry) => {
-        const code = String(entry.code || '').toUpperCase();
-        const row = promo.vip.find((vip) => code.indexOf(String(vip.prefix).toUpperCase()) === 0);
+        const row = this.vipRowForCode(entry.code);
         if (row) want('vip:' + row.prefix, row);
       });
     }
     return desired;
   }
 
-  // The variant a gift with a choice should be, out of the ones in stock and
-  // not blocked: the one picked in the drawer, else the one already in the
-  // cart, else the one whose product page this is (an email's scent tile links
-  // to that scent), else the first. null when none is left.
+  // The variants a gift with a choice can be: in stock and not blocked.
+  usableGiftChoices(value, gift) {
+    if (this.giftBlocked.has(this.giftKey(value, '*'))) return [];
+    return gift.choices
+      .filter((choice) => choice.available && !this.giftBlocked.has(this.giftKey(value, choice.variantId)))
+      .map((choice) => choice.variantId);
+  }
+
+  // The variant a gift with a choice should be, if it's usable: the one
+  // picked in the drawer, else the one already in the cart. Nothing is picked
+  // for the customer: until they pick, the gift waits in the drawer
+  // ("Choose your scent", see pendingGiftChoices).
   pickGiftChoice(value, gift, cart) {
-    if (this.giftBlocked.has(this.giftKey(value, '*'))) return null;
-    const usable = gift.choices.filter(
-      (choice) => choice.available && !this.giftBlocked.has(this.giftKey(value, choice.variantId))
-    );
-    const usableId = (id) => (usable.some((choice) => choice.variantId === id) ? id : null);
+    const usable = this.usableGiftChoices(value, gift);
+    const usableId = (id) => (usable.includes(id) ? id : null);
     const line = (cart.items || []).find((item) => this.isGiftLine(item) && item.properties._gift === value);
-    const page = window.location.pathname.match(/\/products\/([^/?#]+)/);
-    const fromPage = page && usable.find((choice) => choice.handle === decodeURIComponent(page[1]));
-    return (
-      usableId(this.giftChoices.get(value)) ||
-      usableId(line && line.variant_id) ||
-      (fromPage && fromPage.variantId) ||
-      (usable[0] && usable[0].variantId) ||
-      null
+    return usableId(this.giftChoices.get(value)) || usableId(line && line.variant_id) || null;
+  }
+
+  // The VIP gifts waiting for the customer to pick (the scent gift): the
+  // gift's code is in the cart, but the gift isn't, as nothing is picked yet
+  // (or the pick didn't go in). Each with the codes that bring it and the
+  // variants it can still be. None while a promo runs (no codes then).
+  pendingGiftChoices(cart) {
+    if (!this.giftPromo || !cart || this.giftPromoRunning(cart)) return [];
+    const pending = new Map();
+    (cart.discount_codes || []).forEach((entry) => {
+      const row = this.vipRowForCode(entry.code);
+      if (!row || !row.choices) return;
+      const value = 'vip:' + row.prefix;
+      if (!pending.has(value)) pending.set(value, { value, row, codes: [], usable: this.usableGiftChoices(value, row) });
+      pending.get(value).codes.push(String(entry.code));
+    });
+    return Array.from(pending.values()).filter(
+      (gift) =>
+        gift.usable.length > 0 &&
+        !(cart.items || []).some((line) => this.isGiftLine(line) && line.properties._gift === gift.value)
     );
+  }
+
+  // Puts in a card for each gift waiting for a pick (from its template, see
+  // snippets/sidecart-gift-choice.liquid) and takes out the ones no longer
+  // waiting, after every render. The drawer opens for a waiting gift once
+  // (see syncGifts), so it remembers here which codes it has shown.
+  renderGiftChoices(cart) {
+    const pending = this.pendingGiftChoices(cart);
+    const values = new Set(pending.map((gift) => gift.value));
+    this.sidecart.querySelectorAll('[data-gift-pending]').forEach((card) => {
+      if (!values.has(card.dataset.gift)) card.remove();
+    });
+    pending.forEach((gift) => {
+      const cards = Array.from(this.sidecart.querySelectorAll('[data-gift-pending]'));
+      if (cards.some((card) => card.dataset.gift === gift.value)) return;
+      const template = Array.from(this.sidecart.querySelectorAll('template[data-gift-choice-template]')).find(
+        (el) => el.dataset.giftChoiceTemplate === gift.value
+      );
+      const source = template && template.content.firstElementChild;
+      if (!source || !this.itemsContainer) return;
+      const card = document.importNode(source, true);
+      // Scents sold out or blocked since the page loaded aren't offered.
+      card.querySelectorAll('[data-gift-choice-select] option').forEach((option) => {
+        if (option.value && !gift.usable.includes(parseInt(option.value, 10))) option.remove();
+      });
+      const error = card.querySelector('[data-gift-choice-error]');
+      if (error) error.hidden = !this.giftChoicePrompted;
+      this.itemsContainer.appendChild(card); // its dropdown sets itself up as it goes in
+    });
+    if (!pending.length) this.giftChoicePrompted = false;
+    this.giftChoicesPending = this.sidecart.querySelectorAll('[data-gift-pending]:not([aria-hidden="true"])').length;
+    this.updateGiftChoiceBlock();
+
+    try {
+      if (!pending.length) {
+        localStorage.removeItem('baudie:gift-choice-shown');
+      } else if (this.sidecart.classList.contains('is-open')) {
+        localStorage.setItem('baudie:gift-choice-shown', this.giftChoiceCodes(pending).join(','));
+      }
+    } catch (e) {}
+  }
+
+  giftChoiceCodes(pending) {
+    return pending.flatMap((gift) => gift.codes.map((code) => code.toUpperCase()));
+  }
+
+  // True when a waiting gift has a code this browser hasn't shown yet: the
+  // drawer opens for it (an email link's code, see syncGifts).
+  newGiftChoice(cart) {
+    let shown = [];
+    try {
+      shown = (localStorage.getItem('baudie:gift-choice-shown') || '').split(',');
+    } catch (e) {}
+    return this.giftChoiceCodes(this.pendingGiftChoices(cart)).some((code) => !shown.includes(code));
+  }
+
+  // The first waiting gift card with nothing picked yet, or null.
+  unpickedGiftChoice() {
+    return this.sidecart.querySelector('[data-gift-pending]:not([data-gift-picked]):not([aria-hidden="true"])');
+  }
+
+  // Checkout waits while a gift waits for its pick: dimmed, and a click asks
+  // for the pick (see handleCheckoutClick). The footer is re-rendered, so the
+  // state lives on the drawer.
+  updateGiftChoiceBlock() {
+    const waiting = !!this.unpickedGiftChoice();
+    this.sidecart.classList.toggle('is-gift-choice-pending', waiting);
+    this.sidecart.querySelectorAll('[data-sidecart-checkout]').forEach((link) => {
+      if (waiting) link.setAttribute('aria-disabled', 'true');
+      else link.removeAttribute('aria-disabled');
+    });
+  }
+
+  // Checkout clicked before the pick: brings the waiting card into view with
+  // its message ("Choose your scent to check out.") and a nudge, and puts the
+  // focus on its dropdown. The message stays on through re-renders until the
+  // pick.
+  promptGiftChoice() {
+    const card = this.unpickedGiftChoice() || this.sidecart.querySelector('[data-gift-pending]');
+    this.giftChoicePrompted = true;
+    if (!card) return;
+    const error = card.querySelector('[data-gift-choice-error]');
+    if (error) error.hidden = false;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    card.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+    card.classList.remove('is-prompted');
+    void card.offsetWidth; // so the nudge plays again on another click
+    card.classList.add('is-prompted');
+    this.giftChoiceControl(card)?.focus({ preventScroll: true });
+  }
+
+  // A gift card's dropdown to focus: the styled button, or the native select
+  // when the dropdown script hasn't set it up (it comes first in the card).
+  giftChoiceControl(card) {
+    return card.querySelector('.select-menu__button') || card.querySelector('[data-gift-choice-select]');
   }
 
   // Runs on the chain once per drain (see enqueue). Each step re-reads the live
@@ -3460,6 +3800,16 @@ class Sidecart {
       let cart = this.lastCartFresh && this.lastCart ? this.lastCart : await this.fetchCart();
       let changed = false;
       let addedVip = false;
+
+      // A VIP gift's pick goes with its code: adding the code back asks again.
+      const coded = new Set();
+      (cart.discount_codes || []).forEach((entry) => {
+        const row = this.vipRowForCode(entry.code);
+        if (row) coded.add('vip:' + row.prefix);
+      });
+      Array.from(this.giftChoices.keys()).forEach((value) => {
+        if (!coded.has(value)) this.giftChoices.delete(value);
+      });
 
       // 1. No discount codes while a promo runs (checkout rejects them too).
       if (this.giftPromoRunning(cart) && (cart.discount_codes || []).length) {
@@ -3516,16 +3866,19 @@ class Sidecart {
       }
 
       // Show the customer what their email link just brought: the VIP gift it
-      // added (unless step 4 took it back off), or a free shipping code new to
-      // this browser. That one waits for something in the cart: an empty
-      // cart's drawer opens on the first add instead, and the bar races once
-      // the drawer is in.
+      // added (unless step 4 took it back off), a VIP gift waiting for them to
+      // pick its scent (once per code, so browsing on doesn't keep opening
+      // it), or a free shipping code new to this browser. That one waits for
+      // something in the cart: an empty cart's drawer opens on the first add
+      // instead, and the bar races once the drawer is in.
       if (openOnEmailCode && !this.sidecart.classList.contains('is-open')) {
         const vipGift =
           addedVip &&
           (cart.items || []).some((line) => this.isGiftLine(line) && this.isVipGiftValue(line.properties._gift));
         this.trackShippingCode(cart);
-        if (vipGift || (this.shippingRacePending && (cart.item_count || 0) > 0)) this.open();
+        if (vipGift || this.newGiftChoice(cart) || (this.shippingRacePending && (cart.item_count || 0) > 0)) {
+          this.open();
+        }
       }
     } catch (err) {
       console.error('Sidecart gift sync failed:', err);
@@ -3914,8 +4267,14 @@ class Sidecart {
   // cart no longer earns, which checkout charges at full price. While a gift
   // promo is set up, the gifts are also checked once more against the live
   // cart (it may have changed in another tab). New-tab clicks go straight
-  // through.
+  // through, unless a gift waits for its scent: then no click goes through
+  // until it's picked.
   handleCheckoutClick(e, link) {
+    if (this.unpickedGiftChoice()) {
+      e.preventDefault();
+      this.promptGiftChoice();
+      return;
+    }
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     if (this.checkingOut) return;
@@ -3935,6 +4294,13 @@ class Sidecart {
       if (this.giftPromo && this.giftsOutOfSync(await this.fetchCart())) {
         await this.enqueue(() => this.syncGifts(), { giftSync: true });
         await this.cartSettled();
+      }
+      // A gift still waits for its scent: one picked just now didn't go in
+      // (it sold out meanwhile), or the code came in from another tab.
+      if (this.pendingGiftChoices(this.lastCart).length) {
+        this.endCheckoutWait();
+        this.promptGiftChoice();
+        return;
       }
     } catch (err) {
       console.error('Sidecart checkout check failed:', err);
@@ -3992,23 +4358,60 @@ class Sidecart {
 
   removeDiscountCode(code) {
     if (!code) return;
-    this.setDiscountMessage(null);
+    this.removeDiscountCodes((existing) => existing.toUpperCase() === code.toUpperCase());
+  }
+
+  // Takes off every code in the cart that `matches` (code => boolean), and the
+  // gifts they brought with them in the same request. Their chips and gift
+  // cards go at once; the render that follows confirms it, or brings them
+  // back if the request failed.
+  removeDiscountCodes(matches) {
+    const codes = ((this.lastCart && this.lastCart.discount_codes) || []).map((entry) => String(entry.code));
+    const removing = codes.filter(matches);
+    removing.forEach((code) => this.removingCodes.add(code.toUpperCase()));
+    if (this.giftPromo) {
+      // A gift goes unless another code in the cart brings it too.
+      const kept = new Set(codes.filter((code) => !matches(code)).map((code) => this.vipRowForCode(code)));
+      removing.forEach((code) => {
+        const row = this.vipRowForCode(code);
+        if (row && !kept.has(row)) this.hideGiftCards('vip:' + row.prefix);
+      });
+    }
+    const chipFocused = !!document.activeElement?.closest?.('[data-discount-codes]');
+    this.setDiscountMessage(null); // redraws the chips without them
+    if (chipFocused) this.sidecart.querySelector('[data-discount-toggle]')?.focus();
     this.requestStructureRender();
     this.enqueue(async () => {
-      const cart = await this.fetchCart();
-      const codes = (cart.discount_codes || [])
-        .map((entry) => entry.code)
-        .filter((existing) => existing.toUpperCase() !== code.toUpperCase());
-      await this.updateCartDiscounts(codes);
-      this.dirty = true;
+      try {
+        let cart = this.lastCartFresh && this.lastCart ? this.lastCart : await this.fetchCart();
+        for (let attempt = 0; ; attempt++) {
+          const keep = (cart.discount_codes || []).map((entry) => entry.code).filter((existing) => !matches(existing));
+          const updates = this.giftPromo ? this.giftFixes({ ...cart, discount_codes: keep.map((code) => ({ code })) }) : {};
+          try {
+            await this.updateCartDiscounts(keep, updates);
+            break;
+          } catch (err) {
+            // Line keys from a cart changed since fail the whole request: once more, fresh.
+            if (attempt) throw err;
+            cart = await this.fetchCart();
+          }
+        }
+        this.dirty = true;
+      } finally {
+        removing.forEach((code) => this.removingCodes.delete(code.toUpperCase()));
+      }
     }).catch(() => this.setDiscountMessage(this.discountText('errorMsg'), 'error'));
   }
 
-  async updateCartDiscounts(codes) {
+  // Sets the cart's codes, along with line updates by line key if any (one
+  // request does both).
+  async updateCartDiscounts(codes, updates = {}) {
+    const body = { discount: codes.join(',') };
+    if (Object.keys(updates).length) body.updates = updates;
     const res = await fetch('/cart/update.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ discount: codes.join(',') })
+      body: JSON.stringify(body)
     });
     if (!res.ok) throw new Error('cart/update failed: ' + res.status);
     const cart = await res.json();
@@ -4018,7 +4421,9 @@ class Sidecart {
   }
 
   // After the render that follows applying a code: a code the cart can't use
-  // gets a message (its chip stays, dimmed, so the customer can remove it).
+  // gets a message (its chip stays, dimmed, so the customer can remove it). A
+  // gift code whose gift waits for its scent applies once it's picked, so its
+  // card comes into view instead.
   reportPendingDiscount(cart) {
     const code = this.pendingDiscountCode;
     if (!code) return;
@@ -4027,6 +4432,10 @@ class Sidecart {
       (existing) => String(existing.code).toUpperCase() === code.toUpperCase()
     );
     if (entry && entry.applicable) return;
+    if (entry && this.giftChoiceCodes(this.pendingGiftChoices(cart)).includes(code.toUpperCase())) {
+      this.unpickedGiftChoice()?.scrollIntoView({ block: 'nearest' });
+      return;
+    }
     this.setDiscountMessage(this.discountText('invalidMsg').replace('CODE', code), 'error');
   }
 
@@ -4089,10 +4498,14 @@ class Sidecart {
     if (list) {
       const codes = (cart && cart.discount_codes) || [];
       const removeLabel = box.dataset.removeLabel || 'Remove CODE';
+      // A gift code applies to nothing until its scent is picked: not dimmed.
+      const waiting = this.giftChoiceCodes(this.pendingGiftChoices(cart));
       list.innerHTML = '';
       codes.forEach((entry) => {
+        if (this.removingCodes.has(String(entry.code).toUpperCase())) return; // on its way off
+        const active = entry.applicable || waiting.includes(String(entry.code).toUpperCase());
         const chip = document.createElement('li');
-        chip.className = 'sidecart__discount-code' + (entry.applicable ? '' : ' sidecart__discount-code--inactive');
+        chip.className = 'sidecart__discount-code' + (active ? '' : ' sidecart__discount-code--inactive');
         const label = document.createElement('span');
         label.textContent = entry.code;
         const remove = document.createElement('button');
@@ -4105,7 +4518,7 @@ class Sidecart {
         chip.append(label, remove);
         list.appendChild(chip);
       });
-      list.hidden = codes.length === 0;
+      list.hidden = !list.children.length;
     }
 
     const message = box.querySelector('[data-discount-message]');
@@ -4311,7 +4724,8 @@ class Sidecart {
   handleKeydown(e) {
     if (!this.sidecart.classList.contains('is-open')) return;
     if (e.key === 'Escape') {
-      this.close();
+      // An open dropdown in the drawer takes the Escape (it closes only itself).
+      if (!e.defaultPrevented) this.close();
       return;
     }
     if (e.key === 'Tab') {

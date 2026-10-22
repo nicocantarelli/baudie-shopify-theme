@@ -20,6 +20,9 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
 
+    {% # Styled dropdowns (snippets/select-menu.liquid), which the cart drawer can render on any page %}
+    <script src="{{ 'select-menu.js' | asset_url }}" defer></script>
+
     {%- if settings.favicon != blank -%}
       <link
         rel="icon"

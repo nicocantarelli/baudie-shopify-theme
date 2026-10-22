@@ -25,7 +25,8 @@
   comment
     Free gifts are added and removed by the sidecart script (gift with
     purchase), which tags them with a `_gift` property. The customer can't
-    change or remove them, or switch them to a subscription.
+    change their quantity or switch them to a subscription. A VIP gift has
+    Remove, which takes its code off the cart (the gift goes with it).
   endcomment
   assign gift_value = item.properties['_gift']
   assign is_gift = false
@@ -453,7 +454,7 @@
       </div>
     </div>
 
-    {%- unless is_gift -%}
+    {%- if is_gift == false -%}
       <button
         type="button"
         class="sidecart-item__remove"
@@ -461,6 +462,14 @@
         aria-label="{{ 'sidecart.remove_item' | t }}: {{ item_title }}">
         {{ 'sidecart.remove_item' | t }}
       </button>
-    {%- endunless -%}
+    {%- elsif gift_kind == 'vip' -%}
+      <button
+        type="button"
+        class="sidecart-item__remove"
+        data-gift-remove
+        aria-label="{{ 'sidecart.remove_item' | t }}: {{ item_title }}">
+        {{ 'sidecart.remove_item' | t }}
+      </button>
+    {%- endif -%}
   </div>
 </li>

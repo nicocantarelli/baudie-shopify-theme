@@ -1,0 +1,124 @@
+{% doc %}
+  Renders the drawer card of a VIP gift the customer picks the variant of (the
+  scent gift) while none is picked yet: the gift on a plain card, a "Choose
+  your scent" dropdown of the scents in stock, and Remove, which takes the
+  gift's code off too.
+
+  The gift isn't a cart line yet, and Liquid's cart doesn't list a code that
+  applies to nothing in it, so the section renders this inside a <template>
+  and the sidecart script puts it in while the gift's code is on the cart
+  without its gift (see renderGiftChoices). Picking a scent adds that variant
+  as the gift; checkout waits until one is picked.
+
+  @param {object} gift - A VIP row from the baudie.gift_promo metafield
+    (prefix, productHandle, quantity)
+  @param {string} [gift_label] - Label on free gift lines (defaults to the translation)
+
+  @example
+  {% render 'sidecart-gift-choice', gift: row, gift_label: section.settings.gift_label %}
+{% enddoc %}
+
+{%- liquid
+  assign product = all_products[gift.productHandle]
+  assign gift_value = 'vip:' | append: gift.prefix
+  assign gift_quantity = gift.quantity | default: 1
+  assign gift_worth = product.price | times: gift_quantity
+  assign gift_option_name = product.options.first | downcase
+  assign gift_error_id = 'sidecart-gift-choice-error-' | append: gift.prefix | handleize
+  assign gift_label_text = gift_label
+  if gift_label_text == blank
+    assign gift_label_text = 'sidecart.gift_label' | t
+  endif
+-%}
+
+<li class="sidecart-item sidecart-item--gift sidecart-item--gift-pending" data-gift-pending data-gift="{{ gift_value | escape }}" data-variant-id="">
+  <span class="sidecart-item__image-link" style="background-color: #FCF0D2;">
+    <svg class="sidecart-item__pending-icon" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 12 12" fill="none">
+      <path d="M1.25 3.75H10.75V6.25H1.25V3.75ZM2.25 6.25V10.75H9.75V6.25M6 3.75V10.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+      <path d="M6 3.75C5.6 2.2 4.9 1.25 4 1.25C3.3 1.25 2.9 1.7 2.9 2.3C2.9 3.1 3.7 3.75 6 3.75ZM6 3.75C6.4 2.2 7.1 1.25 8 1.25C8.7 1.25 9.1 1.7 9.1 2.3C9.1 3.1 8.3 3.75 6 3.75Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+    </svg>
+    {%- comment -%} The picked scent's bottle shows here at once (see chooseGift). {%- endcomment -%}
+    <img class="sidecart-item__image" alt="" width="150" height="194" hidden>
+  </span>
+
+  <div class="sidecart-item__details">
+    <div class="sidecart-item__info">
+      <h3 class="sidecart-item__title">{{ product.title }}</h3>
+      <p class="sidecart-item__gift-label">
+        <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M1.25 3.75H10.75V6.25H1.25V3.75ZM2.25 6.25V10.75H9.75V6.25M6 3.75V10.75" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 3.75C5.6 2.2 4.9 1.25 4 1.25C3.3 1.25 2.9 1.7 2.9 2.3C2.9 3.1 3.7 3.75 6 3.75ZM6 3.75C6.4 2.2 7.1 1.25 8 1.25C8.7 1.25 9.1 1.7 9.1 2.3C9.1 3.1 8.3 3.75 6 3.75Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+        </svg>
+        <span>{{ gift_label_text }}</span>
+      </p>
+      <p class="sidecart-item__gift-choice">
+        <span class="sidecart-item__frequency-wrap">
+          {%- capture gift_choice_select -%}
+          <select
+            class="sidecart-item__frequency"
+            aria-label="{{ 'sidecart.gift_choice_label' | t: option: gift_option_name }}"
+            aria-describedby="{{ gift_error_id }}"
+            data-gift-choice-select
+          >
+            <option value="" disabled hidden selected>
+              {{- 'sidecart.gift_choice_placeholder' | t: option: gift_option_name -}}
+            </option>
+            {%- for choice in product.variants -%}
+              {%- liquid
+                assign choice_ships_as = choice.metafields.baudie.ships_as.value
+                assign choice_available = choice.available
+                if choice_ships_as != blank
+                  assign choice_available = choice_ships_as.available
+                endif
+              -%}
+              {%- if choice_available -%}
+                {%- liquid
+                  assign choice_image = choice_ships_as.product.metafields.custom.card_image_portrait | default: choice_ships_as.product.metafields.custom.card_image | default: choice_ships_as.product.featured_image | default: choice.featured_image
+                  capture choice_bg
+                    echo choice_ships_as.product.metafields.custom.product_card_background | default: '#FCF0D2'
+                  endcapture
+                -%}
+                <option
+                  value="{{ choice.id }}"
+                  data-image="{% if choice_image %}{{ choice_image | image_url: width: 400 }}{% endif %}"
+                  data-card-bg="{{ choice_bg | strip | escape }}"
+                >
+                  {{- choice.title | escape -}}
+                </option>
+              {%- endif -%}
+            {%- endfor -%}
+          </select>
+          {%- endcapture -%}
+          {% render 'select-menu', select: gift_choice_select %}
+          <svg class="sidecart-item__frequency-chevron" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="8" height="4" viewBox="0 0 12 6" fill="none">
+            <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </p>
+      <p class="sidecart-item__gift-choice-error" id="{{ gift_error_id }}" data-gift-choice-error role="alert" hidden>
+        {{- 'sidecart.gift_choice_required' | t: option: gift_option_name -}}
+      </p>
+    </div>
+
+    <div class="sidecart-item__controls">
+      <div class="sidecart-item__price">
+        <s class="sidecart-item__compare-price">
+          <span class="visually-hidden">{{ 'products.regular_price' | t }}:</span>
+          <span>{{ gift_worth | money }}</span>
+        </s>
+        <span class="sidecart-item__current-price sidecart-item__current-price--sale">
+          <span class="visually-hidden">{{ 'products.sale_price' | t }}:</span>
+          <span>{{ 'sidecart.gift_free' | t }}</span>
+        </span>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="sidecart-item__remove"
+      data-gift-remove
+      aria-label="{{ 'sidecart.remove_item' | t }}: {{ product.title | escape }}">
+      {{ 'sidecart.remove_item' | t }}
+    </button>
+  </div>
+</li>
