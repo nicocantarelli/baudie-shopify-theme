@@ -677,7 +677,7 @@
 
 /* The bottle: the picked one stays unseen until its image can show, then drops
    in from above its box and bounces (see dropBottle). The old one, or the
-   waiting card's gift icon, leaves first. */
+   waiting card's fan of bottles, falls out first. */
 .sidecart-item__image.is-arriving {
   opacity: 0;
 }
@@ -706,8 +706,9 @@
   animation: sidecart-scent-bottle-out 0.35s cubic-bezier(0.5, 0, 1, 0.6) forwards;
 }
 
-.sidecart-item__leaving--icon {
-  animation: sidecart-scent-icon-out 0.3s ease-out forwards;
+.sidecart-item__fan.is-leaving {
+  transform-origin: 50% 100%;
+  animation: sidecart-scent-fan-out 0.35s cubic-bezier(0.5, 0, 1, 0.6) forwards;
 }
 
 .sidecart-item.is-choosing .sidecart-item__frequency {
@@ -745,8 +746,9 @@
   to { transform: translateY(115%) rotate(12deg); }
 }
 
-@keyframes sidecart-scent-icon-out {
-  to { opacity: 0; transform: scale(1.6) rotate(-10deg); }
+/* The fan is shorter than its box, so it has further to fall. */
+@keyframes sidecart-scent-fan-out {
+  to { transform: translateY(150%) rotate(12deg); }
 }
 
 /* Reduced motion: the card fades to the scent's color and back instead. */
@@ -770,7 +772,8 @@
     animation: none;
   }
 
-  .sidecart-item__leaving {
+  .sidecart-item__leaving,
+  .sidecart-item__fan.is-leaving {
     display: none;
   }
 }
@@ -780,17 +783,39 @@
 }
 
 /* The VIP scent gift before a scent is picked (snippets/sidecart-gift-choice.liquid):
-   a gift icon on the plain card until then, and "Choose your scent" at full
-   strength, since it asks for the pick. */
+   the scents' bottles fanned out like a hand of cards in the middle of a
+   pink-to-peach photo until then, and "Choose your scent" at full strength,
+   since it asks for the pick. A pick gives the photo its scent's color (see
+   chooseGift). */
 .sidecart-item--gift-pending .sidecart-item__image-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--sidecart-text);
+  position: relative;
+  background-image: linear-gradient(160deg, #FFD9E4, #FFE3C4);
 }
 
-.sidecart-item__pending-icon {
-  opacity: 0.35;
+.sidecart-item--gift-pending.is-choosing .sidecart-item__image-link {
+  background-image: none;
+}
+
+/* Each bottle turns on its base and bulges on its right, so the fan is nudged
+   up and a little left to sit in the middle of the photo. */
+.sidecart-item__fan {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 58%;
+  aspect-ratio: 2 / 3;
+  translate: -52% -54%;
+  pointer-events: none;
+}
+
+.sidecart-item__fan img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 50% 92%;
+  transform: rotate(var(--fan-turn, 0deg));
 }
 
 /* The reset makes every img a block, which would beat [hidden]. */
@@ -2988,14 +3013,15 @@ class Sidecart {
     this.enqueue(async () => {});
   }
 
-  // The bottle of the scent wash: the old one (or the waiting card's gift
-  // icon) falls out of its box, and the picked one drops in from the top once
-  // its image can show, so the whole fall is seen. The scents' images load as
-  // the dropdown is reached (see preloadGiftChoices), so it usually drops at once.
+  // The bottle of the scent wash: the old one (or the waiting card's fan of
+  // bottles) falls out of its box, and the picked one drops in from the top
+  // once its image can show, so the whole fall is seen. The scents' images load
+  // with the fan, or as the dropdown is reached (see preloadGiftChoices), so it
+  // usually drops at once.
   dropBottle(card, image, src) {
-    let leaving = card.querySelector('.sidecart-item__pending-icon');
+    let leaving = card.querySelector('.sidecart-item__fan');
     if (leaving) {
-      leaving.classList.add('sidecart-item__leaving', 'sidecart-item__leaving--icon');
+      leaving.classList.add('is-leaving');
     } else if (!image.hidden && image.currentSrc) {
       leaving = image.cloneNode();
       leaving.className = 'sidecart-item__leaving sidecart-item__leaving--bottle';
