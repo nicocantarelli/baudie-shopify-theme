@@ -32,7 +32,7 @@
 
 {% if enable_quick_cart %}
   <div
-    class="sidecart"
+    class="sidecart{% if section.settings.card_size == 'compact' %} sidecart--compact{% endif %}"
     id="sidecart"
     aria-hidden="true"
     data-sidecart
@@ -42,14 +42,33 @@
     data-stock-warning="{{ 'sidecart.stock_warning' | t | escape }}"
     data-frequency-error="{{ 'sidecart.frequency_error' | t | escape }}"
     style="--sidecart-bg: {{ section.settings.background_color }}; --sidecart-text: {{ section.settings.text_color }};"
+    data-section-id="{{ section.id }}"
     {% if shipping_bar_enabled %}
     data-shipping-bar-enabled
     data-shipping-threshold="{{ shipping_threshold_cents }}"
     data-shipping-progress-msg="{{ section.settings.shipping_progress_message | escape }}"
     data-shipping-success-msg="{{ section.settings.shipping_success_message | escape }}"
+    data-shipping-code-msg="{{ section.settings.shipping_code_message | escape }}"
     {% endif %}>
 
     <div class="sidecart__overlay" id="sidecart-overlay"></div>
+
+    {%- comment -%} Gift with purchase settings for the script (outside the re-rendered regions). {%- endcomment -%}
+    {% render 'gift-promo-data' %}
+
+    {%- comment -%}
+      The card of a VIP gift the customer picks the scent of, for while its
+      code is on the cart and no scent is picked yet. Liquid's cart doesn't
+      list a code that applies to nothing in it, so the script puts the card
+      in from here (see renderGiftChoices).
+    {%- endcomment -%}
+    {%- for row in shop.metafields.baudie.gift_promo.value.vip -%}
+      {%- if row.prefix != blank and all_products[row.productHandle].variants.size > 1 -%}
+        <template data-gift-choice-template="vip:{{ row.prefix | escape }}">
+          {%- render 'sidecart-gift-choice', gift: row, gift_label: section.settings.gift_label -%}
+        </template>
+      {%- endif -%}
+    {%- endfor -%}
 
     <div
       class="sidecart__drawer"
@@ -91,6 +110,37 @@
         </button>
       </div>
 
+      {%- comment -%}
+        Gift with purchase progress, under the free shipping bar and above the
+        items (Gift progress style setting):
+        - list: at the top of the scrolling items area, so on a phone it
+          scrolls out of the way of the items. It's re-rendered with them and
+          the script fills it straight back in.
+        - bar: joined to the shipping bar, outside the regions a re-render
+          replaces.
+        - cards: in the items area like the list.
+        All start hidden; the script fills them in on every cart update.
+      {%- endcomment -%}
+      {%- liquid
+        assign gift_layout = 'list'
+        if section.settings.gift_progress_style == 'bar'
+          assign gift_layout = 'bar'
+        elsif section.settings.gift_progress_style == 'cards'
+          assign gift_layout = 'cards'
+        endif
+      -%}
+      {%- capture gift_bar -%}
+        {%- if gift_layout == 'bar' -%}
+          {% render 'sidecart-gift-bar',
+            layout: 'bar',
+            progress_message: section.settings.gift_progress_message,
+            success_message: section.settings.gift_success_message,
+            fill_color: section.settings.shipping_bar_fill_color,
+            track_color: section.settings.shipping_bar_track_color,
+            text_color: section.settings.shipping_bar_text_color
+          %}
+        {%- endif -%}
+      {%- endcapture -%}
       {% if shipping_bar_enabled and shipping_bar_position == 'top' %}
         <div
           class="sidecart__shipping-bar{% unless has_items or shipping_bar_preview %} sidecart__shipping-bar--hidden{% endunless %}"
@@ -117,9 +167,21 @@
               {% endif %}
     </div>
   </div>
-</div>{% render 'promo-banner', location: 'sidecart-top' %}{% endif %}<div class="sidecart__content" data-sidecart-content>
+</div>{{ gift_bar }}{% render 'promo-banner', location: 'sidecart-top' %}{% else %}{{ gift_bar }}{% endif %}<div class="sidecart__content" data-sidecart-content>
+{%- unless gift_layout == 'bar' -%}
+  {% render 'sidecart-gift-bar',
+    layout: gift_layout,
+    fill_color: section.settings.shipping_bar_fill_color,
+    track_color: section.settings.shipping_bar_track_color,
+    text_color: section.settings.shipping_bar_text_color,
+    card_color: section.settings.gift_card_color,
+    card_bar_color: section.settings.gift_card_bar_color,
+    card_label_color: section.settings.gift_card_label_color
+  %}
+{%- endunless %}
 <ul
-  class="sidecart__items{% unless has_items %} sidecart__items--hidden{% endunless %}"
+  class="sidecart__items{% unless has_items %} sidecart__items--hidden{% endunless %}{% if gift_layout == 'cards' %} sidecart__items--gift-cards{% endif %}"
+  {%- if gift_layout == 'cards' %} style="--gift-free-color: {{ section.settings.gift_card_label_color | default: '#B4506D' }};"{% endif %}
   role="list"
   data-sidecart-items>
   {%- comment -%}
@@ -131,8 +193,22 @@
     line so it never merges with a one-time line of the same variant. A bracket
     wrapper guards against prefix collisions.
   {%- endcomment -%}
+  {%- comment -%}
+    Two passes: the customer's own items first (newest first, Shopify's cart
+    order), then the free gifts. The gift sync adds those after the items that
+    earned them, so Shopify would otherwise list them on top. The order on the
+    page doesn't matter to the script: it finds lines by signature.
+  {%- endcomment -%}
   {%- assign rendered_sigs = '' -%}
+  {%- for pass in (1..2) -%}
   {%- for item in cart.items -%}
+    {%- liquid
+      assign item_pass = 1
+      if item.properties['_gift'] != blank
+        assign item_pass = 2
+      endif
+    -%}
+    {%- if item_pass != pass -%}{%- continue -%}{%- endif -%}
     {%- capture raw_sig -%}{{ item.variant_id }}{%- for p in item.properties -%}@{{ p.first }}={{ p.last }}{%- endfor -%}{%- if item.selling_plan_allocation -%}~sp{{ item.selling_plan_allocation.selling_plan.id }}{%- endif -%}{%- endcapture -%}
     {%- assign sig_token = '[' | append: raw_sig | append: ']' -%}
     {%- unless rendered_sigs contains sig_token -%}
@@ -170,8 +246,10 @@
         group_final_line_price: group_final,
         group_original_line_price: group_original,
         group_line_count: group_lines,
-        group_signature: raw_sig -%}
+        group_signature: raw_sig,
+        gift_label: section.settings.gift_label -%}
     {%- endunless -%}
+  {%- endfor -%}
   {%- endfor -%}
 </ul>
 <div class="sidecart__empty{% if has_items %} sidecart__empty--hidden{% endif %}" data-sidecart-empty>
@@ -180,7 +258,7 @@
   <a href="{{ routes.all_products_collection_url }}" class="sidecart__continue-btn">
     {{ section.settings.continue_button_text }}
   </a>
-</div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading, product_1: section.settings.upsell_product_1, product_2: section.settings.upsell_product_2, exclude_collection: section.settings.upsell_exclude_collection, contained_in_1: section.settings.upsell_contained_in_1, contained_in_2: section.settings.upsell_contained_in_2 %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
+</div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
 {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
   <div
     class="sidecart__shipping-bar"
@@ -210,6 +288,58 @@
   {% render 'promo-banner', location: 'sidecart-bottom' %}
 {% endif %}
 
+{%- if section.settings.show_discount_code -%}
+  {%- comment -%}
+    Codes apply to the cart here (not only at checkout) so a VIP gift code can
+    add its gift before checkout. The applied-code chips and messages are drawn
+    by the script from /cart.js.
+  {%- endcomment -%}
+  {%- comment -%} The t filter already HTML-escapes, so no extra escape (it would show &#39;). {%- endcomment -%}
+  <div
+    class="sidecart__discount"
+    data-sidecart-discount
+    data-remove-label="{{ 'sidecart.discount.remove' | t }}"
+    data-invalid-msg="{{ 'sidecart.discount.invalid' | t }}"
+    data-error-msg="{{ 'sidecart.discount.error' | t }}"
+    data-blocked-msg="{{ 'sidecart.discount.blocked' | t }}">
+    {%- comment -%}
+      Folded away by default to save room; the script keeps it open across
+      re-renders once opened. Applied codes and messages show either way.
+    {%- endcomment -%}
+    <button
+      type="button"
+      class="sidecart__discount-toggle"
+      data-discount-toggle
+      aria-expanded="false"
+      aria-controls="sidecart-discount-panel">
+      <span>{{ 'sidecart.discount.toggle' | t }}</span>
+      <svg aria-hidden="true" focusable="false" width="12" height="7" viewBox="0 0 12 7" fill="none">
+        <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="sidecart__discount-panel" id="sidecart-discount-panel" data-discount-panel hidden>
+    <form class="sidecart__discount-form" data-discount-form novalidate>
+      <label class="visually-hidden" for="sidecart-discount-code">{{ 'sidecart.discount.label' | t }}</label>
+      <input
+        id="sidecart-discount-code"
+        class="sidecart__discount-input"
+        type="text"
+        name="discount"
+        placeholder="{{ 'sidecart.discount.placeholder' | t }}"
+        autocomplete="off"
+        autocapitalize="characters"
+        spellcheck="false"
+        data-discount-input>
+      <button type="submit" class="sidecart__discount-apply" data-discount-apply>
+        {{- 'sidecart.discount.apply' | t -}}
+      </button>
+    </form>
+    </div>
+    <p class="sidecart__discount-message" data-discount-message role="status" aria-live="polite" hidden></p>
+    <ul class="sidecart__discount-codes" data-discount-codes role="list" hidden></ul>
+  </div>
+{%- endif -%}
+
 <div class="sidecart__subtotal-row">
   <span class="sidecart__subtotal-label">{{ 'sidecart.subtotal' | t }}</span>
   <div class="sidecart__subtotal-value-wrapper">
@@ -222,7 +352,7 @@
 </div>
 
 <div class="sidecart__actions sidecart__actions--single">
-  <a href="/checkout" class="sidecart__btn sidecart__btn--primary">
+  <a href="/checkout" class="sidecart__btn sidecart__btn--primary" data-sidecart-checkout>
     {{ 'sidecart.checkout' | t }}
   </a>
 </div>
@@ -415,7 +545,7 @@
 .sidecart-item__info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--sidecart-info-gap, 8px);
 }
 
 .sidecart-item__title {
@@ -426,6 +556,7 @@
   text-transform: uppercase;
   color: var(--sidecart-text);
   margin: 0;
+  padding-right: 44px; /* clear of Remove, over the card's top-right corner */
 }
 
 .sidecart-item__title a {
@@ -443,6 +574,350 @@
   color: var(--sidecart-text);
   opacity: 0.7;
   margin: 0;
+}
+
+/* Free gift lines: a gift line in place of the purchase options (same type as
+   the subscription line), no quantity or remove controls. The price says
+   FREE, so the label doesn't. */
+.sidecart-item__gift-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  font-family: var(--font-jokker);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--sidecart-text);
+  opacity: 0.75;
+}
+
+.sidecart-item__gift-label svg {
+  flex: 0 0 auto;
+}
+
+/* FREE in the price: Sweet Sans capitals run wide at this size. */
+.sidecart-item--gift .sidecart-item__current-price {
+  letter-spacing: -0.06em;
+}
+
+/* On its own line, just above the price. */
+.sidecart-item__gift-quantity {
+  flex-basis: 100%;
+  margin: 0;
+  font-family: var(--font-jokker);
+  font-size: 13px;
+  color: var(--sidecart-text);
+  opacity: 0.75;
+}
+
+.sidecart-item--gift .sidecart-item__controls {
+  row-gap: 4px;
+}
+
+/* A gift with a choice (the VIP scent gift): its dropdown sits under the gift
+   label as a box like a button, so it's plain the pick is a click away. It's
+   the gift rose (the Added to cart label color setting with the cards) until a
+   scent is picked, then that scent's product page button color (--scent-box),
+   which sweeps in from the left on a pick (see colorGiftChoice). */
+.sidecart-item__gift-choice {
+  display: flex;
+  margin: 0;
+  font-family: var(--font-jokker);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--sidecart-text);
+}
+
+.sidecart-item__gift-label + .sidecart-item__gift-choice {
+  margin-top: 2px;
+}
+
+.sidecart-item__gift-choice .sidecart-item__frequency {
+  padding: 10.25px 32px 7.75px 13px; /* the font's caps sit 1.25px high in their line, so 1.25px moves from the bottom to the top */
+  background-color: var(--scent-box, var(--gift-free-color, #B4506D));
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  color: #ffffff;
+  font-family: var(--font-sweet-sans);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.sidecart-item__gift-choice .sidecart-item__frequency:hover {
+  opacity: 0.85;
+}
+
+/* The old color slides off to the right, uncovering the new one. */
+.sidecart-item__gift-choice.is-coloring .sidecart-item__frequency {
+  background-image: linear-gradient(90deg, transparent 48%, var(--scent-box-from) 52%);
+  animation: sidecart-scent-box 0.5s cubic-bezier(0.3, 0, 0.2, 1) var(--scent-box-delay, 0s) both;
+}
+
+@keyframes sidecart-scent-box {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+
+/* Reduced motion: the new color fades in instead. */
+@media (prefers-reduced-motion: reduce) {
+  .sidecart-item__gift-choice .sidecart-item__frequency {
+    transition: background-color 0.3s ease, opacity 0.2s ease;
+  }
+
+  .sidecart-item__gift-choice.is-coloring .sidecart-item__frequency {
+    background-image: none;
+    animation: none;
+  }
+}
+
+/* The chevron inside the box, on the right. */
+.sidecart-item__gift-choice .sidecart-item__frequency-chevron {
+  position: absolute;
+  right: 13px;
+  width: 10px;
+  height: 5px;
+  color: #ffffff;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+/* An open menu stacks above its neighbours (z-index 30), so the chevron would
+   go behind the box. */
+.sidecart-item__gift-choice .select-menu.is-open + .sidecart-item__frequency-chevron {
+  z-index: 31;
+}
+
+/* The scent wash. While a picked scent goes in (.is-choosing), a wave in that
+   scent's product page colors sweeps the card from the bottle's side: its
+   darkest color leads, the other two fill in behind. The bottle drops in (see
+   below), and a shine runs across until the render brings the new card. There
+   (.is-chosen) the wave finishes, then runs off to the right (see washGift).
+   The wave is an SVG band wider than the card (--scent-wash). Registered
+   positions let it animate smoothly. The dropdown stays locked meanwhile: the
+   render replaces the card, which would close it under the customer's hand. */
+@property --scent-wash-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 100%;
+}
+
+@property --scent-shine-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 100%;
+}
+
+.sidecart-item.is-choosing,
+.sidecart-item.is-chosen {
+  background-image:
+    linear-gradient(100deg, transparent 44%, rgba(255, 255, 255, 0.5) 50%, transparent 56%),
+    var(--scent-wash, none);
+  background-repeat: no-repeat;
+  background-size: 300% 100%, 340% 100%;
+  background-position: var(--scent-shine-x) 0, var(--scent-wash-x) 0;
+}
+
+.sidecart-item.is-choosing {
+  animation:
+    sidecart-scent-wash-in 0.55s ease-out forwards,
+    sidecart-scent-shine 1.2s 0.55s ease-in-out infinite;
+}
+
+.sidecart-item.is-chosen {
+  animation:
+    sidecart-scent-wash-in 0.55s ease-out var(--scent-wash-elapsed, 0s) both,
+    sidecart-scent-wash-out 0.7s ease-in-out var(--scent-wash-hold, 0.15s) forwards;
+}
+
+/* The bottle: the picked one stays unseen until its image can show, then drops
+   in from above its box and bounces (see dropBottle). The old one, or the
+   waiting card's fan of bottles, falls out first. */
+.sidecart-item__image.is-arriving {
+  opacity: 0;
+}
+
+.sidecart-item__image.is-dropping {
+  transform-origin: 50% 100%;
+  animation: sidecart-scent-bottle 0.9s var(--bottle-delay, 0s) both;
+}
+
+.sidecart-item.is-choosing .sidecart-item__image-link {
+  position: relative;
+}
+
+.sidecart-item__leaving {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  pointer-events: none;
+}
+
+.sidecart-item__leaving--bottle {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 50% 100%;
+  animation: sidecart-scent-bottle-out 0.35s cubic-bezier(0.5, 0, 1, 0.6) forwards;
+}
+
+.sidecart-item__fan.is-leaving {
+  transform-origin: 50% 100%;
+  animation: sidecart-scent-fan-out 0.35s cubic-bezier(0.5, 0, 1, 0.6) forwards;
+}
+
+.sidecart-item.is-choosing .sidecart-item__frequency {
+  cursor: default;
+}
+
+@keyframes sidecart-scent-wash-in {
+  from { --scent-wash-x: 100%; }
+  to { --scent-wash-x: 50%; }
+}
+
+@keyframes sidecart-scent-wash-out {
+  from { --scent-wash-x: 50%; }
+  to { --scent-wash-x: 0%; }
+}
+
+@keyframes sidecart-scent-shine {
+  from { --scent-shine-x: 100%; }
+  to { --scent-shine-x: 0%; }
+}
+
+/* Falls from above the box with gravity, squashes as it lands, then two
+   bounces. */
+@keyframes sidecart-scent-bottle {
+  0% { transform: translateY(-115%) rotate(-12deg); animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
+  38% { transform: translateY(0) rotate(-4deg); animation-timing-function: ease-out; }
+  44% { transform: translateY(0) rotate(-2deg) scale(1.08, 0.88); animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1); }
+  60% { transform: translateY(-14%) rotate(4deg) scale(0.97, 1.04); animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
+  74% { transform: translateY(0) rotate(-2deg) scale(1.04, 0.95); animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1); }
+  86% { transform: translateY(-4%) rotate(1deg); animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
+  100% { transform: none; }
+}
+
+@keyframes sidecart-scent-bottle-out {
+  to { transform: translateY(115%) rotate(12deg); }
+}
+
+/* The fan is shorter than its box, so it has further to fall. */
+@keyframes sidecart-scent-fan-out {
+  to { transform: translateY(150%) rotate(12deg); }
+}
+
+/* Reduced motion: the card fades to the scent's color and back instead. */
+@media (prefers-reduced-motion: reduce) {
+  .sidecart-item.is-choosing,
+  .sidecart-item.is-chosen {
+    background-image: none;
+    animation: none;
+  }
+
+  .sidecart-item.is-choosing[data-gift] {
+    background-color: var(--scent-wash-color);
+    transition: background-color 0.3s ease;
+  }
+
+  .sidecart-item.is-chosen {
+    animation: sidecart-scent-fade 0.6s ease-in-out var(--scent-wash-hold, 0.15s) backwards;
+  }
+
+  .sidecart-item__image.is-dropping {
+    animation: none;
+  }
+
+  .sidecart-item__leaving,
+  .sidecart-item__fan.is-leaving {
+    display: none;
+  }
+}
+
+@keyframes sidecart-scent-fade {
+  from { background-color: var(--scent-wash-color); }
+}
+
+/* The VIP scent gift before a scent is picked (snippets/sidecart-gift-choice.liquid):
+   the scents' bottles fanned out like a hand of cards in the middle of a
+   pink-to-peach photo until then. A pick gives the photo its scent's color
+   (see chooseGift). */
+.sidecart-item--gift-pending .sidecart-item__image-link {
+  position: relative;
+  background-image: linear-gradient(160deg, #FFD9E4, #FFE3C4);
+}
+
+.sidecart-item--gift-pending.is-choosing .sidecart-item__image-link {
+  background-image: none;
+}
+
+/* Each bottle turns on its base and bulges on its right, so the fan is nudged
+   up and a little left to sit in the middle of the photo. */
+.sidecart-item__fan {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 58%;
+  aspect-ratio: 2 / 3;
+  translate: -52% -54%;
+  pointer-events: none;
+}
+
+.sidecart-item__fan img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 50% 92%;
+  transform: rotate(var(--fan-turn, 0deg));
+}
+
+/* The reset makes every img a block, which would beat [hidden]. */
+.sidecart-item__image[hidden] {
+  display: none;
+}
+
+.sidecart-item__gift-choice-error {
+  margin: 0;
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  line-height: 1.4;
+  color: #A12A2A; /* the discount code error's red */
+}
+
+.sidecart-item__gift-choice-error[hidden] {
+  display: none;
+}
+
+/* Checkout clicked before a scent is picked: the dropdown gives a nudge. */
+.sidecart-item--gift-pending.is-prompted .sidecart-item__gift-choice {
+  animation: sidecart-gift-nudge 0.5s ease;
+}
+
+@keyframes sidecart-gift-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidecart-item--gift-pending.is-prompted .sidecart-item__gift-choice {
+    animation: none;
+  }
 }
 
 .sidecart-item__subscription {
@@ -896,6 +1371,810 @@
   mask-position: center;
 }
 
+/* A free shipping code in the cart: the bar is full, in the warm scents' bottle
+   colors (St. Tropez, Petal Kiss, Capri Seaside, Sweet Muse; Alex wanted no
+   green or blue), with a soft glow that breathes and a shine that runs across
+   now and then. The track is a container so the gradient spans the full bar:
+   a growing fill uncovers it instead of stretching it.
+
+   --race plays when a code first shows (see raceShippingBar): the truck pops a
+   wheelie, races from the real progress to the end with speed lines and brakes
+   in a burst of scent-colored sparkles. Behind it, a rainbow wave sweeps the
+   chocolate bar from the start and catches it at the finish, and the message
+   pops. */
+.sidecart__shipping-bar--code .sidecart__shipping-bar-track {
+  container-type: inline-size;
+}
+
+.sidecart__shipping-bar--code .sidecart__shipping-bar-fill {
+  background-image: linear-gradient(90deg, #EA4A7F, #F49AA6, #F47A54, #E9CB7F);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-size: calc(100cqw - 22px) 100%;
+}
+
+.sidecart__shipping-bar--code .sidecart__shipping-bar-track::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: 0;
+  right: 22px;
+  border-radius: 5px;
+  background-image: linear-gradient(90deg, #EA4A7F, #F49AA6, #F47A54, #E9CB7F);
+  filter: blur(6px);
+  opacity: 0.5;
+  pointer-events: none;
+  animation:
+    sidecart-shipping-glow-in 0.6s 0.9s ease-out backwards,
+    sidecart-shipping-glow 3s 1.5s ease-in-out infinite alternate;
+}
+
+.sidecart__shipping-bar--code .sidecart__shipping-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.75) 50%, transparent 60%) no-repeat 0 0 / 300% 100%;
+  pointer-events: none;
+  animation: sidecart-shipping-shine 5s 1s ease-in-out infinite backwards;
+}
+
+.sidecart__shipping-bar--code .sidecart__shipping-bar-icon {
+  z-index: 1;
+}
+
+/* Still while the drawer is closed. */
+.sidecart:not(.is-open) .sidecart__shipping-bar-track::before,
+.sidecart:not(.is-open) .sidecart__shipping-bar-fill::after {
+  animation-play-state: paused;
+}
+
+.sidecart__shipping-bar--race .sidecart__shipping-bar-fill {
+  transition: width 0.85s 0.15s cubic-bezier(0.65, 0, 0.25, 1);
+}
+
+/* The chocolate left ahead of the wave; the wave keeps the fill's timing, so
+   it stays behind the truck and runs off the end as the truck arrives. */
+.sidecart__shipping-bar--race .sidecart__shipping-bar-fill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent calc(var(--shipping-race-wave) - 16px), var(--shipping-bar-fill, #3E2027) var(--shipping-race-wave));
+  pointer-events: none;
+  animation: sidecart-shipping-wave 0.85s 0.15s cubic-bezier(0.65, 0, 0.25, 1) both;
+}
+
+.sidecart__shipping-bar--race .sidecart__shipping-bar-icon {
+  transform-origin: 25% 85%;
+  animation: sidecart-truck-race 1.2s ease-in-out;
+}
+
+.sidecart__shipping-bar--race .sidecart__shipping-bar-icon::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  width: 16px;
+  height: 11px;
+  margin: -10px 2px 0 0;
+  background:
+    linear-gradient(var(--shipping-bar-icon-color, var(--shipping-bar-fill, #3E2027)) 0 0) 2px 0 / 12px 2px no-repeat,
+    linear-gradient(var(--shipping-bar-icon-color, var(--shipping-bar-fill, #3E2027)) 0 0) 0 4px / 16px 2px no-repeat,
+    linear-gradient(var(--shipping-bar-icon-color, var(--shipping-bar-fill, #3E2027)) 0 0) 5px 8px / 9px 2px no-repeat;
+  opacity: 0;
+  animation: sidecart-speed-lines 1.2s ease-out;
+}
+
+.sidecart__shipping-bar--race .sidecart__shipping-bar-icon::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  background:
+    radial-gradient(circle, #EA4A7F 0 2px, transparent 2.5px) 50% 0 / 6px 6px no-repeat,
+    radial-gradient(circle, #F47A54 0 2px, transparent 2.5px) 93% 25% / 6px 6px no-repeat,
+    radial-gradient(circle, #E9CB7F 0 2px, transparent 2.5px) 93% 75% / 6px 6px no-repeat,
+    radial-gradient(circle, #F49AA6 0 2px, transparent 2.5px) 50% 100% / 6px 6px no-repeat,
+    radial-gradient(circle, #F47A54 0 2px, transparent 2.5px) 7% 75% / 6px 6px no-repeat,
+    radial-gradient(circle, #E9CB7F 0 2px, transparent 2.5px) 7% 25% / 6px 6px no-repeat;
+  opacity: 0;
+  pointer-events: none;
+  animation: sidecart-shipping-burst 0.6s 0.95s ease-out both;
+}
+
+.sidecart__shipping-bar--race .sidecart__shipping-bar-text {
+  animation: sidecart-shipping-pop 0.45s 0.95s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidecart__shipping-bar--code .sidecart__shipping-bar-track::before,
+  .sidecart__shipping-bar--code .sidecart__shipping-bar-fill::after {
+    animation: none;
+  }
+}
+
+@keyframes sidecart-truck-race {
+  0% { transform: translateY(-57%) rotate(0); }
+  10% { transform: translateY(-57%) rotate(-12deg); }
+  16% { transform: translateY(-57%) rotate(-8deg); }
+  70% { transform: translateY(-57%) rotate(-6deg); }
+  84% { transform: translateY(-70%) rotate(7deg); }
+  92% { transform: translateY(-55%) rotate(-2deg); }
+  100% { transform: translateY(-57%) rotate(0); }
+}
+
+@keyframes sidecart-speed-lines {
+  0%, 12% { opacity: 0; transform: translateX(8px); }
+  25% { opacity: 0.85; transform: translateX(0); }
+  70% { opacity: 0.85; transform: translateX(-3px); }
+  84%, 100% { opacity: 0; transform: translateX(-10px); }
+}
+
+@property --shipping-race-wave {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes sidecart-shipping-wave {
+  from { --shipping-race-wave: 0px; }
+  to { --shipping-race-wave: calc(100cqw - 6px); }
+}
+
+@keyframes sidecart-shipping-burst {
+  0% { opacity: 0; transform: scale(0.4); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.2); }
+}
+
+@keyframes sidecart-shipping-pop {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(1.08); }
+}
+
+@keyframes sidecart-shipping-glow-in {
+  from { opacity: 0; }
+}
+
+@keyframes sidecart-shipping-glow {
+  from { opacity: 0.5; }
+  to { opacity: 0.9; }
+}
+
+@keyframes sidecart-shipping-shine {
+  0% { background-position: 100% 0; }
+  25%, 100% { background-position: 0 0; }
+}
+
+/* Gift with purchase progress, right under the free shipping bar: a list of
+   the gifts, or the segmented bar (Gift progress style setting). */
+.sidecart__gift-bar {
+  flex-shrink: 0;
+  padding: 14px 20px 16px;
+  border-bottom: 1px solid var(--sidecart-border);
+  color: var(--shipping-bar-text, var(--sidecart-text));
+}
+
+.sidecart__gift-bar[hidden] {
+  display: none;
+}
+
+/* List: a heading with the unlocked count, then one row per gift: a tick
+   once it's unlocked (its number until then), the spend it unlocks at, and
+   FREE or what's left to spend. The gift being worked towards is tinted.
+   It opens the scrolling items area, edge to edge, with the items after its
+   divider. */
+.sidecart__gift-bar--list {
+  margin: -15px -20px 0;
+  padding: 14px 20px 10px;
+}
+
+.sidecart__gift-bar--list:not([hidden]) + .sidecart__items {
+  margin-top: 0;
+}
+
+.sidecart__gift-list-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.sidecart__gift-list-heading {
+  margin: 0;
+  font-family: var(--font-sweet-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.13px;
+  text-transform: uppercase;
+}
+
+.sidecart__gift-list-count {
+  margin: 0;
+  font-family: var(--font-sweet-sans);
+  font-size: 11px;
+  letter-spacing: -0.11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.6;
+}
+
+/* The rows run 10px past the text on both sides, so the tint has room while
+   the ticks and amounts line up with the heading. */
+.sidecart__gift-list {
+  list-style: none;
+  margin: 0 -10px;
+  padding: 0;
+}
+
+.sidecart__gift-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 10px;
+}
+
+.sidecart__gift-row.is-current {
+  background-color: color-mix(in srgb, var(--shipping-bar-fill, #3E2027) 7%, transparent);
+}
+
+.sidecart__gift-row-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  font-family: var(--font-sweet-sans);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.sidecart__gift-row.is-current .sidecart__gift-row-icon {
+  background-color: var(--sidecart-bg);
+}
+
+.sidecart__gift-row.is-unlocked .sidecart__gift-row-icon {
+  border-color: var(--shipping-bar-fill, #3E2027);
+  background-color: var(--shipping-bar-fill, #3E2027);
+  color: var(--sidecart-bg);
+}
+
+.sidecart__gift-row-check {
+  display: none;
+  width: 10px;
+  height: 10px;
+}
+
+.sidecart__gift-row.is-unlocked .sidecart__gift-row-check {
+  display: block;
+}
+
+.sidecart__gift-row.is-unlocked .sidecart__gift-row-number {
+  display: none;
+}
+
+.sidecart__gift-row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sidecart__gift-row-name {
+  font-family: var(--font-sweet-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.13px;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.sidecart__gift-row-status {
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.sidecart__gift-row-value {
+  flex: 0 0 auto;
+  font-family: var(--font-sweet-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.13px;
+  white-space: nowrap;
+}
+
+/* Gifts past the next one read a step quieter. */
+.sidecart__gift-row:not(.is-unlocked):not(.is-current) .sidecart__gift-row-info,
+.sidecart__gift-row:not(.is-unlocked):not(.is-current) .sidecart__gift-row-value {
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .sidecart__gift-bar--list {
+    padding: 12px 20px 8px;
+  }
+
+  .sidecart__gift-list-head {
+    margin-bottom: 4px;
+  }
+
+  .sidecart__gift-row {
+    gap: 10px;
+    padding: 5px 10px;
+  }
+
+  .sidecart__gift-row-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .sidecart__gift-row-name,
+  .sidecart__gift-row-value {
+    font-size: 12px;
+  }
+
+  .sidecart__gift-row-status {
+    font-size: 11px;
+  }
+}
+
+/* Cards: a heading with the unlocked count, then a row of pink gift cards
+   to scroll through (swipe on a phone), one per gift: photo, worth, its own
+   pink progress bar, then what's left or a rose Added to cart. The card,
+   bar and label colors are theme editor settings (--gift-card-bg,
+   --gift-card-bar, --gift-added-bg).
+   It opens the scrolling items area edge to edge, like the list. */
+.sidecart__gift-bar--cards {
+  margin: -15px -20px 0;
+  padding: 14px 0 16px;
+}
+
+.sidecart__gift-bar--cards .sidecart__gift-list-head {
+  margin-bottom: 10px;
+  padding: 0 20px;
+}
+
+.sidecart__gift-bar--cards:not([hidden]) + .sidecart__items {
+  margin-top: 0;
+}
+
+.sidecart__gift-cards {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0 20px;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 20px;
+  scrollbar-width: none;
+}
+
+.sidecart__gift-cards::-webkit-scrollbar {
+  display: none;
+}
+
+/* With a mouse, the row can be dragged (startGiftCardsDrag): an open hand
+   when there's more than one card to move through, a closed one mid-drag. */
+@media (hover: hover) and (pointer: fine) {
+  .sidecart__gift-cards:has(> :nth-child(2)) {
+    cursor: grab;
+  }
+}
+
+.sidecart__gift-cards.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  user-select: none;
+}
+
+/* The next card peeks in from the right, so it reads as a row to scroll. */
+.sidecart__gift-card {
+  flex: 0 0 78%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  padding: 12px;
+  background-color: var(--gift-card-bg, #F8D9E0);
+  scroll-snap-align: start;
+}
+
+.sidecart__gift-card:only-child {
+  flex-basis: 100%;
+}
+
+.sidecart__gift-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidecart__gift-card-image {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+}
+
+.sidecart__gift-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sidecart__gift-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sidecart__gift-card-name {
+  font-family: var(--font-sweet-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.12px;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.sidecart__gift-card-detail {
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.sidecart__gift-card-track {
+  height: 4px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+}
+
+.sidecart__gift-card-fill {
+  width: 0;
+  height: 100%;
+  border-radius: 2px;
+  background-color: var(--gift-card-bar, #B4506D);
+  transition: width 0.3s ease;
+}
+
+.sidecart__gift-card-chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+}
+
+.sidecart__gift-card-chip {
+  padding: 5px 10px;
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  line-height: 1.2;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.sidecart__gift-card-chip--added {
+  color: #FFFFFF;
+  background-color: var(--gift-added-bg, #B4506D);
+}
+
+.sidecart__gift-card-chip[hidden] {
+  display: none;
+}
+
+/* With the cards, gift lines in the bag get their own tint, edge to edge. */
+.sidecart__items--gift-cards .sidecart-item--gift {
+  margin: 0 -20px;
+  padding-right: 20px;
+  padding-left: 20px;
+  background-color: color-mix(in srgb, var(--sidecart-text) 5%, transparent);
+}
+
+/* Remove in line with the other cards', inside the tint's padding. */
+.sidecart__items--gift-cards .sidecart-item--gift .sidecart-item__remove {
+  right: 20px;
+}
+
+/* Its FREE price in the same rose as the cards' bar and Added to cart label
+   (the Added to cart label color setting), instead of the sale color. */
+.sidecart__items--gift-cards .sidecart-item--gift .sidecart-item__current-price {
+  color: var(--gift-free-color, #B4506D);
+}
+
+@media (max-width: 768px) {
+  .sidecart__gift-bar--cards {
+    padding: 12px 0 14px;
+  }
+
+  .sidecart__gift-card {
+    flex-basis: 84%;
+  }
+}
+
+/* Bar: joined to the shipping bar above as one block, with the same message
+   style, then one segment per tier with the gift and its spend amount
+   underneath. No divider between the two, just the spacing of one block; the
+   truck icon hangs below its track, hence the gap. */
+.sidecart__shipping-bar:has(+ .sidecart__gift-bar--bar:not([hidden])) {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.sidecart__shipping-bar + .sidecart__gift-bar--bar {
+  padding-top: 22px;
+}
+
+.sidecart__gift-bar-text {
+  font-family: var(--font-sweet-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.13px;
+  margin: 0 0 12px;
+  text-align: center;
+  color: var(--shipping-bar-text, var(--sidecart-text));
+}
+
+.sidecart__gift-steps {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 6px;
+}
+
+.sidecart__gift-step-track {
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--shipping-bar-track, rgba(62, 32, 39, 0.15));
+  overflow: hidden;
+}
+
+.sidecart__gift-step-fill {
+  width: 0;
+  height: 100%;
+  border-radius: 3px;
+  background-color: var(--shipping-bar-fill, #3E2027);
+  transition: width 0.3s ease;
+}
+
+.sidecart__gift-step-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.sidecart__gift-step-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, currentColor 25%, transparent);
+}
+
+/* The gift being worked towards: a ring with a dot. */
+.sidecart__gift-step.is-current .sidecart__gift-step-icon {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--shipping-bar-fill, #3E2027);
+}
+
+.sidecart__gift-step.is-current .sidecart__gift-step-icon::after {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--shipping-bar-fill, #3E2027);
+}
+
+/* Unlocked: filled, with a tick. */
+.sidecart__gift-step.is-unlocked .sidecart__gift-step-icon {
+  background-color: var(--shipping-bar-fill, #3E2027);
+}
+
+.sidecart__gift-step-check {
+  display: none;
+  width: 8px;
+  height: 8px;
+  color: var(--sidecart-bg);
+}
+
+.sidecart__gift-step.is-unlocked .sidecart__gift-step-check {
+  display: block;
+}
+
+.sidecart__gift-step-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Gifts still ahead read a step quieter. */
+.sidecart__gift-step:not(.is-unlocked):not(.is-current) .sidecart__gift-step-name {
+  opacity: 0.6;
+}
+
+.sidecart__gift-step-amount {
+  margin: 2px 0 0 18px;
+  font-family: var(--font-jokker);
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+/* Discount code field */
+.sidecart__discount {
+  margin-bottom: 14px;
+}
+
+/* The fold-out row: label on the left, chevron on the right. */
+.sidecart__discount-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 2px 0;
+  font-family: var(--font-sweet-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.13px;
+  text-transform: uppercase;
+  color: var(--sidecart-text);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sidecart__discount-toggle svg {
+  flex: 0 0 auto;
+  transition: transform 0.2s ease;
+}
+
+.sidecart__discount-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.sidecart__discount-toggle:focus-visible {
+  outline: 2px solid var(--sidecart-text);
+  outline-offset: 2px;
+}
+
+.sidecart__discount-panel {
+  margin-top: 10px;
+}
+
+.sidecart__discount-panel[hidden] {
+  display: none;
+}
+
+.sidecart__discount-form {
+  display: flex;
+  gap: 8px;
+}
+
+.sidecart__discount-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font-family: var(--font-manrope);
+  font-size: 14px;
+  color: var(--sidecart-text);
+  background-color: transparent;
+  border: 1px solid color-mix(in srgb, var(--sidecart-text) 35%, transparent);
+  border-radius: 0;
+}
+
+.sidecart__discount-input::placeholder {
+  color: color-mix(in srgb, var(--sidecart-text) 55%, transparent);
+}
+
+.sidecart__discount-input:focus-visible {
+  outline: 2px solid var(--sidecart-text);
+  outline-offset: 1px;
+}
+
+.sidecart__discount-apply {
+  padding: 10px 16px;
+  font-family: var(--font-sweet-sans);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: -0.13px;
+  text-transform: uppercase;
+  color: var(--sidecart-text);
+  background-color: transparent;
+  border: 1px solid var(--sidecart-text);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.sidecart__discount-apply:hover {
+  background-color: color-mix(in srgb, var(--sidecart-text) 10%, var(--sidecart-bg));
+}
+
+.sidecart__discount-apply:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.sidecart__discount-message {
+  margin: 8px 0 0;
+  font-family: var(--font-jokker);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--sidecart-text);
+}
+
+.sidecart__discount-message--error {
+  color: #A12A2A;
+}
+
+.sidecart__discount-codes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sidecart__discount-codes[hidden] {
+  display: none;
+}
+
+.sidecart__discount-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 10px;
+  font-family: var(--font-sweet-sans);
+  font-size: 12px;
+  letter-spacing: -0.12px;
+  text-transform: uppercase;
+  color: var(--sidecart-text);
+  background-color: color-mix(in srgb, var(--sidecart-text) 10%, transparent);
+}
+
+.sidecart__discount-code--inactive > span {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.sidecart__discount-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 .sidecart__footer {
   padding: 20px;
   border-top: 1px solid var(--sidecart-border);
@@ -973,6 +2252,19 @@
   background-color: var(--sidecart-text);
   color: #FFFFFF;
   border: none;
+}
+
+/* Checkout waiting for the cart to settle (see goToCheckout). On the drawer,
+   not the button, since a re-render replaces the footer meanwhile. */
+.sidecart.is-checking-out [data-sidecart-checkout] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* A gift waits for its scent: checkout asks for it first (see
+   promptGiftChoice), so it still takes the click. */
+.sidecart.is-gift-choice-pending [data-sidecart-checkout] {
+  opacity: 0.5;
 }
 
 .sidecart__btn--secondary {
@@ -1197,6 +2489,91 @@
   }
 }
 
+/* Compact cards (Product cards setting): a smaller photo in the same
+   proportions, tighter spacing, and the controls right under the text instead
+   of at the foot of a tall photo, so more of the cart fits on screen. */
+.sidecart--compact {
+  --sidecart-info-gap: 5px;
+}
+
+/* Top and bottom only: gift cards keep the side padding inside their tint. */
+.sidecart--compact .sidecart-item {
+  gap: 16px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.sidecart--compact .sidecart-item__remove {
+  top: 12px;
+}
+
+.sidecart--compact .sidecart-item__image-link {
+  width: 96px;
+  height: 124px;
+}
+
+.sidecart--compact .sidecart-item__details {
+  padding: 2px 0;
+}
+
+.sidecart--compact .sidecart-item__controls {
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 0;
+}
+
+.sidecart--compact .sidecart-item__qty-btn {
+  width: 30px;
+  height: 30px;
+}
+
+.sidecart--compact .sidecart-item__qty-input {
+  width: 32px;
+  font-size: 13px;
+}
+
+.sidecart--compact .sidecart-item__compare-price {
+  font-size: 13px;
+}
+
+.sidecart--compact .sidecart-item__current-price {
+  font-size: 16px;
+}
+
+.sidecart--compact .sidecart-item__description {
+  -webkit-line-clamp: 1;
+}
+
+.sidecart--compact .sidecart-item__bundle-bottle {
+  margin: 0 -7px;
+}
+
+@media (max-width: 768px) {
+  .sidecart--compact .sidecart-item {
+    gap: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .sidecart--compact .sidecart-item__remove {
+    top: 10px;
+  }
+
+  .sidecart--compact .sidecart-item__image-link {
+    width: 78px;
+    height: 101px;
+  }
+
+  .sidecart--compact .sidecart-item__qty-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sidecart--compact .sidecart-item__bundle-bottle {
+    margin: 0 -5px;
+  }
+}
+
 .visually-hidden {
   position: absolute !important;
   width: 1px !important;
@@ -1248,6 +2625,11 @@ class Sidecart {
     this.shippingThreshold = parseInt(this.sidecart.dataset.shippingThreshold || '0', 10);
     this.shippingProgressMsg = this.sidecart.dataset.shippingProgressMsg || '';
     this.shippingSuccessMsg = this.sidecart.dataset.shippingSuccessMsg || '';
+    this.shippingCodeMsg = this.sidecart.dataset.shippingCodeMsg || ''; // empty = no code state
+    this.shippingCode = null; // the free shipping code in the cart, if any
+    this.shippingRacePending = false; // a new code waits for the open drawer to race
+    this.shippingProgress = 0; // the bar's real progress (%), where the race starts
+    this.drawerReady = false; // the drawer has finished sliding in (see drawerOpened)
 
     this.triggerElement = null;
     this.stockWarningTimeouts = new Map();
@@ -1276,6 +2658,31 @@ class Sidecart {
     // (add / external update / open) and needs the Liquid section re-render;
     // plain qty/remove only needs a fast in-place money update.
     this.renderRetries = 0; // bounded retries when a structure render's fetch fails
+    this.lastCartFresh = false; // lastCart is the cart as it is now (no outside add since)
+
+    // --- Gift with purchase --------------------------------------------------
+    // Settings come from the baudie.gift_promo shop metafield (rendered by
+    // snippets/gift-promo-data.liquid). Every time the queue drains, syncGifts
+    // brings the cart's free gift lines in line with the promo before the
+    // drawer renders: it adds earned gifts, removes ones no longer earned, and
+    // takes discount codes off while a promo runs. The baudie-discounts
+    // function makes the gifts free at checkout from the same settings.
+    this.giftPromo = this.readGiftPromo();
+    this.giftSynced = true; // cleared by every queued job, so sync runs once per drain
+    this.giftBlocked = this.loadBlockedGifts(); // gifts that came out at full price
+    this.openOnEmailCode = false; // the load sync opens the drawer for an email link's VIP gift or shipping code
+    this.giftChoices = new Map(); // gift value -> the variant picked in the drawer (see pickGiftChoice)
+    this.giftChoicesPending = 0; // waiting gift cards showing ("Choose your scent", see renderGiftChoices)
+    this.giftChoicePrompted = false; // checkout was clicked before the pick: the cards say so
+    this.refocusGift = null; // gift value whose dropdown gets focus back after the render a pick causes
+    this.giftWash = null; // the scent wash a pick started, which the new card finishes (see washGift)
+    this.preloadedBottles = new Map(); // scent bottle images loading ahead of a pick (see preloadGiftChoices)
+    this.checkingOut = false; // checkout clicked, waiting for the cart to settle
+    this.giftCardsScroll = 0; // Cards: how far the row is scrolled, kept across re-renders
+    this.discountOpen = false; // the discount code fold-out, kept across re-renders
+    this.discountMessage = null; // { text, tone } under the code box, kept across renders
+    this.pendingDiscountCode = null; // a just-applied code to report on after the render
+    this.removingCodes = new Set(); // codes on their way off the cart (their chips already gone)
 
     this.cacheRefs();
     this.bindEvents();
@@ -1348,8 +2755,49 @@ class Sidecart {
     this.closeButton?.addEventListener('click', () => this.close());
     this.overlay?.addEventListener('click', () => this.close());
     document.addEventListener('keydown', (e) => this.handleKeydown(e));
+    this.drawer?.addEventListener('transitionend', (e) => {
+      if (e.target === this.drawer && e.propertyName === 'transform') this.drawerOpened();
+    });
+    // Back from checkout (page restored from the back-forward cache): the
+    // checkout button works again.
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) this.endCheckoutWait();
+    });
+    // Cards: remember the row's scroll, so a re-render (a gift going in)
+    // doesn't send it back to the first card.
+    this.sidecart.addEventListener(
+      'scroll',
+      (e) => {
+        if (e.target.matches && e.target.matches('[data-gift-cards]')) this.giftCardsScroll = e.target.scrollLeft;
+      },
+      true
+    );
+    this.sidecart.addEventListener('pointerdown', (e) => this.startGiftCardsDrag(e));
 
     this.sidecart.addEventListener('click', (e) => {
+      const checkout = e.target.closest('[data-sidecart-checkout]');
+      if (checkout) {
+        this.handleCheckoutClick(e, checkout);
+        return;
+      }
+      const discountToggle = e.target.closest('[data-discount-toggle]');
+      if (discountToggle) {
+        this.discountOpen = !this.discountOpen;
+        this.renderDiscountState(this.lastCart);
+        if (this.discountOpen) this.sidecart.querySelector('[data-discount-input]')?.focus();
+        return;
+      }
+      const removeCode = e.target.closest('[data-discount-remove]');
+      if (removeCode) {
+        this.removeDiscountCode(removeCode.dataset.discountRemove);
+        return;
+      }
+      const removeGift = e.target.closest('[data-gift-remove]');
+      if (removeGift) {
+        const card = removeGift.closest('[data-gift]');
+        if (card) this.removeGift(card);
+        return;
+      }
       const btn = e.target.closest('[data-action]');
       if (!btn) return;
       const item = btn.closest('[data-sidecart-item]');
@@ -1357,11 +2805,36 @@ class Sidecart {
       this.handleAction(btn.dataset.action, item);
     });
 
+    this.sidecart.addEventListener('submit', (e) => {
+      const form = e.target.closest('[data-discount-form]');
+      if (!form) return;
+      e.preventDefault();
+      const input = form.querySelector('[data-discount-input]');
+      this.applyDiscountCode((input && input.value ? input.value : '').trim());
+    });
+
+    // A gift's scent bottles start loading as its dropdown is reached, so a
+    // pick can drop its bottle at once (see dropBottle).
+    const preloadBottles = (e) => {
+      const wrap = e.target.closest && e.target.closest('[data-gift] .sidecart-item__frequency-wrap');
+      const select = wrap && wrap.querySelector('[data-gift-choice-select]');
+      if (select) this.preloadGiftChoices(select);
+    };
+    this.sidecart.addEventListener('pointerover', preloadBottles);
+    this.sidecart.addEventListener('focusin', preloadBottles);
+
     this.sidecart.addEventListener('change', (e) => {
       const frequency = e.target.closest('[data-frequency-select]');
       if (frequency) {
         const card = frequency.closest('[data-sidecart-item]');
         if (card) this.changeFrequency(card, frequency);
+        return;
+      }
+
+      const giftChoice = e.target.closest('[data-gift-choice-select]');
+      if (giftChoice) {
+        const card = giftChoice.closest('[data-sidecart-item], [data-gift-pending]');
+        if (card) this.chooseGift(card, giftChoice);
         return;
       }
 
@@ -1457,6 +2930,13 @@ class Sidecart {
     this.subtotalCents = Math.max(0, this.subtotalCents + deltaCents);
     if (this.subtotalElement) this.subtotalElement.textContent = this.formatMoney(this.subtotalCents);
     this.updateShippingBar(this.subtotalCents);
+    // Gifts are free, so the spend moves with the subtotal until the
+    // authoritative cart lands: the last known spend plus the change since.
+    const spend = this.lastCart
+      ? this.giftSpend(this.lastCart) + (this.subtotalCents - (this.lastCart.total_price || 0))
+      : this.subtotalCents;
+    this.updateGiftBar(this.lastCart, spend);
+    this.previewGiftCards(spend);
   }
 
   parseMoney(str) {
@@ -1503,7 +2983,9 @@ class Sidecart {
   // job rejects, but the returned promise rejects so callers (e.g. add-to-cart)
   // can surface errors. A single authoritative re-render runs once the queue
   // fully drains.
-  enqueue(job) {
+  enqueue(job, { giftSync = false } = {}) {
+    // Any cart change may earn or lose a gift, so the next drain re-syncs them.
+    if (!giftSync) this.giftSynced = false;
     this.busy++;
     const run = this.chain.then(() => job());
     this.chain = run
@@ -1513,6 +2995,14 @@ class Sidecart {
       .finally(() => {
         this.busy--;
         if (this.busy === 0 && this.pendingTargets.size === 0) {
+          // Before rendering, bring the free gifts in line with the cart, once
+          // per drain. Queued (not awaited here, which would wait on itself);
+          // its own drain then renders.
+          if (this.giftPromo && !this.giftSynced) {
+            this.giftSynced = true;
+            this.enqueue(() => this.syncGifts(), { giftSync: true });
+            return;
+          }
           // Add / external update / open changes the set of cards -> full Liquid
           // re-render. Plain qty/remove -> fast in-place money update (no extra
           // network: the change.js response cart is already cached in lastCart).
@@ -1527,6 +3017,7 @@ class Sidecart {
     const res = await fetch('/cart.js', { cache: 'no-store' });
     const cart = await res.json();
     this.lastCart = cart;
+    this.lastCartFresh = true;
     return cart;
   }
 
@@ -1541,7 +3032,222 @@ class Sidecart {
     // money in place without another /cart.js round-trip.
     const cart = await res.json();
     this.lastCart = cart;
+    this.lastCartFresh = true;
     return cart;
+  }
+
+  // A gift with a choice (the VIP scent gift): picking a scent shows its
+  // bottle at once, and the gift sync adds that variant, or swaps the line for
+  // it (still free, same `_gift`), so the order carries that scent's own SKU.
+  // The dropdown waits until the render that follows has replaced the card,
+  // which then gets the focus back if this one had it.
+  chooseGift(card, select) {
+    const value = card.dataset.gift;
+    const variantId = parseInt(select.value, 10);
+    if (!value || !variantId || String(variantId) === card.dataset.variantId) return;
+    this.giftChoices.set(value, variantId);
+    const option = select.selectedOptions[0];
+    const image = card.querySelector('.sidecart-item__image');
+    if (option && image && option.dataset.image) this.dropBottle(card, image, option.dataset.image);
+    const imageLink = card.querySelector('.sidecart-item__image-link');
+    if (option && imageLink && option.dataset.cardBg) imageLink.style.backgroundColor = option.dataset.cardBg;
+    if (card.contains(document.activeElement)) this.refocusGift = value;
+    select.disabled = true; // a disabled select's dropdown doesn't open (assets/select-menu.js)
+    if (option) this.washGift(card, option);
+    if (option) this.colorGiftChoice(card, option.dataset.textColor);
+    card.classList.add('is-choosing');
+    card.setAttribute('aria-busy', 'true');
+    if (card.hasAttribute('data-gift-pending')) {
+      card.setAttribute('data-gift-picked', '');
+      const error = card.querySelector('[data-gift-choice-error]');
+      if (error) error.hidden = true;
+      this.updateGiftChoiceBlock();
+    }
+    this.requestStructureRender();
+    this.enqueue(async () => {});
+  }
+
+  // The bottle of the scent wash: the old one (or the waiting card's fan of
+  // bottles) falls out of its box, and the picked one drops in from the top
+  // once its image can show, so the whole fall is seen. The scents' images load
+  // with the fan, or as the dropdown is reached (see preloadGiftChoices), so it
+  // usually drops at once.
+  dropBottle(card, image, src) {
+    let leaving = card.querySelector('.sidecart-item__fan');
+    if (leaving) {
+      leaving.classList.add('is-leaving');
+    } else if (!image.hidden && image.currentSrc) {
+      leaving = image.cloneNode();
+      leaving.className = 'sidecart-item__leaving sidecart-item__leaving--bottle';
+      leaving.alt = '';
+      leaving.setAttribute('aria-hidden', 'true');
+      image.after(leaving);
+    }
+    if (leaving) leaving.addEventListener('animationend', () => leaving.remove(), { once: true });
+    image.removeAttribute('srcset');
+    image.src = src;
+    image.hidden = false;
+    this.dropIn(image, () => {
+      if (this.giftWash && this.giftWash.value === card.dataset.gift) this.giftWash.dropAt = performance.now();
+    });
+  }
+
+  // Drops a bottle into its box once its image can show (unseen until then).
+  dropIn(image, onDrop) {
+    image.classList.remove('is-dropping');
+    image.classList.add('is-arriving');
+    const drop = () => {
+      if (!image.isConnected) return;
+      image.classList.remove('is-arriving');
+      void image.offsetWidth; // restarts the drop
+      image.classList.add('is-dropping');
+      if (onDrop) onDrop();
+    };
+    (image.decode ? image.decode() : Promise.resolve()).then(drop, drop);
+  }
+
+  // Starts loading a gift's scent bottles (kept, so the loads aren't dropped).
+  preloadGiftChoices(select) {
+    select.querySelectorAll('option[data-image]').forEach((option) => {
+      const src = option.dataset.image;
+      if (!src || this.preloadedBottles.has(src)) return;
+      const bottle = new Image();
+      bottle.src = src;
+      this.preloadedBottles.set(src, bottle);
+    });
+  }
+
+  // The scent wash (see the .is-choosing styles): a wave in the picked scent's
+  // product page colors, its darkest leading (the scents' gradients don't all
+  // run the same way). It falls back to the scent's card color.
+  washGift(card, option) {
+    const hex = /^#[0-9a-f]{3}([0-9a-f]{3})?$/i;
+    let colors = (option.dataset.wash || '').split(/\s+/).filter((color) => hex.test(color));
+    if (colors.length < 3) colors = hex.test(option.dataset.cardBg || '') ? [option.dataset.cardBg] : [];
+    if (!colors.length) return;
+    const luminance = (color) => {
+      const full = color.length === 4 ? color.replace(/[0-9a-f]/gi, '$&$&') : color;
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(full.slice(i, i + 2), 16));
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const [lead, ...rest] = colors.slice().sort((a, b) => luminance(a) - luminance(b));
+    const [fill, tail] = rest.length ? rest.sort((a, b) => luminance(b) - luminance(a)) : [lead, lead];
+    // The band's trailing edge, its body (light to mid) and, just ahead, a
+    // crest in the darkest color, their edges a gentle wave (a swell and a
+    // half down the card); 340 wide for a card of 100.
+    const band =
+      "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 100' preserveAspectRatio='none'>" +
+      "<defs><linearGradient id='w' x1='108' x2='226' gradientUnits='userSpaceOnUse'>" +
+      `<stop offset='0' stop-color='${fill}'/><stop offset='1' stop-color='${tail}'/></linearGradient></defs>` +
+      "<path fill='url(#w)' d='M108 0H226Q230 16.67 226 33.33T226 66.67T226 100H108Q112 83.33 108 66.67T108 33.33T108 0Z'/>" +
+      `<path fill='${lead}' d='M226 0Q230 16.67 226 33.33T226 66.67T226 100H236Q240 83.33 236 66.67T236 33.33T236 0Z'/>` +
+      '</svg>';
+    this.giftWash = {
+      value: card.dataset.gift,
+      image: `url("data:image/svg+xml,${encodeURIComponent(band)}")`,
+      color: tail,
+      started: performance.now()
+    };
+    card.classList.remove('is-chosen');
+    card.style.setProperty('--scent-wash', this.giftWash.image);
+    card.style.setProperty('--scent-wash-color', this.giftWash.color);
+  }
+
+  // The dropdown's box takes the picked scent's product page button color, the
+  // old color sliding off to the right (see .is-coloring). The new card has
+  // the new color and finishes the slide (see settleGiftWash).
+  colorGiftChoice(card, color) {
+    const choice = card.querySelector('.sidecart-item__gift-choice');
+    const box = choice && (choice.querySelector('.select-menu__button') || choice.querySelector('.sidecart-item__frequency'));
+    if (!box || !/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color || '')) return;
+    const from = getComputedStyle(box).backgroundColor;
+    choice.style.setProperty('--scent-box', color);
+    choice.style.setProperty('--scent-box-from', from);
+    choice.style.removeProperty('--scent-box-delay');
+    choice.classList.remove('is-coloring');
+    void choice.offsetWidth; // restarts the slide
+    choice.classList.add('is-coloring');
+    if (this.giftWash && this.giftWash.value === card.dataset.gift) {
+      this.giftWash.boxFrom = from;
+      this.giftWash.boxAt = performance.now();
+    }
+  }
+
+  // The render brought the new card: the wave picks up where it was, holds a
+  // moment once it covers the card, then runs off.
+  settleGiftWash() {
+    const wash = this.giftWash;
+    this.giftWash = null;
+    if (!wash || !this.sidecart.classList.contains('is-open')) return;
+    const card = Array.from(this.sidecart.querySelectorAll('[data-gift]')).find(
+      (el) => el.dataset.gift === wash.value && el.getAttribute('aria-hidden') !== 'true'
+    );
+    if (!card || card.classList.contains('is-choosing')) return;
+    const elapsed = Math.round(performance.now() - wash.started);
+    card.style.setProperty('--scent-wash', wash.image);
+    card.style.setProperty('--scent-wash-color', wash.color);
+    card.style.setProperty('--scent-wash-elapsed', `${-elapsed}ms`);
+    card.style.setProperty('--scent-wash-hold', `${Math.max(550 - elapsed, 0) + 150}ms`);
+    card.classList.add('is-chosen');
+    // The bottle drops on: the rest of its fall (0.9s, see .is-dropping), or
+    // all of it if its image wasn't in yet.
+    const image = card.querySelector('.sidecart-item__image');
+    const fallen = wash.dropAt ? performance.now() - wash.dropAt : 0;
+    if (image && !wash.dropAt) {
+      this.dropIn(image);
+    } else if (image && fallen < 900) {
+      image.style.setProperty('--bottle-delay', `${-Math.round(fallen)}ms`);
+      image.classList.add('is-dropping');
+    }
+    // The box slides on to its new color (0.5s, see .is-coloring).
+    const choice = card.querySelector('.sidecart-item__gift-choice');
+    const colored = wash.boxAt ? performance.now() - wash.boxAt : Infinity;
+    if (choice && colored < 500) {
+      choice.style.setProperty('--scent-box-from', wash.boxFrom);
+      choice.style.setProperty('--scent-box-delay', `${-Math.round(colored)}ms`);
+      choice.classList.add('is-coloring');
+    }
+    const done = (event) => {
+      if (event.target !== card || !/^sidecart-scent-(wash-out|fade)$/.test(event.animationName)) return;
+      card.classList.remove('is-chosen');
+      card.removeEventListener('animationend', done);
+    };
+    card.addEventListener('animationend', done);
+  }
+
+  // Remove on a VIP gift, or on its card waiting for a scent, takes the gift's
+  // code off the cart, like the code's X (see removeDiscountCodes).
+  removeGift(card) {
+    const row = this.vipRow(card.dataset.gift);
+    if (!row) return;
+    this.hideGiftCards(card.dataset.gift);
+    this.removeDiscountCodes((code) => this.vipRowForCode(code) === row);
+  }
+
+  // Takes a gift's cards out of the drawer at once, ahead of the cart, moving
+  // the focus off them first.
+  hideGiftCards(value) {
+    const cards = Array.from(this.sidecart.querySelectorAll('[data-gift]')).filter(
+      (card) => card.dataset.gift === value && card.getAttribute('aria-hidden') !== 'true'
+    );
+    cards.forEach((card) => {
+      if (card.contains(document.activeElement)) {
+        const others = Array.from(
+          this.sidecart.querySelectorAll('[data-sidecart-item]:not([aria-hidden="true"])')
+        ).filter((el) => el !== card);
+        const focusTarget = (others[0] && others[0].querySelector('[data-action="remove"]')) || this.closeButton;
+        focusTarget?.focus();
+      }
+      card.setAttribute('aria-hidden', 'true');
+      card.style.display = 'none';
+      const quantity = card.hasAttribute('data-gift-pending')
+        ? (this.vipRow(value) || {}).quantity || 1
+        : ((this.lastCart && this.lastCart.items) || [])
+            .filter((line) => this.isGiftLine(line) && line.properties._gift === value)
+            .reduce((sum, line) => sum + line.quantity, 0);
+      this.adjustCountBadge(-quantity);
+    });
+    this.updateGiftChoiceBlock();
   }
 
   // Switch a card's purchase option: another delivery frequency (selling plan
@@ -1752,7 +3458,10 @@ class Sidecart {
     let html;
     try {
       const cartPromise = this.fetchCart();
-      const htmlPromise = fetch('/?section_id=sidecart', { cache: 'no-store' }).then((r) => r.text());
+      // The section's own id (it lives in a section group): the bare
+      // "sidecart" renders with the default settings, not the saved ones.
+      const sectionId = encodeURIComponent(this.sidecart.dataset.sectionId || 'sidecart');
+      const htmlPromise = fetch('/?section_id=' + sectionId, { cache: 'no-store' }).then((r) => r.text());
       cart = await cartPromise;
       // Update only the count badge early (it lives in the header, which the
       // section render does NOT replace) so it responds the moment the cart
@@ -1785,20 +3494,28 @@ class Sidecart {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const newContent = doc.querySelector('[data-sidecart-content]');
     const newFooter = doc.querySelector('[data-sidecart-footer]');
+    const openMenu = this.openMenuKey();
     if (newContent && this.content) this.content.innerHTML = newContent.innerHTML;
     if (newFooter && this.footer) this.footer.innerHTML = newFooter.innerHTML;
 
+    // The top bar stays put while it shows a free shipping code, so its race
+    // and glow run on through re-renders (applyCartTotals sets its text and
+    // width).
     const topBar = this.sidecart.querySelector('.sidecart__drawer > [data-shipping-bar]');
     const newTopBar = doc.querySelector('.sidecart__drawer > [data-shipping-bar]');
-    if (topBar && newTopBar) {
+    if (topBar && newTopBar && !topBar.classList.contains('sidecart__shipping-bar--code')) {
       topBar.innerHTML = newTopBar.innerHTML;
       topBar.className = newTopBar.className;
     }
 
     this.cacheRefs();
     this.applyCartTotals(cart);
-    this.applyUpsellVisibility((cart.items || []).map((i) => String(i.product_id)));
+    this.applyUpsellVisibility(this.upsellProductIds(cart));
     this.surfaceClamps();
+    this.reportPendingDiscount(cart);
+    this.restoreGiftFocus();
+    this.settleGiftWash();
+    this.reopenMenu(openMenu);
     this.needsStructureRender = false;
     this.renderRetries = 0;
     this.markContentBusy(false);
@@ -1810,6 +3527,51 @@ class Sidecart {
       this.dirty = false;
       document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart, fromSidecart: true } }));
     }
+  }
+
+  // The dropdown open in the drawer (a scent or a purchase option), as its
+  // card and kind, so a render that rebuilds the card can open it again.
+  openMenuKey() {
+    const menu = this.content && this.content.querySelector('select-menu.is-open');
+    const card = menu && menu.closest('[data-sidecart-item], [data-gift-pending]');
+    const select = menu && menu.querySelector('select');
+    if (!card || !select) return null;
+    return {
+      signature: card.dataset.propertiesSignature || null,
+      gift: card.dataset.gift || null,
+      select: select.hasAttribute('data-gift-choice-select') ? '[data-gift-choice-select]' : '[data-frequency-select]',
+      focused: menu.contains(document.activeElement)
+    };
+  }
+
+  // A render rebuilt the card whose dropdown was open (e.g. the one that
+  // follows opening the drawer): it opens again on the new card, in the same
+  // frame, so it never shuts under the customer's hand.
+  reopenMenu(key) {
+    if (!key || !this.sidecart.classList.contains('is-open')) return;
+    const card = Array.from(this.sidecart.querySelectorAll('[data-sidecart-item], [data-gift-pending]')).find(
+      (el) =>
+        el.getAttribute('aria-hidden') !== 'true' &&
+        (key.signature ? el.dataset.propertiesSignature === key.signature : el.dataset.gift === key.gift)
+    );
+    const menu = card && card.querySelector(key.select)?.closest('select-menu');
+    if (!menu || !menu.button || menu.isOpen) return;
+    if (key.focused) menu.button.focus({ preventScroll: true });
+    menu.open();
+  }
+
+  // After a scent is picked, the render replaces the card whose dropdown had
+  // the focus: it goes to the new card's dropdown, unless it has moved on.
+  restoreGiftFocus() {
+    const value = this.refocusGift;
+    this.refocusGift = null;
+    if (!value || !this.sidecart.classList.contains('is-open')) return;
+    const active = document.activeElement;
+    if (active && active !== document.body && this.sidecart.contains(active)) return;
+    const card = Array.from(this.sidecart.querySelectorAll('[data-gift]')).find(
+      (el) => el.dataset.gift === value && el.getAttribute('aria-hidden') !== 'true'
+    );
+    if (card) this.giftChoiceControl(card)?.focus({ preventScroll: true });
   }
 
   // Warn on any group whose increase the server could not fully honour (stock
@@ -1884,8 +3646,9 @@ class Sidecart {
 
     this.cacheRefs();
     this.applyCartTotals(cart);
-    this.applyUpsellVisibility(cart.items.map((i) => String(i.product_id)));
+    this.applyUpsellVisibility(this.upsellProductIds(cart));
     this.surfaceClamps();
+    this.reportPendingDiscount(cart);
     this.markContentBusy(false);
 
     if (this.dirty) {
@@ -1921,7 +3684,12 @@ class Sidecart {
     const compareEl = card.querySelector('[data-compare-price]');
     const compareAmount = card.querySelector('[data-compare-amount]');
 
-    if (priceAmount) priceAmount.textContent = this.formatMoney(final);
+    if (priceAmount) {
+      priceAmount.textContent =
+        card.dataset.gift !== undefined && final === 0 && card.dataset.freeText
+          ? card.dataset.freeText
+          : this.formatMoney(final);
+    }
     if (currentEl) currentEl.classList.toggle('sidecart-item__current-price--sale', hasCompare);
     if (saleLabel) saleLabel.hidden = !hasCompare;
     if (compareEl) compareEl.hidden = !hasCompare;
@@ -1930,8 +3698,11 @@ class Sidecart {
 
   // Count badge only (header + any [data-cart-count] outside the drawer). These
   // survive the section innerHTML replace, so they're safe to update early.
+  // A gift waiting for its scent shows as a card, so it counts too.
   applyCartCount(cart) {
-    const count = cart.item_count || 0;
+    const count =
+      (cart.item_count || 0) +
+      this.pendingGiftChoices(cart).reduce((sum, gift) => sum + (gift.row.quantity || 1), 0);
     if (this.countElement) this.countElement.textContent = count;
     this.updateItemsLabel(count);
     document.querySelectorAll('[data-cart-count]').forEach((el) => {
@@ -1941,17 +3712,22 @@ class Sidecart {
   }
 
   applyCartTotals(cart) {
+    this.renderGiftChoices(cart);
     this.applyCartCount(cart);
+    this.trackShippingCode(cart);
     if (typeof cart.total_price === 'number') {
       this.subtotalCents = cart.total_price; // authoritative; resets optimistic drift
       if (this.subtotalElement) this.subtotalElement.textContent = this.formatMoney(cart.total_price);
       this.updateShippingBar(cart.total_price);
     }
-    if ((cart.item_count || 0) === 0) {
+    this.updateGiftBar(cart);
+    this.renderDiscountState(cart);
+    if ((cart.item_count || 0) === 0 && !this.giftChoicesPending) {
       this.showEmptyState();
     } else {
       this.hideEmptyState();
     }
+    if (this.shippingRacePending) this.raceShippingBar();
   }
 
   adjustCountBadge(diff) {
@@ -1977,6 +3753,17 @@ class Sidecart {
     const threshold = this.shippingThreshold;
     const remaining = Math.max(0, threshold - cartTotalCents);
     const progress = threshold > 0 ? Math.min(100, (cartTotalCents / threshold) * 100) : 0;
+    this.shippingProgress = progress;
+
+    // A free shipping code fills the bar whatever the total, in the scents'
+    // rainbow (see the --code styles).
+    const code = this.shippingCode;
+    if (this.shippingBar) this.shippingBar.classList.toggle('sidecart__shipping-bar--code', !!code);
+    if (code) {
+      this.shippingBarFill.style.width = '100%';
+      this.shippingBarText.textContent = this.shippingCodeMsg;
+      return;
+    }
 
     this.shippingBarFill.style.width = progress + '%';
 
@@ -1985,6 +3772,69 @@ class Sidecart {
     } else {
       this.shippingBarText.textContent = this.shippingProgressMsg.replace('[amount]', this.formatMoney(remaining));
     }
+  }
+
+  // The free shipping code in the cart, or null. Shipping is only priced at
+  // checkout, so a shipping code applies (applicable) but discounts nothing
+  // here, while every other code that applies shows on a line or the cart.
+  freeShippingCode(cart) {
+    const used = new Set();
+    (cart.cart_level_discount_applications || []).forEach((app) => used.add(String(app.title || '').toUpperCase()));
+    (cart.items || []).forEach((line) => {
+      (line.discounts || []).forEach((discount) => used.add(String(discount.title || '').toUpperCase()));
+    });
+    const entry = (cart.discount_codes || []).find(
+      (discount) => discount.applicable && !used.has(String(discount.code || '').toUpperCase())
+    );
+    return entry ? entry.code : null;
+  }
+
+  // A free shipping code that's new to the cart races the bar once the drawer
+  // shows it: typed in the drawer, or from an email link (which opens the
+  // drawer, see syncGifts). The raced code is remembered in this browser so a
+  // page load doesn't race it again (or reopen the drawer for it); taking the
+  // code off forgets it, so adding it back races again.
+  trackShippingCode(cart) {
+    const code = this.shippingCodeMsg ? this.freeShippingCode(cart) : null;
+    const key = String(code || '').toUpperCase();
+    let raced = null;
+    try {
+      raced = localStorage.getItem('baudie:shipping-race');
+      if (!code && raced) localStorage.removeItem('baudie:shipping-race');
+    } catch (e) {}
+    if (!code) {
+      this.shippingRacePending = false;
+    } else if (key !== String(this.shippingCode || '').toUpperCase() && key !== raced) {
+      this.shippingRacePending = true;
+    }
+    this.shippingCode = code;
+  }
+
+  // The truck races from the real progress to the end while the rainbow forms
+  // behind it (the --race styles). Waits until the drawer has slid all the way
+  // in and the bar shows the code (drawn by applyCartTotals: until then the
+  // re-render would still replace the bar and cut the race): drawerOpened and
+  // the next applyCartTotals call it again.
+  raceShippingBar() {
+    const bar = this.shippingBar;
+    const fill = this.shippingBarFill;
+    if (!bar || !fill || !this.shippingCode) return;
+    if (!this.drawerReady || bar.classList.contains('sidecart__shipping-bar--hidden')) return;
+    if (!bar.classList.contains('sidecart__shipping-bar--code')) return;
+    this.shippingRacePending = false;
+    try {
+      localStorage.setItem('baudie:shipping-race', String(this.shippingCode).toUpperCase());
+    } catch (e) {}
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    fill.style.transition = 'none';
+    fill.style.width = this.shippingProgress + '%';
+    void fill.offsetWidth; // the race starts there, not at 100%
+    fill.style.transition = '';
+    bar.classList.add('sidecart__shipping-bar--race');
+    fill.style.width = '100%';
+    clearTimeout(this.shippingRaceTimer);
+    this.shippingRaceTimer = setTimeout(() => bar.classList.remove('sidecart__shipping-bar--race'), 1600);
   }
 
   showEmptyState() {
@@ -2018,10 +3868,12 @@ class Sidecart {
       // Ignore the events we dispatch ourselves; reconcile for external ones
       // (e.g. the product-bundle add path), which may add a card -> full render.
       if (e.detail && e.detail.fromSidecart) return;
+      this.lastCartFresh = false;
       this.requestStructureRender();
       this.enqueue(async () => {});
     });
     this.updateUpsell();
+    this.initGiftPromo();
   }
 
   // ---- Upsell visibility --------------------------------------------------
@@ -2034,13 +3886,15 @@ class Sidecart {
       return;
     }
 
-    const excludeIds = (region.dataset.excludeIds || '')
+    // A cart of only deal products gets no deal (it needs a regular product
+    // too), so offering another one at the deal price would be misleading.
+    const dealIds = (region.dataset.dealIds || '')
       .split(',')
       .map((s) => s.trim())
       .filter(Boolean);
 
-    const allExcluded = excludeIds.length > 0 && productIds.every((id) => excludeIds.includes(id));
-    if (allExcluded) {
+    const onlyDeals = dealIds.length > 0 && productIds.every((id) => dealIds.includes(id));
+    if (onlyDeals) {
       region.hidden = true;
       return;
     }
@@ -2069,7 +3923,8 @@ class Sidecart {
   // Instant: reads the cart line cards already in the drawer DOM (ignores cards
   // optimistically removed). Final truth comes from reconcileRender.
   updateUpsellFromDOM() {
-    const items = this.sidecart.querySelectorAll('[data-sidecart-item]:not([aria-hidden="true"])');
+    // Free gifts don't count as "already in the cart": the customer didn't pick them.
+    const items = this.sidecart.querySelectorAll('[data-sidecart-item]:not([aria-hidden="true"]):not([data-gift])');
     const productIds = Array.from(items)
       .map((el) => String(el.dataset.productId))
       .filter((id) => id && id !== 'undefined');
@@ -2085,7 +3940,1051 @@ class Sidecart {
     } catch (e) {
       return;
     }
-    this.applyUpsellVisibility((cart.items || []).map((i) => String(i.product_id)));
+    this.applyUpsellVisibility(this.upsellProductIds(cart));
+  }
+
+  // Product ids the upsell treats as "in the cart". Free gifts are left out:
+  // the customer didn't choose them, so they shouldn't hide an offer.
+  upsellProductIds(cart) {
+    return (cart.items || []).filter((line) => !this.isGiftLine(line)).map((line) => String(line.product_id));
+  }
+
+  // ---- Gift with purchase -------------------------------------------------
+  readGiftPromo() {
+    const el = this.sidecart.querySelector('[data-gift-promo]');
+    if (!el) return null;
+    try {
+      const promo = JSON.parse(el.textContent);
+      promo.tiers = (promo.tiers || []).filter((tier) => tier.variantId);
+      promo.vip = (promo.vip || []).filter((row) => row.variantId && row.prefix);
+      return promo;
+    } catch (e) {
+      console.error('Sidecart gift settings unreadable:', e);
+      return null;
+    }
+  }
+
+  initGiftPromo() {
+    if (!this.giftPromo) return;
+    // A VIP gift added by this first sync, or a new free shipping code it
+    // finds, came from an email link (/discount/CODE): the drawer opens to
+    // show it.
+    this.openOnEmailCode = true;
+    // ?gift_preview=1 (the admin's preview link) makes this browser's cart a
+    // preview cart, so a promo in Preview runs for it; ?gift_preview=0 undoes it.
+    const flag = new URLSearchParams(window.location.search).get('gift_preview');
+    if (flag === '1' || flag === '0') {
+      this.enqueue(async () => {
+        const res = await fetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ attributes: { _gift_preview: flag === '1' ? '1' : '' } })
+        });
+        if (res.ok) {
+          this.lastCart = await res.json();
+          this.lastCartFresh = true;
+        }
+      });
+      return;
+    }
+    // Otherwise sync once on load: e.g. a VIP code applied by an email link
+    // (/discount/CODE), or a promo that started since the cart was filled.
+    this.enqueue(async () => {});
+  }
+
+  isGiftLine(line) {
+    return !!(line && line.properties && line.properties._gift);
+  }
+
+  isVipGiftValue(value) {
+    return String(value || '').indexOf('vip:') === 0;
+  }
+
+  giftKey(value, variantId) {
+    return value + '|' + variantId;
+  }
+
+  // The VIP row of a gift value ("vip:<prefix>"), or null.
+  vipRow(value) {
+    if (!this.giftPromo || !this.isVipGiftValue(value)) return null;
+    return this.giftPromo.vip.find((vip) => 'vip:' + vip.prefix === value) || null;
+  }
+
+  // The VIP row a discount code belongs to (its code starts with the row's
+  // prefix), or null.
+  vipRowForCode(code) {
+    const upper = String(code || '').toUpperCase();
+    return this.giftPromo.vip.find((vip) => upper.indexOf(String(vip.prefix).toUpperCase()) === 0) || null;
+  }
+
+  // True for a gift the customer picks the variant of in the drawer: a VIP
+  // gift whose product has several (the scent gift; see pickGiftChoice).
+  giftHasChoice(value) {
+    const row = this.vipRow(value);
+    return !!(row && row.choices);
+  }
+
+  // A gift that came out at full price stays off for the rest of the visit, so
+  // a misconfigured gift can never loop. Reset whenever the settings are saved.
+  loadBlockedGifts() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('baudie:gift-blocked') || 'null');
+      if (saved && this.giftPromo && saved.version === this.giftPromo.updatedAt) return new Set(saved.keys);
+    } catch (e) {}
+    return new Set();
+  }
+
+  blockGift(key) {
+    this.giftBlocked.add(key);
+    try {
+      sessionStorage.setItem(
+        'baudie:gift-blocked',
+        JSON.stringify({ version: this.giftPromo.updatedAt, keys: Array.from(this.giftBlocked) })
+      );
+    } catch (e) {}
+  }
+
+  // The store's date (YYYY-MM-DD) in its own time zone, like the function's
+  // shop.localTime.date.
+  storeToday() {
+    try {
+      return new Intl.DateTimeFormat('en-CA', {
+        timeZone: this.giftPromo.timezone || undefined,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(new Date());
+    } catch (e) {
+      return new Date().toISOString().slice(0, 10);
+    }
+  }
+
+  // Mirrors giftPromoIsRunning in the baudie-discounts function.
+  giftPromoRunning(cart) {
+    const promo = this.giftPromo;
+    if (!promo || !promo.tiers.length) return false;
+    if (promo.status === 'preview') {
+      return !!(cart && cart.attributes && cart.attributes._gift_preview === '1');
+    }
+    if (promo.status !== 'on') return false;
+    const today = this.storeToday();
+    if (promo.startDate && today < promo.startDate) return false;
+    if (promo.endDate && today > promo.endDate) return false;
+    return true;
+  }
+
+  // What the customer is spending: every line except gifts, after discounts
+  // (the wipes deal, subscription prices).
+  giftSpend(cart) {
+    return (cart.items || [])
+      .filter((line) => !this.isGiftLine(line))
+      .reduce((sum, line) => sum + (line.final_line_price || 0), 0);
+  }
+
+  // A tier's spend amount in the cart's currency, in cents.
+  giftTierCents(tier) {
+    const rate = parseFloat((window.Shopify && Shopify.currency && Shopify.currency.rate) || '1') || 1;
+    return Math.round(parseFloat(tier.minimum) * 100 * rate);
+  }
+
+  // The gift lines the cart should have, keyed by their `_gift` value:
+  // "tier:N" for each spend tier reached (promo running), or "vip:<prefix>" for
+  // a VIP code in the cart (no promo running: codes are blocked during one).
+  desiredGifts(cart) {
+    const desired = new Map();
+    const promo = this.giftPromo;
+    const want = (value, gift) => {
+      const variantId = gift.choices ? this.pickGiftChoice(value, gift, cart) : gift.available && gift.variantId;
+      if (!variantId || this.giftBlocked.has(this.giftKey(value, variantId))) return;
+      desired.set(value, { variantId, quantity: gift.quantity || 1 });
+    };
+
+    if (this.giftPromoRunning(cart)) {
+      const spend = this.giftSpend(cart);
+      promo.tiers.forEach((tier, index) => {
+        if (spend >= this.giftTierCents(tier)) want('tier:' + (index + 1), tier);
+      });
+    } else {
+      (cart.discount_codes || []).forEach((entry) => {
+        const row = this.vipRowForCode(entry.code);
+        if (row) want('vip:' + row.prefix, row);
+      });
+    }
+    return desired;
+  }
+
+  // The variants a gift with a choice can be: in stock and not blocked.
+  usableGiftChoices(value, gift) {
+    if (this.giftBlocked.has(this.giftKey(value, '*'))) return [];
+    return gift.choices
+      .filter((choice) => choice.available && !this.giftBlocked.has(this.giftKey(value, choice.variantId)))
+      .map((choice) => choice.variantId);
+  }
+
+  // The variant a gift with a choice should be, if it's usable: the one
+  // picked in the drawer, else the one already in the cart. Nothing is picked
+  // for the customer: until they pick, the gift waits in the drawer
+  // ("Choose your scent", see pendingGiftChoices).
+  pickGiftChoice(value, gift, cart) {
+    const usable = this.usableGiftChoices(value, gift);
+    const usableId = (id) => (usable.includes(id) ? id : null);
+    const line = (cart.items || []).find((item) => this.isGiftLine(item) && item.properties._gift === value);
+    return usableId(this.giftChoices.get(value)) || usableId(line && line.variant_id) || null;
+  }
+
+  // The VIP gifts waiting for the customer to pick (the scent gift): the
+  // gift's code is in the cart, but the gift isn't, as nothing is picked yet
+  // (or the pick didn't go in). Each with the codes that bring it and the
+  // variants it can still be. None while a promo runs (no codes then).
+  pendingGiftChoices(cart) {
+    if (!this.giftPromo || !cart || this.giftPromoRunning(cart)) return [];
+    const pending = new Map();
+    (cart.discount_codes || []).forEach((entry) => {
+      const row = this.vipRowForCode(entry.code);
+      if (!row || !row.choices) return;
+      const value = 'vip:' + row.prefix;
+      if (!pending.has(value)) pending.set(value, { value, row, codes: [], usable: this.usableGiftChoices(value, row) });
+      pending.get(value).codes.push(String(entry.code));
+    });
+    return Array.from(pending.values()).filter(
+      (gift) =>
+        gift.usable.length > 0 &&
+        !(cart.items || []).some((line) => this.isGiftLine(line) && line.properties._gift === gift.value)
+    );
+  }
+
+  // Puts in a card for each gift waiting for a pick (from its template, see
+  // snippets/sidecart-gift-choice.liquid) and takes out the ones no longer
+  // waiting, after every render. The drawer opens for a waiting gift once
+  // (see syncGifts), so it remembers here which codes it has shown.
+  renderGiftChoices(cart) {
+    const pending = this.pendingGiftChoices(cart);
+    const values = new Set(pending.map((gift) => gift.value));
+    this.sidecart.querySelectorAll('[data-gift-pending]').forEach((card) => {
+      if (!values.has(card.dataset.gift)) card.remove();
+    });
+    pending.forEach((gift) => {
+      const cards = Array.from(this.sidecart.querySelectorAll('[data-gift-pending]'));
+      if (cards.some((card) => card.dataset.gift === gift.value)) return;
+      const template = Array.from(this.sidecart.querySelectorAll('template[data-gift-choice-template]')).find(
+        (el) => el.dataset.giftChoiceTemplate === gift.value
+      );
+      const source = template && template.content.firstElementChild;
+      if (!source || !this.itemsContainer) return;
+      const card = document.importNode(source, true);
+      // Scents sold out or blocked since the page loaded aren't offered.
+      card.querySelectorAll('[data-gift-choice-select] option').forEach((option) => {
+        if (option.value && !gift.usable.includes(parseInt(option.value, 10))) option.remove();
+      });
+      const error = card.querySelector('[data-gift-choice-error]');
+      if (error) error.hidden = !this.giftChoicePrompted;
+      this.itemsContainer.appendChild(card); // its dropdown sets itself up as it goes in
+    });
+    if (!pending.length) this.giftChoicePrompted = false;
+    this.giftChoicesPending = this.sidecart.querySelectorAll('[data-gift-pending]:not([aria-hidden="true"])').length;
+    this.updateGiftChoiceBlock();
+
+    try {
+      if (!pending.length) {
+        localStorage.removeItem('baudie:gift-choice-shown');
+      } else if (this.sidecart.classList.contains('is-open')) {
+        localStorage.setItem('baudie:gift-choice-shown', this.giftChoiceCodes(pending).join(','));
+      }
+    } catch (e) {}
+  }
+
+  giftChoiceCodes(pending) {
+    return pending.flatMap((gift) => gift.codes.map((code) => code.toUpperCase()));
+  }
+
+  // True when a waiting gift has a code this browser hasn't shown yet: the
+  // drawer opens for it (an email link's code, see syncGifts).
+  newGiftChoice(cart) {
+    let shown = [];
+    try {
+      shown = (localStorage.getItem('baudie:gift-choice-shown') || '').split(',');
+    } catch (e) {}
+    return this.giftChoiceCodes(this.pendingGiftChoices(cart)).some((code) => !shown.includes(code));
+  }
+
+  // The first waiting gift card with nothing picked yet, or null.
+  unpickedGiftChoice() {
+    return this.sidecart.querySelector('[data-gift-pending]:not([data-gift-picked]):not([aria-hidden="true"])');
+  }
+
+  // Checkout waits while a gift waits for its pick: dimmed, and a click asks
+  // for the pick (see handleCheckoutClick). The footer is re-rendered, so the
+  // state lives on the drawer.
+  updateGiftChoiceBlock() {
+    const waiting = !!this.unpickedGiftChoice();
+    this.sidecart.classList.toggle('is-gift-choice-pending', waiting);
+    this.sidecart.querySelectorAll('[data-sidecart-checkout]').forEach((link) => {
+      if (waiting) link.setAttribute('aria-disabled', 'true');
+      else link.removeAttribute('aria-disabled');
+    });
+  }
+
+  // Checkout clicked before the pick: brings the waiting card into view with
+  // its message ("Choose your scent to check out.") and a nudge, and puts the
+  // focus on its dropdown. The message stays on through re-renders until the
+  // pick.
+  promptGiftChoice() {
+    const card = this.unpickedGiftChoice() || this.sidecart.querySelector('[data-gift-pending]');
+    this.giftChoicePrompted = true;
+    if (!card) return;
+    const error = card.querySelector('[data-gift-choice-error]');
+    if (error) error.hidden = false;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    card.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+    card.classList.remove('is-prompted');
+    void card.offsetWidth; // so the nudge plays again on another click
+    card.classList.add('is-prompted');
+    this.giftChoiceControl(card)?.focus({ preventScroll: true });
+  }
+
+  // A gift card's dropdown to focus: the styled button, or the native select
+  // when the dropdown script hasn't set it up (it comes first in the card).
+  giftChoiceControl(card) {
+    return card.querySelector('.select-menu__button') || card.querySelector('[data-gift-choice-select]');
+  }
+
+  // Runs on the chain once per drain (see enqueue). Each step re-reads the live
+  // cart, so line indices are always current.
+  async syncGifts() {
+    const openOnEmailCode = this.openOnEmailCode;
+    this.openOnEmailCode = false;
+    try {
+      let cart = this.lastCartFresh && this.lastCart ? this.lastCart : await this.fetchCart();
+      let changed = false;
+      let addedVip = false;
+
+      // A VIP gift's pick goes with its code: adding the code back asks again.
+      const coded = new Set();
+      (cart.discount_codes || []).forEach((entry) => {
+        const row = this.vipRowForCode(entry.code);
+        if (row) coded.add('vip:' + row.prefix);
+      });
+      Array.from(this.giftChoices.keys()).forEach((value) => {
+        if (!coded.has(value)) this.giftChoices.delete(value);
+      });
+
+      // 1. No discount codes while a promo runs (checkout rejects them too).
+      if (this.giftPromoRunning(cart) && (cart.discount_codes || []).length) {
+        cart = await this.updateCartDiscounts([]);
+        this.setDiscountMessage(this.codesBlockedMessage(), 'error');
+        changed = true;
+      }
+
+      // 2. Remove gift lines that aren't earned (or are duplicates) and fix
+      // quantities, all in one request.
+      const fixes = this.giftFixes(cart);
+      if (Object.keys(fixes).length) {
+        cart = await this.updateLines(fixes);
+        changed = true;
+      }
+
+      // 3. Add the earned gifts that are missing, in one request.
+      const missing = this.missingGifts(cart);
+      if (missing.length) {
+        const res = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ items: missing })
+        });
+        if (!res.ok) {
+          // E.g. a gift sold out since the page loaded: leave those out.
+          missing.forEach((item) => this.blockGift(this.giftKey(item.properties._gift, item.id)));
+        } else {
+          addedVip = missing.some((item) => this.isVipGiftValue(item.properties._gift));
+        }
+        cart = await this.fetchCart();
+        changed = true;
+      }
+
+      // 4. Safety net: a gift must be free. One that isn't (the discount is
+      // switched off, a VIP code doesn't cover that product, ...) is removed
+      // rather than charged. A gift with a choice is blocked whole, since the
+      // code would miss its other variants too.
+      const charged = {};
+      (cart.items || []).forEach((line) => {
+        if (!this.isGiftLine(line) || line.final_line_price <= 0) return;
+        const value = line.properties._gift;
+        this.blockGift(this.giftKey(value, this.giftHasChoice(value) ? '*' : line.variant_id));
+        charged[line.key] = 0;
+      });
+      if (Object.keys(charged).length) {
+        cart = await this.updateLines(charged);
+        changed = true;
+      }
+
+      if (changed) {
+        this.dirty = true;
+        this.needsStructureRender = true;
+      }
+
+      // Show the customer what their email link just brought: the VIP gift it
+      // added (unless step 4 took it back off), a VIP gift waiting for them to
+      // pick its scent (once per code, so browsing on doesn't keep opening
+      // it), or a free shipping code new to this browser. That one waits for
+      // something in the cart: an empty cart's drawer opens on the first add
+      // instead, and the bar races once the drawer is in.
+      if (openOnEmailCode && !this.sidecart.classList.contains('is-open')) {
+        const vipGift =
+          addedVip &&
+          (cart.items || []).some((line) => this.isGiftLine(line) && this.isVipGiftValue(line.properties._gift));
+        this.trackShippingCode(cart);
+        if (vipGift || this.newGiftChoice(cart) || (this.shippingRacePending && (cart.item_count || 0) > 0)) {
+          this.open();
+        }
+      }
+    } catch (err) {
+      console.error('Sidecart gift sync failed:', err);
+    }
+  }
+
+  // The fixes the existing gift lines need, as /cart/update.js updates keyed by
+  // line key ({} when every gift line is right): 0 for a gift that isn't
+  // earned or is a duplicate, otherwise its quantity when that's off.
+  giftFixes(cart) {
+    const desired = this.desiredGifts(cart);
+    const seen = new Set();
+    const updates = {};
+    (cart.items || []).forEach((line) => {
+      if (!this.isGiftLine(line)) return;
+      const value = line.properties._gift;
+      const want = desired.get(value);
+      if (!want || want.variantId !== line.variant_id || seen.has(value)) {
+        updates[line.key] = 0;
+        return;
+      }
+      seen.add(value);
+      if (line.quantity !== want.quantity) updates[line.key] = want.quantity;
+    });
+    return updates;
+  }
+
+  // Several lines in one request, by line key (a gift and a paid line of the
+  // same product are separate lines, so variant ids won't do).
+  async updateLines(updates) {
+    const res = await fetch('/cart/update.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ updates })
+    });
+    if (!res.ok) throw new Error('cart/update failed: ' + res.status);
+    const cart = await res.json();
+    this.lastCart = cart;
+    this.lastCartFresh = true;
+    return cart;
+  }
+
+  // True when the cart's gift lines don't match what it earns: one to remove
+  // or fix, one missing, or one that isn't free.
+  giftsOutOfSync(cart) {
+    return (
+      Object.keys(this.giftFixes(cart)).length > 0 ||
+      this.missingGifts(cart).length > 0 ||
+      (cart.items || []).some((line) => this.isGiftLine(line) && line.final_line_price > 0)
+    );
+  }
+
+  // Optimistic, while a quantity change is on its way: hide the gift cards the
+  // new spend no longer earns (and take them off the item count, which shows
+  // the empty cart if nothing else is left), so a gift never lingers while the
+  // sync removes it. A spend that climbs back shows them again; the next
+  // render shows the real cart either way. VIP gifts don't depend on spend.
+  previewGiftCards(spend) {
+    if (!this.giftPromo || !this.lastCart || !this.giftPromoRunning(this.lastCart)) return;
+    const earned = new Set();
+    this.giftPromo.tiers.forEach((tier, index) => {
+      if (spend >= this.giftTierCents(tier)) earned.add('tier:' + (index + 1));
+    });
+    this.sidecart.querySelectorAll('[data-sidecart-item][data-gift^="tier:"]').forEach((card) => {
+      const leaving = !earned.has(card.dataset.gift);
+      if (leaving === card.hasAttribute('data-gift-leaving')) return;
+      // Already hidden for another reason: leave it be.
+      if (leaving && card.getAttribute('aria-hidden') === 'true') return;
+      const quantity = (this.lastCart.items || [])
+        .filter((line) => this.isGiftLine(line) && line.properties._gift === card.dataset.gift)
+        .reduce((sum, line) => sum + line.quantity, 0);
+      card.toggleAttribute('data-gift-leaving', leaving);
+      if (leaving) {
+        card.setAttribute('aria-hidden', 'true');
+        card.style.display = 'none';
+      } else {
+        card.removeAttribute('aria-hidden');
+        card.style.display = '';
+      }
+      this.adjustCountBadge(leaving ? -quantity : quantity);
+    });
+  }
+
+  missingGifts(cart) {
+    const present = new Set(
+      (cart.items || []).filter((line) => this.isGiftLine(line)).map((line) => line.properties._gift)
+    );
+    const missing = [];
+    this.desiredGifts(cart).forEach((gift, value) => {
+      if (!present.has(value)) {
+        missing.push({ id: gift.variantId, quantity: gift.quantity, properties: { _gift: value } });
+      }
+    });
+    return missing;
+  }
+
+  // Progress toward the gifts, for however many tiers the promo has (1, 2 or
+  // 3), as a list or a segmented bar (the Gift progress style setting).
+  // Hidden unless a promo runs for this cart and it has paid items.
+  updateGiftBar(cart, spendOverride) {
+    const bar = this.sidecart.querySelector('[data-gift-bar]');
+    if (!bar) return;
+    const running = !!cart && this.giftPromoRunning(cart);
+    let hasItems = !!cart && (cart.items || []).some((line) => !this.isGiftLine(line));
+    // Optimistic update (the cart is the one before the change): go by the
+    // cards still showing, so removing the last item hides it straight away.
+    if (hasItems && typeof spendOverride === 'number') {
+      hasItems = !!this.sidecart.querySelector('[data-sidecart-item]:not([aria-hidden="true"]):not([data-gift])');
+    }
+    if (!running || !hasItems) {
+      bar.hidden = true;
+      return;
+    }
+
+    const tiers = this.giftPromo.tiers
+      .map((tier, index) => ({
+        cents: this.giftTierCents(tier),
+        label: (tier.quantity > 1 ? tier.quantity + ' × ' : '') + tier.title,
+        value: 'tier:' + (index + 1),
+        image: tier.image,
+        cardBg: tier.cardBg,
+        worth: tier.worth,
+        // Same test as desiredGifts: a gift that won't be added isn't offered.
+        offered: tier.available && !this.giftBlocked.has(this.giftKey('tier:' + (index + 1), tier.variantId))
+      }))
+      .sort((a, b) => a.cents - b.cents);
+    const spend = typeof spendOverride === 'number' ? spendOverride : this.giftSpend(cart);
+
+    if (bar.dataset.giftLayout === 'list') {
+      bar.hidden = !this.updateGiftList(bar, tiers, spend);
+    } else if (bar.dataset.giftLayout === 'cards') {
+      bar.hidden = !this.updateGiftCards(bar, tiers, spend);
+      const row = bar.querySelector('[data-gift-cards][data-restore-scroll]');
+      if (row && !bar.hidden) {
+        delete row.dataset.restoreScroll;
+        row.scrollLeft = this.giftCardsScroll;
+      }
+    } else {
+      this.updateGiftSteps(bar, tiers, spend);
+      bar.hidden = false;
+    }
+  }
+
+  // List layout: a row per gift on offer, numbered in spend order. Each row is
+  // unlocked (a tick, FREE), the next gift (tinted) or still ahead, with the
+  // spend it unlocks at and what's left. The rows are rebuilt only when the
+  // gifts on offer change (a gift sold out at page load or blocked since).
+  // Returns false when there's no gift to show.
+  updateGiftList(bar, tiers, spend) {
+    const list = bar.querySelector('[data-gift-list]');
+    if (!list) return false;
+    const shown = tiers.filter((tier) => tier.offered);
+    const signature = shown.map((tier) => tier.cents + ':' + tier.label).join('|');
+    if (list.dataset.gifts !== signature) {
+      list.dataset.gifts = signature;
+      list.replaceChildren(
+        ...shown.map((tier, index) => {
+          const row = document.createElement('li');
+          row.className = 'sidecart__gift-row';
+          row.innerHTML =
+            '<span class="sidecart__gift-row-icon" aria-hidden="true">' +
+            '<span class="sidecart__gift-row-number"></span>' +
+            '<svg class="sidecart__gift-row-check" focusable="false" viewBox="0 0 10 10" fill="none"><path d="M2 5.3L4.1 7.3L8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+            '</span>' +
+            '<span class="sidecart__gift-row-info">' +
+            '<span class="sidecart__gift-row-name"></span><span class="sidecart__gift-row-status"></span>' +
+            '</span>' +
+            '<span class="sidecart__gift-row-value"></span>';
+          row.querySelector('.sidecart__gift-row-number').textContent = index + 1;
+          row.querySelector('.sidecart__gift-row-name').textContent = tier.label;
+          return row;
+        })
+      );
+    }
+
+    let unlockedCount = 0;
+    let currentFound = false;
+    Array.from(list.children).forEach((row, index) => {
+      const tier = shown[index];
+      const unlocked = spend >= tier.cents;
+      const current = !unlocked && !currentFound;
+      if (current) currentFound = true;
+      if (unlocked) unlockedCount += 1;
+      row.classList.toggle('is-unlocked', unlocked);
+      row.classList.toggle('is-current', current);
+      row.querySelector('.sidecart__gift-row-status').textContent = unlocked
+        ? bar.dataset.unlockedMsg || ''
+        : (bar.dataset.unlocksAtMsg || '').replace('AMOUNT', this.formatMoney(tier.cents).replace(/[.,]00(?=\D*$)/, ''));
+      row.querySelector('.sidecart__gift-row-value').textContent = unlocked
+        ? bar.dataset.freeMsg || ''
+        : (bar.dataset.leftMsg || '').replace('AMOUNT', this.formatMoney(tier.cents - spend));
+    });
+
+    // "2 of 3 unlocked". A single gift's row says it all.
+    const count = bar.querySelector('[data-gift-list-count]');
+    if (count) {
+      count.textContent =
+        shown.length > 1
+          ? (bar.dataset.countMsg || '').replace('COUNT', unlockedCount).replace('TOTAL', shown.length)
+          : '';
+    }
+    return shown.length > 0;
+  }
+
+  // Cards layout: a card per gift on offer, in spend order, rebuilt only when
+  // the gifts on offer change (or the drawer re-renders, which replaces them:
+  // the row goes back to where the customer had scrolled it). Each shows its
+  // own progress toward its spend amount, then what's left to spend or, once
+  // unlocked, Added to cart (the sync adds it). Returns false when there's no
+  // gift to show.
+  updateGiftCards(bar, tiers, spend) {
+    const list = bar.querySelector('[data-gift-cards]');
+    if (!list) return false;
+    const shown = tiers.filter((tier) => tier.offered);
+    const signature = shown.map((tier) => tier.value + ':' + tier.cents).join('|');
+    const noDecimals = (cents) => this.formatMoney(cents).replace(/[.,]00(?=\D*$)/, '');
+    if (list.dataset.gifts !== signature) {
+      list.dataset.gifts = signature;
+      list.replaceChildren(
+        ...shown.map((tier) => {
+          const card = document.createElement('li');
+          card.className = 'sidecart__gift-card';
+          card.dataset.giftCard = tier.value;
+          card.innerHTML =
+            '<div class="sidecart__gift-card-top">' +
+            '<span class="sidecart__gift-card-image" aria-hidden="true"></span>' +
+            '<span class="sidecart__gift-card-text">' +
+            '<span class="sidecart__gift-card-name"></span><span class="sidecart__gift-card-detail"></span>' +
+            '</span>' +
+            '</div>' +
+            '<div class="sidecart__gift-card-track" aria-hidden="true"><div class="sidecart__gift-card-fill"></div></div>' +
+            '<p class="sidecart__gift-card-chip" data-gift-card-locked></p>' +
+            '<p class="sidecart__gift-card-chip sidecart__gift-card-chip--added" data-gift-card-added hidden>' +
+            // The gift icon of the gift lines' "Gift with purchase".
+            '<svg aria-hidden="true" focusable="false" width="12" height="12" viewBox="0 0 12 12" fill="none">' +
+            '<path d="M1.25 3.75H10.75V6.25H1.25V3.75ZM2.25 6.25V10.75H9.75V6.25M6 3.75V10.75" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '<path d="M6 3.75C5.6 2.2 4.9 1.25 4 1.25C3.3 1.25 2.9 1.7 2.9 2.3C2.9 3.1 3.7 3.75 6 3.75ZM6 3.75C6.4 2.2 7.1 1.25 8 1.25C8.7 1.25 9.1 1.7 9.1 2.3C9.1 3.1 8.3 3.75 6 3.75Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>' +
+            '</svg>' +
+            '<span></span></p>';
+          const image = card.querySelector('.sidecart__gift-card-image');
+          if (tier.cardBg) image.style.backgroundColor = tier.cardBg;
+          if (tier.image) {
+            const img = document.createElement('img');
+            img.src = tier.image;
+            img.alt = '';
+            img.loading = 'lazy';
+            img.width = 52;
+            img.height = 52;
+            img.draggable = false;
+            image.appendChild(img);
+          }
+          card.querySelector('.sidecart__gift-card-name').textContent = tier.label;
+          card.querySelector('.sidecart__gift-card-detail').textContent = (bar.dataset.detailMsg || '')
+            .replace('WORTH', noDecimals(tier.worth || 0))
+            .replace('AMOUNT', noDecimals(tier.cents));
+          card.querySelector('[data-gift-card-added] span').textContent = bar.dataset.addedMsg || '';
+          return card;
+        })
+      );
+      // Scrolled back once the panel shows (see updateGiftBar): a hidden row can't scroll.
+      list.dataset.restoreScroll = '';
+    }
+
+    let unlockedCount = 0;
+    Array.from(list.children).forEach((card, index) => {
+      const tier = shown[index];
+      const unlocked = spend >= tier.cents;
+      if (unlocked) unlockedCount += 1;
+      card.classList.toggle('is-unlocked', unlocked);
+      const fill = card.querySelector('.sidecart__gift-card-fill');
+      if (fill) fill.style.width = (tier.cents > 0 ? Math.min(1, Math.max(0, spend / tier.cents)) : 1) * 100 + '%';
+      const locked = card.querySelector('[data-gift-card-locked]');
+      locked.hidden = unlocked;
+      if (!unlocked) locked.textContent = (bar.dataset.lockedMsg || '').replace('AMOUNT', this.formatMoney(tier.cents - spend));
+      card.querySelector('[data-gift-card-added]').hidden = !unlocked;
+    });
+
+    // "2 of 3 unlocked". A single gift's card says it all.
+    const count = bar.querySelector('[data-gift-list-count]');
+    if (count) {
+      count.textContent =
+        shown.length > 1
+          ? (bar.dataset.countMsg || '').replace('COUNT', unlockedCount).replace('TOTAL', shown.length)
+          : '';
+    }
+    return shown.length > 0;
+  }
+
+  // Cards: click and drag the row with a mouse (touch screens swipe it
+  // natively, so only the mouse is handled). Snapping is off while dragging;
+  // on release the row glides to the nearest card and snapping comes back.
+  startGiftCardsDrag(e) {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    const row = e.target.closest('[data-gift-cards]');
+    if (!row || row.scrollWidth <= row.clientWidth) return;
+    e.preventDefault(); // no text selection or image dragging
+    const startX = e.clientX;
+    const startScroll = row.scrollLeft;
+    let dragging = false;
+    const move = (ev) => {
+      const dx = ev.clientX - startX;
+      if (!dragging) {
+        if (Math.abs(dx) < 4) return;
+        dragging = true;
+        row.classList.add('is-dragging');
+      }
+      row.scrollLeft = startScroll - dx;
+    };
+    const end = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+      if (!dragging) return;
+      const rowLeft = row.getBoundingClientRect().left;
+      const padding = parseFloat(getComputedStyle(row).scrollPaddingLeft) || 0;
+      const max = row.scrollWidth - row.clientWidth;
+      const stops = Array.from(row.children).map((card) =>
+        Math.min(max, Math.max(0, row.scrollLeft + card.getBoundingClientRect().left - rowLeft - padding))
+      );
+      const target = stops.reduce(
+        (best, stop) => (Math.abs(stop - row.scrollLeft) < Math.abs(best - row.scrollLeft) ? stop : best),
+        stops[0] || 0
+      );
+      row.scrollTo({ left: target, behavior: 'smooth' });
+      setTimeout(() => row.classList.remove('is-dragging'), 450);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+  }
+
+  // Bar layout: a message, then one segment per tier, each filling from the
+  // previous tier's amount to its own, with the gift and its amount underneath.
+  updateGiftSteps(bar, tiers, spend) {
+    // The segments are built once: the bar lives outside the re-rendered
+    // regions, and the tiers only change with a page load.
+    const steps = bar.querySelector('[data-gift-steps]');
+    if (steps && !steps.children.length) {
+      tiers.forEach((tier) => {
+        const step = document.createElement('div');
+        step.className = 'sidecart__gift-step';
+        step.innerHTML =
+          '<div class="sidecart__gift-step-track" aria-hidden="true"><div class="sidecart__gift-step-fill"></div></div>' +
+          '<p class="sidecart__gift-step-label">' +
+          '<span class="sidecart__gift-step-icon" aria-hidden="true">' +
+          '<svg class="sidecart__gift-step-check" focusable="false" viewBox="0 0 8 8" fill="none"><path d="M1.5 4.2L3.2 5.8L6.5 2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+          '</span><span class="sidecart__gift-step-name"></span></p>' +
+          '<p class="sidecart__gift-step-amount"></p>';
+        step.querySelector('.sidecart__gift-step-name').textContent = tier.label;
+        step.querySelector('.sidecart__gift-step-amount').textContent = this.formatMoney(tier.cents).replace(/[.,]00(?=\D*$)/, '');
+        steps.appendChild(step);
+      });
+    }
+
+    let previous = 0;
+    let currentFound = false;
+    Array.from(steps ? steps.children : []).forEach((step, index) => {
+      const tier = tiers[index];
+      if (!tier) return;
+      const span = tier.cents - previous;
+      const progress = span > 0 ? Math.min(1, Math.max(0, (spend - previous) / span)) : 1;
+      const unlocked = spend >= tier.cents;
+      const current = !unlocked && !currentFound;
+      if (current) currentFound = true;
+      step.classList.toggle('is-unlocked', unlocked);
+      step.classList.toggle('is-current', current);
+      const fill = step.querySelector('.sidecart__gift-step-fill');
+      if (fill) fill.style.width = progress * 100 + '%';
+      previous = tier.cents;
+    });
+
+    const text = bar.querySelector('[data-gift-bar-text]');
+    const next = tiers.find((tier) => spend < tier.cents);
+    if (text) {
+      text.textContent = next
+        ? (bar.dataset.progressMsg || '')
+            .replace('[amount]', this.formatMoney(next.cents - spend))
+            .replace('[gift]', next.label)
+        : bar.dataset.successMsg || '';
+    }
+  }
+
+  // ---- Checkout -----------------------------------------------------------
+  // Checkout waits for the cart to settle. A quantity change still on its way,
+  // or the gift sync after it, would otherwise reach checkout with gifts the
+  // cart no longer earns, which checkout charges at full price. While a gift
+  // promo is set up, the gifts are also checked once more against the live
+  // cart (it may have changed in another tab). New-tab clicks go straight
+  // through, unless a gift waits for its scent: then no click goes through
+  // until it's picked.
+  handleCheckoutClick(e, link) {
+    if (this.unpickedGiftChoice()) {
+      e.preventDefault();
+      this.promptGiftChoice();
+      return;
+    }
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    if (this.checkingOut) return;
+    this.goToCheckout(link.href);
+  }
+
+  async goToCheckout(href) {
+    this.checkingOut = true;
+    this.sidecart.classList.add('is-checking-out');
+    try {
+      // A quantity change still in its debounce goes out now.
+      if (this.pendingTargets.size) {
+        clearTimeout(this.flushTimer);
+        this.flush();
+      }
+      await this.cartSettled();
+      if (this.giftPromo && this.giftsOutOfSync(await this.fetchCart())) {
+        await this.enqueue(() => this.syncGifts(), { giftSync: true });
+        await this.cartSettled();
+      }
+      // A gift still waits for its scent: one picked just now didn't go in
+      // (it sold out meanwhile), or the code came in from another tab.
+      if (this.pendingGiftChoices(this.lastCart).length) {
+        this.endCheckoutWait();
+        this.promptGiftChoice();
+        return;
+      }
+    } catch (err) {
+      console.error('Sidecart checkout check failed:', err);
+    }
+    window.location.href = href;
+    // Still here a while later (navigation cancelled): let them try again.
+    setTimeout(() => this.endCheckoutWait(), 8000);
+  }
+
+  endCheckoutWait() {
+    this.checkingOut = false;
+    this.sidecart.classList.remove('is-checking-out');
+  }
+
+  // Resolves once no cart write, debounced quantity change or gift sync is
+  // pending (the re-render after them may still be running), or after the
+  // timeout, so checkout is never held up for good.
+  cartSettled(timeout = 10000) {
+    const start = Date.now();
+    return new Promise((resolve) => {
+      const check = () => {
+        // Without gift settings on the page the sync never runs (giftSynced
+        // stays false), so there's nothing to wait for there.
+        const idle = this.busy === 0 && this.pendingTargets.size === 0 && (this.giftSynced || !this.giftPromo);
+        if (idle || Date.now() - start > timeout) resolve();
+        else setTimeout(check, 50);
+      };
+      check();
+    });
+  }
+
+  // ---- Discount codes -----------------------------------------------------
+  // Codes are applied to the cart here, so a VIP gift code adds its gift
+  // before checkout. During a gift promo, codes can't be used at all.
+  applyDiscountCode(code) {
+    if (!code) return;
+    if (this.giftPromoRunning(this.lastCart)) {
+      this.setDiscountMessage(this.codesBlockedMessage(), 'error');
+      return;
+    }
+    this.setDiscountMessage(null);
+    this.setDiscountBusy(true);
+    this.requestStructureRender();
+    this.enqueue(async () => {
+      const cart = await this.fetchCart();
+      const codes = (cart.discount_codes || []).map((entry) => entry.code);
+      if (!codes.some((existing) => existing.toUpperCase() === code.toUpperCase())) codes.push(code);
+      await this.updateCartDiscounts(codes);
+      this.pendingDiscountCode = code;
+      this.dirty = true;
+    })
+      .catch(() => this.setDiscountMessage(this.discountText('errorMsg'), 'error'))
+      .finally(() => this.setDiscountBusy(false));
+  }
+
+  removeDiscountCode(code) {
+    if (!code) return;
+    this.removeDiscountCodes((existing) => existing.toUpperCase() === code.toUpperCase());
+  }
+
+  // Takes off every code in the cart that `matches` (code => boolean), and the
+  // gifts they brought with them in the same request. Their chips and gift
+  // cards go at once; the render that follows confirms it, or brings them
+  // back if the request failed.
+  removeDiscountCodes(matches) {
+    const codes = ((this.lastCart && this.lastCart.discount_codes) || []).map((entry) => String(entry.code));
+    const removing = codes.filter(matches);
+    removing.forEach((code) => this.removingCodes.add(code.toUpperCase()));
+    if (this.giftPromo) {
+      // A gift goes unless another code in the cart brings it too.
+      const kept = new Set(codes.filter((code) => !matches(code)).map((code) => this.vipRowForCode(code)));
+      removing.forEach((code) => {
+        const row = this.vipRowForCode(code);
+        if (row && !kept.has(row)) this.hideGiftCards('vip:' + row.prefix);
+      });
+    }
+    const chipFocused = !!document.activeElement?.closest?.('[data-discount-codes]');
+    this.setDiscountMessage(null); // redraws the chips without them
+    if (chipFocused) this.sidecart.querySelector('[data-discount-toggle]')?.focus();
+    this.requestStructureRender();
+    this.enqueue(async () => {
+      try {
+        let cart = this.lastCartFresh && this.lastCart ? this.lastCart : await this.fetchCart();
+        for (let attempt = 0; ; attempt++) {
+          const keep = (cart.discount_codes || []).map((entry) => entry.code).filter((existing) => !matches(existing));
+          const updates = this.giftPromo ? this.giftFixes({ ...cart, discount_codes: keep.map((code) => ({ code })) }) : {};
+          try {
+            await this.updateCartDiscounts(keep, updates);
+            break;
+          } catch (err) {
+            // Line keys from a cart changed since fail the whole request: once more, fresh.
+            if (attempt) throw err;
+            cart = await this.fetchCart();
+          }
+        }
+        this.dirty = true;
+      } finally {
+        removing.forEach((code) => this.removingCodes.delete(code.toUpperCase()));
+      }
+    }).catch(() => this.setDiscountMessage(this.discountText('errorMsg'), 'error'));
+  }
+
+  // Sets the cart's codes, along with line updates by line key if any (one
+  // request does both).
+  async updateCartDiscounts(codes, updates = {}) {
+    const body = { discount: codes.join(',') };
+    if (Object.keys(updates).length) body.updates = updates;
+    const res = await fetch('/cart/update.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error('cart/update failed: ' + res.status);
+    const cart = await res.json();
+    this.lastCart = cart;
+    this.lastCartFresh = true;
+    return cart;
+  }
+
+  // After the render that follows applying a code: a code the cart can't use
+  // gets a message (its chip stays, dimmed, so the customer can remove it). A
+  // gift code whose gift waits for its scent applies once it's picked, so its
+  // card comes into view instead.
+  reportPendingDiscount(cart) {
+    const code = this.pendingDiscountCode;
+    if (!code) return;
+    this.pendingDiscountCode = null;
+    const entry = (cart.discount_codes || []).find(
+      (existing) => String(existing.code).toUpperCase() === code.toUpperCase()
+    );
+    if (entry && entry.applicable) return;
+    if (entry && this.giftChoiceCodes(this.pendingGiftChoices(cart)).includes(code.toUpperCase())) {
+      this.unpickedGiftChoice()?.scrollIntoView({ block: 'nearest' });
+      return;
+    }
+    this.setDiscountMessage(this.discountText('invalidMsg').replace('CODE', code), 'error');
+  }
+
+  codesBlockedMessage() {
+    return (this.giftPromo && this.giftPromo.codesBlockedMessage) || this.discountText('blockedMsg');
+  }
+
+  discountText(key) {
+    const box = this.sidecart.querySelector('[data-sidecart-discount]');
+    return (box && box.dataset[key]) || '';
+  }
+
+  // A message under the code box fades after a few seconds of being seen. If
+  // it's set while the drawer is closed (e.g. a code from an email link removed
+  // during a promo), the clock starts when the drawer opens.
+  setDiscountMessage(text, tone = 'info') {
+    this.discountMessage = text ? { text, tone } : null;
+    clearTimeout(this.discountMessageTimer);
+    const box = this.sidecart.querySelector('[data-sidecart-discount]');
+    if (!box && text && tone === 'error') {
+      this.showToast(text);
+      this.discountMessage = null;
+      return;
+    }
+    this.renderDiscountState(this.lastCart);
+    if (text && this.sidecart.classList.contains('is-open')) this.startDiscountMessageTimer();
+  }
+
+  startDiscountMessageTimer() {
+    clearTimeout(this.discountMessageTimer);
+    this.discountMessageTimer = setTimeout(() => {
+      this.discountMessage = null;
+      this.renderDiscountState(this.lastCart);
+    }, 8000);
+  }
+
+  setDiscountBusy(isBusy) {
+    const box = this.sidecart.querySelector('[data-sidecart-discount]');
+    if (!box) return;
+    box.classList.toggle('is-loading', !!isBusy);
+    const apply = box.querySelector('[data-discount-apply]');
+    if (apply) apply.disabled = !!isBusy;
+  }
+
+  // Applied-code chips + the message, redrawn after every render (the footer
+  // markup is replaced on each one).
+  renderDiscountState(cart) {
+    const box = this.sidecart.querySelector('[data-sidecart-discount]');
+    if (!box) return;
+
+    // The fold-out stays the way the customer left it, re-render or not.
+    const toggle = box.querySelector('[data-discount-toggle]');
+    const panel = box.querySelector('[data-discount-panel]');
+    if (toggle && panel) {
+      panel.hidden = !this.discountOpen;
+      toggle.setAttribute('aria-expanded', this.discountOpen ? 'true' : 'false');
+    }
+
+    const list = box.querySelector('[data-discount-codes]');
+    if (list) {
+      const codes = (cart && cart.discount_codes) || [];
+      const removeLabel = box.dataset.removeLabel || 'Remove CODE';
+      // A gift code applies to nothing until its scent is picked: not dimmed.
+      const waiting = this.giftChoiceCodes(this.pendingGiftChoices(cart));
+      list.innerHTML = '';
+      codes.forEach((entry) => {
+        if (this.removingCodes.has(String(entry.code).toUpperCase())) return; // on its way off
+        const active = entry.applicable || waiting.includes(String(entry.code).toUpperCase());
+        const chip = document.createElement('li');
+        chip.className = 'sidecart__discount-code' + (active ? '' : ' sidecart__discount-code--inactive');
+        const label = document.createElement('span');
+        label.textContent = entry.code;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'sidecart__discount-remove';
+        remove.dataset.discountRemove = entry.code;
+        remove.setAttribute('aria-label', removeLabel.replace('CODE', entry.code));
+        remove.innerHTML =
+          '<svg aria-hidden="true" focusable="false" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+        chip.append(label, remove);
+        list.appendChild(chip);
+      });
+      list.hidden = !list.children.length;
+    }
+
+    const message = box.querySelector('[data-discount-message]');
+    if (message) {
+      const current = this.discountMessage;
+      message.hidden = !current;
+      message.textContent = current ? current.text : '';
+      message.classList.toggle('sidecart__discount-message--error', !!current && current.tone === 'error');
+    }
   }
 
   // ---- Add to cart (routed through the same serialized chain) -------------
@@ -2137,7 +5036,8 @@ class Sidecart {
   // falls back to the loading spinner).
   insertPendingUpsellCard(offer) {
     const container = this.itemsContainer;
-    const template = this.sidecart.querySelector('[data-sidecart-item]:not([aria-hidden="true"])');
+    // A free gift card has no quantity or remove controls, so it can't be the template.
+    const template = this.sidecart.querySelector('[data-sidecart-item]:not([aria-hidden="true"]):not([data-gift])');
     if (!container || !template) return null;
 
     const form = offer.querySelector('form');
@@ -2227,6 +5127,8 @@ class Sidecart {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
         body
       });
+      // add.js answers with the added line only, so the cached cart is stale.
+      this.lastCartFresh = false;
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.description || data.message || 'Could not add item to cart');
@@ -2237,6 +5139,13 @@ class Sidecart {
 
   // ---- Open / close -------------------------------------------------------
   open(trigger = null) {
+    // A shipping race waits until the drawer has slid in: transitionend, or
+    // this fallback when there's no transition to wait for.
+    if (!this.sidecart.classList.contains('is-open')) {
+      this.drawerReady = false;
+      clearTimeout(this.drawerReadyTimer);
+      this.drawerReadyTimer = setTimeout(() => this.drawerOpened(), 400);
+    }
     this.triggerElement = trigger || document.activeElement;
     this.sidecart.classList.add('is-open');
     this.sidecart.setAttribute('aria-hidden', 'false');
@@ -2244,12 +5153,24 @@ class Sidecart {
     document.body.style.overflow = 'hidden';
     // Reconcile against the server whenever the drawer opens so a stale/ghost
     // line can never be shown (full render: the card set may have changed).
+    this.lastCartFresh = false;
     this.requestStructureRender();
     this.enqueue(async () => {});
+    if (this.discountMessage) this.startDiscountMessageTimer();
     setTimeout(() => this.closeButton?.focus(), 100);
   }
 
+  // The drawer has finished sliding in: a race waiting for it starts now.
+  drawerOpened() {
+    clearTimeout(this.drawerReadyTimer);
+    if (this.drawerReady || !this.sidecart.classList.contains('is-open')) return;
+    this.drawerReady = true;
+    if (this.shippingRacePending) this.raceShippingBar();
+  }
+
   close() {
+    this.drawerReady = false;
+    clearTimeout(this.drawerReadyTimer);
     this.sidecart.classList.remove('is-open');
     this.sidecart.setAttribute('aria-hidden', 'true');
     document.getElementById('cart-toggle')?.setAttribute('aria-expanded', 'false');
@@ -2260,7 +5181,8 @@ class Sidecart {
   handleKeydown(e) {
     if (!this.sidecart.classList.contains('is-open')) return;
     if (e.key === 'Escape') {
-      this.close();
+      // An open dropdown in the drawer takes the Escape (it closes only itself).
+      if (!e.defaultPrevented) this.close();
       return;
     }
     if (e.key === 'Tab') {
@@ -2411,6 +5333,22 @@ if (Shopify.designMode) {
       "default": "Continue shopping"
     },
     {
+      "type": "select",
+      "id": "card_size",
+      "label": "t:sidecart.settings.card_size.label",
+      "info": "t:sidecart.settings.card_size.info",
+      "options": [
+        {
+          "value": "extended",
+          "label": "t:sidecart.settings.card_size.options.extended"
+        }, {
+          "value": "compact",
+          "label": "t:sidecart.settings.card_size.options.compact"
+        }
+      ],
+      "default": "extended"
+    },
+    {
       "type": "header",
       "content": "t:sidecart.settings.shipping_bar_header"
     }, {
@@ -2448,6 +5386,12 @@ if (Shopify.designMode) {
       "label": "t:sidecart.settings.shipping_success_message.label",
       "default": "You've unlocked free shipping!"
     }, {
+      "type": "text",
+      "id": "shipping_code_message",
+      "label": "t:sidecart.settings.shipping_code_message.label",
+      "info": "t:sidecart.settings.shipping_code_message.info",
+      "default": "Ooh, a FREE shipping code! Shipping's on us."
+    }, {
       "type": "color",
       "id": "shipping_bar_fill_color",
       "label": "t:sidecart.settings.shipping_bar_fill_color.label",
@@ -2477,6 +5421,9 @@ if (Shopify.designMode) {
       "type": "header",
       "content": "t:sidecart.settings.upsell_header"
     }, {
+      "type": "paragraph",
+      "content": "t:sidecart.settings.upsell_info"
+    }, {
       "type": "checkbox",
       "id": "enable_upsell",
       "label": "t:sidecart.settings.enable_upsell.label",
@@ -2487,28 +5434,75 @@ if (Shopify.designMode) {
       "label": "t:sidecart.settings.upsell_heading.label",
       "default": "Complete your order"
     }, {
-      "type": "product",
-      "id": "upsell_product_1",
-      "label": "t:sidecart.settings.upsell_product_1.label"
+      "type": "header",
+      "content": "t:sidecart.settings.gift_header"
     }, {
-      "type": "product_list",
-      "id": "upsell_contained_in_1",
-      "label": "t:sidecart.settings.upsell_contained_in_1.label",
-      "info": "t:sidecart.settings.upsell_contained_in.info"
+      "type": "paragraph",
+      "content": "t:sidecart.settings.gift_info"
     }, {
-      "type": "product",
-      "id": "upsell_product_2",
-      "label": "t:sidecart.settings.upsell_product_2.label"
+      "type": "select",
+      "id": "gift_progress_style",
+      "label": "t:sidecart.settings.gift_progress_style.label",
+      "info": "t:sidecart.settings.gift_progress_style.info",
+      "options": [
+        {
+          "value": "list",
+          "label": "t:sidecart.settings.gift_progress_style.options.list"
+        }, {
+          "value": "bar",
+          "label": "t:sidecart.settings.gift_progress_style.options.bar"
+        }, {
+          "value": "cards",
+          "label": "t:sidecart.settings.gift_progress_style.options.cards"
+        }
+      ],
+      "default": "cards"
     }, {
-      "type": "product_list",
-      "id": "upsell_contained_in_2",
-      "label": "t:sidecart.settings.upsell_contained_in_2.label",
-      "info": "t:sidecart.settings.upsell_contained_in.info"
+      "type": "color",
+      "id": "gift_card_color",
+      "label": "t:sidecart.settings.gift_card_color.label",
+      "default": "#F8D9E0",
+      "visible_if": "{{ section.settings.gift_progress_style == 'cards' }}"
     }, {
-      "type": "collection",
-      "id": "upsell_exclude_collection",
-      "label": "t:sidecart.settings.upsell_exclude_collection.label",
-      "info": "t:sidecart.settings.upsell_exclude_collection.info"
+      "type": "color",
+      "id": "gift_card_bar_color",
+      "label": "t:sidecart.settings.gift_card_bar_color.label",
+      "default": "#B4506D",
+      "visible_if": "{{ section.settings.gift_progress_style == 'cards' }}"
+    }, {
+      "type": "color",
+      "id": "gift_card_label_color",
+      "label": "t:sidecart.settings.gift_card_label_color.label",
+      "info": "t:sidecart.settings.gift_card_label_color.info",
+      "default": "#B4506D",
+      "visible_if": "{{ section.settings.gift_progress_style == 'cards' }}"
+    }, {
+      "type": "text",
+      "id": "gift_progress_message",
+      "label": "t:sidecart.settings.gift_progress_message.label",
+      "info": "t:sidecart.settings.gift_progress_message.info",
+      "default": "Spend [amount] more to get [gift] FREE!",
+      "visible_if": "{{ section.settings.gift_progress_style == 'bar' }}"
+    }, {
+      "type": "text",
+      "id": "gift_success_message",
+      "label": "t:sidecart.settings.gift_success_message.label",
+      "default": "You've unlocked your FREE gifts!",
+      "visible_if": "{{ section.settings.gift_progress_style == 'bar' }}"
+    }, {
+      "type": "text",
+      "id": "gift_label",
+      "label": "t:sidecart.settings.gift_label.label",
+      "default": "Gift with purchase"
+    }, {
+      "type": "header",
+      "content": "t:sidecart.settings.discount_header"
+    }, {
+      "type": "checkbox",
+      "id": "show_discount_code",
+      "label": "t:sidecart.settings.show_discount_code.label",
+      "info": "t:sidecart.settings.show_discount_code.info",
+      "default": true
     }, {
       "type": "header",
       "content": "t:labels.colors"

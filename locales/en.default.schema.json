@@ -893,6 +893,14 @@
       "continue_button_text": {
         "label": "Continue shopping button text"
       },
+      "card_size": {
+        "label": "Product cards",
+        "info": "Compact shows smaller photos and tighter spacing, so more of the cart fits on screen.",
+        "options": {
+          "extended": "Extended",
+          "compact": "Compact"
+        }
+      },
       "shipping_bar_header": "Free shipping bar",
       "enable_shipping_bar": {
         "label": "Enable free shipping bar"
@@ -913,6 +921,10 @@
       "shipping_success_message": {
         "label": "Free shipping reached message"
       },
+      "shipping_code_message": {
+        "label": "Free shipping code message",
+        "info": "Shown with a rainbow bar when a free shipping code is in the cart. Leave empty to turn this off."
+      },
       "shipping_bar_fill_color": {
         "label": "Bar fill color"
       },
@@ -929,34 +941,52 @@
         "label": "Bar icon color"
       },
       "upsell_header": "Upsell",
+      "upsell_info": "The products offered here, and their deal prices, are set in the admin under Apps → Baudie Gifts & Deals → Upsell deals. The checkout offers the same products.",
       "enable_upsell": {
         "label": "Enable cart upsell"
       },
       "upsell_heading": {
         "label": "Upsell heading"
       },
-      "upsell_product_1": {
-        "label": "Upsell product 1"
+      "gift_header": "Gift with purchase",
+      "gift_info": "The gifts, spend amounts and dates are set in the admin under Apps → Baudie Gifts & Deals. The gift progress only shows while a promo is running.",
+      "gift_progress_style": {
+        "label": "Gift progress style",
+        "info": "List shows each gift with what's left to unlock it. Bar shows one progress segment per gift under the free shipping bar. Cards shows a row of gift cards to scroll through, with each gift's photo and what's left to unlock it. In every style, unlocked gifts are added to the cart automatically.",
+        "options": {
+          "list": "List",
+          "bar": "Bar",
+          "cards": "Cards"
+        }
       },
-      "upsell_contained_in_1": {
-        "label": "Bundles already containing upsell 1"
+      "gift_card_color": {
+        "label": "Gift card color"
       },
-      "upsell_product_2": {
-        "label": "Upsell product 2"
+      "gift_card_bar_color": {
+        "label": "Gift card progress bar color"
       },
-      "upsell_contained_in_2": {
-        "label": "Bundles already containing upsell 2"
+      "gift_card_label_color": {
+        "label": "Added to cart label color",
+        "info": "Also used for FREE on gift lines in the cart. The label's text is white, so keep this dark enough to read."
       },
-      "upsell_exclude_collection": {
-        "label": "Exclude collection",
-        "info": "Carts containing only products from this collection won't see the upsell (e.g. your Wipes collection)."
+      "gift_progress_message": {
+        "label": "Progress message",
+        "info": "[amount] is what's left to spend, [gift] is the next gift."
+      },
+      "gift_success_message": {
+        "label": "All gifts unlocked message"
+      },
+      "gift_label": {
+        "label": "Gift label in the cart"
+      },
+      "discount_header": "Discount codes",
+      "show_discount_code": {
+        "label": "Show discount code field",
+        "info": "Lets customers apply a code in the cart, so a VIP gift code adds its gift right away. Codes can still be entered at checkout too."
       },
       "colors_header": "Colors",
       "background_color": "Background color",
-      "text_color": "Text color",
-      "upsell_contained_in": {
-        "info": "Bundle products that already include this upsell (e.g. the Scent & Wipes Pack contains the Cotton Dry Wipes). A bundle is a single cart line until checkout, so its contents are invisible to the \"already in cart\" check — list them here and the offer hides when one is in the cart."
-      }
+      "text_color": "Text color"
     }
   }
 }

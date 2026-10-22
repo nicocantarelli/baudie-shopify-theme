@@ -1,14 +1,17 @@
 {% doc %}
   Renders a single upsell offer card in the sidecart. Renders nothing when the
   product has no available variant. Shows the discounted upsell price from the
-  product's `custom.upsell_price` metafield (the matching Buy X Get Y discount
-  applies the real reduction once the item is added to the cart).
+  product's `custom.upsell_price` metafield (the Upsell deal discount from the
+  baudie-discounts app charges that same price once the item is in the cart).
 
   @param {product} product - The product to offer as an upsell
-  @param {product_list} [contained_in] - Bundle products that already include this
-    offer. Their component lines never appear in /cart.js (Simple Bundles expands
-    them at checkout), so the "already in cart" check cannot see them — these ids
-    let the JS hide the offer anyway.
+  @param {string} [contained_in_ids] - Comma-separated ids of bundle products
+    that already include this offer. Their component lines never appear in
+    /cart.js (Simple Bundles expands them at checkout), so the "already in cart"
+    check cannot see them — these ids let the JS hide the offer anyway.
+
+  @example
+  {% render 'sidecart-upsell-item', product: product, contained_in_ids: '8226055847981' %}
 {% enddoc %}
 
 {%- liquid
@@ -35,7 +38,7 @@
 -%}
 
 {%- if render_card -%}
-  <li class="sidecart-upsell__item" data-sidecart-upsell-offer data-product-id="{{ product.id }}" data-contained-in="{% if contained_in != blank %}{% for p in contained_in %}{{ p.id }}{% unless forloop.last %},{% endunless %}{% endfor %}{% endif %}" data-card-bg="{{ product.metafields.custom.product_card_background | default: '#FCF0D2' }}">
+  <li class="sidecart-upsell__item" data-sidecart-upsell-offer data-product-id="{{ product.id }}" data-contained-in="{{ contained_in_ids }}" data-card-bg="{{ product.metafields.custom.product_card_background | default: '#FCF0D2' }}">
     <div class="sidecart-upsell__image-wrap">
       {%- if card_image -%}
         {{ card_image | image_url: width: 160 | image_tag:

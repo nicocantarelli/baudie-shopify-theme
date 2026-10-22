@@ -3,72 +3,65 @@
   load (where section settings resolve reliably) and lives OUTSIDE the
   AJAX-replaced content/footer regions, so it is never wiped on cart updates.
 
+  The offered products come from the `baudie.upsell_offers` shop metafield,
+  saved in the admin (Apps → Baudie Gifts & Deals → Upsell deals) by the
+  baudie-discounts app. The checkout upsell reads the same metafield, so the
+  drawer and checkout always offer the same products.
+
   Visibility is driven by JavaScript (see `updateUpsell` in sidecart.liquid),
   using the live cart from `/cart.js`:
-  - hidden when the cart is empty or contains only excluded ("wipes") products
-  - each offer is hidden when its product is already in the cart
-
-  Available offers are rendered as cards; the exclusion collection's product ids
-  are exposed via `data-exclude-ids` for the JS check.
+  - hidden when the cart is empty or contains only deal products (the deal
+    needs a regular product too); their ids are exposed via `data-deal-ids`
+  - each offer is hidden when its product, or a bundle that already includes
+    it, is in the cart
 
   @param {boolean} enabled - Whether the upsell feature is turned on
   @param {string} heading - Heading text shown above the offers
-  @param {product} [product_1] - First upsell product
-  @param {product} [product_2] - Second upsell product
-  @param {collection} [exclude_collection] - Cart of only these products shows no upsell
-  @param {product_list} [contained_in_1] - Bundles that already include product_1
-  @param {product_list} [contained_in_2] - Bundles that already include product_2
+
+  @example
+  {% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading %}
 {% enddoc %}
 
 {%- liquid
-  assign variant_1 = product_1.selected_or_first_available_variant
-  assign variant_2 = product_2.selected_or_first_available_variant
+  assign upsell = shop.metafields.baudie.upsell_offers.value
 
   comment
-    Don't upsell a product that's tagged "coming soon" (matches the storefront
-    coming-soon state), even if it still has stock.
+    Each card renders nothing when its product is gone, sold out or tagged
+    "coming soon", so the region only renders when at least one card does.
   endcomment
-  assign cs_1 = false
-  if product_1.tags contains 'coming-soon' or product_1.tags contains 'Coming soon' or product_1.tags contains 'coming soon' or product_1.tags contains 'Coming Soon'
-    assign cs_1 = true
-  endif
-  assign cs_2 = false
-  if product_2.tags contains 'coming-soon' or product_2.tags contains 'Coming soon' or product_2.tags contains 'coming soon' or product_2.tags contains 'Coming Soon'
-    assign cs_2 = true
-  endif
+  capture offer_cards
+    if enabled
+      for offer in upsell.offers
+        assign contained_in_ids = ''
+        for bundle_gid in offer.containedIn
+          assign bundle_id = bundle_gid | split: '/' | last
+          assign contained_in_ids = contained_in_ids | append: ',' | append: bundle_id
+        endfor
+        assign contained_in_ids = contained_in_ids | remove_first: ','
+        render 'sidecart-upsell-item', product: all_products[offer.productHandle], contained_in_ids: contained_in_ids
+      endfor
+    endif
+  endcapture
+  assign offer_cards = offer_cards | strip
 
-  assign has_1 = false
-  if product_1 != blank and variant_1 != blank and variant_1.available and cs_1 == false
-    assign has_1 = true
-  endif
-
-  assign has_2 = false
-  if product_2 != blank and variant_2 != blank and variant_2.available and cs_2 == false
-    assign has_2 = true
-  endif
-
-  assign render_region = false
-  if enabled and has_1 or enabled and has_2
-    assign render_region = true
-  endif
+  assign deal_ids = ''
+  for deal_gid in upsell.dealProductIds
+    assign deal_id = deal_gid | split: '/' | last
+    assign deal_ids = deal_ids | append: ',' | append: deal_id
+  endfor
 -%}
 
-{%- if render_region -%}
+{%- if offer_cards != blank -%}
   <div
     class="sidecart-upsell"
     data-sidecart-upsell
     hidden
-    data-exclude-ids="{% if exclude_collection != blank %}{% for p in exclude_collection.products %}{{ p.id }}{% unless forloop.last %},{% endunless %}{% endfor %}{% endif %}">
+    data-deal-ids="{{ deal_ids | remove_first: ',' }}">
     {%- if heading != blank -%}
       <p class="sidecart-upsell__heading">{{ heading }}</p>
     {%- endif -%}
     <ul class="sidecart-upsell__list" role="list">
-      {%- if has_1 -%}
-        {% render 'sidecart-upsell-item', product: product_1, contained_in: contained_in_1 %}
-      {%- endif -%}
-      {%- if has_2 -%}
-        {% render 'sidecart-upsell-item', product: product_2, contained_in: contained_in_2 %}
-      {%- endif -%}
+      {{- offer_cards -}}
     </ul>
   </div>
 {%- endif -%}

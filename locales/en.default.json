@@ -464,7 +464,37 @@
     "subscribe_group": "Subscribe & save",
     "subscribe_group_percent": "Subscribe & save {{ percent }}%",
     "subscribe_nudge": "Save with a subscription",
-    "subscribe_nudge_percent": "Save {{ percent }}% with a subscription"
+    "subscribe_nudge_percent": "Save {{ percent }}% with a subscription",
+    "gift_label": "Gift with purchase",
+    "gift_free": "Free",
+    "gift_quantity": "Qty {{ count }}",
+    "gift_choice_label": "Choose your gift's {{ option }}",
+    "gift_choice_placeholder": "Choose your {{ option }}",
+    "gift_choice_required": "Choose your {{ option }} to check out.",
+    "gift_list": {
+      "heading": {
+        "one": "Your free gift",
+        "other": "Your free gifts"
+      },
+      "count": "COUNT of TOTAL unlocked",
+      "unlocked": "Unlocked",
+      "unlocks_at": "Unlocks at AMOUNT",
+      "free": "FREE",
+      "left": "AMOUNT left",
+      "card_detail": "Worth WORTH, FREE over AMOUNT",
+      "card_locked": "Spend AMOUNT more to unlock",
+      "card_added": "Added to cart"
+    },
+    "discount": {
+      "toggle": "Discount code",
+      "label": "Discount code",
+      "placeholder": "Discount code",
+      "apply": "Apply",
+      "remove": "Remove code CODE",
+      "invalid": "CODE can't be applied to your cart.",
+      "error": "Couldn't update your discount code. Please try again.",
+      "blocked": "Discount codes can't be used during this promotion. Save yours for your next order!"
+    }
   },
   "breadcrumbs": {
     "navigation": "Breadcrumb navigation",

@@ -18,14 +18,49 @@
   @param {number} group_original_line_price - Combined pre-discount price (cents)
   @param {number} group_line_count - How many Shopify lines this card represents
   @param {string} group_signature - variant_id + properties (+ selling plan) signature (targeting key)
+  @param {string} [gift_label] - Label on free gift lines (defaults to the translation)
 {% enddoc %}
 
 {%- liquid
+  comment
+    Free gifts are added and removed by the sidecart script (gift with
+    purchase), which tags them with a `_gift` property. The customer can't
+    change their quantity or switch them to a subscription. A VIP gift has
+    Remove, which takes its code off the cart (the gift goes with it).
+  endcomment
+  assign gift_value = item.properties['_gift']
+  assign is_gift = false
+  if gift_value != blank
+    assign is_gift = true
+  endif
+
   assign item_url = item.url
   assign item_image = item.product.metafields.custom.card_image_portrait | default: item.product.metafields.custom.card_image | default: item.image
   assign card_bg = item.product.metafields.custom.product_card_background | default: '#FCF0D2'
   assign item_title = item.product.title
   assign item_variant = item.variant.title
+
+  comment
+    A VIP gift the customer picks the variant of (the scent gift: one variant
+    per scent, each naming the regular variant it ships as in
+    baudie.ships_as, with the same SKU) shows that scent's card art and links
+    to its page, with a dropdown of the scents in stock to switch, a box in
+    the scent's product page button color.
+  endcomment
+  assign gift_ships_as = nil
+  assign gift_kind = gift_value | split: ':' | first
+  if gift_kind == 'vip' and item.product.variants.size > 1
+    assign gift_ships_as = item.variant.metafields.baudie.ships_as.value
+  endif
+  if gift_ships_as != blank
+    assign item_url = gift_ships_as.product.url
+    assign item_image = gift_ships_as.product.metafields.custom.card_image_portrait | default: gift_ships_as.product.metafields.custom.card_image | default: gift_ships_as.product.featured_image
+    assign card_bg = gift_ships_as.product.metafields.custom.product_card_background | default: card_bg
+    capture gift_box_color
+      echo gift_ships_as.product.metafields.custom.product_text_color | default: '#3E2027'
+    endcapture
+  endif
+
   assign item_quantity = group_quantity | default: item.quantity
   assign item_price = group_final_line_price | default: item.final_line_price
   assign item_original = group_original_line_price | default: item.original_line_price
@@ -99,7 +134,7 @@
   endif
 -%}
 
-<li class="sidecart-item" data-sidecart-item data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ compare_at_unit }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
+<li class="sidecart-item{% if is_gift %} sidecart-item--gift{% endif %}" data-sidecart-item{% if is_gift %} data-gift="{{ gift_value | escape }}" data-free-text="{{ 'sidecart.gift_free' | t }}"{% endif %} data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ compare_at_unit }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
     {%- if bundle_has_bottles -%}
       <div class="sidecart-item__bundle-bottles{% if companion_image != blank %} sidecart-item__bundle-bottles--with-companion{% endif %}">
@@ -113,6 +148,8 @@
                 src="{{ bottle_image | image_url: width: 1200 }}"
                 srcset="{{ bottle_image | image_url: width: 400 }} 400w, {{ bottle_image | image_url: width: 800 }} 800w, {{ bottle_image | image_url: width: 1200 }} 1200w"
                 sizes="120px"
+                width="{{ bottle_image.width }}"
+                height="{{ bottle_image.height }}"
                 loading="lazy"
                 class="sidecart-item__bundle-bottle"
                 alt="{{ scent_product.title | escape }}">
@@ -124,6 +161,8 @@
             src="{{ companion_image | image_url: width: 1200 }}"
             srcset="{{ companion_image | image_url: width: 400 }} 400w, {{ companion_image | image_url: width: 800 }} 800w, {{ companion_image | image_url: width: 1200 }} 1200w"
             sizes="120px"
+            width="{{ companion_image.width }}"
+            height="{{ companion_image.height }}"
             loading="lazy"
             class="sidecart-item__bundle-bottle"
             alt="{{ bundle_companion.title | escape }}">
@@ -149,7 +188,81 @@
       <h3 class="sidecart-item__title">
         <a href="{{ item_url }}">{{ item_title }}</a>
       </h3>
-      {%- if item_variant != 'Default Title' -%}
+      {%- if is_gift -%}
+        {%- liquid
+          assign gift_label_text = gift_label
+          if gift_label_text == blank
+            assign gift_label_text = 'sidecart.gift_label' | t
+          endif
+        -%}
+        <p class="sidecart-item__gift-label">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M1.25 3.75H10.75V6.25H1.25V3.75ZM2.25 6.25V10.75H9.75V6.25M6 3.75V10.75" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 3.75C5.6 2.2 4.9 1.25 4 1.25C3.3 1.25 2.9 1.7 2.9 2.3C2.9 3.1 3.7 3.75 6 3.75ZM6 3.75C6.4 2.2 7.1 1.25 8 1.25C8.7 1.25 9.1 1.7 9.1 2.3C9.1 3.1 8.3 3.75 6 3.75Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+          </svg>
+          <span>{{ gift_label_text }}</span>
+        </p>
+      {%- endif -%}
+      {%- if gift_ships_as != blank -%}
+        {%- assign gift_option_name = item.product.options.first | downcase -%}
+        <p class="sidecart-item__gift-choice" style="--scent-box: {{ gift_box_color | strip | escape }};">
+          <span class="sidecart-item__frequency-wrap">
+            {%- capture gift_choice_select -%}
+            <select
+              class="sidecart-item__frequency"
+              aria-label="{{ 'sidecart.gift_choice_label' | t: option: gift_option_name }}"
+              data-gift-choice-select
+            >
+              {%- for choice in item.product.variants -%}
+                {%- liquid
+                  assign choice_ships_as = choice.metafields.baudie.ships_as.value
+                  assign choice_available = choice.available
+                  if choice_ships_as != blank
+                    assign choice_available = choice_ships_as.available
+                  endif
+                -%}
+                {%- if choice_available or choice.id == item.variant_id -%}
+                  {%- liquid
+                    assign choice_image = choice_ships_as.product.metafields.custom.card_image_portrait | default: choice_ships_as.product.metafields.custom.card_image | default: choice_ships_as.product.featured_image | default: choice.featured_image
+                    capture choice_bg
+                      echo choice_ships_as.product.metafields.custom.product_card_background | default: card_bg
+                    endcapture
+                    # The scent's product page button color, for the box.
+                    capture choice_text
+                      echo choice_ships_as.product.metafields.custom.product_text_color | default: '#3E2027'
+                    endcapture
+                    # The scent's product page gradient, for the wash a pick plays.
+                    capture choice_wash
+                      echo choice_ships_as.product.metafields.custom.gradient_color_1
+                      echo ' '
+                      echo choice_ships_as.product.metafields.custom.gradient_color_2
+                      echo ' '
+                      echo choice_ships_as.product.metafields.custom.gradient_color_3
+                    endcapture
+                  -%}
+                  <option
+                    value="{{ choice.id }}"
+                    data-image="{% if choice_image %}{{ choice_image | image_url: width: 400 }}{% endif %}"
+                    data-card-bg="{{ choice_bg | strip | escape }}"
+                    data-text-color="{{ choice_text | strip | escape }}"
+                    data-wash="{{ choice_wash | strip | escape }}"
+                    {% if choice.id == item.variant_id %}
+                      selected
+                    {% endif %}
+                  >
+                    {{- choice.title | escape -}}
+                  </option>
+                {%- endif -%}
+              {%- endfor -%}
+            </select>
+            {%- endcapture -%}
+            {% render 'select-menu', select: gift_choice_select %}
+            <svg class="sidecart-item__frequency-chevron" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="8" height="4" viewBox="0 0 12 6" fill="none">
+              <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </p>
+      {%- elsif item_variant != 'Default Title' -%}
         <p class="sidecart-item__variant">{{ item_variant }}</p>
       {%- endif -%}
       {%- liquid
@@ -170,6 +283,9 @@
           assign switch_group_id = item.selling_plan_allocation.selling_plan_group_id
         elsif settings.cart_subscription_switch and item.variant.selling_plan_allocations.size > 0
           assign switch_group_id = item.variant.selling_plan_allocations.first.selling_plan_group_id
+        endif
+        if is_gift
+          assign switch_group_id = nil
         endif
         assign plan_count = 0
         assign plan_percent = 0
@@ -303,6 +419,11 @@
 
     <div class="sidecart-item__controls">
       <p class="sidecart-item__stock-warning" data-stock-warning role="status" aria-live="polite" hidden></p>
+      {%- if is_gift -%}
+        {%- if item_quantity > 1 -%}
+          <p class="sidecart-item__gift-quantity">{{ 'sidecart.gift_quantity' | t: count: item_quantity }}</p>
+        {%- endif -%}
+      {%- else -%}
       <div class="sidecart-item__quantity">
         <button
           type="button"
@@ -330,6 +451,7 @@
           </svg>
         </button>
       </div>
+      {%- endif -%}
 
       <div class="sidecart-item__price">
         {%- comment -%} Stable structure: JS updates the amount spans / toggles in place on qty change (see renderCardPrice). {%- endcomment -%}
@@ -339,17 +461,33 @@
         </s>
         <span class="sidecart-item__current-price{% if has_compare_price %} sidecart-item__current-price--sale{% endif %}" data-price>
           <span class="visually-hidden" data-sale-label{% unless has_compare_price %} hidden{% endunless %}>{{ 'products.sale_price' | t }}:</span>
-          <span data-price-amount>{{ item_price | money }}</span>
+          <span data-price-amount>
+            {%- if is_gift and item_price == 0 -%}
+              {{ 'sidecart.gift_free' | t }}
+            {%- else -%}
+              {{ item_price | money }}
+            {%- endif -%}
+          </span>
         </span>
       </div>
     </div>
 
-    <button
-      type="button"
-      class="sidecart-item__remove"
-      data-action="remove"
-      aria-label="{{ 'sidecart.remove_item' | t }}: {{ item_title }}">
-      {{ 'sidecart.remove_item' | t }}
-    </button>
+    {%- if is_gift == false -%}
+      <button
+        type="button"
+        class="sidecart-item__remove"
+        data-action="remove"
+        aria-label="{{ 'sidecart.remove_item' | t }}: {{ item_title }}">
+        {{ 'sidecart.remove_item' | t }}
+      </button>
+    {%- elsif gift_kind == 'vip' -%}
+      <button
+        type="button"
+        class="sidecart-item__remove"
+        data-gift-remove
+        aria-label="{{ 'sidecart.remove_item' | t }}: {{ item_title }}">
+        {{ 'sidecart.remove_item' | t }}
+      </button>
+    {%- endif -%}
   </div>
 </li>

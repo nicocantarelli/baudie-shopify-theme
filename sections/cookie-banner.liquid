@@ -201,11 +201,14 @@
     border-color: currentColor;
   }
 
-  /* Compact corner banner */
+  /* Compact corner banner. Above the page (whose layers stop at 30) but under
+     the header (100, which holds the mobile menu) and the cart drawer (300),
+     so they open over it like over the rest of the page; it's still there
+     when they close. The preferences modal stays on top (1001). */
   .cookie-banner {
     position: fixed;
     bottom: 0;
-    z-index: 1000;
+    z-index: 90;
     max-width: 400px;
     width: calc(100% - 32px);
     margin: 16px;

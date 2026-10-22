@@ -1,0 +1,94 @@
+{% doc %}
+  Outputs one gift (a spend tier or a VIP code gift) from the gift with purchase
+  settings as a JSON object, with its storefront title and availability.
+
+  @param {object} gift - A tier or VIP row from the baudie.gift_promo metafield
+    (variantId, productHandle, quantity, and minimum or prefix)
+
+  @example
+  {% render 'gift-promo-gift-json', gift: tier %}
+{% enddoc %}
+
+{%- liquid
+  assign variant_id = gift.variantId | split: '/' | last | plus: 0
+  assign product = all_products[gift.productHandle]
+  assign variant = nil
+  for candidate in product.variants
+    if candidate.id == variant_id
+      assign variant = candidate
+      break
+    endif
+  endfor
+
+  assign title = gift.title
+  if product != blank
+    assign title = product.title
+    if variant and variant.title != 'Default Title'
+      assign title = title | append: ' – ' | append: variant.title
+    endif
+  endif
+
+  assign available = false
+  if variant and variant.available
+    assign available = true
+  endif
+
+  comment
+    A VIP gift whose product has several variants (the scent gift) waits in
+    the drawer for the customer to pick one ("Choose your scent"). Each
+    variant can name the regular variant it ships as (baudie.ships_as, same
+    SKU): that one's stock decides whether it can be picked. The gift itself
+    is named without a variant.
+  endcomment
+  assign has_choices = false
+  assign choices = ''
+  if gift.prefix != blank and product.variants.size > 1
+    assign has_choices = true
+    assign title = product.title
+    capture choices
+      for candidate in product.variants
+        assign ships_as = candidate.metafields.baudie.ships_as.value
+        assign choice_available = candidate.available
+        if ships_as != blank
+          assign choice_available = ships_as.available
+        endif
+        echo '{"variantId":' | append: candidate.id | append: ',"available":' | append: choice_available | append: '}'
+        unless forloop.last
+          echo ','
+        endunless
+      endfor
+    endcapture
+  endif
+
+  comment
+    For the gift cards in the drawer: a thumbnail on the product's card color,
+    and what the gift is worth (its price, in the cart's currency, times the
+    quantity given).
+  endcomment
+  assign image = variant.featured_image | default: product.featured_image
+  assign image_src = nil
+  if image
+    assign image_src = image | image_url: width: 160
+  endif
+  # A color metafield: as text (the json filter doesn't take the color object).
+  capture card_bg
+    echo product.metafields.custom.product_card_background | default: '#FCF0D2'
+  endcapture
+  assign gift_quantity = gift.quantity | default: 1
+  assign worth = 0
+  if variant
+    assign worth = variant.price | times: gift_quantity
+  endif
+-%}
+{
+  "variantId": {{ variant_id }},
+  "quantity": {{ gift.quantity | default: 1 }},
+  "minimum": {{ gift.minimum | json }},
+  "prefix": {{ gift.prefix | json }},
+  "title": {{ title | json }},
+  "available": {{ available }},
+  "choices": {% if has_choices %}[{{ choices }}]{% else %}null{% endif %},
+  "image": {{ image_src | json }},
+  "cardBg": {{ card_bg | json }},
+  "worth": {{ worth }}
+}
