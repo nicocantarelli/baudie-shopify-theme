@@ -2418,9 +2418,11 @@
   --sidecart-info-gap: 5px;
 }
 
+/* Top and bottom only: gift cards keep the side padding inside their tint. */
 .sidecart--compact .sidecart-item {
   gap: 16px;
-  padding: 12px 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 .sidecart--compact .sidecart-item__remove {
@@ -2471,7 +2473,8 @@
 @media (max-width: 768px) {
   .sidecart--compact .sidecart-item {
     gap: 12px;
-    padding: 10px 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
   .sidecart--compact .sidecart-item__remove {
