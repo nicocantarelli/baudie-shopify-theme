@@ -857,7 +857,7 @@
 @property --wipe-x {
   syntax: '<percentage>';
   inherits: true;
-  initial-value: -20%;
+  initial-value: -15%;
 }
 
 .sidecart-item.is-landing-pending .sidecart-item__sticker {
@@ -865,16 +865,16 @@
 }
 
 .sidecart-item.is-landing .sidecart-item__sticker {
-  animation: sidecart-sticker-slap 0.5s calc(var(--sticker-at, 0.15s) + var(--landing-elapsed, 0s)) both;
+  animation: sidecart-sticker-slap 0.65s calc(var(--sticker-at, 0.25s) + var(--landing-elapsed, 0s)) both;
 }
 
 .sidecart-item.is-wiping {
-  --sticker-at: 0.62s;
+  --sticker-at: 1.3s;
 }
 
 .sidecart-item.is-wiping .sidecart-item__image {
   transform-origin: 50% 100%;
-  animation: sidecart-landing-hop 0.55s calc(0.18s + var(--landing-elapsed, 0s)) both;
+  animation: sidecart-landing-hop 0.75s calc(0.26s + var(--landing-elapsed, 0s)) both;
 }
 
 .sidecart-item__landing {
@@ -883,7 +883,7 @@
   z-index: 2;
   overflow: hidden;
   pointer-events: none;
-  animation: sidecart-landing-wipe 0.9s cubic-bezier(0.3, 0.1, 0.5, 0.95) var(--landing-elapsed, 0s) both;
+  animation: sidecart-landing-wipe 1.7s cubic-bezier(0.3, 0.1, 0.5, 0.95) var(--landing-elapsed, 0s) both;
 }
 
 /* The shine, up to where the wipe is, then fading: the scents' pastels over a
@@ -899,7 +899,7 @@
   -webkit-mask: radial-gradient(153% 150% at 50% 152%, transparent 65%, #000 69.5%, #000 72.5%, transparent 77%);
   mask: radial-gradient(153% 150% at 50% 152%, transparent 65%, #000 69.5%, #000 72.5%, transparent 77%);
   clip-path: inset(0 calc(100% - var(--wipe-x)) 0 0);
-  animation: sidecart-landing-streak 0.6s ease-in calc(0.6s + var(--landing-elapsed, 0s)) forwards;
+  animation: sidecart-landing-streak 0.8s ease-in calc(1.45s + var(--landing-elapsed, 0s)) forwards;
 }
 
 .sidecart-item__landing-streak::after {
@@ -935,7 +935,7 @@
   box-shadow:
     inset 0 -4px 8px rgba(120, 90, 80, 0.12),
     0 8px 18px rgba(62, 32, 39, 0.18);
-  animation: sidecart-landing-pad 0.9s ease-in-out var(--landing-elapsed, 0s) both;
+  animation: sidecart-landing-pad 1.7s ease-in-out var(--landing-elapsed, 0s) both;
 }
 
 .sidecart-item__landing-glint {
@@ -947,21 +947,21 @@
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0C53 35 65 47 100 50C65 53 53 65 50 100C47 65 35 53 0 50C35 47 47 35 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0C53 35 65 47 100 50C65 53 53 65 50 100C47 65 35 53 0 50C35 47 47 35 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
   opacity: 0;
-  animation: sidecart-landing-glint 0.55s ease-out calc(var(--glint-at) + var(--landing-elapsed, 0s)) both;
+  animation: sidecart-landing-glint 0.8s ease-out calc(var(--glint-at) + var(--landing-elapsed, 0s)) both;
 }
 
 .sidecart-item__landing-glint:nth-child(3) {
   top: 24%;
   left: 12%;
   --glint: #EA4A7F;
-  --glint-at: 0.26s;
+  --glint-at: 0.44s;
 }
 
 .sidecart-item__landing-glint:nth-child(4) {
   top: 76%;
   left: 30%;
   --glint: #F47A54;
-  --glint-at: 0.33s;
+  --glint-at: 0.6s;
   --glint-size: 15px;
 }
 
@@ -969,20 +969,20 @@
   top: 28%;
   left: 58%;
   --glint: #88BBE1;
-  --glint-at: 0.45s;
+  --glint-at: 0.83s;
 }
 
 .sidecart-item__landing-glint:nth-child(6) {
   top: 68%;
   left: 84%;
   --glint: #B9C155;
-  --glint-at: 0.57s;
+  --glint-at: 1.09s;
   --glint-size: 17px;
 }
 
 @keyframes sidecart-landing-wipe {
-  from { --wipe-x: -20%; }
-  to { --wipe-x: 120%; }
+  from { --wipe-x: -15%; }
+  to { --wipe-x: 115%; }
 }
 
 @keyframes sidecart-landing-pad {
@@ -3397,7 +3397,7 @@ class Sidecart {
   // Plays a landing on the card from where it is (a card a render brought
   // picks it up mid-way), and clears it at the end.
   playGiftLanding(card, landing, now) {
-    const length = landing.wipe ? 1300 : 700;
+    const length = landing.wipe ? 2400 : 1000;
     const elapsed = Math.round(now - landing.started);
     card.classList.remove('is-landing-pending');
     if (elapsed >= length) {
