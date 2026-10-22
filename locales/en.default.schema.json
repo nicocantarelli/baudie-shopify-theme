@@ -911,6 +911,10 @@
       "shipping_success_message": {
         "label": "Free shipping reached message"
       },
+      "shipping_code_message": {
+        "label": "Free shipping code message",
+        "info": "Shown with a rainbow bar when a free shipping code is in the cart. Leave empty to turn this off."
+      },
       "shipping_bar_fill_color": {
         "label": "Bar fill color"
       },
