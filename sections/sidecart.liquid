@@ -556,6 +556,7 @@
   text-transform: uppercase;
   color: var(--sidecart-text);
   margin: 0;
+  padding-right: 44px; /* clear of Remove, over the card's top-right corner */
 }
 
 .sidecart-item__title a {
@@ -823,9 +824,43 @@
   display: none;
 }
 
-.sidecart-item--gift-pending .sidecart-item__frequency,
-.sidecart-item--gift-pending .sidecart-item__frequency-chevron {
+/* Its "Choose your scent" is a rose box like a button, so it's plain the pick
+   is a click away: the gift rose (the Added to cart label color setting with
+   the cards), with the chevron inside on the right. */
+.sidecart-item--gift-pending .sidecart-item__gift-label + .sidecart-item__gift-choice {
+  margin-top: 2px;
+}
+
+.sidecart-item--gift-pending .sidecart-item__frequency {
+  padding: 9px 32px 9px 13px;
+  background-color: var(--gift-free-color, #B4506D);
+  color: #ffffff;
+  font-family: var(--font-sweet-sans);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   opacity: 1;
+}
+
+.sidecart-item--gift-pending .sidecart-item__frequency:hover {
+  opacity: 0.85;
+}
+
+.sidecart-item--gift-pending .sidecart-item__gift-choice .sidecart-item__frequency-chevron {
+  left: auto;
+  right: 13px;
+  width: 10px;
+  height: 5px;
+  color: #ffffff;
+  opacity: 1;
+}
+
+/* An open menu stacks above its neighbours (z-index 30), so the chevron would
+   go behind the box. */
+.sidecart-item--gift-pending .select-menu.is-open + .sidecart-item__frequency-chevron {
+  z-index: 31;
 }
 
 .sidecart-item__gift-choice-error {
