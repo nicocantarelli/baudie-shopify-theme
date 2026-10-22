@@ -468,6 +468,7 @@
     "gift_label": "Gift with purchase",
     "gift_free": "Free",
     "gift_quantity": "Qty {{ count }}",
+    "gift_choice_label": "Choose your gift's {{ option }}",
     "gift_list": {
       "heading": {
         "one": "Your free gift",

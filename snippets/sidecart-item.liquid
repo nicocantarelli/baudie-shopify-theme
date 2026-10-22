@@ -38,6 +38,24 @@
   assign card_bg = item.product.metafields.custom.product_card_background | default: '#FCF0D2'
   assign item_title = item.product.title
   assign item_variant = item.variant.title
+
+  comment
+    A VIP gift the customer picks the variant of (the scent gift: one variant
+    per scent, each naming the regular variant it ships as in
+    baudie.ships_as, with the same SKU) shows that scent's card art and links
+    to its page, with a dropdown of the scents in stock to switch.
+  endcomment
+  assign gift_ships_as = nil
+  assign gift_kind = gift_value | split: ':' | first
+  if gift_kind == 'vip' and item.product.variants.size > 1
+    assign gift_ships_as = item.variant.metafields.baudie.ships_as.value
+  endif
+  if gift_ships_as != blank
+    assign item_url = gift_ships_as.product.url
+    assign item_image = gift_ships_as.product.metafields.custom.card_image_portrait | default: gift_ships_as.product.metafields.custom.card_image | default: gift_ships_as.product.featured_image
+    assign card_bg = gift_ships_as.product.metafields.custom.product_card_background | default: card_bg
+  endif
+
   assign item_quantity = group_quantity | default: item.quantity
   assign item_price = group_final_line_price | default: item.final_line_price
   assign item_original = group_original_line_price | default: item.original_line_price
@@ -180,7 +198,52 @@
           <span>{{ gift_label_text }}</span>
         </p>
       {%- endif -%}
-      {%- if item_variant != 'Default Title' -%}
+      {%- if gift_ships_as != blank -%}
+        {%- assign gift_option_name = item.product.options.first | downcase -%}
+        <p class="sidecart-item__gift-choice">
+          <span class="sidecart-item__frequency-wrap">
+            {%- capture gift_choice_select -%}
+            <select
+              class="sidecart-item__frequency"
+              aria-label="{{ 'sidecart.gift_choice_label' | t: option: gift_option_name }}"
+              data-gift-choice-select
+            >
+              {%- for choice in item.product.variants -%}
+                {%- liquid
+                  assign choice_ships_as = choice.metafields.baudie.ships_as.value
+                  assign choice_available = choice.available
+                  if choice_ships_as != blank
+                    assign choice_available = choice_ships_as.available
+                  endif
+                -%}
+                {%- if choice_available or choice.id == item.variant_id -%}
+                  {%- liquid
+                    assign choice_image = choice_ships_as.product.metafields.custom.card_image_portrait | default: choice_ships_as.product.metafields.custom.card_image | default: choice_ships_as.product.featured_image | default: choice.featured_image
+                    capture choice_bg
+                      echo choice_ships_as.product.metafields.custom.product_card_background | default: card_bg
+                    endcapture
+                  -%}
+                  <option
+                    value="{{ choice.id }}"
+                    data-image="{% if choice_image %}{{ choice_image | image_url: width: 400 }}{% endif %}"
+                    data-card-bg="{{ choice_bg | strip | escape }}"
+                    {% if choice.id == item.variant_id %}
+                      selected
+                    {% endif %}
+                  >
+                    {{- choice.title | escape -}}
+                  </option>
+                {%- endif -%}
+              {%- endfor -%}
+            </select>
+            {%- endcapture -%}
+            {% render 'select-menu', select: gift_choice_select %}
+            <svg class="sidecart-item__frequency-chevron" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="8" height="4" viewBox="0 0 12 6" fill="none">
+              <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </p>
+      {%- elsif item_variant != 'Default Title' -%}
         <p class="sidecart-item__variant">{{ item_variant }}</p>
       {%- endif -%}
       {%- liquid

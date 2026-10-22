@@ -34,6 +34,37 @@
   endif
 
   comment
+    A VIP gift whose product has several variants (the scent gift) lets the
+    customer pick one in the drawer. Each variant can name the regular variant
+    it ships as (baudie.ships_as, same SKU): that one's stock decides whether
+    it can be picked, and its product page preselects it (an email's scent tile
+    links there). The gift itself is named without a variant.
+  endcomment
+  assign has_choices = false
+  assign choices = ''
+  if gift.prefix != blank and product.variants.size > 1
+    assign has_choices = true
+    assign title = product.title
+    capture choices
+      for candidate in product.variants
+        assign ships_as = candidate.metafields.baudie.ships_as.value
+        assign choice_available = candidate.available
+        assign choice_handle = product.handle
+        if ships_as != blank
+          assign choice_available = ships_as.available
+          assign choice_handle = ships_as.product.handle
+        endif
+        assign choice_handle_json = choice_handle | json
+        echo '{"variantId":' | append: candidate.id | append: ',"handle":' | append: choice_handle_json
+        echo ',"available":' | append: choice_available | append: '}'
+        unless forloop.last
+          echo ','
+        endunless
+      endfor
+    endcapture
+  endif
+
+  comment
     For the gift cards in the drawer: a thumbnail on the product's card color,
     and what the gift is worth (its price, in the cart's currency, times the
     quantity given).
@@ -60,6 +91,7 @@
   "prefix": {{ gift.prefix | json }},
   "title": {{ title | json }},
   "available": {{ available }},
+  "choices": {% if has_choices %}[{{ choices }}]{% else %}null{% endif %},
   "image": {{ image_src | json }},
   "cardBg": {{ card_bg | json }},
   "worth": {{ worth }}
