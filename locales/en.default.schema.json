@@ -891,6 +891,14 @@
       "continue_button_text": {
         "label": "Continue shopping button text"
       },
+      "card_size": {
+        "label": "Product cards",
+        "info": "Compact shows smaller photos and tighter spacing, so more of the cart fits on screen.",
+        "options": {
+          "extended": "Extended",
+          "compact": "Compact"
+        }
+      },
       "shipping_bar_header": "Free shipping bar",
       "enable_shipping_bar": {
         "label": "Enable free shipping bar"

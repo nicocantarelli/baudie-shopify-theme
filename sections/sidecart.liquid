@@ -32,7 +32,7 @@
 
 {% if enable_quick_cart %}
   <div
-    class="sidecart"
+    class="sidecart{% if section.settings.card_size == 'compact' %} sidecart--compact{% endif %}"
     id="sidecart"
     aria-hidden="true"
     data-sidecart
@@ -545,7 +545,7 @@
 .sidecart-item__info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--sidecart-info-gap, 8px);
 }
 
 .sidecart-item__title {
@@ -628,9 +628,9 @@
 
 /* Right under the label, with no gap between them (the purchase-option
    dropdown shares its label's line box): this takes back the info column's
-   8px gap. */
+   gap. */
 .sidecart-item__gift-label + .sidecart-item__gift-choice {
-  margin-top: -8px;
+  margin-top: calc(-1 * var(--sidecart-info-gap, 8px));
 }
 
 /* The scent wash. While a picked scent goes in (.is-choosing), a wave in that
@@ -2408,6 +2408,88 @@
 
   .sidecart__actions {
     flex-direction: column;
+  }
+}
+
+/* Compact cards (Product cards setting): a smaller photo in the same
+   proportions, tighter spacing, and the controls right under the text instead
+   of at the foot of a tall photo, so more of the cart fits on screen. */
+.sidecart--compact {
+  --sidecart-info-gap: 5px;
+}
+
+.sidecart--compact .sidecart-item {
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.sidecart--compact .sidecart-item__remove {
+  top: 12px;
+}
+
+.sidecart--compact .sidecart-item__image-link {
+  width: 96px;
+  height: 124px;
+}
+
+.sidecart--compact .sidecart-item__details {
+  padding: 2px 0;
+}
+
+.sidecart--compact .sidecart-item__controls {
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 0;
+}
+
+.sidecart--compact .sidecart-item__qty-btn {
+  width: 30px;
+  height: 30px;
+}
+
+.sidecart--compact .sidecart-item__qty-input {
+  width: 32px;
+  font-size: 13px;
+}
+
+.sidecart--compact .sidecart-item__compare-price {
+  font-size: 13px;
+}
+
+.sidecart--compact .sidecart-item__current-price {
+  font-size: 16px;
+}
+
+.sidecart--compact .sidecart-item__description {
+  -webkit-line-clamp: 1;
+}
+
+.sidecart--compact .sidecart-item__bundle-bottle {
+  margin: 0 -7px;
+}
+
+@media (max-width: 768px) {
+  .sidecart--compact .sidecart-item {
+    gap: 12px;
+    padding: 10px 0;
+  }
+
+  .sidecart--compact .sidecart-item__remove {
+    top: 10px;
+  }
+
+  .sidecart--compact .sidecart-item__image-link {
+    width: 78px;
+    height: 101px;
+  }
+
+  .sidecart--compact .sidecart-item__qty-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sidecart--compact .sidecart-item__bundle-bottle {
+    margin: 0 -5px;
   }
 }
 
@@ -5137,6 +5219,22 @@ if (Shopify.designMode) {
       "id": "continue_button_text",
       "label": "t:sidecart.settings.continue_button_text.label",
       "default": "Continue shopping"
+    },
+    {
+      "type": "select",
+      "id": "card_size",
+      "label": "t:sidecart.settings.card_size.label",
+      "info": "t:sidecart.settings.card_size.info",
+      "options": [
+        {
+          "value": "extended",
+          "label": "t:sidecart.settings.card_size.options.extended"
+        }, {
+          "value": "compact",
+          "label": "t:sidecart.settings.card_size.options.compact"
+        }
+      ],
+      "default": "extended"
     },
     {
       "type": "header",
