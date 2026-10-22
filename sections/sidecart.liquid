@@ -635,8 +635,8 @@
 
 /* The scent wash. While a picked scent goes in (.is-choosing), a wave in that
    scent's product page colors sweeps the card from the bottle's side: its
-   darkest color leads, the other two fill in behind. The bottle drops in with
-   a tilt, and a shine runs across until the render brings the new card. There
+   darkest color leads, the other two fill in behind. The bottle drops in (see
+   below), and a shine runs across until the render brings the new card. There
    (.is-chosen) the wave finishes, then runs off to the right (see washGift).
    The wave is an SVG band wider than the card (--scent-wash). Registered
    positions let it animate smoothly. The dropdown stays locked meanwhile: the
@@ -675,14 +675,39 @@
     sidecart-scent-wash-out 0.7s ease-in-out var(--scent-wash-hold, 0.15s) forwards;
 }
 
-.sidecart-item.is-choosing .sidecart-item__image {
-  transform-origin: 50% 90%;
-  animation: sidecart-scent-bottle 0.65s ease-out;
+/* The bottle: the picked one stays unseen until its image can show, then drops
+   in from above its box and bounces (see dropBottle). The old one, or the
+   waiting card's gift icon, leaves first. */
+.sidecart-item__image.is-arriving {
+  opacity: 0;
 }
 
-.sidecart-item.is-chosen .sidecart-item__image {
-  transform-origin: 50% 90%;
-  animation: sidecart-scent-bottle 0.65s ease-out var(--scent-wash-elapsed, 0s) both;
+.sidecart-item__image.is-dropping {
+  transform-origin: 50% 100%;
+  animation: sidecart-scent-bottle 0.9s var(--bottle-delay, 0s) both;
+}
+
+.sidecart-item.is-choosing .sidecart-item__image-link {
+  position: relative;
+}
+
+.sidecart-item__leaving {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  pointer-events: none;
+}
+
+.sidecart-item__leaving--bottle {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 50% 100%;
+  animation: sidecart-scent-bottle-out 0.35s cubic-bezier(0.5, 0, 1, 0.6) forwards;
+}
+
+.sidecart-item__leaving--icon {
+  animation: sidecart-scent-icon-out 0.3s ease-out forwards;
 }
 
 .sidecart-item.is-choosing .sidecart-item__frequency {
@@ -704,11 +729,24 @@
   to { --scent-shine-x: 0%; }
 }
 
+/* Falls from above the box with gravity, squashes as it lands, then two
+   bounces. */
 @keyframes sidecart-scent-bottle {
-  0% { opacity: 0; transform: translateY(-28px) rotate(-14deg); }
-  55% { opacity: 1; transform: translateY(3px) rotate(5deg); }
-  78% { transform: translateY(0) rotate(-2deg); }
+  0% { transform: translateY(-115%) rotate(-12deg); animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
+  38% { transform: translateY(0) rotate(-4deg); animation-timing-function: ease-out; }
+  44% { transform: translateY(0) rotate(-2deg) scale(1.08, 0.88); animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1); }
+  60% { transform: translateY(-14%) rotate(4deg) scale(0.97, 1.04); animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
+  74% { transform: translateY(0) rotate(-2deg) scale(1.04, 0.95); animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1); }
+  86% { transform: translateY(-4%) rotate(1deg); animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
   100% { transform: none; }
+}
+
+@keyframes sidecart-scent-bottle-out {
+  to { transform: translateY(115%) rotate(12deg); }
+}
+
+@keyframes sidecart-scent-icon-out {
+  to { opacity: 0; transform: scale(1.6) rotate(-10deg); }
 }
 
 /* Reduced motion: the card fades to the scent's color and back instead. */
@@ -728,9 +766,12 @@
     animation: sidecart-scent-fade 0.6s ease-in-out var(--scent-wash-hold, 0.15s) backwards;
   }
 
-  .sidecart-item.is-choosing .sidecart-item__image,
-  .sidecart-item.is-chosen .sidecart-item__image {
+  .sidecart-item__image.is-dropping {
     animation: none;
+  }
+
+  .sidecart-item__leaving {
+    display: none;
   }
 }
 
@@ -2472,6 +2513,7 @@ class Sidecart {
     this.giftChoicePrompted = false; // checkout was clicked before the pick: the cards say so
     this.refocusGift = null; // gift value whose dropdown gets focus back after the render a pick causes
     this.giftWash = null; // the scent wash a pick started, which the new card finishes (see washGift)
+    this.preloadedBottles = new Map(); // scent bottle images loading ahead of a pick (see preloadGiftChoices)
     this.checkingOut = false; // checkout clicked, waiting for the cart to settle
     this.giftCardsScroll = 0; // Cards: how far the row is scrolled, kept across re-renders
     this.discountOpen = false; // the discount code fold-out, kept across re-renders
@@ -2607,6 +2649,16 @@ class Sidecart {
       const input = form.querySelector('[data-discount-input]');
       this.applyDiscountCode((input && input.value ? input.value : '').trim());
     });
+
+    // A gift's scent bottles start loading as its dropdown is reached, so a
+    // pick can drop its bottle at once (see dropBottle).
+    const preloadBottles = (e) => {
+      const wrap = e.target.closest && e.target.closest('[data-gift] .sidecart-item__frequency-wrap');
+      const select = wrap && wrap.querySelector('[data-gift-choice-select]');
+      if (select) this.preloadGiftChoices(select);
+    };
+    this.sidecart.addEventListener('pointerover', preloadBottles);
+    this.sidecart.addEventListener('focusin', preloadBottles);
 
     this.sidecart.addEventListener('change', (e) => {
       const frequency = e.target.closest('[data-frequency-select]');
@@ -2833,12 +2885,7 @@ class Sidecart {
     this.giftChoices.set(value, variantId);
     const option = select.selectedOptions[0];
     const image = card.querySelector('.sidecart-item__image');
-    if (option && image && option.dataset.image) {
-      image.removeAttribute('srcset');
-      image.src = option.dataset.image;
-      image.hidden = false;
-      card.querySelector('.sidecart-item__pending-icon')?.remove();
-    }
+    if (option && image && option.dataset.image) this.dropBottle(card, image, option.dataset.image);
     const imageLink = card.querySelector('.sidecart-item__image-link');
     if (option && imageLink && option.dataset.cardBg) imageLink.style.backgroundColor = option.dataset.cardBg;
     if (card.contains(document.activeElement)) this.refocusGift = value;
@@ -2854,6 +2901,55 @@ class Sidecart {
     }
     this.requestStructureRender();
     this.enqueue(async () => {});
+  }
+
+  // The bottle of the scent wash: the old one (or the waiting card's gift
+  // icon) falls out of its box, and the picked one drops in from the top once
+  // its image can show, so the whole fall is seen. The scents' images load as
+  // the dropdown is reached (see preloadGiftChoices), so it usually drops at once.
+  dropBottle(card, image, src) {
+    let leaving = card.querySelector('.sidecart-item__pending-icon');
+    if (leaving) {
+      leaving.classList.add('sidecart-item__leaving', 'sidecart-item__leaving--icon');
+    } else if (!image.hidden && image.currentSrc) {
+      leaving = image.cloneNode();
+      leaving.className = 'sidecart-item__leaving sidecart-item__leaving--bottle';
+      leaving.alt = '';
+      leaving.setAttribute('aria-hidden', 'true');
+      image.after(leaving);
+    }
+    if (leaving) leaving.addEventListener('animationend', () => leaving.remove(), { once: true });
+    image.removeAttribute('srcset');
+    image.src = src;
+    image.hidden = false;
+    this.dropIn(image, () => {
+      if (this.giftWash && this.giftWash.value === card.dataset.gift) this.giftWash.dropAt = performance.now();
+    });
+  }
+
+  // Drops a bottle into its box once its image can show (unseen until then).
+  dropIn(image, onDrop) {
+    image.classList.remove('is-dropping');
+    image.classList.add('is-arriving');
+    const drop = () => {
+      if (!image.isConnected) return;
+      image.classList.remove('is-arriving');
+      void image.offsetWidth; // restarts the drop
+      image.classList.add('is-dropping');
+      if (onDrop) onDrop();
+    };
+    (image.decode ? image.decode() : Promise.resolve()).then(drop, drop);
+  }
+
+  // Starts loading a gift's scent bottles (kept, so the loads aren't dropped).
+  preloadGiftChoices(select) {
+    select.querySelectorAll('option[data-image]').forEach((option) => {
+      const src = option.dataset.image;
+      if (!src || this.preloadedBottles.has(src)) return;
+      const bottle = new Image();
+      bottle.src = src;
+      this.preloadedBottles.set(src, bottle);
+    });
   }
 
   // The scent wash (see the .is-choosing styles): a wave in the picked scent's
@@ -2907,6 +3003,16 @@ class Sidecart {
     card.style.setProperty('--scent-wash-elapsed', `${-elapsed}ms`);
     card.style.setProperty('--scent-wash-hold', `${Math.max(550 - elapsed, 0) + 150}ms`);
     card.classList.add('is-chosen');
+    // The bottle drops on: the rest of its fall (0.9s, see .is-dropping), or
+    // all of it if its image wasn't in yet.
+    const image = card.querySelector('.sidecart-item__image');
+    const fallen = wash.dropAt ? performance.now() - wash.dropAt : 0;
+    if (image && !wash.dropAt) {
+      this.dropIn(image);
+    } else if (image && fallen < 900) {
+      image.style.setProperty('--bottle-delay', `${-Math.round(fallen)}ms`);
+      image.classList.add('is-dropping');
+    }
     const done = (event) => {
       if (event.target !== card || !/^sidecart-scent-(wash-out|fade)$/.test(event.animationName)) return;
       card.classList.remove('is-chosen');
