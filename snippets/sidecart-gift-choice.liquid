@@ -77,11 +77,20 @@
                   capture choice_bg
                     echo choice_ships_as.product.metafields.custom.product_card_background | default: '#FCF0D2'
                   endcapture
+                  # The scent's product page gradient, for the wash a pick plays.
+                  capture choice_wash
+                    echo choice_ships_as.product.metafields.custom.gradient_color_1
+                    echo ' '
+                    echo choice_ships_as.product.metafields.custom.gradient_color_2
+                    echo ' '
+                    echo choice_ships_as.product.metafields.custom.gradient_color_3
+                  endcapture
                 -%}
                 <option
                   value="{{ choice.id }}"
                   data-image="{% if choice_image %}{{ choice_image | image_url: width: 400 }}{% endif %}"
                   data-card-bg="{{ choice_bg | strip | escape }}"
+                  data-wash="{{ choice_wash | strip | escape }}"
                 >
                   {{- choice.title | escape -}}
                 </option>

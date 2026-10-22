@@ -199,10 +199,12 @@ if (!customElements.get('select-menu')) {
       this.button.setAttribute('aria-activedescendant', this.options[index].el.id);
     }
 
+    // The focus stays where it is: on the button when the keyboard picks (and
+    // a click focuses it in most browsers). Safari doesn't focus a clicked
+    // button, and pulling the focus there would show the keyboard focus ring.
     choose(index) {
       const entry = this.options[index];
       this.close();
-      this.button.focus();
       if (!entry || entry.option.selected) return;
       this.select.value = entry.option.value;
       this.sync();

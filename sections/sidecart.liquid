@@ -633,14 +633,109 @@
   margin-top: -8px;
 }
 
-/* While a picked scent goes in, the dropdown waits: the render that follows
-   replaces the card, which would close it again under the customer's hand. */
-.sidecart-item.is-choosing .sidecart-item__frequency-wrap {
-  opacity: 0.5;
+/* The scent wash. While a picked scent goes in (.is-choosing), a wave in that
+   scent's product page colors sweeps the card from the bottle's side: its
+   darkest color leads, the other two fill in behind. The bottle drops in with
+   a tilt, and a shine runs across until the render brings the new card. There
+   (.is-chosen) the wave finishes, then runs off to the right (see washGift).
+   The wave is an SVG band wider than the card (--scent-wash). Registered
+   positions let it animate smoothly. The dropdown stays locked meanwhile: the
+   render replaces the card, which would close it under the customer's hand. */
+@property --scent-wash-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 100%;
+}
+
+@property --scent-shine-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 100%;
+}
+
+.sidecart-item.is-choosing,
+.sidecart-item.is-chosen {
+  background-image:
+    linear-gradient(100deg, transparent 44%, rgba(255, 255, 255, 0.5) 50%, transparent 56%),
+    var(--scent-wash, none);
+  background-repeat: no-repeat;
+  background-size: 300% 100%, 340% 100%;
+  background-position: var(--scent-shine-x) 0, var(--scent-wash-x) 0;
+}
+
+.sidecart-item.is-choosing {
+  animation:
+    sidecart-scent-wash-in 0.55s ease-out forwards,
+    sidecart-scent-shine 1.2s 0.55s ease-in-out infinite;
+}
+
+.sidecart-item.is-chosen {
+  animation:
+    sidecart-scent-wash-in 0.55s ease-out var(--scent-wash-elapsed, 0s) both,
+    sidecart-scent-wash-out 0.7s ease-in-out var(--scent-wash-hold, 0.15s) forwards;
+}
+
+.sidecart-item.is-choosing .sidecart-item__image {
+  transform-origin: 50% 90%;
+  animation: sidecart-scent-bottle 0.65s ease-out;
+}
+
+.sidecart-item.is-chosen .sidecart-item__image {
+  transform-origin: 50% 90%;
+  animation: sidecart-scent-bottle 0.65s ease-out var(--scent-wash-elapsed, 0s) both;
 }
 
 .sidecart-item.is-choosing .sidecart-item__frequency {
-  cursor: progress;
+  cursor: default;
+}
+
+@keyframes sidecart-scent-wash-in {
+  from { --scent-wash-x: 100%; }
+  to { --scent-wash-x: 50%; }
+}
+
+@keyframes sidecart-scent-wash-out {
+  from { --scent-wash-x: 50%; }
+  to { --scent-wash-x: 0%; }
+}
+
+@keyframes sidecart-scent-shine {
+  from { --scent-shine-x: 100%; }
+  to { --scent-shine-x: 0%; }
+}
+
+@keyframes sidecart-scent-bottle {
+  0% { opacity: 0; transform: translateY(-28px) rotate(-14deg); }
+  55% { opacity: 1; transform: translateY(3px) rotate(5deg); }
+  78% { transform: translateY(0) rotate(-2deg); }
+  100% { transform: none; }
+}
+
+/* Reduced motion: the card fades to the scent's color and back instead. */
+@media (prefers-reduced-motion: reduce) {
+  .sidecart-item.is-choosing,
+  .sidecart-item.is-chosen {
+    background-image: none;
+    animation: none;
+  }
+
+  .sidecart-item.is-choosing[data-gift] {
+    background-color: var(--scent-wash-color);
+    transition: background-color 0.3s ease;
+  }
+
+  .sidecart-item.is-chosen {
+    animation: sidecart-scent-fade 0.6s ease-in-out var(--scent-wash-hold, 0.15s) backwards;
+  }
+
+  .sidecart-item.is-choosing .sidecart-item__image,
+  .sidecart-item.is-chosen .sidecart-item__image {
+    animation: none;
+  }
+}
+
+@keyframes sidecart-scent-fade {
+  from { background-color: var(--scent-wash-color); }
 }
 
 /* The VIP scent gift before a scent is picked (snippets/sidecart-gift-choice.liquid):
@@ -2376,6 +2471,7 @@ class Sidecart {
     this.giftChoicesPending = 0; // waiting gift cards showing ("Choose your scent", see renderGiftChoices)
     this.giftChoicePrompted = false; // checkout was clicked before the pick: the cards say so
     this.refocusGift = null; // gift value whose dropdown gets focus back after the render a pick causes
+    this.giftWash = null; // the scent wash a pick started, which the new card finishes (see washGift)
     this.checkingOut = false; // checkout clicked, waiting for the cart to settle
     this.giftCardsScroll = 0; // Cards: how far the row is scrolled, kept across re-renders
     this.discountOpen = false; // the discount code fold-out, kept across re-renders
@@ -2747,6 +2843,7 @@ class Sidecart {
     if (option && imageLink && option.dataset.cardBg) imageLink.style.backgroundColor = option.dataset.cardBg;
     if (card.contains(document.activeElement)) this.refocusGift = value;
     select.disabled = true; // a disabled select's dropdown doesn't open (assets/select-menu.js)
+    if (option) this.washGift(card, option);
     card.classList.add('is-choosing');
     card.setAttribute('aria-busy', 'true');
     if (card.hasAttribute('data-gift-pending')) {
@@ -2757,6 +2854,65 @@ class Sidecart {
     }
     this.requestStructureRender();
     this.enqueue(async () => {});
+  }
+
+  // The scent wash (see the .is-choosing styles): a wave in the picked scent's
+  // product page colors, its darkest leading (the scents' gradients don't all
+  // run the same way). It falls back to the scent's card color.
+  washGift(card, option) {
+    const hex = /^#[0-9a-f]{3}([0-9a-f]{3})?$/i;
+    let colors = (option.dataset.wash || '').split(/\s+/).filter((color) => hex.test(color));
+    if (colors.length < 3) colors = hex.test(option.dataset.cardBg || '') ? [option.dataset.cardBg] : [];
+    if (!colors.length) return;
+    const luminance = (color) => {
+      const full = color.length === 4 ? color.replace(/[0-9a-f]/gi, '$&$&') : color;
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(full.slice(i, i + 2), 16));
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const [lead, ...rest] = colors.slice().sort((a, b) => luminance(a) - luminance(b));
+    const [fill, tail] = rest.length ? rest.sort((a, b) => luminance(b) - luminance(a)) : [lead, lead];
+    // The band's trailing edge, its body (light to mid) and, just ahead, a
+    // crest in the darkest color, all wavy; 340 wide for a card of 100.
+    const band =
+      "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 100' preserveAspectRatio='none'>" +
+      "<defs><linearGradient id='w' x1='108' x2='226' gradientUnits='userSpaceOnUse'>" +
+      `<stop offset='0' stop-color='${fill}'/><stop offset='1' stop-color='${tail}'/></linearGradient></defs>` +
+      "<path fill='url(#w)' d='M108 0H226Q236 8.33 226 16.67T226 33.33T226 50T226 66.67T226 83.33T226 100H108Q98 91.67 108 83.33T108 66.67T108 50T108 33.33T108 16.67T108 0Z'/>" +
+      `<path fill='${lead}' d='M226 0Q236 8.33 226 16.67T226 33.33T226 50T226 66.67T226 83.33T226 100H236Q226 91.67 236 83.33T236 66.67T236 50T236 33.33T236 16.67T236 0Z'/>` +
+      '</svg>';
+    this.giftWash = {
+      value: card.dataset.gift,
+      image: `url("data:image/svg+xml,${encodeURIComponent(band)}")`,
+      color: tail,
+      started: performance.now()
+    };
+    card.classList.remove('is-chosen');
+    card.style.setProperty('--scent-wash', this.giftWash.image);
+    card.style.setProperty('--scent-wash-color', this.giftWash.color);
+  }
+
+  // The render brought the new card: the wave picks up where it was, holds a
+  // moment once it covers the card, then runs off.
+  settleGiftWash() {
+    const wash = this.giftWash;
+    this.giftWash = null;
+    if (!wash || !this.sidecart.classList.contains('is-open')) return;
+    const card = Array.from(this.sidecart.querySelectorAll('[data-gift]')).find(
+      (el) => el.dataset.gift === wash.value && el.getAttribute('aria-hidden') !== 'true'
+    );
+    if (!card || card.classList.contains('is-choosing')) return;
+    const elapsed = Math.round(performance.now() - wash.started);
+    card.style.setProperty('--scent-wash', wash.image);
+    card.style.setProperty('--scent-wash-color', wash.color);
+    card.style.setProperty('--scent-wash-elapsed', `${-elapsed}ms`);
+    card.style.setProperty('--scent-wash-hold', `${Math.max(550 - elapsed, 0) + 150}ms`);
+    card.classList.add('is-chosen');
+    const done = (event) => {
+      if (event.target !== card || !/^sidecart-scent-(wash-out|fade)$/.test(event.animationName)) return;
+      card.classList.remove('is-chosen');
+      card.removeEventListener('animationend', done);
+    };
+    card.addEventListener('animationend', done);
   }
 
   // Remove on a VIP gift, or on its card waiting for a scent, takes the gift's
@@ -3058,6 +3214,7 @@ class Sidecart {
     this.surfaceClamps();
     this.reportPendingDiscount(cart);
     this.restoreGiftFocus();
+    this.settleGiftWash();
     this.reopenMenu(openMenu);
     this.needsStructureRender = false;
     this.renderRetries = 0;
