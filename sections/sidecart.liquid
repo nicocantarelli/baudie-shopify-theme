@@ -2068,6 +2068,7 @@ class Sidecart {
     this.giftPromo = this.readGiftPromo();
     this.giftSynced = true; // cleared by every queued job, so sync runs once per drain
     this.giftBlocked = this.loadBlockedGifts(); // gifts that came out at full price
+    this.openOnVipGift = false; // the load sync opens the drawer if it adds a VIP gift
     this.checkingOut = false; // checkout clicked, waiting for the cart to settle
     this.giftCardsScroll = 0; // Cards: how far the row is scrolled, kept across re-renders
     this.discountOpen = false; // the discount code fold-out, kept across re-renders
@@ -2984,6 +2985,9 @@ class Sidecart {
 
   initGiftPromo() {
     if (!this.giftPromo) return;
+    // A VIP gift added by this first sync came from an email link
+    // (/discount/CODE): the drawer opens to show it.
+    this.openOnVipGift = true;
     // ?gift_preview=1 (the admin's preview link) makes this browser's cart a
     // preview cart, so a promo in Preview runs for it; ?gift_preview=0 undoes it.
     const flag = new URLSearchParams(window.location.search).get('gift_preview');
@@ -3008,6 +3012,10 @@ class Sidecart {
 
   isGiftLine(line) {
     return !!(line && line.properties && line.properties._gift);
+  }
+
+  isVipGiftValue(value) {
+    return String(value || '').indexOf('vip:') === 0;
   }
 
   giftKey(value, variantId) {
@@ -3107,9 +3115,12 @@ class Sidecart {
   // Runs on the chain once per drain (see enqueue). Each step re-reads the live
   // cart, so line indices are always current.
   async syncGifts() {
+    const openOnVipGift = this.openOnVipGift;
+    this.openOnVipGift = false;
     try {
       let cart = this.lastCartFresh && this.lastCart ? this.lastCart : await this.fetchCart();
       let changed = false;
+      let addedVip = false;
 
       // 1. No discount codes while a promo runs (checkout rejects them too).
       if (this.giftPromoRunning(cart) && (cart.discount_codes || []).length) {
@@ -3137,6 +3148,8 @@ class Sidecart {
         if (!res.ok) {
           // E.g. a gift sold out since the page loaded: leave those out.
           missing.forEach((item) => this.blockGift(this.giftKey(item.properties._gift, item.id)));
+        } else {
+          addedVip = missing.some((item) => this.isVipGiftValue(item.properties._gift));
         }
         cart = await this.fetchCart();
         changed = true;
@@ -3159,6 +3172,16 @@ class Sidecart {
       if (changed) {
         this.dirty = true;
         this.needsStructureRender = true;
+      }
+
+      // Show the customer the VIP gift their email link just added (unless
+      // step 4 took it back off).
+      if (
+        openOnVipGift &&
+        addedVip &&
+        (cart.items || []).some((line) => this.isGiftLine(line) && this.isVipGiftValue(line.properties._gift))
+      ) {
+        this.open();
       }
     } catch (err) {
       console.error('Sidecart gift sync failed:', err);
