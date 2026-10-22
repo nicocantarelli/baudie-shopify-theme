@@ -16,6 +16,12 @@
         {{ section.settings.body }}
       </div>
     {%- endif -%}
+
+    {%- if section.settings.embed_url != blank -%}
+      <div class="legal-page__embed">
+        <iframe src="{{ section.settings.embed_url }}" title="{{ section.settings.heading | escape }}"></iframe>
+      </div>
+    {%- endif -%}
   </div>
 </section>
 
@@ -81,9 +87,58 @@
   margin-bottom: 6px;
 }
 
+.legal-page__body + .legal-page__embed {
+  margin-top: 24px;
+}
+
+/* AudioEye's statement insets its text 32px (8px body margin + 24px padding),
+   so the embed bleeds out by that much to line its text up with the title. */
+.legal-page__embed {
+  container-type: inline-size;
+  margin-inline: -32px;
+}
+
+/* A cross-origin iframe can't report its height, so it follows the
+   statement's measured height at each width, with some room to spare. The
+   statement switches to its mobile layout at 600px. */
+.legal-page__embed iframe {
+  display: block;
+  width: 100%;
+  height: 2400px;
+  border: 0;
+}
+
+@container (max-width: 860px) {
+  .legal-page__embed iframe {
+    height: calc(2834px - (100cqi - 601px) * 1.5);
+  }
+}
+
+@container (max-width: 600px) {
+  .legal-page__embed iframe {
+    height: calc(3061px - (100cqi - 480px) * 2.9);
+  }
+}
+
+@container (max-width: 480px) {
+  .legal-page__embed iframe {
+    height: calc(3592px - (100cqi - 400px) * 6.3);
+  }
+}
+
+@container (max-width: 400px) {
+  .legal-page__embed iframe {
+    height: calc(4276px - (100cqi - 320px) * 9.1);
+  }
+}
+
 @media (max-width: 1024px) {
   .legal-page__container {
     padding: 0 24px;
+  }
+
+  .legal-page__embed {
+    margin-inline: -24px;
   }
 
   .legal-page__title {
@@ -99,6 +154,10 @@
 
   .legal-page__container {
     padding: 0 16px;
+  }
+
+  .legal-page__embed {
+    margin-inline: -16px;
   }
 
   .legal-page__title {
@@ -132,6 +191,12 @@
       "type": "richtext",
       "id": "body",
       "label": "t:sections.legal_page.settings.body"
+    },
+    {
+      "type": "url",
+      "id": "embed_url",
+      "label": "t:sections.legal_page.settings.embed_url",
+      "info": "t:sections.legal_page.settings.embed_url_info"
     },
     {
       "type": "range",

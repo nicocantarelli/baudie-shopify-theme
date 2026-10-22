@@ -719,7 +719,9 @@
       "settings": {
         "content_header": "Content",
         "colors_header": "Colors",
-        "body": "Body"
+        "body": "Body",
+        "embed_url": "AudioEye statement link",
+        "embed_url_info": "Shows AudioEye's accessibility statement under the body. Paste the link from the src=\"...\" part of AudioEye's embed code."
       }
     },
     "customer_care": {

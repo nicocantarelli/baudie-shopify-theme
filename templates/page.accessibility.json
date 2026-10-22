@@ -1,0 +1,17 @@
+{
+  "sections": {
+    "main": {
+      "type": "legal-page",
+      "settings": {
+        "heading": "Accessibility Statement",
+        "body": "",
+        "embed_url": "https://accessibility-statement.audioeye-services.com/?siteHash=e89ff432bb8e4aec0908aaa7829f118b",
+        "heading_spacing": 0,
+        "bottom_padding": 0,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    }
+  },
+  "order": ["main"]
+}
