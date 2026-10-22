@@ -687,8 +687,7 @@
   animation: sidecart-scent-bottle 0.9s var(--bottle-delay, 0s) both;
 }
 
-/* The leaving bottle and the VIP sticker sit on the photo. */
-.sidecart-item--gift .sidecart-item__image-link {
+.sidecart-item.is-choosing .sidecart-item__image-link {
   position: relative;
 }
 
@@ -778,256 +777,6 @@
 
 @keyframes sidecart-scent-fade {
   from { background-color: var(--scent-wash-color); }
-}
-
-/* The VIP sticker (snippets/sidecart-gift-sticker.liquid): a starburst like
-   the badges in Baudie's emails, lime or blue (--sticker-color), on the top
-   corner of a VIP gift's photo. Its wavy edge is a mask. The lettering scales
-   with the sticker, and a small sticker keeps just "VIP" and the heart. */
-.sidecart-item__sticker {
-  position: absolute;
-  top: 5%;
-  right: 5%;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: max(38px, 40%);
-  aspect-ratio: 1;
-  container-type: inline-size;
-  font-family: var(--font-alyona);
-  font-weight: 700;
-  line-height: 0.9;
-  color: #1C1C1C;
-  transform: rotate(-12deg);
-  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.18));
-  pointer-events: none;
-}
-
-.sidecart-item__sticker::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-color: var(--sticker-color, #C2FD75);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 0.8L52.4 1.9L54.5 4.4L56.4 7.1L58.3 8.4L60.5 7.9L63.3 6.2L66.2 4.6L68.8 4.5L70.6 6.4L71.6 9.6L72.3 12.8L73.6 14.7L75.9 15.1L79.1 14.6L82.4 14.3L84.8 15.2L85.7 17.6L85.4 20.9L84.9 24.1L85.3 26.4L87.2 27.7L90.4 28.4L93.6 29.4L95.5 31.2L95.4 33.8L93.8 36.7L92.1 39.5L91.6 41.7L92.9 43.6L95.6 45.5L98.1 47.6L99.2 50.0L98.1 52.4L95.6 54.5L92.9 56.4L91.6 58.3L92.1 60.5L93.8 63.3L95.4 66.2L95.5 68.8L93.6 70.6L90.4 71.6L87.2 72.3L85.3 73.6L84.9 75.9L85.4 79.1L85.7 82.4L84.8 84.8L82.4 85.7L79.1 85.4L75.9 84.9L73.6 85.3L72.3 87.2L71.6 90.4L70.6 93.6L68.8 95.5L66.2 95.4L63.3 93.8L60.5 92.1L58.3 91.6L56.4 92.9L54.5 95.6L52.4 98.1L50.0 99.2L47.6 98.1L45.5 95.6L43.6 92.9L41.7 91.6L39.5 92.1L36.7 93.8L33.8 95.4L31.2 95.5L29.4 93.6L28.4 90.4L27.7 87.2L26.4 85.3L24.1 84.9L20.9 85.4L17.6 85.7L15.2 84.8L14.3 82.4L14.6 79.1L15.1 75.9L14.7 73.6L12.8 72.3L9.6 71.6L6.4 70.6L4.5 68.8L4.6 66.2L6.2 63.3L7.9 60.5L8.4 58.3L7.1 56.4L4.4 54.5L1.9 52.4L0.8 50.0L1.9 47.6L4.4 45.5L7.1 43.6L8.4 41.7L7.9 39.5L6.2 36.7L4.6 33.8L4.5 31.2L6.4 29.4L9.6 28.4L12.8 27.7L14.7 26.4L15.1 24.1L14.6 20.9L14.3 17.6L15.2 15.2L17.6 14.3L20.9 14.6L24.1 15.1L26.4 14.7L27.7 12.8L28.4 9.6L29.4 6.4L31.2 4.5L33.8 4.6L36.7 6.2L39.5 7.9L41.7 8.4L43.6 7.1L45.5 4.4L47.6 1.9Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 0.8L52.4 1.9L54.5 4.4L56.4 7.1L58.3 8.4L60.5 7.9L63.3 6.2L66.2 4.6L68.8 4.5L70.6 6.4L71.6 9.6L72.3 12.8L73.6 14.7L75.9 15.1L79.1 14.6L82.4 14.3L84.8 15.2L85.7 17.6L85.4 20.9L84.9 24.1L85.3 26.4L87.2 27.7L90.4 28.4L93.6 29.4L95.5 31.2L95.4 33.8L93.8 36.7L92.1 39.5L91.6 41.7L92.9 43.6L95.6 45.5L98.1 47.6L99.2 50.0L98.1 52.4L95.6 54.5L92.9 56.4L91.6 58.3L92.1 60.5L93.8 63.3L95.4 66.2L95.5 68.8L93.6 70.6L90.4 71.6L87.2 72.3L85.3 73.6L84.9 75.9L85.4 79.1L85.7 82.4L84.8 84.8L82.4 85.7L79.1 85.4L75.9 84.9L73.6 85.3L72.3 87.2L71.6 90.4L70.6 93.6L68.8 95.5L66.2 95.4L63.3 93.8L60.5 92.1L58.3 91.6L56.4 92.9L54.5 95.6L52.4 98.1L50.0 99.2L47.6 98.1L45.5 95.6L43.6 92.9L41.7 91.6L39.5 92.1L36.7 93.8L33.8 95.4L31.2 95.5L29.4 93.6L28.4 90.4L27.7 87.2L26.4 85.3L24.1 84.9L20.9 85.4L17.6 85.7L15.2 84.8L14.3 82.4L14.6 79.1L15.1 75.9L14.7 73.6L12.8 72.3L9.6 71.6L6.4 70.6L4.5 68.8L4.6 66.2L6.2 63.3L7.9 60.5L8.4 58.3L7.1 56.4L4.4 54.5L1.9 52.4L0.8 50.0L1.9 47.6L4.4 45.5L7.1 43.6L8.4 41.7L7.9 39.5L6.2 36.7L4.6 33.8L4.5 31.2L6.4 29.4L9.6 28.4L12.8 27.7L14.7 26.4L15.1 24.1L14.6 20.9L14.3 17.6L15.2 15.2L17.6 14.3L20.9 14.6L24.1 15.1L26.4 14.7L27.7 12.8L28.4 9.6L29.4 6.4L31.2 4.5L33.8 4.6L36.7 6.2L39.5 7.9L41.7 8.4L43.6 7.1L45.5 4.4L47.6 1.9Z'/%3E%3C/svg%3E") center / contain no-repeat;
-}
-
-.sidecart-item__sticker-title,
-.sidecart-item__sticker-text {
-  position: relative;
-}
-
-.sidecart-item__sticker-title {
-  font-size: 36cqw;
-}
-
-.sidecart-item__sticker-text {
-  display: flex;
-  align-items: center;
-  gap: 0.15em;
-  font-size: 20cqw;
-}
-
-.sidecart-item__sticker-text svg {
-  width: 0.85em;
-  height: 0.85em;
-  color: #EA4A7F;
-}
-
-@container (max-width: 50px) {
-  .sidecart-item__sticker-text > span {
-    display: none;
-  }
-
-  .sidecart-item__sticker-text svg {
-    width: 1.3em;
-    height: 1.3em;
-  }
-}
-
-/* A VIP gift's landing, once, when the drawer first shows it (see landGifts):
-   its sticker slaps on. Until the drawer is in, the sticker stays off
-   (.is-landing-pending). A gift with nothing to pick (the wipes) is wiped
-   clean first (.is-wiping): a cotton wipe sweeps across the card, leaving a
-   pearly streak of shine and sparkles in the scents' colors behind it, while
-   the pack hops. The sticker lands as the wipe leaves. A render mid-landing
-   brings a new card, where it carries on (--landing-elapsed, negative). */
-@property --wipe-x {
-  syntax: '<percentage>';
-  inherits: true;
-  initial-value: -15%;
-}
-
-.sidecart-item.is-landing-pending .sidecart-item__sticker {
-  opacity: 0;
-}
-
-.sidecart-item.is-landing .sidecart-item__sticker {
-  animation: sidecart-sticker-slap 0.65s calc(var(--sticker-at, 0.25s) + var(--landing-elapsed, 0s)) both;
-}
-
-.sidecart-item.is-wiping {
-  --sticker-at: 1.3s;
-}
-
-.sidecart-item.is-wiping .sidecart-item__image {
-  transform-origin: 50% 100%;
-  animation: sidecart-landing-hop 0.75s calc(0.26s + var(--landing-elapsed, 0s)) both;
-}
-
-.sidecart-item__landing {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  overflow: hidden;
-  pointer-events: none;
-  animation: sidecart-landing-wipe 1.7s cubic-bezier(0.3, 0.1, 0.5, 0.95) var(--landing-elapsed, 0s) both;
-}
-
-/* The shine, up to where the wipe is, then fading: the scents' pastels over a
-   white gloss, with a bright line along the middle, in an arc along the
-   wipe's path (an ellipse's rim, about 46% down the card in the middle and
-   58% at the ends). */
-.sidecart-item__landing-streak {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(244, 154, 166, 0.55), rgba(233, 203, 127, 0.55) 35%, rgba(185, 193, 85, 0.45) 65%, rgba(136, 187, 225, 0.55)),
-    rgba(255, 255, 255, 0.6);
-  -webkit-mask: radial-gradient(153% 150% at 50% 152%, transparent 65%, #000 69.5%, #000 72.5%, transparent 77%);
-  mask: radial-gradient(153% 150% at 50% 152%, transparent 65%, #000 69.5%, #000 72.5%, transparent 77%);
-  clip-path: inset(0 calc(100% - var(--wipe-x)) 0 0);
-  animation: sidecart-landing-streak 0.8s ease-in calc(1.45s + var(--landing-elapsed, 0s)) forwards;
-}
-
-.sidecart-item__landing-streak::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-color: rgba(255, 255, 255, 0.95);
-  -webkit-mask: radial-gradient(153% 150% at 50% 152%, transparent 70.2%, #000 71%, transparent 71.8%);
-  mask: radial-gradient(153% 150% at 50% 152%, transparent 70.2%, #000 71%, transparent 71.8%);
-}
-
-/* The wipe: a quilted cotton pad on a track as wide as the card (so --wipe-x
-   moves it across), sweeping in a low arc and turning as it goes. */
-.sidecart-item__landing-wipe {
-  position: absolute;
-  inset: 0;
-  transform: translateX(var(--wipe-x));
-}
-
-.sidecart-item__landing-wipe::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  height: 56%;
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  border-radius: 26%;
-  background:
-    radial-gradient(circle, rgba(150, 125, 110, 0.22) 0 1px, transparent 1.6px) 0 0 / 8px 8px,
-    radial-gradient(circle, rgba(150, 125, 110, 0.22) 0 1px, transparent 1.6px) 4px 4px / 8px 8px,
-    #FFFFFF;
-  box-shadow:
-    inset 0 -4px 8px rgba(120, 90, 80, 0.12),
-    0 8px 18px rgba(62, 32, 39, 0.18);
-  animation: sidecart-landing-pad 1.7s ease-in-out var(--landing-elapsed, 0s) both;
-}
-
-.sidecart-item__landing-glint {
-  position: absolute;
-  width: var(--glint-size, 22px);
-  height: var(--glint-size, 22px);
-  margin: calc(var(--glint-size, 22px) / -2) 0 0 calc(var(--glint-size, 22px) / -2);
-  background-color: var(--glint);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0C53 35 65 47 100 50C65 53 53 65 50 100C47 65 35 53 0 50C35 47 47 35 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0C53 35 65 47 100 50C65 53 53 65 50 100C47 65 35 53 0 50C35 47 47 35 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  opacity: 0;
-  animation: sidecart-landing-glint 0.8s ease-out calc(var(--glint-at) + var(--landing-elapsed, 0s)) both;
-}
-
-.sidecart-item__landing-glint:nth-child(3) {
-  top: 24%;
-  left: 12%;
-  --glint: #EA4A7F;
-  --glint-at: 0.44s;
-}
-
-.sidecart-item__landing-glint:nth-child(4) {
-  top: 76%;
-  left: 30%;
-  --glint: #F47A54;
-  --glint-at: 0.6s;
-  --glint-size: 15px;
-}
-
-.sidecart-item__landing-glint:nth-child(5) {
-  top: 28%;
-  left: 58%;
-  --glint: #88BBE1;
-  --glint-at: 0.83s;
-}
-
-.sidecart-item__landing-glint:nth-child(6) {
-  top: 68%;
-  left: 84%;
-  --glint: #B9C155;
-  --glint-at: 1.09s;
-  --glint-size: 17px;
-}
-
-@keyframes sidecart-landing-wipe {
-  from { --wipe-x: -15%; }
-  to { --wipe-x: 115%; }
-}
-
-@keyframes sidecart-landing-pad {
-  0% { transform: translateY(16%) rotate(-22deg); }
-  50% { transform: translateY(-10%) rotate(-4deg); }
-  100% { transform: translateY(12%) rotate(16deg); }
-}
-
-@keyframes sidecart-landing-streak {
-  to { opacity: 0; }
-}
-
-@keyframes sidecart-landing-glint {
-  0% { opacity: 0; transform: scale(0) rotate(0); }
-  35% { opacity: 1; transform: scale(1.15) rotate(45deg); }
-  100% { opacity: 0; transform: scale(0.3) rotate(110deg); }
-}
-
-/* Squashes as the wipe comes over, hops, and lands with a little squash. */
-@keyframes sidecart-landing-hop {
-  0% { transform: none; }
-  22% { transform: scale(1.05, 0.93); animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1); }
-  52% { transform: translateY(-9%) rotate(-3deg) scale(0.97, 1.04); animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
-  74% { transform: translateY(0) rotate(1deg) scale(1.04, 0.96); }
-  100% { transform: none; }
-}
-
-/* Comes down onto the photo from above it, squashes, and settles. */
-@keyframes sidecart-sticker-slap {
-  0% { opacity: 0; transform: rotate(-30deg) scale(1.7); animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
-  45% { opacity: 1; transform: rotate(-10deg) scale(0.86, 0.8); animation-timing-function: cubic-bezier(0, 0.4, 0.5, 1); }
-  68% { transform: rotate(-13deg) scale(1.06); }
-  84% { transform: rotate(-11.5deg) scale(0.98); }
-  100% { opacity: 1; transform: rotate(-12deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sidecart-item__landing {
-    display: none;
-  }
-
-  .sidecart-item.is-landing .sidecart-item__sticker,
-  .sidecart-item.is-wiping .sidecart-item__image {
-    animation: none;
-  }
 }
 
 /* The VIP scent gift before a scent is picked (snippets/sidecart-gift-choice.liquid):
@@ -2850,8 +2599,6 @@ class Sidecart {
     this.refocusGift = null; // gift value whose dropdown gets focus back after the render a pick causes
     this.giftWash = null; // the scent wash a pick started, which the new card finishes (see washGift)
     this.preloadedBottles = new Map(); // scent bottle images loading ahead of a pick (see preloadGiftChoices)
-    this.landedGifts = this.loadLandedGifts(); // VIP gift values that have landed in this browser (see landGifts)
-    this.giftLandings = new Map(); // VIP gift value -> its landing while it plays
     this.checkingOut = false; // checkout clicked, waiting for the cart to settle
     this.giftCardsScroll = 0; // Cards: how far the row is scrolled, kept across re-renders
     this.discountOpen = false; // the discount code fold-out, kept across re-renders
@@ -3357,102 +3104,6 @@ class Sidecart {
       card.removeEventListener('animationend', done);
     };
     card.addEventListener('animationend', done);
-  }
-
-  // A VIP gift lands once in this browser, when the drawer first shows it
-  // (opened for an email link's gift, or after a code typed in it), like the
-  // shipping race: its card comes into view and its sticker slaps on, and a
-  // gift with nothing to pick (the wipes) is wiped clean first (see the
-  // .is-landing styles). Until the drawer has slid in, the card keeps its
-  // sticker off. A landed gift is remembered until its code comes off the
-  // cart, so adding the code back lands it again (see forgetLandedGifts). A
-  // render mid-landing brings a new card, where the landing carries on.
-  landGifts() {
-    if (!this.giftPromo) return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const now = performance.now();
-    this.sidecart.querySelectorAll('[data-gift^="vip:"]').forEach((card) => {
-      if (card.getAttribute('aria-hidden') === 'true') return;
-      const value = card.dataset.gift;
-      const landing = this.giftLandings.get(value);
-      if (landing) {
-        this.playGiftLanding(card, landing, now);
-        return;
-      }
-      if (this.landedGifts.has(value)) return;
-      if (!this.drawerReady && !reduce) {
-        card.classList.add('is-landing-pending');
-        return;
-      }
-      this.landedGifts.add(value);
-      this.saveLandedGifts();
-      if (reduce) return;
-      const fresh = { value, started: now, wipe: !this.giftHasChoice(value), timer: null };
-      this.giftLandings.set(value, fresh);
-      card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      this.playGiftLanding(card, fresh, now);
-    });
-  }
-
-  // Plays a landing on the card from where it is (a card a render brought
-  // picks it up mid-way), and clears it at the end.
-  playGiftLanding(card, landing, now) {
-    const length = landing.wipe ? 2400 : 1000;
-    const elapsed = Math.round(now - landing.started);
-    card.classList.remove('is-landing-pending');
-    if (elapsed >= length) {
-      this.giftLandings.delete(landing.value);
-      return;
-    }
-    if (card.classList.contains('is-landing')) return;
-    card.style.setProperty('--landing-elapsed', `${-elapsed}ms`);
-    card.classList.add('is-landing');
-    if (landing.wipe) {
-      const scene = document.createElement('span');
-      scene.className = 'sidecart-item__landing';
-      scene.setAttribute('aria-hidden', 'true');
-      scene.innerHTML =
-        '<span class="sidecart-item__landing-streak"></span><span class="sidecart-item__landing-wipe"></span>' +
-        '<span class="sidecart-item__landing-glint"></span>'.repeat(4);
-      card.classList.add('is-wiping');
-      card.appendChild(scene);
-    }
-    clearTimeout(landing.timer);
-    landing.timer = setTimeout(() => {
-      this.giftLandings.delete(landing.value);
-      card.classList.remove('is-landing', 'is-wiping');
-      card.style.removeProperty('--landing-elapsed');
-      card.querySelector('.sidecart-item__landing')?.remove();
-    }, length - elapsed);
-  }
-
-  loadLandedGifts() {
-    try {
-      const saved = JSON.parse(localStorage.getItem('baudie:gift-landed') || '[]');
-      if (Array.isArray(saved)) return new Set(saved);
-    } catch (e) {}
-    return new Set();
-  }
-
-  saveLandedGifts() {
-    try {
-      localStorage.setItem('baudie:gift-landed', JSON.stringify(Array.from(this.landedGifts)));
-    } catch (e) {}
-  }
-
-  // The landed VIP gifts whose code came off the cart land again when it's
-  // back (a cart without its codes listed leaves them be).
-  forgetLandedGifts(cart) {
-    if (!this.giftPromo || !this.landedGifts.size || !Array.isArray(cart.discount_codes)) return;
-    const coded = new Set();
-    cart.discount_codes.forEach((entry) => {
-      const row = this.vipRowForCode(entry.code);
-      if (row) coded.add('vip:' + row.prefix);
-    });
-    const gone = Array.from(this.landedGifts).filter((value) => !coded.has(value));
-    if (!gone.length) return;
-    gone.forEach((value) => this.landedGifts.delete(value));
-    this.saveLandedGifts();
   }
 
   // Remove on a VIP gift, or on its card waiting for a scent, takes the gift's
@@ -3968,8 +3619,6 @@ class Sidecart {
       this.hideEmptyState();
     }
     if (this.shippingRacePending) this.raceShippingBar();
-    this.forgetLandedGifts(cart);
-    this.landGifts();
   }
 
   adjustCountBadge(diff) {
@@ -5381,14 +5030,13 @@ class Sidecart {
 
   // ---- Open / close -------------------------------------------------------
   open(trigger = null) {
-    // A shipping race or a gift landing waits until the drawer has slid in:
-    // transitionend, or this fallback when there's no transition to wait for.
+    // A shipping race waits until the drawer has slid in: transitionend, or
+    // this fallback when there's no transition to wait for.
     if (!this.sidecart.classList.contains('is-open')) {
       this.drawerReady = false;
       clearTimeout(this.drawerReadyTimer);
       this.drawerReadyTimer = setTimeout(() => this.drawerOpened(), 400);
     }
-    this.landGifts(); // a gift still to land slides in without its sticker
     this.triggerElement = trigger || document.activeElement;
     this.sidecart.classList.add('is-open');
     this.sidecart.setAttribute('aria-hidden', 'false');
@@ -5403,14 +5051,12 @@ class Sidecart {
     setTimeout(() => this.closeButton?.focus(), 100);
   }
 
-  // The drawer has finished sliding in: a race or a landing waiting for it
-  // starts now.
+  // The drawer has finished sliding in: a race waiting for it starts now.
   drawerOpened() {
     clearTimeout(this.drawerReadyTimer);
     if (this.drawerReady || !this.sidecart.classList.contains('is-open')) return;
     this.drawerReady = true;
     if (this.shippingRacePending) this.raceShippingBar();
-    this.landGifts();
   }
 
   close() {

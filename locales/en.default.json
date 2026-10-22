@@ -471,8 +471,6 @@
     "gift_choice_label": "Choose your gift's {{ option }}",
     "gift_choice_placeholder": "Choose your {{ option }}",
     "gift_choice_required": "Choose your {{ option }} to check out.",
-    "gift_sticker_title": "VIP",
-    "gift_sticker_text": "on us",
     "gift_list": {
       "heading": {
         "one": "Your free gift",
