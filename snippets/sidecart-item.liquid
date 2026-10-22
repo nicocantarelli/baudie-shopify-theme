@@ -44,7 +44,8 @@
     A VIP gift the customer picks the variant of (the scent gift: one variant
     per scent, each naming the regular variant it ships as in
     baudie.ships_as, with the same SKU) shows that scent's card art and links
-    to its page, with a dropdown of the scents in stock to switch.
+    to its page, with a dropdown of the scents in stock to switch, a box in
+    the scent's product page button color.
   endcomment
   assign gift_ships_as = nil
   assign gift_kind = gift_value | split: ':' | first
@@ -55,6 +56,9 @@
     assign item_url = gift_ships_as.product.url
     assign item_image = gift_ships_as.product.metafields.custom.card_image_portrait | default: gift_ships_as.product.metafields.custom.card_image | default: gift_ships_as.product.featured_image
     assign card_bg = gift_ships_as.product.metafields.custom.product_card_background | default: card_bg
+    capture gift_box_color
+      echo gift_ships_as.product.metafields.custom.product_text_color | default: '#3E2027'
+    endcapture
   endif
 
   assign item_quantity = group_quantity | default: item.quantity
@@ -201,7 +205,7 @@
       {%- endif -%}
       {%- if gift_ships_as != blank -%}
         {%- assign gift_option_name = item.product.options.first | downcase -%}
-        <p class="sidecart-item__gift-choice">
+        <p class="sidecart-item__gift-choice" style="--scent-box: {{ gift_box_color | strip | escape }};">
           <span class="sidecart-item__frequency-wrap">
             {%- capture gift_choice_select -%}
             <select
@@ -223,6 +227,10 @@
                     capture choice_bg
                       echo choice_ships_as.product.metafields.custom.product_card_background | default: card_bg
                     endcapture
+                    # The scent's product page button color, for the box.
+                    capture choice_text
+                      echo choice_ships_as.product.metafields.custom.product_text_color | default: '#3E2027'
+                    endcapture
                     # The scent's product page gradient, for the wash a pick plays.
                     capture choice_wash
                       echo choice_ships_as.product.metafields.custom.gradient_color_1
@@ -236,6 +244,7 @@
                     value="{{ choice.id }}"
                     data-image="{% if choice_image %}{{ choice_image | image_url: width: 400 }}{% endif %}"
                     data-card-bg="{{ choice_bg | strip | escape }}"
+                    data-text-color="{{ choice_text | strip | escape }}"
                     data-wash="{{ choice_wash | strip | escape }}"
                     {% if choice.id == item.variant_id %}
                       selected

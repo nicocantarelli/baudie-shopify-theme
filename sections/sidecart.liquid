@@ -616,7 +616,10 @@
 }
 
 /* A gift with a choice (the VIP scent gift): its dropdown sits under the gift
-   label, like the purchase-option dropdown under "Subscription". */
+   label as a box like a button, so it's plain the pick is a click away. It's
+   the gift rose (the Added to cart label color setting with the cards) until a
+   scent is picked, then that scent's product page button color (--scent-box),
+   which sweeps in from the left on a pick (see colorGiftChoice). */
 .sidecart-item__gift-choice {
   display: flex;
   margin: 0;
@@ -627,11 +630,67 @@
   color: var(--sidecart-text);
 }
 
-/* Right under the label, with no gap between them (the purchase-option
-   dropdown shares its label's line box): this takes back the info column's
-   gap. */
 .sidecart-item__gift-label + .sidecart-item__gift-choice {
-  margin-top: calc(-1 * var(--sidecart-info-gap, 8px));
+  margin-top: 2px;
+}
+
+.sidecart-item__gift-choice .sidecart-item__frequency {
+  padding: 9px 32px 9px 13px;
+  background-color: var(--scent-box, var(--gift-free-color, #B4506D));
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  color: #ffffff;
+  font-family: var(--font-sweet-sans);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.sidecart-item__gift-choice .sidecart-item__frequency:hover {
+  opacity: 0.85;
+}
+
+/* The old color slides off to the right, uncovering the new one. */
+.sidecart-item__gift-choice.is-coloring .sidecart-item__frequency {
+  background-image: linear-gradient(90deg, transparent 48%, var(--scent-box-from) 52%);
+  animation: sidecart-scent-box 0.5s cubic-bezier(0.3, 0, 0.2, 1) var(--scent-box-delay, 0s) both;
+}
+
+@keyframes sidecart-scent-box {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+
+/* Reduced motion: the new color fades in instead. */
+@media (prefers-reduced-motion: reduce) {
+  .sidecart-item__gift-choice .sidecart-item__frequency {
+    transition: background-color 0.3s ease, opacity 0.2s ease;
+  }
+
+  .sidecart-item__gift-choice.is-coloring .sidecart-item__frequency {
+    background-image: none;
+    animation: none;
+  }
+}
+
+/* The chevron inside the box, on the right. */
+.sidecart-item__gift-choice .sidecart-item__frequency-chevron {
+  position: absolute;
+  right: 13px;
+  width: 10px;
+  height: 5px;
+  color: #ffffff;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+/* An open menu stacks above its neighbours (z-index 30), so the chevron would
+   go behind the box. */
+.sidecart-item__gift-choice .select-menu.is-open + .sidecart-item__frequency-chevron {
+  z-index: 31;
 }
 
 /* The scent wash. While a picked scent goes in (.is-choosing), a wave in that
@@ -785,9 +844,8 @@
 
 /* The VIP scent gift before a scent is picked (snippets/sidecart-gift-choice.liquid):
    the scents' bottles fanned out like a hand of cards in the middle of a
-   pink-to-peach photo until then, and "Choose your scent" at full strength,
-   since it asks for the pick. A pick gives the photo its scent's color (see
-   chooseGift). */
+   pink-to-peach photo until then. A pick gives the photo its scent's color
+   (see chooseGift). */
 .sidecart-item--gift-pending .sidecart-item__image-link {
   position: relative;
   background-image: linear-gradient(160deg, #FFD9E4, #FFE3C4);
@@ -822,45 +880,6 @@
 /* The reset makes every img a block, which would beat [hidden]. */
 .sidecart-item__image[hidden] {
   display: none;
-}
-
-/* Its "Choose your scent" is a rose box like a button, so it's plain the pick
-   is a click away: the gift rose (the Added to cart label color setting with
-   the cards), with the chevron inside on the right. */
-.sidecart-item--gift-pending .sidecart-item__gift-label + .sidecart-item__gift-choice {
-  margin-top: 2px;
-}
-
-.sidecart-item--gift-pending .sidecart-item__frequency {
-  padding: 9px 32px 9px 13px;
-  background-color: var(--gift-free-color, #B4506D);
-  color: #ffffff;
-  font-family: var(--font-sweet-sans);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  opacity: 1;
-}
-
-.sidecart-item--gift-pending .sidecart-item__frequency:hover {
-  opacity: 0.85;
-}
-
-.sidecart-item--gift-pending .sidecart-item__gift-choice .sidecart-item__frequency-chevron {
-  left: auto;
-  right: 13px;
-  width: 10px;
-  height: 5px;
-  color: #ffffff;
-  opacity: 1;
-}
-
-/* An open menu stacks above its neighbours (z-index 30), so the chevron would
-   go behind the box. */
-.sidecart-item--gift-pending .select-menu.is-open + .sidecart-item__frequency-chevron {
-  z-index: 31;
 }
 
 .sidecart-item__gift-choice-error {
@@ -993,8 +1012,7 @@
   color: var(--sidecart-text);
 }
 
-.sidecart-item__subscription .sidecart-item__frequency-chevron,
-.sidecart-item__gift-choice .sidecart-item__frequency-chevron {
+.sidecart-item__subscription .sidecart-item__frequency-chevron {
   position: absolute;
   left: 2px; /* centred in the same 12px slot as the label's icon */
   opacity: 0.75;
@@ -1353,9 +1371,9 @@
   mask-position: center;
 }
 
-/* A free shipping code in the cart: the bar is full, in the six scents' bottle
-   colors (St. Tropez, Petal Kiss, Capri Seaside, Sweet Muse, Barely There,
-   Deep Ritual), with a soft glow that breathes and a shine that runs across
+/* A free shipping code in the cart: the bar is full, in the warm scents' bottle
+   colors (St. Tropez, Petal Kiss, Capri Seaside, Sweet Muse; Alex wanted no
+   green or blue), with a soft glow that breathes and a shine that runs across
    now and then. The track is a container so the gradient spans the full bar:
    a growing fill uncovers it instead of stretching it.
 
@@ -1369,7 +1387,7 @@
 }
 
 .sidecart__shipping-bar--code .sidecart__shipping-bar-fill {
-  background-image: linear-gradient(90deg, #EA4A7F, #F49AA6, #F47A54, #E9CB7F, #B9C155, #88BBE1);
+  background-image: linear-gradient(90deg, #EA4A7F, #F49AA6, #F47A54, #E9CB7F);
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-size: calc(100cqw - 22px) 100%;
@@ -1383,7 +1401,7 @@
   left: 0;
   right: 22px;
   border-radius: 5px;
-  background-image: linear-gradient(90deg, #EA4A7F, #F49AA6, #F47A54, #E9CB7F, #B9C155, #88BBE1);
+  background-image: linear-gradient(90deg, #EA4A7F, #F49AA6, #F47A54, #E9CB7F);
   filter: blur(6px);
   opacity: 0.5;
   pointer-events: none;
@@ -1460,10 +1478,10 @@
   background:
     radial-gradient(circle, #EA4A7F 0 2px, transparent 2.5px) 50% 0 / 6px 6px no-repeat,
     radial-gradient(circle, #F47A54 0 2px, transparent 2.5px) 93% 25% / 6px 6px no-repeat,
-    radial-gradient(circle, #B9C155 0 2px, transparent 2.5px) 93% 75% / 6px 6px no-repeat,
-    radial-gradient(circle, #88BBE1 0 2px, transparent 2.5px) 50% 100% / 6px 6px no-repeat,
-    radial-gradient(circle, #E9CB7F 0 2px, transparent 2.5px) 7% 75% / 6px 6px no-repeat,
-    radial-gradient(circle, #F49AA6 0 2px, transparent 2.5px) 7% 25% / 6px 6px no-repeat;
+    radial-gradient(circle, #E9CB7F 0 2px, transparent 2.5px) 93% 75% / 6px 6px no-repeat,
+    radial-gradient(circle, #F49AA6 0 2px, transparent 2.5px) 50% 100% / 6px 6px no-repeat,
+    radial-gradient(circle, #F47A54 0 2px, transparent 2.5px) 7% 75% / 6px 6px no-repeat,
+    radial-gradient(circle, #E9CB7F 0 2px, transparent 2.5px) 7% 25% / 6px 6px no-repeat;
   opacity: 0;
   pointer-events: none;
   animation: sidecart-shipping-burst 0.6s 0.95s ease-out both;
@@ -3036,6 +3054,7 @@ class Sidecart {
     if (card.contains(document.activeElement)) this.refocusGift = value;
     select.disabled = true; // a disabled select's dropdown doesn't open (assets/select-menu.js)
     if (option) this.washGift(card, option);
+    if (option) this.colorGiftChoice(card, option.dataset.textColor);
     card.classList.add('is-choosing');
     card.setAttribute('aria-busy', 'true');
     if (card.hasAttribute('data-gift-pending')) {
@@ -3114,13 +3133,14 @@ class Sidecart {
     const [lead, ...rest] = colors.slice().sort((a, b) => luminance(a) - luminance(b));
     const [fill, tail] = rest.length ? rest.sort((a, b) => luminance(b) - luminance(a)) : [lead, lead];
     // The band's trailing edge, its body (light to mid) and, just ahead, a
-    // crest in the darkest color, all wavy; 340 wide for a card of 100.
+    // crest in the darkest color, their edges a gentle wave (a swell and a
+    // half down the card); 340 wide for a card of 100.
     const band =
       "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 100' preserveAspectRatio='none'>" +
       "<defs><linearGradient id='w' x1='108' x2='226' gradientUnits='userSpaceOnUse'>" +
       `<stop offset='0' stop-color='${fill}'/><stop offset='1' stop-color='${tail}'/></linearGradient></defs>` +
-      "<path fill='url(#w)' d='M108 0H226Q236 8.33 226 16.67T226 33.33T226 50T226 66.67T226 83.33T226 100H108Q98 91.67 108 83.33T108 66.67T108 50T108 33.33T108 16.67T108 0Z'/>" +
-      `<path fill='${lead}' d='M226 0Q236 8.33 226 16.67T226 33.33T226 50T226 66.67T226 83.33T226 100H236Q226 91.67 236 83.33T236 66.67T236 50T236 33.33T236 16.67T236 0Z'/>` +
+      "<path fill='url(#w)' d='M108 0H226Q230 16.67 226 33.33T226 66.67T226 100H108Q112 83.33 108 66.67T108 33.33T108 0Z'/>" +
+      `<path fill='${lead}' d='M226 0Q230 16.67 226 33.33T226 66.67T226 100H236Q240 83.33 236 66.67T236 33.33T236 0Z'/>` +
       '</svg>';
     this.giftWash = {
       value: card.dataset.gift,
@@ -3131,6 +3151,26 @@ class Sidecart {
     card.classList.remove('is-chosen');
     card.style.setProperty('--scent-wash', this.giftWash.image);
     card.style.setProperty('--scent-wash-color', this.giftWash.color);
+  }
+
+  // The dropdown's box takes the picked scent's product page button color, the
+  // old color sliding off to the right (see .is-coloring). The new card has
+  // the new color and finishes the slide (see settleGiftWash).
+  colorGiftChoice(card, color) {
+    const choice = card.querySelector('.sidecart-item__gift-choice');
+    const box = choice && (choice.querySelector('.select-menu__button') || choice.querySelector('.sidecart-item__frequency'));
+    if (!box || !/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color || '')) return;
+    const from = getComputedStyle(box).backgroundColor;
+    choice.style.setProperty('--scent-box', color);
+    choice.style.setProperty('--scent-box-from', from);
+    choice.style.removeProperty('--scent-box-delay');
+    choice.classList.remove('is-coloring');
+    void choice.offsetWidth; // restarts the slide
+    choice.classList.add('is-coloring');
+    if (this.giftWash && this.giftWash.value === card.dataset.gift) {
+      this.giftWash.boxFrom = from;
+      this.giftWash.boxAt = performance.now();
+    }
   }
 
   // The render brought the new card: the wave picks up where it was, holds a
@@ -3158,6 +3198,14 @@ class Sidecart {
     } else if (image && fallen < 900) {
       image.style.setProperty('--bottle-delay', `${-Math.round(fallen)}ms`);
       image.classList.add('is-dropping');
+    }
+    // The box slides on to its new color (0.5s, see .is-coloring).
+    const choice = card.querySelector('.sidecart-item__gift-choice');
+    const colored = wash.boxAt ? performance.now() - wash.boxAt : Infinity;
+    if (choice && colored < 500) {
+      choice.style.setProperty('--scent-box-from', wash.boxFrom);
+      choice.style.setProperty('--scent-box-delay', `${-Math.round(colored)}ms`);
+      choice.classList.add('is-coloring');
     }
     const done = (event) => {
       if (event.target !== card || !/^sidecart-scent-(wash-out|fade)$/.test(event.animationName)) return;

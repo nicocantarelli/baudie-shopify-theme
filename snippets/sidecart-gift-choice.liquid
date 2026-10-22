@@ -109,6 +109,10 @@
                   capture choice_bg
                     echo choice_ships_as.product.metafields.custom.product_card_background | default: '#FCF0D2'
                   endcapture
+                  # The scent's product page button color, which the box takes.
+                  capture choice_text
+                    echo choice_ships_as.product.metafields.custom.product_text_color | default: '#3E2027'
+                  endcapture
                   # The scent's product page gradient, for the wash a pick plays.
                   capture choice_wash
                     echo choice_ships_as.product.metafields.custom.gradient_color_1
@@ -122,6 +126,7 @@
                   value="{{ choice.id }}"
                   data-image="{% if choice_image %}{{ choice_image | image_url: width: 400 }}{% endif %}"
                   data-card-bg="{{ choice_bg | strip | escape }}"
+                  data-text-color="{{ choice_text | strip | escape }}"
                   data-wash="{{ choice_wash | strip | escape }}"
                 >
                   {{- choice.title | escape -}}
