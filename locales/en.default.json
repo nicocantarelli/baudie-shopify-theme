@@ -492,6 +492,8 @@
       "apply": "Apply",
       "remove": "Remove code CODE",
       "invalid": "CODE can't be applied to your cart.",
+      "saved": "Saved! CODE applies once you add something to your cart.",
+      "have_code": "Have a code?",
       "error": "Couldn't update your discount code. Please try again.",
       "blocked": "Discount codes can't be used during this promotion. Save yours for your next order!"
     }

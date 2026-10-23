@@ -54,7 +54,18 @@
     </div>
 
     <div class="sidecart-upsell__info">
-      <p class="sidecart-upsell__title">{{ product.title }}</p>
+      {%- comment -%} A word with a hyphen never breaks, e.g. "(3-Pack)" on a phone. {%- endcomment -%}
+      <p class="sidecart-upsell__title">
+        {%- assign title_words = product.title | escape | split: ' ' -%}
+        {%- for word in title_words -%}
+          {%- unless forloop.first %} {% endunless -%}
+          {%- if word contains '-' -%}
+            <span class="sidecart-upsell__nowrap">{{ word }}</span>
+          {%- else -%}
+            {{ word }}
+          {%- endif -%}
+        {%- endfor -%}
+      </p>
       <p class="sidecart-upsell__price">
         {%- if has_deal -%}
           <span class="sidecart-upsell__compare">{{ variant.price | money }}</span>

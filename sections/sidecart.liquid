@@ -258,6 +258,17 @@
   <a href="{{ routes.all_products_collection_url }}" class="sidecart__continue-btn">
     {{ section.settings.continue_button_text }}
   </a>
+  {%- if section.settings.show_discount_code -%}
+    {%- comment -%}
+      An empty cart has no footer, so its code box moves in here (see
+      placeDiscountBox): a VIP code typed in brings its gift like the email link.
+    {%- endcomment -%}
+    <div class="sidecart__empty-code" data-empty-code>
+      <button type="button" class="sidecart__empty-code-open" data-empty-code-open aria-controls="sidecart-discount-panel">
+        {{- 'sidecart.discount.have_code' | t -}}
+      </button>
+    </div>
+  {%- endif -%}
 </div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
 {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
   <div
@@ -300,6 +311,7 @@
     data-sidecart-discount
     data-remove-label="{{ 'sidecart.discount.remove' | t }}"
     data-invalid-msg="{{ 'sidecart.discount.invalid' | t }}"
+    data-saved-msg="{{ 'sidecart.discount.saved' | t }}"
     data-error-msg="{{ 'sidecart.discount.error' | t }}"
     data-blocked-msg="{{ 'sidecart.discount.blocked' | t }}">
     {%- comment -%}
@@ -1289,6 +1301,46 @@
 
 .sidecart__continue-btn:hover {
   opacity: 0.85;
+}
+
+/* "Have a code?", and the code box once it moves in (see placeDiscountBox). */
+.sidecart__empty-code {
+  width: 100%;
+  max-width: 320px;
+  margin-top: 16px;
+}
+
+.sidecart__empty-code-open {
+  padding: 4px;
+  font-family: var(--font-manrope);
+  font-size: 13px;
+  color: var(--sidecart-text);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.sidecart__empty-code-open:focus-visible {
+  outline: 2px solid var(--sidecart-text);
+  outline-offset: 2px;
+}
+
+.sidecart__empty-code .sidecart__discount {
+  margin: 0;
+}
+
+.sidecart__empty-code .sidecart__discount-toggle {
+  display: none;
+}
+
+.sidecart__empty-code .sidecart__discount-panel {
+  margin-top: 0;
+}
+
+.sidecart__empty-code .sidecart__discount-codes {
+  justify-content: center;
 }
 
 .sidecart__shipping-bar {
@@ -2421,14 +2473,96 @@
   pointer-events: none;
 }
 
+.sidecart-upsell__nowrap {
+  white-space: nowrap;
+}
+
+/* Phones: the deals side by side, each a photo with a round + on its corner in
+   place of the worded button (which keeps its "Add to cart: <title>" label), so
+   the block takes about 40% less height. A deal left on its own (the customer
+   added the other) takes the full width. */
 @media (max-width: 768px) {
+  .sidecart-upsell {
+    padding: 12px 20px 14px;
+  }
+
+  .sidecart-upsell__heading {
+    font-size: 12px;
+    letter-spacing: 0;
+    margin-bottom: 8px;
+  }
+
+  .sidecart-upsell__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .sidecart-upsell__item {
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr);
+    column-gap: 12px;
+    align-items: center;
+  }
+
+  .sidecart-upsell__image-wrap,
+  .sidecart-upsell__form {
+    grid-area: 1 / 1;
+  }
+
   .sidecart-upsell__image-wrap {
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .sidecart-upsell__info {
+    grid-area: 1 / 2;
+  }
+
+  .sidecart-upsell__title {
+    font-size: 10.5px;
+    line-height: 1.2;
+    letter-spacing: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .sidecart-upsell__compare {
+    font-size: 10.5px;
+  }
+
+  .sidecart-upsell__current {
+    font-size: 12.5px;
+  }
+
+  /* Centered on the photo, then moved to hang 4px past its bottom-right corner. */
+  .sidecart-upsell__form {
+    justify-self: center;
+    transform: translate(16px, 16px);
   }
 
   .sidecart-upsell__add {
-    padding: 9px 12px;
+    position: relative;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 0;
+    color: transparent;
+    background-image: linear-gradient(var(--sidecart-bg), var(--sidecart-bg)), linear-gradient(var(--sidecart-bg), var(--sidecart-bg));
+    background-size: 10px 1.5px, 1.5px 10px;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: 0 0 0 2px var(--sidecart-bg);
+  }
+
+  /* A bigger tap area than the circle. */
+  .sidecart-upsell__add::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
   }
 }
 
@@ -2683,6 +2817,7 @@ class Sidecart {
     this.discountMessage = null; // { text, tone } under the code box, kept across renders
     this.pendingDiscountCode = null; // a just-applied code to report on after the render
     this.removingCodes = new Set(); // codes on their way off the cart (their chips already gone)
+    this.savedCodes = this.loadSavedCodes(); // codes typed into an empty cart, checked once it holds something (see reportSavedCodes)
 
     this.cacheRefs();
     this.bindEvents();
@@ -2778,6 +2913,13 @@ class Sidecart {
       const checkout = e.target.closest('[data-sidecart-checkout]');
       if (checkout) {
         this.handleCheckoutClick(e, checkout);
+        return;
+      }
+      const emptyCode = e.target.closest('[data-empty-code-open]');
+      if (emptyCode) {
+        this.discountOpen = true;
+        this.renderDiscountState(this.lastCart);
+        this.sidecart.querySelector('[data-discount-input]')?.focus();
         return;
       }
       const discountToggle = e.target.closest('[data-discount-toggle]');
@@ -3513,6 +3655,7 @@ class Sidecart {
     this.applyUpsellVisibility(this.upsellProductIds(cart));
     this.surfaceClamps();
     this.reportPendingDiscount(cart);
+    this.reportSavedCodes(cart);
     this.restoreGiftFocus();
     this.settleGiftWash();
     this.reopenMenu(openMenu);
@@ -3845,6 +3988,7 @@ class Sidecart {
     if (this.shippingBar) this.shippingBar.classList.add('sidecart__shipping-bar--hidden');
     const upsellRegion = this.sidecart.querySelector('[data-sidecart-upsell]');
     if (upsellRegion) upsellRegion.hidden = true;
+    this.placeDiscountBox();
   }
 
   hideEmptyState() {
@@ -3853,6 +3997,31 @@ class Sidecart {
     if (this.emptyElement) this.emptyElement.classList.add('sidecart__empty--hidden');
     if (this.footer) this.footer.classList.remove('sidecart__footer--hidden');
     if (this.shippingBar) this.shippingBar.classList.remove('sidecart__shipping-bar--hidden');
+    this.placeDiscountBox();
+  }
+
+  // The footer (and the code box in it) is hidden while the cart is empty, so
+  // a customer with a code but no items, like a VIP who didn't use the email
+  // link, opens the box with "Have a code?" and it moves under "Continue
+  // shopping". It stays there while open or holding a code, and goes back
+  // above the subtotal once the cart holds something. A render brings a fresh
+  // box in the footer, which this moves again.
+  placeDiscountBox(cart = this.lastCart) {
+    const box = this.sidecart.querySelector('[data-sidecart-discount]');
+    const slot = this.sidecart.querySelector('[data-empty-code]');
+    if (!box || !slot) return;
+    const empty = !!this.emptyElement && !this.emptyElement.classList.contains('sidecart__empty--hidden');
+    const hasCodes = ((cart && cart.discount_codes) || []).some(
+      (entry) => !this.removingCodes.has(String(entry.code).toUpperCase())
+    );
+    const inEmpty = empty && (this.discountOpen || hasCodes);
+    if (inEmpty && box.parentElement !== slot) {
+      slot.appendChild(box);
+    } else if (!inEmpty && box.parentElement === slot && this.footer) {
+      this.footer.insertBefore(box, this.footer.querySelector('.sidecart__subtotal-row'));
+    }
+    const open = slot.querySelector('[data-empty-code-open]');
+    if (open) open.hidden = inEmpty && this.discountOpen;
   }
 
   updateItemsLabel(count) {
@@ -4836,7 +5005,14 @@ class Sidecart {
     }
     const chipFocused = !!document.activeElement?.closest?.('[data-discount-codes]');
     this.setDiscountMessage(null); // redraws the chips without them
-    if (chipFocused) this.sidecart.querySelector('[data-discount-toggle]')?.focus();
+    if (chipFocused) {
+      // In an empty cart the toggle is hidden: the code field or "Have a code?".
+      const inEmpty = !!this.sidecart.querySelector('[data-empty-code] [data-sidecart-discount]');
+      const target = inEmpty
+        ? this.sidecart.querySelector(this.discountOpen ? '[data-discount-input]' : '[data-empty-code-open]')
+        : this.sidecart.querySelector('[data-discount-toggle]');
+      target?.focus();
+    }
     this.requestStructureRender();
     this.enqueue(async () => {
       try {
@@ -4893,7 +5069,49 @@ class Sidecart {
       this.unpickedGiftChoice()?.scrollIntoView({ block: 'nearest' });
       return;
     }
+    // An empty cart: Shopify keeps any code but applies it to nothing yet, so
+    // it's checked once something is added (see reportSavedCodes).
+    if (entry && (cart.item_count || 0) === 0) {
+      this.savedCodes.add(code.toUpperCase());
+      this.storeSavedCodes();
+      this.setDiscountMessage(this.discountText('savedMsg').replace('CODE', entry.code), 'saved');
+      return;
+    }
     this.setDiscountMessage(this.discountText('invalidMsg').replace('CODE', code), 'error');
+  }
+
+  // Codes saved in an empty cart, once it holds something (usually on another
+  // page, so they're kept for the tab): one that still applies to nothing gets
+  // the usual message, and "Saved!" goes.
+  reportSavedCodes(cart) {
+    if (!this.savedCodes.size || (cart.item_count || 0) === 0) return;
+    const waiting = this.giftChoiceCodes(this.pendingGiftChoices(cart));
+    const unused = (cart.discount_codes || []).find((entry) => {
+      const code = String(entry.code).toUpperCase();
+      return this.savedCodes.has(code) && !entry.applicable && !waiting.includes(code);
+    });
+    this.savedCodes.clear();
+    this.storeSavedCodes();
+    if (unused) {
+      this.setDiscountMessage(this.discountText('invalidMsg').replace('CODE', unused.code), 'error');
+    } else if (this.discountMessage && this.discountMessage.tone === 'saved') {
+      this.setDiscountMessage(null);
+    }
+  }
+
+  loadSavedCodes() {
+    try {
+      return new Set(JSON.parse(sessionStorage.getItem('baudie:saved-codes') || '[]'));
+    } catch (e) {
+      return new Set();
+    }
+  }
+
+  storeSavedCodes() {
+    try {
+      if (this.savedCodes.size) sessionStorage.setItem('baudie:saved-codes', JSON.stringify(Array.from(this.savedCodes)));
+      else sessionStorage.removeItem('baudie:saved-codes');
+    } catch (e) {}
   }
 
   codesBlockedMessage() {
@@ -4940,6 +5158,7 @@ class Sidecart {
   // Applied-code chips + the message, redrawn after every render (the footer
   // markup is replaced on each one).
   renderDiscountState(cart) {
+    this.placeDiscountBox(cart);
     const box = this.sidecart.querySelector('[data-sidecart-discount]');
     if (!box) return;
 
@@ -4955,12 +5174,14 @@ class Sidecart {
     if (list) {
       const codes = (cart && cart.discount_codes) || [];
       const removeLabel = box.dataset.removeLabel || 'Remove CODE';
-      // A gift code applies to nothing until its scent is picked: not dimmed.
+      // A gift code applies to nothing until its scent is picked, and any code
+      // to nothing in an empty cart: not dimmed.
       const waiting = this.giftChoiceCodes(this.pendingGiftChoices(cart));
+      const empty = !!cart && (cart.item_count || 0) === 0;
       list.innerHTML = '';
       codes.forEach((entry) => {
         if (this.removingCodes.has(String(entry.code).toUpperCase())) return; // on its way off
-        const active = entry.applicable || waiting.includes(String(entry.code).toUpperCase());
+        const active = entry.applicable || empty || waiting.includes(String(entry.code).toUpperCase());
         const chip = document.createElement('li');
         chip.className = 'sidecart__discount-code' + (active ? '' : ' sidecart__discount-code--inactive');
         const label = document.createElement('span');
