@@ -340,6 +340,9 @@
     "product_features": {
       "name": "Product features",
       "settings": {
+        "band_shape": "Band shape",
+        "band_shape_straight": "Straight",
+        "band_shape_wavy": "Wavy",
         "icon_color": "Icon color"
       },
       "blocks": {

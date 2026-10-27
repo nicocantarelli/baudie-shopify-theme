@@ -1,9 +1,21 @@
 {% comment %}
   Product Features Section
-  Displays product badges/features in an infinite marquee
+  Displays product badges/features in an infinite marquee, on a straight
+  band or one with wavy edges.
+  Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1100
+
+  Colors left empty in the editor fall back to the theme colors set in the
+  stylesheet, so only the ones picked are written here.
 {% endcomment %}
 
-<div class="product-features full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --icon-color: {{ section.settings.icon_color | default: section.settings.text_color }};">
+<div
+  class="product-features product-features--{{ section.settings.band_shape | default: 'straight' }} full-width"
+  style="
+    --band-mask: url('{{ 'shape-ribbon.svg' | asset_url }}');
+    {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
+    {%- if section.settings.icon_color != blank %}--icon-color: {{ section.settings.icon_color }};{% endif -%}
+  ">
   <div class="product-features__container">
     {% if section.blocks.size > 0 %}
       <div class="product-features__viewport">
@@ -34,14 +46,21 @@
 </div>
 
 {% stylesheet %}
-  .product-features {
-    background-color: #FCE9EC;
-    padding: 0;
-  }
-
   .product-features__container {
     margin: 0 auto;
-    background-color: var(--section-bg, #3E2027);
+    background: var(--section-bg, linear-gradient(90deg, var(--color-blush), var(--color-panel)));
+  }
+
+  /* Wavy band: one wave of the design's ribbon, repeated and started half a
+     wave in like in the design. It's taller than the straight band so the
+     icons and text clear the waves. */
+  .product-features--wavy .product-features__container {
+    -webkit-mask: var(--band-mask) -106px 0 / 213px 100% repeat-x;
+    mask: var(--band-mask) -106px 0 / 213px 100% repeat-x;
+  }
+
+  .product-features--wavy .product-features__group {
+    height: 108px;
   }
 
   .product-features__viewport {
@@ -82,7 +101,7 @@
     height: 40px;
     flex-shrink: 0;
     display: inline-block;
-    background-color: var(--icon-color, var(--text-color, #FFFFFF));
+    background-color: var(--icon-color, var(--text-color, var(--color-foreground)));
     -webkit-mask-size: contain;
     mask-size: contain;
     -webkit-mask-repeat: no-repeat;
@@ -93,12 +112,12 @@
 
   .product-features__text {
     font-family: var(--font-sweet-sans);
-    font-weight: 500;
+    font-weight: 700;
     font-size: 14px;
-    line-height: normal;
-    letter-spacing: -0.14px;
+    line-height: 1.3;
+    letter-spacing: var(--tracking-label-sm);
     text-transform: uppercase;
-    color: var(--text-color, #FFFFFF);
+    color: var(--text-color, var(--color-foreground));
     white-space: pre-line;
     margin: 0;
   }
@@ -125,10 +144,21 @@
   }
 
   @media (max-width: 768px) {
+    .product-features--wavy .product-features__container {
+      -webkit-mask-position: -89px 0;
+      mask-position: -89px 0;
+      -webkit-mask-size: 178px 100%;
+      mask-size: 178px 100%;
+    }
+
     .product-features__group {
       gap: 30px;
       padding: 0 15px;
       height: 70px;
+    }
+
+    .product-features--wavy .product-features__group {
+      height: 90px;
     }
 
     .product-features__icon {
@@ -138,7 +168,6 @@
 
     .product-features__text {
       font-size: 12px;
-      letter-spacing: -0.12px;
     }
   }
 {% endstylesheet %}
@@ -231,26 +260,34 @@
     "class": "product-features-section",
     "settings": [
       {
+        "type": "select",
+        "id": "band_shape",
+        "label": "t:sections.product_features.settings.band_shape",
+        "options": [
+          { "value": "straight", "label": "t:sections.product_features.settings.band_shape_straight" },
+          { "value": "wavy", "label": "t:sections.product_features.settings.band_shape_wavy" }
+        ],
+        "default": "straight"
+      },
+      {
         "type": "header",
-        "content": "t:labels.colors"
+        "content": "t:labels.colors",
+        "info": "t:labels.colors_info"
       },
       {
         "type": "color",
         "id": "background_color",
-        "label": "t:labels.background_color",
-        "default": "#3E2027"
+        "label": "t:labels.background_color"
       },
       {
         "type": "color",
         "id": "text_color",
-        "label": "t:labels.text_color",
-        "default": "#FFFFFF"
+        "label": "t:labels.text_color"
       },
       {
         "type": "color",
         "id": "icon_color",
-        "label": "t:sections.product_features.settings.icon_color",
-        "default": "#FFFFFF"
+        "label": "t:sections.product_features.settings.icon_color"
       }
     ],
     "blocks": [

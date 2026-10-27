@@ -239,9 +239,7 @@
       ],
       "name": "t:sections.product_features.name",
       "settings": {
-        "background_color": "#3e2027",
-        "text_color": "#ffffff",
-        "icon_color": "#ffffff"
+        "band_shape": "wavy"
       }
     },
     "what_makes_different_tVrMDA": {
