@@ -72,7 +72,6 @@
       "mobile_category_menu": "Category strip menu",
       "mobile_category_menu_info": "Leave empty to use the links under the main menu's first dropdown.",
       "colors_header": "Colors",
-      "colors_info": "Leave a color empty to use the theme colors from Theme settings > Colors.",
       "header_bg_color": "Header background color",
       "header_text_color": "Header text color",
       "header_icon_color": "Header icon color",
@@ -201,6 +200,7 @@
     "divider_color": "Divider color",
     "summary_background_color": "Summary background color",
     "colors": "Colors",
+    "colors_info": "Leave a color empty to use the theme colors from Theme settings > Colors.",
     "image": "Image"
   },
   "options": {
