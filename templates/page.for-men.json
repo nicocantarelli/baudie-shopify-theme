@@ -21,8 +21,6 @@
           "barely-there"
         ],
         "use_default_colors": false,
-        "default_card_text_color": "#3e2027",
-        "default_card_button_color": "#3e2027",
         "use_static_image": true,
         "static_hero_image": "shopify://shop_images/Deep_Ritual_11_copy.png",
         "static_hero_image_alt": "",

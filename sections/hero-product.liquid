@@ -1,6 +1,13 @@
 {% comment %}
   Hero section with large product imagery and interactive product carousel.
   Products display with their hero images from metafields and allow navigation between items.
+  Matches Figma design: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-950
+  (mobile: node-id=109-11280)
+
+  Card colors come from "Use default colors" (the same colors on every card)
+  or from each product's metafields. Colors left empty fall back to the theme
+  colors set on .hero-product__card in the stylesheet, so only the ones that
+  are set are written here.
 {% endcomment %}
 
 <section class="hero-product full-width" aria-label="{{ 'sections.hero_product.aria_label' | t }}">
@@ -97,15 +104,24 @@
 
     {%- comment -%} Color Block - separate from images so it doesn't fade {%- endcomment -%}
     {%- liquid
-      assign first_card_bg = '#FCD8B3'
+      assign first_card_bg = ''
       for hero_product in section.settings.hero_products limit: 1
-        assign first_card_bg = hero_product.metafields.custom.hero_card_background_color | default: hero_product.metafields.custom.card_background_color | default: hero_product.metafields.custom.product_card_background | default: '#FCD8B3'
+        if section.settings.use_default_colors
+          assign first_card_bg = section.settings.default_card_background_color
+        else
+          assign first_card_bg = hero_product.metafields.custom.hero_card_background_color | default: hero_product.metafields.custom.card_background_color | default: hero_product.metafields.custom.product_card_background
+        endif
       endfor
     -%}
-    <div class="hero-product__color-block" data-color-block style="background-color: {{ first_card_bg }};"></div>
+    <div
+      class="hero-product__color-block"
+      data-color-block
+      style="{%- if first_card_bg != blank %}--card-bg: {{ first_card_bg }};{% endif -%}"></div>
 
     {%- comment -%} Main Heading {%- endcomment -%}
-    <div class="hero-product__heading" style="--heading-color: {{ section.settings.heading_color }}">
+    <div
+      class="hero-product__heading"
+      style="{%- if section.settings.heading_color != blank %}--heading-color: {{ section.settings.heading_color }};{% endif -%}">
       <h1>{{ section.settings.heading }}</h1>
     </div>
 
@@ -116,13 +132,16 @@
     {%- comment -%} Mobile content - heading + content move together at top, center or bottom {%- endcomment -%}
     <div
       class="hero-product__mobile-content hero-product__mobile-content--{{ mobile_position }}"
-      style="--heading-color: {{ section.settings.heading_color }}; --mobile-heading-gap: {{ section.settings.mobile_heading_gap }}px;">
+      style="
+        {%- if section.settings.heading_color != blank %}--heading-color: {{ section.settings.heading_color }}; {% endif -%}
+        --mobile-heading-gap: {{ section.settings.mobile_heading_gap }}px;
+      ">
       {% if section.settings.mobile_heading != blank %}
         <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading }}</h1>
       {% endif %}
       <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
       <p class="hero-product__mobile-subtitle">{{ section.settings.mobile_subtitle }}</p>
-      <a href="{{ section.settings.mobile_button_url }}" class="hero-product__mobile-button">
+      <a href="{{ section.settings.mobile_button_url }}" class="button hero-product__mobile-button">
         <span>{{ section.settings.mobile_button_text }}</span>
       </a>
     </div>
@@ -184,17 +203,24 @@
       aria-label="{{ 'sections.hero_product.product_carousel' | t }}"
       data-hero-cards>
       {% for product in section.settings.hero_products %}
-        {% assign card_bg = product.metafields.custom.hero_card_background_color | default: product.metafields.custom.card_background_color | default: product.metafields.custom.product_card_background | default: '#FCD8B3' %}
-        {%- if section.settings.use_default_colors -%}
-          {%- assign card_text = section.settings.default_card_text_color | default: '#3E2027' -%}
-          {%- assign card_button_color = section.settings.default_card_button_color | default: '#3E2027' -%}
-        {%- else -%}
-          {%- assign card_text = product.metafields.custom.product_text_color | default: '#3E2027' -%}
-          {%- assign card_button_color = product.metafields.custom.product_text_color | default: '#3E2027' -%}
-        {%- endif -%}
+        {%- liquid
+          if section.settings.use_default_colors
+            assign card_bg = section.settings.default_card_background_color
+            assign card_text = section.settings.default_card_text_color
+            assign card_button_color = section.settings.default_card_button_color
+          else
+            assign card_bg = product.metafields.custom.hero_card_background_color | default: product.metafields.custom.card_background_color | default: product.metafields.custom.product_card_background
+            assign card_text = product.metafields.custom.product_text_color
+            assign card_button_color = product.metafields.custom.product_text_color
+          endif
+        -%}
         <div
           class="hero-product__card {% if forloop.first %}is-active{% endif %}"
-          style="--card-text: {{ card_text }}; --card-button: {{ card_button_color }}; background-color: {{ card_bg }};"
+          style="
+            {%- if card_bg != blank %}--card-bg: {{ card_bg }};{% endif -%}
+            {%- if card_text != blank %}--card-text: {{ card_text }};{% endif -%}
+            {%- if card_button_color != blank %}--card-button: {{ card_button_color }};{% endif -%}
+          "
           data-product-index="{{ forloop.index0 }}"
           data-card-color="{{ card_bg }}"
           data-card-text="{{ card_text }}"
@@ -255,11 +281,15 @@
             {%- if is_coming_soon or is_out_of_stock -%}
               {% render 'notify-me-form',
                 variant: selected_variant,
-                button_class: 'hero-product__button hero-product__button--add'
+                button_class: 'button button--secondary hero-product__button hero-product__button--add'
               %}
             {%- elsif selected_variant.available == false -%}
               {%- comment -%} In stock, but not purchasable in this market/region {%- endcomment -%}
-              <button type="button" class="hero-product__button hero-product__button--add" disabled aria-disabled="true">
+              <button
+                type="button"
+                class="button button--secondary hero-product__button hero-product__button--add"
+                disabled
+                aria-disabled="true">
                 <span>{{ 'products.unavailable_region' | t }}</span>
               </button>
             {%- else -%}
@@ -271,7 +301,7 @@
                 <button
                   type="submit"
                   name="add"
-                  class="hero-product__button hero-product__button--add">
+                  class="button button--secondary hero-product__button hero-product__button--add">
                   <svg
                     aria-hidden="true"
                     focusable="false"
@@ -291,7 +321,11 @@
                 </button>
               {% endform %}
             {%- endif -%}
-            <a href="{{ product.url }}" class="hero-product__button hero-product__button--buy">{{ 'products.view_product' | t }}</a>
+            <a
+              href="{{ product.url }}"
+              class="button button--solid hero-product__button hero-product__button--buy">
+              {{- 'products.view_product' | t -}}
+            </a>
           </div>
         </div>
       {% endfor %}
@@ -307,7 +341,7 @@
     --hero-product-card-bottom-offset: 20px;
     position: relative;
     width: 100%;
-    background-color: #FCE9EC;
+    background-color: var(--color-blush);
     overflow: hidden;
     margin-top: var(--total-header-height, 105px);
   }
@@ -439,7 +473,7 @@
     right: 0;
     width: 33.33%;
     height: var(--hero-product-card-panel-height);
-    background-color: #FCD8B3;
+    background-color: var(--card-bg, var(--color-panel));
     transition: background-color 0.6s ease-in-out;
     z-index: 1;
   }
@@ -456,9 +490,9 @@
   .hero-product__heading h1 {
     font-family: var(--font-alyona);
     font-size: clamp(48px, 5.76vw, 82.938px);
-    font-weight: 400;
+    font-weight: 700;
     line-height: 1;
-    color: var(--heading-color);
+    color: var(--heading-color, #fff);
     margin: 0;
   }
 
@@ -512,6 +546,8 @@
   }
 
   .hero-product__card {
+    /* The notify-me form colors its field and messages with this. */
+    --product-text: var(--card-text, var(--color-foreground));
     position: absolute;
     top: var(--hero-product-card-top-offset);
     right: var(--hero-product-card-inline-offset);
@@ -521,7 +557,7 @@
     flex-direction: column;
     gap: 16px;
     padding: 16px;
-    background-color: #FCD8B3;
+    background-color: var(--card-bg, var(--color-panel));
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.6s ease-in-out, background-color 0.6s ease-in-out;
@@ -536,7 +572,7 @@
 
   /* Rating */
   .hero-product__rating {
-    color: var(--card-text, #3E2027);
+    color: var(--card-text, var(--color-foreground));
   }
 
   /* Product Info */
@@ -550,12 +586,12 @@
   .hero-product__name,
   .hero-product__price {
     font-family: var(--font-sweet-sans);
-    font-weight: 500;
+    font-weight: 700;
     font-size: 18px;
     line-height: normal;
-    letter-spacing: -0.18px;
+    letter-spacing: var(--tracking-label-lg);
     text-transform: uppercase;
-    color: var(--card-text, #3E2027);
+    color: var(--card-text, var(--color-foreground));
     margin: 0;
   }
 
@@ -564,10 +600,11 @@
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
-    color: var(--card-text, #3E2027);
+    color: var(--card-text, var(--color-foreground));
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     flex: 0 0 auto;
@@ -587,60 +624,35 @@
     margin: 0;
   }
 
-  .hero-product__button {
+  /* The theme's pill buttons (.button), at the hero's own size. */
+  .hero-product__card .hero-product__button {
+    --button-height: 40px;
+    --button-padding: 20px;
+    --button-font-size: 14px;
     width: 100%;
-    height: 40px;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 10px;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    line-height: normal;
-    letter-spacing: -0.14px;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.2s ease;
     white-space: nowrap;
   }
 
-  .hero-product__button:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+  .hero-product__button svg {
+    flex-shrink: 0;
   }
 
-  .hero-product__button:active {
-    opacity: 0.8;
-    transform: translateY(0);
+  .hero-product__card .hero-product__button--add {
+    --button-color: var(--card-text, var(--color-foreground));
   }
 
-  .hero-product__button--add {
-    background-color: #FFFFFF;
-    color: var(--card-text, #3E2027);
-  }
-
-  .hero-product__button--add:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .hero-product__button--buy {
-    background-color: var(--card-button, var(--card-text, #3E2027));
-    color: #FFFFFF;
+  .hero-product__card .hero-product__button--buy {
+    --button-background: var(--card-button, var(--color-accent));
     flex: 1;
   }
 
-  .hero-product__button:focus-visible {
-    outline: 2px solid var(--card-text, #3E2027);
-    outline-offset: 2px;
+  .hero-product__card .button:focus-visible {
+    outline-color: var(--card-text, var(--color-foreground));
   }
 
-  .hero-product__button--buy:focus-visible {
-    outline-color: #FFFFFF;
+  .hero-product__card .notify-me__input {
+    border-radius: var(--radius-pill);
   }
 
   /* Responsive - Smaller Desktop */
@@ -665,9 +677,9 @@
       font-size: 14px;
     }
 
-    .hero-product__button {
-      padding: 8px 12px;
-      font-size: 12px;
+    .hero-product__card .hero-product__button {
+      --button-padding: 12px;
+      --button-font-size: 12px;
     }
   }
 
@@ -791,10 +803,10 @@
     .hero-product__mobile-heading {
       font-family: var(--font-alyona);
       font-size: 45px;
-      font-weight: 400;
+      font-weight: 700;
       line-height: 1;
       text-align: center;
-      color: var(--heading-color);
+      color: var(--heading-color, #fff);
       margin: 0;
     }
 
@@ -866,43 +878,15 @@
       width: 100%;
     }
 
-    .hero-product__mobile-button {
+    /* The theme's gradient pill button, at the hero's own size. */
+    .hero-product__mobile-content .hero-product__mobile-button {
+      --button-height: 40px;
+      --button-padding: 24px;
+      --button-font-size: 12px;
       margin-top: 16px;
-      background-color: #3E2027;
-      color: #FFFFFF;
-      font-family: var(--font-sweet-sans);
-      font-weight: 500;
-      font-size: 12px;
-      width: auto;
       min-width: 138px;
       max-width: 100%;
-      line-height: normal;
-      letter-spacing: -0.12px;
-      text-transform: uppercase;
-      text-decoration: none;
-      padding: 10px 24px;
-      height: 40px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
       white-space: nowrap;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-
-    .hero-product__mobile-button > span {
-      display: inline-block;
-      text-align: center;
-    }
-
-    .hero-product__mobile-button:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-    }
-
-    .hero-product__mobile-button:active {
-      opacity: 0.8;
-      transform: translateY(0);
     }
 
     /* Hide navigation controls on mobile */
@@ -940,12 +924,12 @@
       font-size: 11px;
     }
 
-    .hero-product__mobile-button {
+    .hero-product__mobile-content .hero-product__mobile-button {
+      --button-height: 34px;
+      --button-padding: 18px;
+      --button-font-size: 10px;
       margin-top: 10px;
       min-width: 110px;
-      padding: 8px 18px;
-      height: 34px;
-      font-size: 10px;
     }
   }
 {% endstylesheet %}
@@ -987,18 +971,25 @@
 
     goTo(index) {
       const newCard = this.cards[index];
-      const bgColor = newCard?.getAttribute('data-card-color') || '#FCD8B3';
-      const textColor = newCard?.getAttribute('data-card-text') || '#3E2027';
-      const buttonColor = newCard?.getAttribute('data-card-button') || textColor;
 
-      if (this.colorBlock) {
-        this.colorBlock.style.backgroundColor = bgColor;
-      }
+      // Every card (and the block behind them) takes the new card's colors, so
+      // the panel doesn't flash two colors while the cards cross-fade. An empty
+      // color falls back to the theme colors in the stylesheet.
+      const colors = {
+        '--card-bg': newCard?.getAttribute('data-card-color'),
+        '--card-text': newCard?.getAttribute('data-card-text'),
+        '--card-button': newCard?.getAttribute('data-card-button')
+      };
 
-      this.cards.forEach(card => {
-        card.style.backgroundColor = bgColor;
-        card.style.setProperty('--card-text', textColor);
-        card.style.setProperty('--card-button', buttonColor);
+      [this.colorBlock, ...this.cards].forEach(el => {
+        if (!el) return;
+        Object.entries(colors).forEach(([property, value]) => {
+          if (value) {
+            el.style.setProperty(property, value);
+          } else {
+            el.style.removeProperty(property);
+          }
+        });
       });
 
       this.cards.forEach(card => card.classList.remove('is-active'));
@@ -1067,26 +1058,30 @@
       },
       {
         "type": "header",
-        "content": "t:sections.hero_product.settings.card_colors_header"
+        "content": "t:sections.hero_product.settings.card_colors_header",
+        "info": "t:labels.colors_info"
       },
       {
         "type": "checkbox",
         "id": "use_default_colors",
         "label": "t:sections.hero_product.settings.use_default_colors",
         "info": "t:sections.hero_product.settings.use_default_colors_info",
-        "default": false
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "default_card_background_color",
+        "label": "t:sections.hero_product.settings.default_card_background_color"
       },
       {
         "type": "color",
         "id": "default_card_text_color",
-        "label": "t:sections.hero_product.settings.default_card_text_color",
-        "default": "#3E2027"
+        "label": "t:sections.hero_product.settings.default_card_text_color"
       },
       {
         "type": "color",
         "id": "default_card_button_color",
-        "label": "t:sections.hero_product.settings.default_card_button_color",
-        "default": "#3E2027"
+        "label": "t:sections.hero_product.settings.default_card_button_color"
       },
       {
         "type": "header",

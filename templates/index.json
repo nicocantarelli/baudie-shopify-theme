@@ -23,9 +23,7 @@
           "deep-ritual",
           "barely-there"
         ],
-        "use_default_colors": false,
-        "default_card_text_color": "#3e2027",
-        "default_card_button_color": "#3e2027",
+        "use_default_colors": true,
         "use_static_image": true,
         "static_hero_image": "shopify://shop_images/freepik_keep-all-the-details-of-t_2737292638_1.png",
         "static_hero_image_alt": "",
