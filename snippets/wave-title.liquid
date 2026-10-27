@@ -1,0 +1,131 @@
+{% doc %}
+  Renders a title set along the top edge of a wave, a set distance below
+  it, like the redesign's curved headings on the yellow bands.
+
+  The bands stretch with the screen while the title keeps its size, so the
+  script below redraws the title's curve from the wave's current shape
+  whenever the section resizes. Until it runs, the curve passed in shows:
+  the design's own, right at the width it was drawn for.
+
+  The svg's size, font and color come from CSS, and so does the distance
+  from the wave's edge down to the title's baseline: --wave-title-offset.
+
+  @param {string} title - The title, already escaped
+  @param {string} id - An id for the curve, unique on the page
+  @param {string} class - Classes for the svg
+  @param {string} wave - Selector, within the section, of the box the wave image fills, rotation included
+  @param {string} wave_size - The wave image's width and height, in its own units
+  @param {string} wave_edge - The wave's top edge in those units, as path data made of one M and then C curves
+  @param {string} view_box - The viewBox for the path below
+  @param {string} path - The design's curve, the title's baseline
+
+  @example
+  {% render 'wave-title',
+    title: title,
+    id: arc_id,
+    class: 'customer-videos__arc',
+    wave: '.customer-videos__wave--back',
+    wave_size: '1543.5 808.099',
+    wave_edge: 'M0 724.91C82.1 787.69 344.82 875.57 738.91 724.91C1133 574.25 1439.51 662.14 1543.5 724.91',
+    view_box: '0 -40 747 145',
+    path: 'M0 96.09C117.11 105.15 235.08 96.67 350.12 73.33C578.89 15.59 662.34 2.37 746.36 0'
+  %}
+{% enddoc %}
+
+<svg
+  class="{{ class }}"
+  viewBox="{{ view_box }}"
+  aria-hidden="true"
+  focusable="false"
+  data-wave-title
+  data-wave="{{ wave }}"
+  data-wave-size="{{ wave_size }}"
+  data-wave-edge="{{ wave_edge }}"
+>
+  <path id="{{ id }}" d="{{ path }}" fill="none"/>
+  <text text-anchor="middle"><textPath href="#{{ id }}" startOffset="50%">{{ title }}</textPath></text>
+</svg>
+
+{% javascript %}
+  (() => {
+    const round = (n) => Math.round(n * 10) / 10;
+
+    // The wave's top edge, mapped through the box and transform its image is
+    // drawn in, moved down along its normals by --wave-title-offset, with the
+    // title centered on the svg. All in the svg's own pixels.
+    const draw = (svg) => {
+      if (!svg.getClientRects().length) return;
+      const wave = svg.closest('.shopify-section')?.querySelector(svg.dataset.wave);
+      if (!wave?.offsetParent) return;
+
+      const [width, height] = svg.dataset.waveSize.split(' ').map(Number);
+      const edge = svg.dataset.waveEdge.match(/-?\d*\.?\d+/g).map(Number);
+      const offset = parseFloat(getComputedStyle(svg).getPropertyValue('--wave-title-offset')) || 0;
+
+      const style = getComputedStyle(wave);
+      const matrix = new DOMMatrix(style.transform === 'none' ? undefined : style.transform);
+      const [originX, originY] = style.transformOrigin.split(' ').map(parseFloat);
+      const parent = wave.offsetParent.getBoundingClientRect();
+      const box = svg.getBoundingClientRect();
+      const left = parent.left + wave.offsetParent.clientLeft + parseFloat(style.left) - box.left + originX;
+      const top = parent.top + wave.offsetParent.clientTop + parseFloat(style.top) - box.top + originY;
+      const scaleX = parseFloat(style.width) / width;
+      const scaleY = parseFloat(style.height) / height;
+      const place = (x, y) => {
+        const point = matrix.transformPoint({ x: x * scaleX - originX, y: y * scaleY - originY });
+        return [left + point.x, top + point.y];
+      };
+
+      const points = [];
+      for (let i = 2; i + 6 <= edge.length; i += 6) {
+        const [x0, y0, x1, y1, x2, y2, x3, y3] = edge.slice(i - 2, i + 6);
+        for (let step = i === 2 ? 0 : 1; step <= 64; step += 1) {
+          const t = step / 64;
+          const u = 1 - t;
+          points.push(place(
+            u * u * u * x0 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t * t * t * x3,
+            u * u * u * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t * t * t * y3
+          ));
+        }
+      }
+      if (points[0][0] > points[points.length - 1][0]) points.reverse();
+
+      const curve = points.map(([x, y], i) => {
+        const [ax, ay] = points[Math.max(i - 1, 0)];
+        const [bx, by] = points[Math.min(i + 1, points.length - 1)];
+        const length = Math.hypot(bx - ax, by - ay);
+        return [x - ((by - ay) / length) * offset, y + ((bx - ax) / length) * offset];
+      });
+
+      let length = 0;
+      let middle = 0;
+      curve.slice(1).forEach(([bx, by], i) => {
+        const [ax, ay] = curve[i];
+        const segment = Math.hypot(bx - ax, by - ay);
+        if (ax <= box.width / 2 && bx > box.width / 2) middle = length + (segment * (box.width / 2 - ax)) / (bx - ax);
+        length += segment;
+      });
+
+      svg.setAttribute('viewBox', `0 0 ${round(box.width)} ${round(box.height)}`);
+      svg.querySelector('path').setAttribute('d', `M${curve.map(([x, y]) => `${round(x)} ${round(y)}`).join('L')}`);
+      svg.querySelector('textPath').setAttribute('startOffset', round(middle));
+    };
+
+    const observer = new ResizeObserver((entries) => {
+      entries.forEach(({ target }) => target.querySelectorAll('[data-wave-title]').forEach(draw));
+    });
+
+    const watch = (root) => {
+      root.querySelectorAll('[data-wave-title]').forEach((svg) => {
+        observer.observe(svg.closest('.shopify-section') || svg.parentElement);
+      });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => watch(document));
+    } else {
+      watch(document);
+    }
+    document.addEventListener('shopify:section:load', (event) => watch(event.target));
+  })();
+{% endjavascript %}
