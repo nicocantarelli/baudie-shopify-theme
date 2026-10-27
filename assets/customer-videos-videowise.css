@@ -1,0 +1,85 @@
+/*
+  The Customer videos section's look for its Videowise carousel.
+  Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1276
+  (mobile: node-id=109-11368)
+
+  Videowise draws the videos in a closed shadow root, out of the theme's
+  reach, but it loads the stylesheets listed in window.videowiseShadow into
+  it. sections/customer-videos.liquid lists this file there and marks its
+  widget with .customer-videos__widget, so Videowise widgets elsewhere keep
+  their own look. The sizes are the section's, set as custom properties on
+  the carousel, which carry into the shadow root. Videowise sets the gap,
+  the slide widths and the tile heights inline, hence the !important.
+*/
+
+:host(.customer-videos__widget) .vw-embla__container {
+  gap: var(--videos-gap) !important;
+}
+
+:host(.customer-videos__widget) .vw-embla__slide {
+  flex: 0 0 var(--videos-tile-width) !important;
+}
+
+/* The design's tiles: their own proportions, rounded corners and no play
+   button. Each tile is still a button that opens the video. */
+:host(.customer-videos__widget) .vw-cmp__in-video-card--preview {
+  padding-bottom: var(--videos-tile-height) !important;
+  border-radius: var(--videos-radius);
+  /* Keeps a playing video inside the corners in Safari. */
+  isolation: isolate;
+}
+
+:host(.customer-videos__widget) .vw-cmp__video-card--play-icon {
+  display: none;
+}
+
+/* The arrows, once they're switched on in Videowise: the design's white
+   circles with a ringed arrow, centered on the row's ends whichever icon
+   and position Videowise has. Their outer halves need the widget's outer
+   boxes to stop clipping; the videos past the row's ends stay clipped by
+   the carousel's own viewport. */
+:host(.customer-videos__widget) #vw-root,
+:host(.customer-videos__widget) #vw-root .vw-cmp__carousel--root {
+  overflow: visible;
+}
+
+/* Arrows outside the slider would pad the row in. */
+:host(.customer-videos__widget) #vw-root .vw-cmp__carousel--wrapper {
+  padding: 0;
+}
+
+/* Videowise's arrow rules carry its #vw-root and !important, so these do too. */
+:host(.customer-videos__widget) #vw-root .vw-cmp__carousel--wrapper .rw__swiper--carousel-btn {
+  display: var(--videos-arrows);
+  top: 50% !important;
+  width: 49px !important;
+  height: 49px !important;
+  border-radius: 50%;
+  background: var(--color-background) !important;
+  transform: translateY(-50%);
+}
+
+:host(.customer-videos__widget) #vw-root .vw-cmp__carousel--wrapper .rw__swiper--carousel-btn svg {
+  display: none;
+}
+
+:host(.customer-videos__widget) #vw-root .vw-cmp__carousel--wrapper .rw__swiper--carousel-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-foreground);
+  -webkit-mask: url("icon-arrow-circle.svg") center / 100% no-repeat;
+  mask: url("icon-arrow-circle.svg") center / 100% no-repeat;
+}
+
+:host(.customer-videos__widget) #vw-root .vw-cmp__carousel--wrapper .rw__swiper--carousel-btn.rw__swiper-btn--prev {
+  left: -24.5px !important;
+}
+
+:host(.customer-videos__widget) #vw-root .vw-cmp__carousel--wrapper .rw__swiper-btn--prev::after {
+  transform: scaleX(-1);
+}
+
+:host(.customer-videos__widget) #vw-root .vw-cmp__carousel--wrapper .rw__swiper--carousel-btn.rw__swiper-btn--next {
+  right: -24.5px !important;
+}

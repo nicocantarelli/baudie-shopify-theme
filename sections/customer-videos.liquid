@@ -44,6 +44,24 @@
     {%- if section.settings.videowise_embed != blank -%}
       <div class="customer-videos__carousel">
         {{ section.settings.videowise_embed }}
+        {%- comment -%}
+          Videowise draws the videos in a closed shadow root, but loads the
+          stylesheets listed in window.videowiseShadow into it. That's how
+          the design's tiles get there; the class keeps them to this widget.
+        {%- endcomment -%}
+        <script>
+          (() => {
+            const stylesheet = {{ 'customer-videos-videowise.css' | asset_url | json }};
+            const config = (window.videowiseShadow = window.videowiseShadow || {});
+            config.assets = config.assets || [];
+            if (!config.assets.some((asset) => asset.src === stylesheet)) {
+              config.assets.push({ type: 'style', src: stylesheet });
+            }
+            document.currentScript.parentElement
+              .querySelectorAll('.reeview-app-widget')
+              .forEach((widget) => widget.classList.add('customer-videos__widget'));
+          })();
+        </script>
       </div>
     {%- elsif request.design_mode -%}
       <div class="customer-videos__carousel">
@@ -140,8 +158,16 @@
     font-size: 24px;
   }
 
+  /* The tiles' sizes, which assets/customer-videos-videowise.css applies
+     inside the Videowise widget. */
   .customer-videos__carousel {
-    width: 100%;
+    --videos-gap: 32px;
+    --videos-tile-width: calc((100% - 3 * var(--videos-gap)) / 4);
+    --videos-tile-height: calc(470 / 296 * 100%);
+    --videos-radius: var(--radius-card);
+    --videos-arrows: block;
+
+    align-self: stretch;
   }
 
   .customer-videos__title + .customer-videos__carousel {
@@ -152,12 +178,12 @@
   .customer-videos__placeholders {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 32px;
+    gap: var(--videos-gap);
   }
 
   .customer-videos__placeholder {
     aspect-ratio: 296 / 470;
-    border-radius: var(--radius-card);
+    border-radius: var(--videos-radius);
     background-color: var(--color-blush);
   }
 
@@ -215,21 +241,29 @@
       display: block;
     }
 
+    /* A row running off the right edge, the third tile just cut, swiped
+       rather than clicked through. */
+    .customer-videos__carousel {
+      --videos-gap: 20px;
+      --videos-tile-width: calc((100% - 2 * var(--videos-gap)) / 2.92);
+      --videos-tile-height: calc(194 / 114 * 100%);
+      --videos-radius: 8px;
+      --videos-arrows: none;
+
+      margin-right: -20px;
+    }
+
     .customer-videos__title + .customer-videos__carousel {
       margin-top: 20px;
     }
 
-    /* A row running off the right edge, like the carousel on phones. */
     .customer-videos__placeholders {
-      grid-template-columns: repeat(4, 114px);
-      gap: 20px;
-      margin-right: -20px;
+      grid-template-columns: repeat(4, var(--videos-tile-width));
       overflow: hidden;
     }
 
     .customer-videos__placeholder {
       aspect-ratio: 114 / 194;
-      border-radius: 8px;
     }
 
     .customer-videos__button {
