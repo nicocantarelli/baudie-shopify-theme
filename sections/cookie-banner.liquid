@@ -69,10 +69,10 @@
             {{ s.label_manage }}
           </button>
           <div class="cookie-banner__buttons">
-            <button type="button" class="button button--small cookie-btn cookie-btn--accept" data-action="accept">
+            <button type="button" class="button cookie-btn cookie-btn--accept" data-action="accept">
               {{ s.label_accept }}
             </button>
-            <button type="button" class="button button--small button--secondary button--outlined cookie-btn cookie-btn--outline" data-action="decline">
+            <button type="button" class="button button--secondary button--outlined cookie-btn cookie-btn--outline" data-action="decline">
               {{ s.label_decline }}
             </button>
           </div>
@@ -102,13 +102,13 @@
           </button>
           <p id="cookie-modal-title" class="cookie-modal__title">{{ s.modal_heading }}</p>
           <div class="cookie-modal__actions">
-            <button type="button" class="button button--small cookie-btn cookie-btn--accept" data-action="accept">
+            <button type="button" class="button cookie-btn cookie-btn--accept" data-action="accept">
               {{ s.modal_accept }}
             </button>
-            <button type="button" class="button button--small button--secondary button--outlined cookie-btn cookie-btn--outline" data-action="decline">
+            <button type="button" class="button button--secondary button--outlined cookie-btn cookie-btn--outline" data-action="decline">
               {{ s.modal_decline }}
             </button>
-            <button type="button" class="button button--small button--secondary button--outlined cookie-btn cookie-btn--outline" data-action="save">
+            <button type="button" class="button button--secondary button--outlined cookie-btn cookie-btn--outline" data-action="save">
               {{ s.modal_save }}
             </button>
           </div>
@@ -168,9 +168,13 @@
     display: contents;
   }
 
-  /* The buttons are the theme's small pill buttons; these rules only bring in
-     the colors picked in the editor, when there are any. */
-  .cookie-btn {
+  /* Shared buttons: the theme's pill buttons (.button) at the banner's own
+     size, in the colors picked in the editor when there are any. */
+  .cookie-consent .cookie-btn {
+    --button-height: 42px;
+    --button-padding: 18px;
+    --button-font-size: 13px;
+
     white-space: nowrap;
   }
 
@@ -217,11 +221,12 @@
 
   .cookie-banner__card {
     pointer-events: auto;
-    padding: 24px;
-    border-radius: var(--radius-card);
     background: var(--cb-bg, var(--color-panel));
     color: var(--cb-text, var(--color-foreground));
+    border-radius: var(--radius-card);
+    padding: 22px;
     box-shadow: 0 12px 32px color-mix(in srgb, var(--color-foreground) 12%, transparent);
+    font-family: var(--font-sweet-sans);
     outline: none;
   }
 
@@ -244,14 +249,19 @@
 
   .cookie-banner__heading {
     margin: 0 0 8px;
-    font: var(--type-label);
+    font-size: 15px;
+    font-weight: 700;
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
+    color: var(--cb-text, var(--color-foreground));
   }
 
   .cookie-banner__body {
     margin: 0 0 16px;
-    font: var(--type-fine);
+    font-family: var(--font-jokker);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--cb-text, var(--color-foreground));
   }
 
   .cookie-banner__body p {
@@ -274,8 +284,9 @@
     padding: 0;
     background: none;
     border: none;
-    color: inherit;
-    font: var(--type-fine);
+    font-family: var(--font-jokker);
+    font-size: 12px;
+    color: var(--cb-text, var(--color-foreground));
     text-decoration: underline;
     text-underline-offset: 2px;
     cursor: pointer;
@@ -283,7 +294,7 @@
 
   .cookie-banner__buttons {
     display: flex;
-    gap: 8px;
+    gap: 10px;
   }
 
   .cookie-banner__buttons .cookie-btn {
@@ -317,10 +328,11 @@
     max-width: 720px;
     max-height: 90vh;
     overflow-y: auto;
-    border-radius: var(--radius-card);
     background: var(--cb-bg, var(--color-background));
     color: var(--cb-text, var(--color-foreground));
+    border-radius: var(--radius-card);
     box-shadow: 0 24px 60px color-mix(in srgb, var(--color-foreground) 20%, transparent);
+    font-family: var(--font-sweet-sans);
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -359,7 +371,7 @@
     padding: 0;
     background: none;
     border: none;
-    color: inherit;
+    color: var(--cb-text, var(--color-foreground));
     cursor: pointer;
     transition: opacity 0.2s ease;
   }
@@ -370,16 +382,18 @@
 
   .cookie-modal__title {
     margin: 0 0 18px;
-    font: var(--type-label);
+    font-size: 16px;
+    font-weight: 700;
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
+    color: var(--cb-text, var(--color-foreground));
   }
 
   .cookie-modal__actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
   }
 
   .cookie-modal__body {
@@ -388,14 +402,19 @@
 
   .cookie-modal__intro-heading {
     margin: 0 0 8px;
-    font: var(--type-label-sm);
-    letter-spacing: var(--tracking-label-sm);
+    font-size: 14px;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: var(--tracking-label-sm);
+    color: var(--cb-text, var(--color-foreground));
   }
 
   .cookie-modal__intro-text {
     margin: 0 0 8px;
-    font: var(--type-fine);
+    font-family: var(--font-jokker);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--cb-text, var(--color-foreground));
   }
 
   .cookie-modal__categories {
@@ -433,13 +452,18 @@
   }
 
   .cookie-cat__title {
-    font: var(--type-label-sm);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cb-text, var(--color-foreground));
   }
 
   .cookie-cat__desc {
     margin: 0;
     padding-left: 30px;
-    font: var(--type-fine);
+    font-family: var(--font-jokker);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--cb-text, var(--color-foreground));
   }
 
   .cookie-consent :focus-visible {
@@ -482,6 +506,7 @@
     .cookie-modal__title {
       margin-bottom: 16px;
       padding-right: 36px;
+      font-size: 14px;
     }
 
     .cookie-modal__actions {
