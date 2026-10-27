@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="52" height="55" viewBox="0 0 52 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon/fill/burst">
+<path id="icon" d="M26 0L28 21.1L42.1 5.2L31.3 23.5L52 18.9L32.5 27.3L52 35.8L31.3 31.2L42.1 49.5L28 33.5L26 54.7L24 33.5L9.9 49.5L20.7 31.2L0 35.8L19.5 27.3L0 18.9L20.7 23.5L9.9 5.2L24 21.1L26 0Z" fill="url(#paint0_linear_0_6)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_6" x1="0" y1="27.35" x2="52" y2="27.35" gradientUnits="userSpaceOnUse">
+<stop stop-color="#E65C9A"/>
+<stop offset="0.5" stop-color="#F88EBE"/>
+<stop offset="1" stop-color="#FFC8E4"/>
+</linearGradient>
+</defs>
+</svg>

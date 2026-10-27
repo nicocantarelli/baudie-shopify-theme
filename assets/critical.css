@@ -78,6 +78,180 @@ body {
   color: var(--color-foreground);
 }
 
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/**
+ * Shared components from the redesign. Colors, type, spacing and radii
+ * come from the tokens in snippets/css-variables.liquid.
+ */
+
+/* Buttons: pill, gradient by default. Size M; phones step L down to M. */
+.button {
+  --button-height: 56px;
+  --button-padding: 32px;
+  --button-font-size: 19px;
+  --button-background: var(--gradient-button);
+  --button-color: var(--color-on-accent);
+  --button-border: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-height: var(--button-height);
+  padding: 0 var(--button-padding);
+  border: 2px solid var(--button-border);
+  border-radius: var(--radius-pill);
+  background: var(--button-background);
+  color: var(--button-color);
+  font: 700 var(--button-font-size)/1.2 var(--font-sweet-sans);
+  letter-spacing: var(--tracking-label-lg);
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 0.2s ease, background-color 0.2s ease;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-foreground);
+  outline-offset: 3px;
+}
+
+.button:disabled,
+.button[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button--secondary {
+  --button-background: var(--color-background);
+  --button-color: var(--color-foreground);
+}
+
+/* For a secondary button that sits on a white background. */
+.button--outlined {
+  --button-border: currentColor;
+}
+
+.button--solid {
+  --button-background: var(--color-accent);
+}
+
+.button--large {
+  --button-height: 72px;
+  --button-padding: 48px;
+  --button-font-size: 22px;
+}
+
+.button--small {
+  --button-height: 48px;
+  --button-padding: 24px;
+  --button-font-size: 16px;
+}
+
+@media (hover: hover) {
+  .button:not(:disabled):hover {
+    filter: brightness(0.92);
+  }
+
+  .button--secondary:not(:disabled):hover {
+    --button-background: var(--color-blush);
+    filter: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .button--large {
+    --button-height: 56px;
+    --button-padding: 32px;
+    --button-font-size: 19px;
+  }
+}
+
+/* Text field: pill with a 2px border, as in the newsletter forms. */
+.input {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 24px;
+  border: 2px solid var(--color-foreground);
+  border-radius: var(--radius-pill);
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font: var(--type-body-lg);
+}
+
+.input::placeholder {
+  color: var(--color-foreground);
+  opacity: 1;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--color-foreground);
+  outline-offset: 2px;
+}
+
+/* Wavy divider line. Set its color with `color` and its size with `height`. */
+.squiggle {
+  display: block;
+  width: 100%;
+  height: 16px;
+  color: var(--color-yellow);
+  background-color: currentColor;
+  -webkit-mask: url('shape-squiggle.svg') left center / auto 100% repeat-x;
+  mask: url('shape-squiggle.svg') left center / auto 100% repeat-x;
+}
+
+/* Round badge for a step number or a plus sign. */
+.sticker {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font: 700 20px/1 var(--font-sweet-sans);
+  letter-spacing: var(--tracking-label-lg);
+}
+
+.sticker--small {
+  width: 27px;
+  height: 27px;
+  font-size: 14px;
+}
+
+/* Sparkle decoration. */
+.sparkle {
+  display: inline-block;
+  width: 52px;
+  aspect-ratio: 52 / 55;
+  background: var(--gradient-button);
+  -webkit-mask: url('shape-burst.svg') center / contain no-repeat;
+  mask: url('shape-burst.svg') center / contain no-repeat;
+}
+
+/* Gradient heading text. Display sizes only: the light end is 3.3:1 on white. */
+.text-gradient {
+  background: var(--gradient-heading);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
 /** Section layout utilities */
 
 /**
