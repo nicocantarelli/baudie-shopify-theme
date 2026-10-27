@@ -285,7 +285,9 @@
       "tint_logos": "Tint logos",
       "tint_logos_info": "Shows every logo in one color. Upload logos with a transparent background.",
       "logo_color": "Logo color",
-      "divider_color_info": "Leave empty to hide the line under the logos."
+      "divider_color_info": "Leave empty to hide the line under the logos.",
+      "logo_width": "Logo width",
+      "logo_width_info": "In pixels, for the script heading style. Phones show the logo a little over half as wide. Crop logo files close to the wordmark so the gaps between logos come out even."
     },
     "product_details": {
       "content_header": "Content",

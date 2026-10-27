@@ -71,7 +71,10 @@
           <div class="in-press__group">
             {% for block in section.blocks %}
               {% if block.type == 'press_logo' and block.settings.logo %}
-                <div class="in-press__logo-wrapper" {{ block.shopify_attributes }}>
+                <div
+                  class="in-press__logo-wrapper"
+                  style="--logo-width: {{ block.settings.logo_width | default: 140 | at_least: 40 | at_most: 400 }}px;"
+                  {{ block.shopify_attributes }}>
                   {%- comment -%} The tint paints the logo's shape in one color; the image underneath keeps the size and alt text. {%- endcomment -%}
                   <span class="in-press__logo-tint" style="--logo-mask: url('{{ block.settings.logo | image_url: width: 400 }}');">
                     {{ block.settings.logo | image_url: width: 400 | image_tag: alt: block.settings.alt_text, class: 'in-press__logo', loading: 'lazy' }}
@@ -120,6 +123,16 @@
     margin-top: calc(-1 * var(--wave-height));
   }
 
+  /* The script style is the redesign's band: the design's logo row and gaps,
+     its spacing under the logos, and the white strip below the band. */
+  .in-press--title-script {
+    --logo-row-height: 76px;
+    --logo-gap: 104px;
+
+    padding-bottom: 21.45px;
+    margin-bottom: 24.45px;
+  }
+
   .in-press__container {
     /* max-width: 1360px; */
     margin: 0 auto;
@@ -140,7 +153,7 @@
     letter-spacing: 0;
     text-transform: none;
     color: var(--text-color, var(--color-pink));
-    margin-bottom: 56px;
+    margin-bottom: 67px;
   }
 
   /* Where .wave-top (critical.css) draws the wave, for the script title to
@@ -228,6 +241,39 @@
     opacity: 0;
   }
 
+  /* In the script style each logo has its own width, set per logo in the
+     editor, centred on a row as tall as the design's. A logo file with empty
+     space around its wordmark can stand taller than the row, so the clip box
+     reaches past it. */
+  .in-press--title-script .in-press__viewport {
+    margin: -16px 0;
+    padding: 16px 0;
+  }
+
+  .in-press--title-script .in-press__track {
+    height: var(--logo-row-height);
+  }
+
+  .in-press--title-script .in-press__group {
+    gap: var(--logo-gap);
+    padding-right: var(--logo-gap);
+  }
+
+  .in-press--title-script .in-press__logo-wrapper {
+    width: var(--logo-width);
+    height: auto;
+  }
+
+  .in-press--title-script .in-press__logo-tint {
+    width: 100%;
+  }
+
+  .in-press--title-script .in-press__logo {
+    width: 100%;
+    max-width: none;
+    max-height: none;
+  }
+
   .in-press__line {
     width: calc(100% - 80px);
     margin: 30px auto 0;
@@ -308,6 +354,19 @@
     .in-press__logo {
       max-width: 130px;
       max-height: 50px;
+    }
+
+    .in-press--title-script {
+      --logo-row-height: 20px;
+      --logo-gap: 52px;
+
+      padding-bottom: 15.9px;
+      margin-bottom: 9.6px;
+    }
+
+    /* The design's phone logos are a little over half their desktop size. */
+    .in-press--title-script .in-press__logo-wrapper {
+      width: calc(var(--logo-width) * 0.59);
     }
   }
 {% endstylesheet %}
@@ -479,6 +538,13 @@
             "label": "t:labels.logo_description",
             "info": "Describe the press outlet for accessibility",
             "default": "Press logo"
+          },
+          {
+            "type": "number",
+            "id": "logo_width",
+            "label": "t:sections.in_press.logo_width",
+            "info": "t:sections.in_press.logo_width_info",
+            "default": 140
           }
         ]
       }
