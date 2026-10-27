@@ -7,6 +7,19 @@
   The divider line only shows when it has a color.
 {% endcomment %}
 
+{%- liquid
+  assign curved_title = false
+  if section.settings.title_style == 'script' and section.settings.title != blank
+    assign curved_title = true
+    assign title = section.settings.title | escape
+    assign curve_id = 'InPressCurve-' | append: section.id
+    assign curve_id_mobile = curve_id | append: '-mobile'
+
+    # The top edge of the band's wave (assets/shape-wave.svg), which the title follows.
+    assign wave_edge = 'M0 30.55C62.45 52.15 246.75 82.55 482.85 30.55C577.8 9.94 659.68 2.74 727.03 2.74C937.4 2.74 937.4 58.87 1147.77 58.87C1222.85 58.87 1311.85 51.37 1409.55 30.55C1647.55 -24.05 1804.35 6.45 1853.45 30.55'
+  endif
+-%}
+
 <div
   class="in-press wave-top full-width in-press--title-{{ section.settings.title_style | default: 'label' }}{% if section.settings.tint_logos %} in-press--tinted{% endif %}"
   style="
@@ -15,8 +28,40 @@
     {%- if section.settings.divider_color != blank %}--divider-color: {{ section.settings.divider_color }};{% endif -%}
     {%- if section.settings.logo_color != blank %}--logo-color: {{ section.settings.logo_color }};{% endif -%}
   ">
+  {%- if curved_title -%}
+    <span class="in-press__wave" aria-hidden="true"></span>
+  {%- endif -%}
+
   <div class="in-press__container">
-    {% if section.settings.title != blank %}
+    {% if curved_title %}
+      {%- comment -%}
+        The script title runs along the wave above it, as in the design.
+        Phones have their own size, so they get their own copy.
+      {%- endcomment -%}
+      <p class="in-press__title">
+        <span class="visually-hidden">{{ title }}</span>
+        {%- render 'wave-title',
+          title: title,
+          id: curve_id,
+          class: 'in-press__curve in-press__curve--desktop',
+          wave: '.in-press__wave',
+          wave_size: '1853.45 60',
+          wave_edge: wave_edge,
+          view_box: '0 -34.5 323.66 50.4',
+          path: 'M0 13.9C83.91 0.34 177.64 -5.53 261.97 6.6C282.78 9.59 303.29 14.05 323.66 19.24'
+        -%}
+        {%- render 'wave-title',
+          title: title,
+          id: curve_id_mobile,
+          class: 'in-press__curve in-press__curve--mobile',
+          wave: '.in-press__wave',
+          wave_size: '1853.45 60',
+          wave_edge: wave_edge,
+          view_box: '0 0 112 25.2',
+          path: 'M0 18H112'
+        -%}
+      </p>
+    {% elsif section.settings.title != blank %}
       <p class="in-press__title">{{ section.settings.title }}</p>
     {% endif %}
 
@@ -96,6 +141,35 @@
     text-transform: none;
     color: var(--text-color, var(--color-pink));
     margin-bottom: 56px;
+  }
+
+  /* Where .wave-top (critical.css) draws the wave, for the script title to
+     follow (snippets/wave-title.liquid). */
+  .in-press__wave {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 128.7%;
+    height: var(--wave-height);
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* The script title, the design's 98px under the wave's edge, on a line as
+     tall as the straight title's so the logos stay put. */
+  .in-press__curve {
+    --wave-title-offset: 98px;
+
+    display: block;
+    width: 100%;
+    height: 50.4px;
+    overflow: visible;
+    font: 700 48px var(--font-alyona);
+    fill: var(--text-color, var(--color-pink));
+  }
+
+  .in-press__curve--mobile {
+    display: none;
   }
 
   .in-press__viewport {
@@ -207,6 +281,19 @@
     .in-press--title-script .in-press__title {
       font-size: 24px;
       margin-bottom: 10px;
+    }
+
+    .in-press__curve--desktop {
+      display: none;
+    }
+
+    /* 43px under the wave's top, where the straight title sat. */
+    .in-press__curve--mobile {
+      --wave-title-offset: 43px;
+
+      display: block;
+      height: 25.2px;
+      font-size: 24px;
     }
 
     .in-press__line {
