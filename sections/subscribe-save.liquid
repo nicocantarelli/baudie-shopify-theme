@@ -1,0 +1,386 @@
+{% comment %}
+  Subscribe & save: a cream panel with the title, the perks and a button, next
+  to a photo. On desktop the panel's curved right edge runs over the photo; on
+  phones the panel sits above the photo and its wavy bottom edge runs over it.
+  Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1066
+  (mobile: node-id=109-11288)
+
+  Sizes follow the theme's sections (the newsletter's title and text, the
+  Who card's button), not the design's. Colors left empty in the editor fall
+  back to the theme colors set in the stylesheet, so only the ones picked are
+  written here. A picked text color also replaces the title's gradient.
+{% endcomment %}
+
+<div
+  class="subscribe-save full-width"
+  style="
+    --edge-mask: url('{{ 'shape-cream-edge.svg' | asset_url }}');
+    --wave-mask: url('{{ 'shape-cream-wave.svg' | asset_url }}');
+    {%- if section.settings.background_color != blank %}--panel-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }}; --text-fill: {{ section.settings.text_color }};{% endif -%}
+  ">
+  <div class="subscribe-save__panel">
+    <div class="subscribe-save__content">
+      {%- if section.settings.title != blank -%}
+        <h2 class="subscribe-save__title text-gradient">{{ section.settings.title | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <ul class="subscribe-save__perks" role="list">
+          {%- for block in section.blocks -%}
+            {%- capture icon_style -%}
+              --icon: url('
+              {%- if block.settings.custom_icon != blank -%}
+                {{- block.settings.custom_icon | image_url: width: 96 -}}
+              {%- else -%}
+                {%- case block.settings.icon -%}
+                  {%- when 'truck' -%}
+                    {{- 'icon-truck.svg' | asset_url -}}
+                  {%- when 'gift' -%}
+                    {{- 'icon-gift.svg' | asset_url -}}
+                  {%- when 'calendar' -%}
+                    {{- 'icon-calendar.svg' | asset_url -}}
+                  {%- else -%}
+                    {{- 'icon-percent.svg' | asset_url -}}
+                {%- endcase -%}
+              {%- endif -%}
+              ');
+            {%- endcapture -%}
+
+            <li class="subscribe-save__perk" {{ block.shopify_attributes }}>
+              <span class="subscribe-save__circle">
+                <span class="subscribe-save__icon" style="{{ icon_style }}"></span>
+              </span>
+              <span class="subscribe-save__perk-text">{{ block.settings.text | escape }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if section.settings.button_text != blank and section.settings.button_link != blank -%}
+        <a class="button subscribe-save__button" href="{{ section.settings.button_link }}">
+          {{- section.settings.button_text | escape -}}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="subscribe-save__photo">
+    {%- if section.settings.image != blank -%}
+      {{
+        section.settings.image
+        | image_url: width: 1600
+        | image_tag:
+          loading: 'lazy',
+          widths: '400, 600, 800, 1000, 1200, 1600',
+          sizes: '(min-width: 769px) 56vw, 100vw',
+          class: 'subscribe-save__img'
+      }}
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'subscribe-save__img subscribe-save__img--placeholder' }}
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .subscribe-save {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    /* The design's 1440 × 835, kept in proportion on smaller screens. */
+    min-height: min(58vw, 835px);
+  }
+
+  /* The cream panel, over the left of the photo. Its right edge is the
+     design's cream tile, turned upright and stretched to the panel's height;
+     the content is centered in the part left of the curve. */
+  .subscribe-save__panel {
+    display: flex;
+    align-items: center;
+    width: 58.8%;
+    padding: 64px 4.36% 64px 0;
+    background: var(--panel-bg, var(--color-cream));
+    -webkit-mask:
+      linear-gradient(#000 0 0) left / 50% 100% no-repeat,
+      var(--edge-mask) right / 53.15% 100% no-repeat;
+    mask:
+      linear-gradient(#000 0 0) left / 50% 100% no-repeat,
+      var(--edge-mask) right / 53.15% 100% no-repeat;
+  }
+
+  .subscribe-save__content {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+    width: 100%;
+    padding: 0 40px;
+    color: var(--text-color, var(--color-foreground));
+    text-align: center;
+  }
+
+  /* Shrinks to the text so the gradient runs across the words themselves.
+     The bottom padding keeps the descenders inside the painted gradient. */
+  .subscribe-save__title {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 0 -0.15em;
+    padding-bottom: 0.15em;
+    font: 400 70px/0.88 var(--font-jokker);
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .subscribe-save__perks {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 26px 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Two by two when the four don't fit on one row. */
+  @container (max-width: 579px) {
+    .subscribe-save__perks {
+      max-width: 300px;
+      column-gap: 20px;
+    }
+  }
+
+  .subscribe-save__perk {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 140px;
+  }
+
+  .subscribe-save__circle {
+    display: grid;
+    place-items: center;
+    width: 80px;
+    height: 80px;
+    border: 2px solid currentColor;
+    border-radius: var(--radius-pill);
+  }
+
+  /* One-color icons, painted in the text color. */
+  .subscribe-save__icon {
+    width: 40px;
+    height: 40px;
+    background-color: currentColor;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+  }
+
+  .subscribe-save__perk-text {
+    font: 400 16px/1.5 var(--font-jokker);
+    white-space: pre-line;
+  }
+
+  .subscribe-save__button {
+    --button-height: 50px;
+    --button-padding: 36px;
+    --button-font-size: 16px;
+  }
+
+  .subscribe-save__photo {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    width: 55.32%;
+    background-color: var(--color-blush);
+  }
+
+  .subscribe-save__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .subscribe-save__img--placeholder {
+    fill: var(--color-panel);
+  }
+
+  @media (max-width: 1024px) {
+    .subscribe-save__title {
+      font-size: 56px;
+    }
+  }
+
+  /* Phones: the panel on top with a wavy bottom edge, the photo under it. */
+  @media (max-width: 768px) {
+    .subscribe-save {
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .subscribe-save__panel {
+      width: 100%;
+      padding: 64px 0 76px;
+      -webkit-mask: var(--wave-mask) 0 0 / 100% 100% no-repeat;
+      mask: var(--wave-mask) 0 0 / 100% 100% no-repeat;
+    }
+
+    .subscribe-save__content {
+      padding: 0 16px;
+    }
+
+    .subscribe-save__title {
+      font-size: 42px;
+    }
+
+    .subscribe-save__perks {
+      max-width: 276px;
+      column-gap: 20px;
+    }
+
+    .subscribe-save__perk {
+      gap: 12px;
+      width: 128px;
+    }
+
+    .subscribe-save__circle {
+      width: 64px;
+      height: 64px;
+    }
+
+    .subscribe-save__icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    .subscribe-save__perk-text {
+      font-size: 14px;
+    }
+
+    .subscribe-save__button {
+      --button-height: 48px;
+      --button-padding: 32px;
+      --button-font-size: 14px;
+    }
+
+    /* Runs up under the panel's wavy edge, so the dips show the photo. */
+    .subscribe-save__photo {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      aspect-ratio: 393 / 374;
+      margin-top: -56px;
+    }
+
+    .subscribe-save__img {
+      object-position: center top;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.subscribe_save.name",
+  "class": "subscribe-save-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:labels.image",
+      "info": "t:sections.subscribe_save.image_info"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:labels.title",
+      "default": "Save 15% for life and smell good"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "t:labels.button_text",
+      "default": "Subscribe + save"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.subscribe_save.button_link"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors",
+      "info": "t:labels.colors_info"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "perk",
+      "name": "t:sections.subscribe_save.perk",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.subscribe_save.icon",
+          "options": [
+            { "value": "percent", "label": "t:sections.subscribe_save.icon_percent" },
+            { "value": "truck", "label": "t:sections.subscribe_save.icon_truck" },
+            { "value": "gift", "label": "t:sections.subscribe_save.icon_gift" },
+            { "value": "calendar", "label": "t:sections.subscribe_save.icon_calendar" }
+          ],
+          "default": "percent"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "t:sections.subscribe_save.custom_icon",
+          "info": "t:sections.subscribe_save.custom_icon_info"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:labels.text",
+          "info": "t:sections.subscribe_save.perk_text_info",
+          "default": "15% off every\norder"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.subscribe_save.name",
+      "blocks": [
+        {
+          "type": "perk",
+          "settings": { "icon": "percent", "text": "15% off every\norder" }
+        },
+        {
+          "type": "perk",
+          "settings": { "icon": "truck", "text": "autoship so you\ndon’t run out" }
+        },
+        {
+          "type": "perk",
+          "settings": { "icon": "gift", "text": "VIP perks\n+ free gifts" }
+        },
+        {
+          "type": "perk",
+          "settings": { "icon": "calendar", "text": "pause or\ncancel anytime" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

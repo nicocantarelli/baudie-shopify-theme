@@ -337,6 +337,20 @@
       "yotpo_app_key_info": "Find this in your Yotpo dashboard under Settings > API",
       "product_info": "Leave empty to show site-wide reviews"
     },
+    "subscribe_save": {
+      "name": "Subscribe & save",
+      "image_info": "Shown on the right on desktop and under the text on phones.",
+      "button_link": "Button link",
+      "perk": "Perk",
+      "icon": "Icon",
+      "icon_percent": "Percent",
+      "icon_truck": "Delivery truck",
+      "icon_gift": "Gift",
+      "icon_calendar": "Calendar",
+      "custom_icon": "Custom icon",
+      "custom_icon_info": "Replaces the icon above. Use a one-color icon on a transparent background; it's shown in the text color.",
+      "perk_text_info": "Press Enter to start a new line."
+    },
     "product_features": {
       "name": "Product features",
       "settings": {

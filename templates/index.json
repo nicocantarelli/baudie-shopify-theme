@@ -168,6 +168,51 @@
         "benefit_plant_based"
       ]
     },
+    "subscribe_save_R7m2Qa": {
+      "type": "subscribe-save",
+      "blocks": {
+        "perk_discount": {
+          "type": "perk",
+          "settings": {
+            "icon": "percent",
+            "text": "15% off every\norder"
+          }
+        },
+        "perk_autoship": {
+          "type": "perk",
+          "settings": {
+            "icon": "truck",
+            "text": "autoship so you\ndon’t run out"
+          }
+        },
+        "perk_vip": {
+          "type": "perk",
+          "settings": {
+            "icon": "gift",
+            "text": "VIP perks\n+ free gifts"
+          }
+        },
+        "perk_pause": {
+          "type": "perk",
+          "settings": {
+            "icon": "calendar",
+            "text": "pause or\ncancel anytime"
+          }
+        }
+      },
+      "block_order": [
+        "perk_discount",
+        "perk_autoship",
+        "perk_vip",
+        "perk_pause"
+      ],
+      "name": "t:sections.subscribe_save.name",
+      "settings": {
+        "title": "Save 15% for life and smell good",
+        "button_text": "Subscribe + save",
+        "button_link": "shopify://collections/shop"
+      }
+    },
     "product_features_aNgxYb": {
       "type": "product-features",
       "blocks": {
@@ -511,6 +556,7 @@
     "hero_product_tkHfVy",
     "in_press_9ChkGH",
     "product_details_XyZ123",
+    "subscribe_save_R7m2Qa",
     "product_features_aNgxYb",
     "what_makes_different_tVrMDA",
     "meet_scents_AbC456",
