@@ -65,8 +65,100 @@
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
+        "default": "#C11562",
         "label": "t:labels.foreground"
+      },
+      {
+        "type": "color",
+        "id": "accent_color",
+        "default": "#D3176C",
+        "label": "t:labels.accent",
+        "info": "t:labels.accent_info"
+      },
+      {
+        "type": "color",
+        "id": "brand_pink_color",
+        "default": "#E65C9A",
+        "label": "t:labels.brand_pink",
+        "info": "t:labels.brand_pink_info"
+      },
+      {
+        "type": "color",
+        "id": "panel_color",
+        "default": "#FFDCED",
+        "label": "t:labels.panel"
+      },
+      {
+        "type": "color",
+        "id": "blush_color",
+        "default": "#FFF4F8",
+        "label": "t:labels.blush"
+      },
+      {
+        "type": "color",
+        "id": "cream_color",
+        "default": "#FFFFDC",
+        "label": "t:labels.cream"
+      },
+      {
+        "type": "color",
+        "id": "yellow_color",
+        "default": "#FDFC8D",
+        "label": "t:labels.yellow"
+      },
+      {
+        "type": "color",
+        "id": "on_accent_color",
+        "default": "#FFFFFF",
+        "label": "t:labels.on_accent"
+      },
+      {
+        "type": "color",
+        "id": "cocoa_color",
+        "default": "#3E2027",
+        "label": "t:labels.cocoa",
+        "info": "t:labels.cocoa_info"
+      },
+      {
+        "type": "color",
+        "id": "error_color",
+        "default": "#B42318",
+        "label": "t:labels.error"
+      },
+      {
+        "type": "color",
+        "id": "lime_color",
+        "default": "#DAFF70",
+        "label": "t:labels.lime",
+        "info": "t:labels.decoration_only_info"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.gradients"
+      },
+      {
+        "type": "color_background",
+        "id": "button_gradient",
+        "default": "linear-gradient(90deg, #C81466 0%, #DC1870 47%, #E65C9A 100%)",
+        "label": "t:labels.button_gradient"
+      },
+      {
+        "type": "color_background",
+        "id": "heading_gradient",
+        "default": "linear-gradient(90deg, #C81466 0%, #D3176C 50%, #E65C9A 100%)",
+        "label": "t:labels.heading_gradient"
+      },
+      {
+        "type": "color_background",
+        "id": "blush_gradient",
+        "default": "linear-gradient(180deg, #FFDCED 0%, #FFF4F8 100%)",
+        "label": "t:labels.blush_gradient"
+      },
+      {
+        "type": "color_background",
+        "id": "sunshine_gradient",
+        "default": "linear-gradient(180deg, #FDFC8D 0%, #FEFDB6 50%, #FFFFDC 100%)",
+        "label": "t:labels.sunshine_gradient"
       },
       {
         "type": "range",
