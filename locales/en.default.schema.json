@@ -209,6 +209,11 @@
       "center": "Center",
       "right": "Right"
     },
+    "position": {
+      "top": "Top",
+      "center": "Center",
+      "bottom": "Bottom"
+    },
     "direction": {
       "horizontal": "Horizontal",
       "vertical": "Vertical"
@@ -351,6 +356,9 @@
       "rating_label": "{{ rating }} out of 5 stars, {{ count }} reviews",
       "settings": {
         "desktop_header": "Desktop settings",
+        "heading_position": "Heading position",
+        "heading_alignment": "Heading alignment",
+        "heading_alignment_info": "Also moves the heading to that side of the image",
         "products": "Products",
         "image_mode_header": "Hero image mode",
         "use_static_image": "Use static image",
@@ -377,6 +385,9 @@
         "mobile_content_position_top": "Top of screen",
         "mobile_content_position_center": "Center of screen",
         "mobile_content_position_bottom": "Bottom of screen",
+        "mobile_content_alignment": "Content alignment",
+        "mobile_eyebrow": "Text above the heading",
+        "mobile_eyebrow_info": "Shown in small capitals above the mobile heading. Leave empty to hide it.",
         "mobile_heading_gap": "Spacing between heading and content",
         "mobile_overlay_enable": "Enable mobile image overlay",
         "mobile_overlay_color": "Mobile overlay color",

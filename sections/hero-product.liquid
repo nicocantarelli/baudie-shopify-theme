@@ -118,9 +118,9 @@
       data-color-block
       style="{%- if first_card_bg != blank %}--card-bg: {{ first_card_bg }};{% endif -%}"></div>
 
-    {%- comment -%} Main Heading {%- endcomment -%}
+    {%- comment -%} Main Heading, at the position and alignment picked in the editor {%- endcomment -%}
     <div
-      class="hero-product__heading"
+      class="hero-product__heading hero-product__heading--{{ section.settings.heading_position }} hero-product__heading--align-{{ section.settings.heading_alignment }}"
       style="{%- if section.settings.heading_color != blank %}--heading-color: {{ section.settings.heading_color }};{% endif -%}">
       <h1>{{ section.settings.heading }}</h1>
     </div>
@@ -129,13 +129,19 @@
       assign mobile_position = section.settings.mobile_content_position
     -%}
 
-    {%- comment -%} Mobile content - heading + content move together at top, center or bottom {%- endcomment -%}
+    {%- comment -%}
+      Mobile content - heading + content move together at top, center or bottom,
+      aligned left, center or right
+    {%- endcomment -%}
     <div
-      class="hero-product__mobile-content hero-product__mobile-content--{{ mobile_position }}"
+      class="hero-product__mobile-content hero-product__mobile-content--{{ mobile_position }} hero-product__mobile-content--align-{{ section.settings.mobile_content_alignment }}"
       style="
         {%- if section.settings.heading_color != blank %}--heading-color: {{ section.settings.heading_color }}; {% endif -%}
         --mobile-heading-gap: {{ section.settings.mobile_heading_gap }}px;
       ">
+      {% if section.settings.mobile_eyebrow != blank %}
+        <p class="hero-product__mobile-eyebrow">{{ section.settings.mobile_eyebrow }}</p>
+      {% endif %}
       {% if section.settings.mobile_heading != blank %}
         <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading }}</h1>
       {% endif %}
@@ -478,13 +484,48 @@
     z-index: 1;
   }
 
-  /* Main Heading - positioned over left side */
+  /* Main Heading - over the left image (two thirds of the width), at the
+     position and alignment picked in the editor. The box is wider than the old
+     40rem so the bold title wraps like the old regular one did, but never wider
+     than the image. */
   .hero-product__heading {
+    --heading-inset: 40px;
+    --heading-inset-bottom: 47px;
+    --heading-shift-x: 0%;
+    --heading-shift-y: 0%;
     position: absolute;
-    left: 40px;
-    bottom: 47px;
-    max-width: 40rem;
+    max-width: min(44rem, calc(66.67% - 2 * var(--heading-inset)));
+    transform: translate(var(--heading-shift-x), var(--heading-shift-y));
     z-index: 2;
+  }
+
+  .hero-product__heading--top {
+    top: var(--heading-inset);
+  }
+
+  .hero-product__heading--center {
+    top: 50%;
+    --heading-shift-y: -50%;
+  }
+
+  .hero-product__heading--bottom {
+    bottom: var(--heading-inset-bottom);
+  }
+
+  .hero-product__heading--align-left {
+    left: var(--heading-inset);
+    text-align: left;
+  }
+
+  .hero-product__heading--align-center {
+    left: 33.335%;
+    --heading-shift-x: -50%;
+    text-align: center;
+  }
+
+  .hero-product__heading--align-right {
+    right: calc(33.33% + var(--heading-inset));
+    text-align: right;
   }
 
   .hero-product__heading h1 {
@@ -698,9 +739,9 @@
     }
 
     .hero-product__heading {
-      left: 24px;
-      bottom: 120px;
-      max-width: 45%;
+      --heading-inset: 24px;
+      --heading-inset-bottom: 120px;
+      max-width: 48%;
     }
 
     .hero-product__controls {
@@ -805,9 +846,20 @@
       font-size: 45px;
       font-weight: 700;
       line-height: 1;
-      text-align: center;
       color: var(--heading-color, #fff);
       margin: 0;
+    }
+
+    /* Short line in small capitals above the heading */
+    .hero-product__mobile-eyebrow {
+      margin: 0;
+      font-family: var(--font-sweet-sans);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: var(--tracking-label-sm);
+      text-transform: uppercase;
+      color: var(--heading-color, #fff);
     }
 
     /* Show mobile overlay */
@@ -824,7 +876,8 @@
       display: none;
     }
 
-    /* Mobile content block - absolute positioned, horizontally centered */
+    /* Mobile content block - absolute positioned, horizontally centered; its
+       content is aligned left, center or right inside it */
     .hero-product__mobile-content {
       display: flex;
       flex-direction: column;
@@ -834,7 +887,18 @@
       left: 50%;
       width: calc(100% - 24px);
       max-width: 360px;
+      text-align: center;
       z-index: 3;
+    }
+
+    .hero-product__mobile-content--align-left {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .hero-product__mobile-content--align-right {
+      align-items: flex-end;
+      text-align: right;
     }
 
     .hero-product__mobile-content--top {
@@ -863,7 +927,6 @@
       font-weight: 400;
       line-height: 1;
       color: #FFFFFF;
-      text-align: center;
       margin: 0;
       width: 100%;
     }
@@ -873,7 +936,6 @@
       font-size: 14px;
       line-height: 1.2;
       color: #FFFFFF;
-      text-align: center;
       margin: 0;
       width: 100%;
     }
@@ -1052,6 +1114,29 @@
         "default": "#FFFFFF"
       },
       {
+        "type": "select",
+        "id": "heading_position",
+        "label": "t:sections.hero_product.settings.heading_position",
+        "options": [
+          { "value": "top", "label": "t:options.position.top" },
+          { "value": "center", "label": "t:options.position.center" },
+          { "value": "bottom", "label": "t:options.position.bottom" }
+        ],
+        "default": "bottom"
+      },
+      {
+        "type": "select",
+        "id": "heading_alignment",
+        "label": "t:sections.hero_product.settings.heading_alignment",
+        "info": "t:sections.hero_product.settings.heading_alignment_info",
+        "options": [
+          { "value": "left", "label": "t:options.alignment.left" },
+          { "value": "center", "label": "t:options.alignment.center" },
+          { "value": "right", "label": "t:options.alignment.right" }
+        ],
+        "default": "left"
+      },
+      {
         "type": "product_list",
         "id": "hero_products",
         "label": "t:sections.hero_product.settings.products"
@@ -1169,6 +1254,23 @@
           }
         ],
         "default": "center"
+      },
+      {
+        "type": "select",
+        "id": "mobile_content_alignment",
+        "label": "t:sections.hero_product.settings.mobile_content_alignment",
+        "options": [
+          { "value": "left", "label": "t:options.alignment.left" },
+          { "value": "center", "label": "t:options.alignment.center" },
+          { "value": "right", "label": "t:options.alignment.right" }
+        ],
+        "default": "center"
+      },
+      {
+        "type": "text",
+        "id": "mobile_eyebrow",
+        "label": "t:sections.hero_product.settings.mobile_eyebrow",
+        "info": "t:sections.hero_product.settings.mobile_eyebrow_info"
       },
       {
         "type": "range",
