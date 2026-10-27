@@ -5,10 +5,10 @@
   Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1066
   (mobile: node-id=109-11288)
 
-  Sizes follow the theme's sections (the newsletter's title and text, the
-  Who card's button), not the design's. Colors left empty in the editor fall
-  back to the theme colors set in the stylesheet, so only the ones picked are
-  written here. A picked text color also replaces the title's gradient.
+  Sizes follow the design, except the button, which keeps the theme's size
+  like the other buttons. Colors left empty in the editor fall back to the
+  theme colors set in the stylesheet, so only the ones picked are written
+  here. A picked text color also replaces the title's gradient.
 {% endcomment %}
 
 <div
@@ -113,7 +113,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 48px;
+    gap: 54px;
     width: 100%;
     padding: 0 40px;
     color: var(--text-color, var(--color-foreground));
@@ -127,7 +127,7 @@
     max-width: 100%;
     margin: 0 0 -0.15em;
     padding-bottom: 0.15em;
-    font: 400 70px/0.88 var(--font-jokker);
+    font: 400 72px/0.88 var(--font-jokker);
     letter-spacing: -0.03em;
     text-wrap: balance;
   }
@@ -142,49 +142,57 @@
     list-style: none;
   }
 
-  /* Two by two when the four don't fit on one row. */
-  @container (max-width: 579px) {
-    .subscribe-save__perks {
-      max-width: 300px;
-      column-gap: 20px;
-    }
-  }
-
+  /* The design's 156px each, sharing the row's width when it's narrower. */
   .subscribe-save__perk {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    width: 140px;
+    gap: 23px;
+    width: min(156px, 25cqi);
+  }
+
+  /* Two by two when the four don't fit on one row. */
+  @container (max-width: 559px) {
+    .subscribe-save__perks {
+      max-width: 300px;
+      column-gap: 20px;
+    }
+
+    .subscribe-save__perk {
+      width: 140px;
+    }
   }
 
   .subscribe-save__circle {
     display: grid;
     place-items: center;
-    width: 80px;
-    height: 80px;
+    width: 96px;
+    height: 96px;
     border: 2px solid currentColor;
     border-radius: var(--radius-pill);
   }
 
   /* One-color icons, painted in the text color. */
   .subscribe-save__icon {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     background-color: currentColor;
     -webkit-mask: var(--icon) center / contain no-repeat;
     mask: var(--icon) center / contain no-repeat;
   }
 
   .subscribe-save__perk-text {
-    font: 400 16px/1.5 var(--font-jokker);
+    font: 400 18px/1.5 var(--font-jokker);
     white-space: pre-line;
   }
 
+  /* Centered where the design's taller button (72px) sits. */
   .subscribe-save__button {
     --button-height: 50px;
     --button-padding: 36px;
     --button-font-size: 16px;
+
+    margin-block: calc((72px - var(--button-height)) / 2);
   }
 
   .subscribe-save__photo {
@@ -221,49 +229,53 @@
       min-height: 0;
     }
 
+    /* 30px under the button, then the 35.4px wave. */
     .subscribe-save__panel {
       width: 100%;
-      padding: 64px 0 76px;
+      padding: 40px 0 65.4px;
       -webkit-mask: var(--wave-mask) 0 0 / 100% 100% no-repeat;
       mask: var(--wave-mask) 0 0 / 100% 100% no-repeat;
     }
 
     .subscribe-save__content {
+      gap: 32px;
       padding: 0 16px;
     }
 
     .subscribe-save__title {
-      font-size: 42px;
+      font-size: 34px;
     }
 
     .subscribe-save__perks {
-      max-width: 276px;
+      max-width: 222px;
       column-gap: 20px;
     }
 
     .subscribe-save__perk {
-      gap: 12px;
-      width: 128px;
+      gap: 11.5px;
+      width: 101px;
     }
 
     .subscribe-save__circle {
-      width: 64px;
-      height: 64px;
+      width: 62px;
+      height: 62px;
     }
 
     .subscribe-save__icon {
-      width: 32px;
-      height: 32px;
+      width: 31px;
+      height: 31px;
     }
 
     .subscribe-save__perk-text {
-      font-size: 14px;
+      font-size: 11px;
     }
 
     .subscribe-save__button {
       --button-height: 48px;
       --button-padding: 32px;
       --button-font-size: 14px;
+
+      margin-block: calc((56px - var(--button-height)) / 2);
     }
 
     /* Runs up under the panel's wavy edge, so the dips show the photo. */
@@ -272,7 +284,7 @@
       inset: auto;
       width: 100%;
       aspect-ratio: 393 / 374;
-      margin-top: -56px;
+      margin-top: -35.4px;
     }
 
     .subscribe-save__img {
