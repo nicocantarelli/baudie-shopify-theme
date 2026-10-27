@@ -3,9 +3,11 @@
   + 1 fixed companion product (Cotton Dry Wipes).
 
   Adapted from sections/product-bundle.liquid. It is a separate section rather
-  than a shared one because {% stylesheet %} / {% javascript %} blocks are
-  concatenated theme-wide, so the two pages must not share a class prefix or a
-  JS root selector — everything here is `bundle-duo` / `data-duo-*`.
+  than a shared one because stylesheet / javascript blocks are concatenated
+  theme-wide, so the two pages must not share a class prefix or a JS root
+  selector — everything here is `bundle-duo` / `data-duo-*`. (The tag names
+  are written without braces on purpose: `shopify theme dev` picks up those
+  tags even inside comments, which breaks its local script bundle.)
 
   Only the scent is chosen, so only the scent is submitted as an option-group
   property. The companion is a fixed component of the bundle in Simple Bundles
