@@ -6,7 +6,18 @@
   {% render 'breadcrumbs', background_color: section.settings.breadcrumb_background_color, text_color: section.settings.breadcrumb_text_color %}
 {%- endunless -%}
 
-<footer class="footer full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --button-bg: {{ section.settings.button_background_color }}; --button-text: {{ section.settings.button_text_color }};">
+{%- comment -%}
+  Colors left empty in the editor fall back to the theme colors set on .footer
+  in the stylesheet, so only the ones Alex picked are written here.
+{%- endcomment -%}
+<footer
+  class="footer full-width"
+  style="
+    {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }}; --line-color: {{ section.settings.text_color }};{% endif -%}
+    {%- if section.settings.button_background_color != blank %}--button-bg: {{ section.settings.button_background_color }};{% endif -%}
+    {%- if section.settings.button_text_color != blank %}--button-text: {{ section.settings.button_text_color }};{% endif -%}
+  ">
   <div class="footer__container">
     {%- comment -%} Top Horizontal Line {%- endcomment -%}
     <div class="footer__line"></div>
@@ -87,10 +98,10 @@
               <input
                 type="email"
                 name="email"
-                class="footer__newsletter-input"
+                class="input footer__newsletter-input"
                 placeholder="{{ 'footer.email_placeholder' | t }}"
                 required>
-              <button type="submit" class="footer__newsletter-button">
+              <button type="submit" class="button footer__newsletter-button">
                 {{ 'footer.subscribe' | t }}
               </button>
             </form>
@@ -192,22 +203,26 @@
 
 {% stylesheet %}
   .footer {
-    background-color: var(--section-bg, #FCE9EC);
-    padding: 30px 0 0;
+    --section-bg: var(--color-background);
+    --text-color: var(--color-foreground);
+    --line-color: var(--color-accent);
+
+    background-color: var(--section-bg);
+    color: var(--text-color);
+    padding: var(--space-section) 0 0;
   }
 
   .footer__container {
     max-width: 1600px;
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 var(--gutter);
   }
 
   /* Horizontal Lines */
   .footer__line {
     width: 100%;
     height: 1px;
-    background-color: var(--text-color, #3E2027);
-    opacity: 1;
+    background-color: var(--line-color);
   }
 
   /* Large Logo Section */
@@ -229,15 +244,15 @@
     font-family: var(--font-alyona);
     font-size: 120px;
     font-weight: 400;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color);
     text-align: center;
   }
 
-  /* Main Footer Content - 4 Columns */
+  /* Main Footer Content - 4 Columns, placed as in the design at 1440px */
   .footer__content {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 2.5fr;
-    gap: 110px;
+    grid-template-columns: 1fr 1fr 1fr 2.2fr;
+    gap: 60px;
     padding: 70px 0 60px;
   }
 
@@ -247,30 +262,29 @@
     gap: 20px;
   }
 
+  .footer__column--newsletter {
+    gap: 24px;
+  }
+
+  /* Newsletter on top, social links in a row under it */
   .footer__header-row {
     display: flex;
-    justify-content: space-between;
-    align-items: stretch;
-    gap: 20px;
+    flex-direction: column;
+    gap: 24px;
   }
 
   .footer__text-content {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 16px;
-    flex: 1;
+    gap: 20px;
   }
 
   .footer__heading {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 16px;
-    line-height: normal;
-    letter-spacing: -0.16px;
-    text-transform: uppercase;
-    color: var(--text-color, #3E2027);
     margin: 0;
+    color: var(--text-color);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
   }
 
   .footer__menu {
@@ -287,10 +301,8 @@
   }
 
   .footer__menu-link {
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color);
+    font: var(--type-body);
     text-decoration: none;
     transition: opacity 0.2s ease;
   }
@@ -299,87 +311,40 @@
     opacity: 0.7;
   }
 
-  /* Newsletter Column */
-  .footer__column--newsletter {
-    gap: 16px;
-  }
-
-  .footer__newsletter-description {
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--text-color, #3E2027);
-    margin: 0;
-  }
-
+  /* The field takes the room left; when the column is too narrow for both,
+     the button drops under it and fills the line. */
   .footer__newsletter-form {
     display: flex;
-    gap: 10px;
-    margin-top: 8px;
+    flex-wrap: wrap;
+    gap: 12px;
   }
 
   .footer__newsletter-input {
-    flex: 1;
-    height: 50px;
-    padding: 10px 25px;
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--text-color, #3E2027);
-    background: transparent;
-    border: 1px solid var(--text-color, #3E2027);
-    outline: none;
-    transition: border-color 0.2s ease;
+    --input-color: var(--text-color);
+    --input-background: transparent;
+
+    flex: 1 1 200px;
+    min-width: 0;
   }
 
-  .footer__newsletter-input::placeholder {
-    color: var(--text-color, #3E2027);
-    opacity: 1;
-  }
+  .footer__newsletter-form .footer__newsletter-button {
+    --button-background: var(--button-bg, var(--gradient-button));
+    --button-color: var(--button-text, var(--color-on-accent));
 
-  .footer__newsletter-input:focus {
-    border-color: var(--text-color, #3E2027);
-  }
-
-  .footer__newsletter-button {
-    height: 50px;
-    padding: 10px 20px;
-    background: var(--button-bg, #3E2027);
-    color: var(--button-text, #FFFAE6);
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    line-height: normal;
-    letter-spacing: -0.14px;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: opacity 0.2s ease
-    , transform 0.2s ease;
-  }
-
-  .footer__newsletter-button:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
-
-  .footer__newsletter-button:active {
-    opacity: 0.8;
-    transform: translateY(0);
+    flex: 1 0 auto;
   }
 
   .footer__newsletter-status {
+    margin: 0;
+    color: var(--text-color);
     font-family: var(--font-jokker);
     font-size: 14px;
     font-weight: 600;
     line-height: 1.4;
-    margin: 12px 0 0;
-    color: var(--text-color, #3E2027);
   }
 
   .footer__newsletter-status[data-state="error"] {
-    color: #C0392B;
+    color: var(--color-error);
   }
 
   .footer__newsletter-status:empty {
@@ -389,19 +354,16 @@
   /* Social Media Links */
   .footer__social {
     display: flex;
-    flex-direction: column;
-    gap: 19px;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px 24px;
   }
 
   .footer__social-link {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.2;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color);
+    font: var(--type-body);
     text-decoration: none;
     transition: opacity 0.2s ease;
   }
@@ -424,24 +386,21 @@
     gap: 12px;
     width: 100%;
     box-sizing: border-box;
-    margin-top: 8px;
-    padding: 20px 24px;
-    border: 1px solid var(--text-color, #3E2027);
+    padding: 18px 24px;
+    border: 2px solid var(--text-color);
+    border-radius: var(--radius-pill);
     background: transparent;
-    color: var(--text-color, #3E2027);
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    line-height: normal;
-    letter-spacing: -0.14px;
+    color: var(--text-color);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     text-decoration: none;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   .footer__affiliate-cta:hover {
-    background-color: var(--button-bg, #3E2027);
-    color: var(--button-text, #FFFAE6);
+    background-color: var(--text-color);
+    color: var(--section-bg);
   }
 
   .footer__affiliate-cta svg {
@@ -450,38 +409,33 @@
     flex-shrink: 0;
   }
 
-  /* Bottom Row */
+  /* Bottom Row: copyright left, email centered, cookie settings right */
   .footer__bottom {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     align-items: center;
+    gap: var(--space-s);
     padding: 24px 0;
   }
 
-  .footer__copyright {
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--text-color, #3E2027);
-    text-align: center;
+  .footer__copyright,
+  .footer__contact {
+    color: var(--text-color);
+    font: var(--type-body);
   }
 
   .footer__contact {
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--text-color, #3E2027);
-    text-align: right;
+    text-align: center;
   }
 
   .footer__cookie-settings {
+    grid-column: 3;
+    justify-self: end;
     padding: 0;
     background: none;
     border: none;
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color);
+    font: var(--type-body);
     text-decoration: underline;
     text-underline-offset: 2px;
     cursor: pointer;
@@ -494,10 +448,6 @@
 
   /* Responsive */
   @media (max-width: 1024px) {
-    .footer__container {
-      padding: 0 24px;
-    }
-
     .footer__logo-wrapper {
       padding: 50px 0;
     }
@@ -509,10 +459,6 @@
   }
 
   @media (max-width: 768px) {
-    .footer__container {
-      padding: 0 16px;
-    }
-
     .footer__logo-wrapper {
       padding: 40px 0;
     }
@@ -532,33 +478,17 @@
       padding: 50px 0 40px;
     }
 
-    .footer__heading {
-      font-size: 15px;
-    }
-
-    .footer__menu-link,
-    .footer__newsletter-description,
-    .footer__social-link {
-      font-size: 14px;
-    }
-
-    .footer__newsletter-input {
-      font-size: 14px;
-      padding: 10px 20px;
-    }
-
     .footer__bottom {
-      flex-direction: column;
+      grid-template-columns: 1fr;
+      justify-items: center;
       gap: 12px;
       padding: 20px 0;
       text-align: center;
     }
 
-    .footer__copyright,
-    .footer__contact,
     .footer__cookie-settings {
-      text-align: center;
-      font-size: 14px;
+      grid-column: auto;
+      justify-self: center;
     }
   }
 
@@ -573,7 +503,6 @@
 
     /* 2 columns for menus, newsletter spans full width */
     .footer__content {
-      grid-template-columns: repeat(2, 1fr);
       gap: 30px 20px;
       padding: 40px 0 35px;
     }
@@ -581,38 +510,6 @@
     /* Newsletter spans full width below the menus */
     .footer__column--newsletter {
       grid-column: span 2;
-    }
-
-    .footer__heading {
-      font-size: 14px;
-    }
-
-    .footer__menu-link,
-    .footer__newsletter-description,
-    .footer__social-link,
-    .footer__copyright,
-    .footer__contact,
-    .footer__cookie-settings {
-      font-size: 13px;
-    }
-
-    .footer__newsletter-form {
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .footer__newsletter-input,
-    .footer__newsletter-button {
-      width: 100%;
-      height: 45px;
-    }
-
-    .footer__newsletter-button {
-      font-size: 13px;
-    }
-
-    .footer__bottom {
-      padding: 18px 0;
     }
   }
 {% endstylesheet %}
@@ -809,19 +706,18 @@
       },
       {
         "type": "header",
-        "content": "t:footer.settings.breadcrumb_header"
+        "content": "t:footer.settings.breadcrumb_header",
+        "info": "t:labels.colors_info"
       },
       {
         "type": "color",
         "id": "breadcrumb_background_color",
-        "label": "t:footer.settings.breadcrumb_background_color",
-        "default": "#FCE9EC"
+        "label": "t:footer.settings.breadcrumb_background_color"
       },
       {
         "type": "color",
         "id": "breadcrumb_text_color",
-        "label": "t:footer.settings.breadcrumb_text_color",
-        "default": "#3E2027"
+        "label": "t:footer.settings.breadcrumb_text_color"
       },
       {
         "type": "header",
@@ -836,31 +732,28 @@
       },
       {
         "type": "header",
-        "content": "t:labels.colors"
+        "content": "t:labels.colors",
+        "info": "t:labels.colors_info"
       },
       {
         "type": "color",
         "id": "background_color",
-        "label": "t:labels.background_color",
-        "default": "#FCE9EC"
+        "label": "t:labels.background_color"
       },
       {
         "type": "color",
         "id": "text_color",
-        "label": "t:labels.text_color",
-        "default": "#3E2027"
+        "label": "t:labels.text_color"
       },
       {
         "type": "color",
         "id": "button_background_color",
-        "label": "t:labels.button_background_color",
-        "default": "#3E2027"
+        "label": "t:labels.button_background_color"
       },
       {
         "type": "color",
         "id": "button_text_color",
-        "label": "t:labels.button_text_color",
-        "default": "#FFFAE6"
+        "label": "t:labels.button_text_color"
       }
     ]
   }
