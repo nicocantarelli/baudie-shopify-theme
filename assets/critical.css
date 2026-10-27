@@ -201,6 +201,12 @@ body {
   mask: url('shape-squiggle.svg') left center / auto 100% repeat-x;
 }
 
+/* Twice the stroke, as the homepage's squiggles use. */
+.squiggle--bold {
+  -webkit-mask-image: url('shape-squiggle-bold.svg');
+  mask-image: url('shape-squiggle-bold.svg');
+}
+
 /* Band with a wavy top edge, painted behind the element's content.
    Set its paint with --wave-fill and the wave's height with --wave-height.
    Like in the design, the wave is wider than the page (1853px on a 1440px
