@@ -55,8 +55,8 @@
           "type": "press_logo",
           "name": "Popsugar Logo",
           "settings": {
-            "logo": "shopify://shop_images/1.png",
-            "alt_text": "Press logo",
+            "logo": "shopify://shop_images/press-popsugar.png",
+            "alt_text": "Popsugar",
             "logo_width": 218
           }
         },
@@ -64,8 +64,8 @@
           "type": "press_logo",
           "name": "NewBeauty Logo",
           "settings": {
-            "logo": "shopify://shop_images/2.png",
-            "alt_text": "Press logo",
+            "logo": "shopify://shop_images/press-newbeauty.svg",
+            "alt_text": "NewBeauty",
             "logo_width": 172
           }
         },
@@ -73,8 +73,8 @@
           "type": "press_logo",
           "name": "Vogue Logo",
           "settings": {
-            "logo": "shopify://shop_images/6.png",
-            "alt_text": "Goop Logo",
+            "logo": "shopify://shop_images/press-vogue.png",
+            "alt_text": "Vogue",
             "logo_width": 129
           }
         },
@@ -82,8 +82,8 @@
           "type": "press_logo",
           "name": "Byrdie Logo",
           "settings": {
-            "logo": "shopify://shop_images/3.png",
-            "alt_text": "The New Yorker Logo",
+            "logo": "shopify://shop_images/press-byrdie.png",
+            "alt_text": "Byrdie",
             "logo_width": 145
           }
         },
@@ -91,8 +91,8 @@
           "type": "press_logo",
           "name": "Instyle Logo",
           "settings": {
-            "logo": "shopify://shop_images/4.png",
-            "alt_text": "Vice Logo",
+            "logo": "shopify://shop_images/press-instyle.png",
+            "alt_text": "InStyle",
             "logo_width": 136
           }
         },
@@ -100,8 +100,8 @@
           "type": "press_logo",
           "name": "Cosmopolitan Logo",
           "settings": {
-            "logo": "shopify://shop_images/5.png",
-            "alt_text": "Bustle Logo",
+            "logo": "shopify://shop_images/press-cosmopolitan.png",
+            "alt_text": "Cosmopolitan",
             "logo_width": 175
           }
         }
