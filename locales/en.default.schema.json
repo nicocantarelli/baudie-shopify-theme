@@ -344,6 +344,13 @@
       "label": "Label",
       "link": "Link"
     },
+    "customer_videos": {
+      "name": "Customer videos",
+      "title_info": "Runs along a curve and stops at its end, so keep it about this long.",
+      "videowise_embed": "Videowise embed code",
+      "videowise_embed_info": "Paste the widget embed code from Videowise (Copy embed code) to show the videos here. Leave blank to hide the videos.",
+      "button_link": "Button link"
+    },
     "subscribe_save": {
       "name": "Subscribe & save",
       "image_info": "Shown on the right on desktop and under the text on phones.",

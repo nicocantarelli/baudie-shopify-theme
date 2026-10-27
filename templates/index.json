@@ -396,6 +396,16 @@
         "sprays_title": ""
       }
     },
+    "customer_videos_Vq7nXa": {
+      "type": "customer-videos",
+      "name": "t:sections.customer_videos.name",
+      "settings": {
+        "title": "Baudie looks good on you",
+        "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
+        "button_text": "Shop all scents",
+        "button_link": "shopify://collections/shop"
+      }
+    },
     "what_makes_different_tVrMDA": {
       "type": "what-makes-different",
       "disabled": true,
@@ -669,6 +679,7 @@
     "product_features_aNgxYb",
     "category_cards_Wd3pLs",
     "how_to_use_Kp3vTe",
+    "customer_videos_Vq7nXa",
     "what_makes_different_tVrMDA",
     "meet_scents_AbC456",
     "explore_sets_UjtGBG",

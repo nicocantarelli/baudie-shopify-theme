@@ -1,0 +1,302 @@
+{% comment %}
+  Customer videos: a curved title riding a yellow wave, the Videowise video
+  carousel and a button, with a pink squiggle along the bottom.
+  Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1276
+  (mobile: node-id=109-11368)
+
+  The videos come from Videowise: paste a widget's embed code in the editor.
+  Colors left empty in the editor fall back to the theme colors set in the
+  stylesheet, so only the ones picked are written here.
+{% endcomment %}
+
+{%- liquid
+  assign title = section.settings.title | escape
+  assign arc_id = 'CustomerVideosArc-' | append: section.id
+-%}
+
+<div
+  class="customer-videos full-width"
+  style="
+    --wave-back: url('{{ 'shape-ugc-wave-back.svg' | asset_url }}');
+    --wave-front: url('{{ 'shape-ugc-wave-front.svg' | asset_url }}');
+    {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
+  ">
+  <span class="customer-videos__wave customer-videos__wave--back" aria-hidden="true"></span>
+  <span class="customer-videos__wave customer-videos__wave--front" aria-hidden="true"></span>
+
+  <div class="customer-videos__container">
+    {%- if section.settings.title != blank -%}
+      {%- comment -%} The design's own curves, a flatter one for phones, with the title centered along them. {%- endcomment -%}
+      <h2 class="customer-videos__title">
+        <span class="visually-hidden">{{ title }}</span>
+        <svg class="customer-videos__arc customer-videos__arc--desktop" viewBox="0 -40 747 145" aria-hidden="true" focusable="false">
+          <path id="{{ arc_id }}" d="M0 96.09C117.11 105.15 235.08 96.67 350.12 73.33C378.22 67.63 406.14 61.06 433.83 53.68C455.09 48.01 476.19 41.75 497.51 36.32C578.89 15.59 662.34 2.37 746.36 0" fill="none"/>
+          <text text-anchor="middle"><textPath href="#{{ arc_id }}" startOffset="50%">{{ title }}</textPath></text>
+        </svg>
+        <svg class="customer-videos__arc customer-videos__arc--mobile" viewBox="0 -16 314 40" aria-hidden="true" focusable="false">
+          <path id="{{ arc_id }}-mobile" d="M0 2.24C50.36 15.43 103 18.72 154.77 13.92C175.08 12.04 194.97 8.2 215.1 5.09C247.72 0.06 280.9 -1.57 313.78 1.7" fill="none"/>
+          <text text-anchor="middle"><textPath href="#{{ arc_id }}-mobile" startOffset="50%">{{ title }}</textPath></text>
+        </svg>
+      </h2>
+    {%- endif -%}
+
+    {%- if section.settings.videowise_embed != blank -%}
+      <div class="customer-videos__carousel">
+        {{ section.settings.videowise_embed }}
+      </div>
+    {%- elsif request.design_mode -%}
+      <div class="customer-videos__carousel">
+        <div class="customer-videos__placeholders">
+          {%- for i in (1..4) -%}
+            <span class="customer-videos__placeholder"></span>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.button_text != blank and section.settings.button_link != blank -%}
+      <a class="button button--secondary customer-videos__button" href="{{ section.settings.button_link }}">
+        {{- section.settings.button_text | escape -}}
+      </a>
+    {%- endif -%}
+  </div>
+
+  <span class="customer-videos__squiggle squiggle squiggle--bold" aria-hidden="true"></span>
+</div>
+
+{% stylesheet %}
+  .customer-videos {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: var(--color-background);
+  }
+
+  /* The yellow: the design's two waves, turned so their wavy edge is on
+     top, the back one slightly tilted. The front one runs on down to the
+     squiggle's middle however tall the videos are, so only its wavy end
+     keeps the design's height. */
+  .customer-videos__wave {
+    position: absolute;
+    z-index: -1;
+    width: 107.19%;
+    background: var(--section-bg, linear-gradient(90deg, var(--color-yellow), var(--color-cream)));
+  }
+
+  .customer-videos__wave--back {
+    top: -17.5px;
+    left: -3.53%;
+    height: 808px;
+    -webkit-mask: var(--wave-back) 0 0 / 100% 100% no-repeat;
+    mask: var(--wave-back) 0 0 / 100% 100% no-repeat;
+    transform: rotate(-175.02deg);
+  }
+
+  .customer-videos__wave--front {
+    --wave-front-height: 906px;
+
+    top: 90.6px;
+    bottom: 18px;
+    left: -3.33%;
+    -webkit-mask:
+      var(--wave-front) center bottom / 100% var(--wave-front-height) no-repeat,
+      linear-gradient(#000 0 0) center top / 100% max(0px, 100% - var(--wave-front-height) + 1px) no-repeat;
+    mask:
+      var(--wave-front) center bottom / 100% var(--wave-front-height) no-repeat,
+      linear-gradient(#000 0 0) center top / 100% max(0px, 100% - var(--wave-front-height) + 1px) no-repeat;
+    transform: rotate(180deg);
+  }
+
+  .customer-videos__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 68px 40px 110px;
+  }
+
+  .customer-videos__title {
+    width: 100%;
+    margin: 0;
+    line-height: 0;
+  }
+
+  /* Shrinks with the screen, type included. */
+  .customer-videos__arc {
+    display: block;
+    width: min(747px, 100%);
+    height: auto;
+    margin: 0 auto;
+    overflow: visible;
+    font: 700 72px var(--font-alyona);
+    fill: var(--text-color, var(--color-pink));
+  }
+
+  .customer-videos__arc--mobile {
+    display: none;
+    width: min(314px, 100%);
+    font-size: 24px;
+  }
+
+  .customer-videos__carousel {
+    width: 100%;
+  }
+
+  .customer-videos__title + .customer-videos__carousel {
+    margin-top: 99px;
+  }
+
+  /* Stand-ins for the videos while the editor has no embed code. */
+  .customer-videos__placeholders {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 32px;
+  }
+
+  .customer-videos__placeholder {
+    aspect-ratio: 296 / 470;
+    border-radius: var(--radius-card);
+    background-color: var(--color-blush);
+  }
+
+  .customer-videos__button {
+    --button-height: 50px;
+    --button-padding: 36px;
+    --button-font-size: 16px;
+
+    margin-top: 48px;
+  }
+
+  /* Along the bottom, across the yellow's edge, starting mid-wave like in
+     the design. */
+  .customer-videos .customer-videos__squiggle {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    height: 36px;
+    color: var(--color-panel);
+    -webkit-mask-position: -57px center;
+    mask-position: -57px center;
+  }
+
+  @media (max-width: 768px) {
+    .customer-videos__wave {
+      width: 124.11%;
+    }
+
+    .customer-videos__wave--back {
+      top: 8.8px;
+      left: -7.99%;
+      height: 215.3px;
+      transform: rotate(-172.61deg);
+    }
+
+    .customer-videos__wave--front {
+      --wave-front-height: 320.2px;
+
+      top: 81px;
+      bottom: 5px;
+      left: -3.92%;
+    }
+
+    .customer-videos__container {
+      padding: 45px 20px 34px;
+    }
+
+    .customer-videos__arc--desktop {
+      display: none;
+    }
+
+    .customer-videos__arc--mobile {
+      display: block;
+    }
+
+    .customer-videos__title + .customer-videos__carousel {
+      margin-top: 20px;
+    }
+
+    /* A row running off the right edge, like the carousel on phones. */
+    .customer-videos__placeholders {
+      grid-template-columns: repeat(4, 114px);
+      gap: 20px;
+      margin-right: -20px;
+      overflow: hidden;
+    }
+
+    .customer-videos__placeholder {
+      aspect-ratio: 114 / 194;
+      border-radius: 8px;
+    }
+
+    .customer-videos__button {
+      --button-height: 48px;
+      --button-padding: 32px;
+      --button-font-size: 14px;
+
+      margin-top: 12px;
+    }
+
+    .customer-videos .customer-videos__squiggle {
+      height: 10px;
+      -webkit-mask-position: -15.6px center;
+      mask-position: -15.6px center;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_videos.name",
+  "class": "customer-videos-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:labels.title",
+      "info": "t:sections.customer_videos.title_info",
+      "default": "Baudie looks good on you"
+    },
+    {
+      "type": "liquid",
+      "id": "videowise_embed",
+      "label": "t:sections.customer_videos.videowise_embed",
+      "info": "t:sections.customer_videos.videowise_embed_info"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "t:labels.button_text",
+      "default": "Shop all scents"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.customer_videos.button_link"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors",
+      "info": "t:labels.colors_info"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.customer_videos.name"
+    }
+  ]
+}
+{% endschema %}
