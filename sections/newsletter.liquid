@@ -1,6 +1,7 @@
 {% comment %}
   Newsletter signup section
   Matches Figma design: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1297
+  (mobile: node-id=109-11380)
 
   Colors left empty in the editor fall back to the theme colors set on
   .newsletter-section in the stylesheet, so only the ones Alex picked are
@@ -16,89 +17,100 @@
     {%- if section.settings.button_text_color != blank %}--button-text: {{ section.settings.button_text_color }};{% endif -%}
   ">
   <div class="newsletter-section__container">
-    <h2 class="newsletter-section__heading text-gradient">
-      {{ section.settings.heading }}
-    </h2>
+    <div class="newsletter-section__intro">
+      <h2 class="newsletter-section__heading text-gradient">
+        {{ section.settings.heading }}
+      </h2>
 
-    <p class="newsletter-section__description">
-      {{ section.settings.description }}
-    </p>
-
-    <div class="newsletter-section__form-group">
-      <form
-        class="newsletter-section__form"
-        data-klaviyo-subscribe
-        data-klaviyo-company="{{ settings.klaviyo_public_key }}"
-        data-klaviyo-list="{{ section.settings.klaviyo_list_id }}"
-        data-klaviyo-source="newsletter_section"
-        data-msg-success="{{ 'newsletter.success' | t }}"
-        data-msg-error="{{ 'newsletter.error' | t }}"
-        data-msg-invalid="{{ 'newsletter.invalid_email' | t }}"
-        novalidate>
-        <input
-          type="email"
-          name="email"
-          class="input newsletter-section__input"
-          placeholder="{{ section.settings.placeholder }}"
-          aria-label="{{ 'newsletter.email_placeholder' | t }}"
-          required>
-        <button type="submit" class="button newsletter-section__button">
-          {{ section.settings.button_text }}
-        </button>
-      </form>
-      <p class="newsletter-section__status" data-klaviyo-status role="status" aria-live="polite"></p>
+      <p class="newsletter-section__description">
+        {{ section.settings.description }}
+      </p>
     </div>
 
-    {% if section.settings.fine_print != blank %}
-      <div class="newsletter-section__fine-print">
-        {{ section.settings.fine_print }}
+    <div class="newsletter-section__signup">
+      <div class="newsletter-section__form-group">
+        <form
+          class="newsletter-section__form"
+          data-klaviyo-subscribe
+          data-klaviyo-company="{{ settings.klaviyo_public_key }}"
+          data-klaviyo-list="{{ section.settings.klaviyo_list_id }}"
+          data-klaviyo-source="newsletter_section"
+          data-msg-success="{{ 'newsletter.success' | t }}"
+          data-msg-error="{{ 'newsletter.error' | t }}"
+          data-msg-invalid="{{ 'newsletter.invalid_email' | t }}"
+          novalidate>
+          <input
+            type="email"
+            name="email"
+            class="input newsletter-section__input"
+            placeholder="{{ section.settings.placeholder }}"
+            aria-label="{{ 'newsletter.email_placeholder' | t }}"
+            required>
+          <button type="submit" class="button newsletter-section__button">
+            {{ section.settings.button_text }}
+          </button>
+        </form>
+        <p class="newsletter-section__status" data-klaviyo-status role="status" aria-live="polite"></p>
       </div>
-    {% endif %}
+
+      {% if section.settings.fine_print != blank %}
+        <div class="newsletter-section__fine-print">
+          {{ section.settings.fine_print }}
+        </div>
+      {% endif %}
+    </div>
   </div>
 </div>
 
 {% stylesheet %}
-  /* Sizes are the section's own from before the redesign; only the colors,
-     the gradient title and the pill field and button are new. */
+  /* Sizes and spacing follow the redesign, phones included. */
   .newsletter-section {
     --section-bg: var(--color-background);
     --text-color: var(--color-foreground);
 
     background-color: var(--section-bg);
-    padding: 80px 0;
+    padding: 64px 0;
   }
 
   .newsletter-section__container {
-    max-width: 765px;
-    margin: 0 auto;
-    padding: 0 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 33px;
+    gap: 32px;
+    padding: 0 var(--page-gutter);
+  }
+
+  .newsletter-section__intro,
+  .newsletter-section__signup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
   }
 
   /* Shrinks to the text so the gradient runs across the words themselves. */
   .newsletter-section__heading {
     font-family: var(--font-alyona);
-    font-size: 70px;
+    font-size: 72px;
     font-weight: 400;
     line-height: 1;
     letter-spacing: var(--tracking-title-light);
     text-align: center;
+    text-wrap: balance;
     margin: 0;
     width: fit-content;
     max-width: 100%;
   }
 
   .newsletter-section__description {
+    max-width: 623px;
     font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 22px;
+    line-height: 1.45;
     color: var(--text-color);
     text-align: center;
     margin: 0;
-    width: 100%;
   }
 
   .newsletter-section__form-group {
@@ -111,7 +123,7 @@
 
   .newsletter-section__form {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     align-items: center;
     width: 100%;
     justify-content: center;
@@ -132,21 +144,24 @@
     color: var(--color-error);
   }
 
+  /* Shows only once there's a message, so it adds no space until then. */
   .newsletter-section__status:empty {
-    min-height: 0;
+    display: none;
   }
 
   .newsletter-section__form .newsletter-section__input {
     --input-color: var(--text-color);
     --input-background: transparent;
 
-    width: 404px;
-    height: 50px;
-    padding: 10px 25px;
+    width: 396px;
+    height: 56px;
+    font-size: 18px;
   }
 
   .newsletter-section__form .newsletter-section__button {
-    --button-height: 50px;
+    --button-height: 56px;
+    --button-padding: 32px;
+    --button-font-size: 19px;
     --button-background: var(--button-bg, var(--gradient-button));
     --button-color: var(--button-text, var(--color-on-accent));
 
@@ -154,13 +169,17 @@
   }
 
   .newsletter-section__fine-print {
+    max-width: 490px;
     font-family: var(--font-jokker);
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.5;
     color: var(--text-color);
     text-align: center;
     margin: 0;
-    width: 100%;
+  }
+
+  .newsletter-section__fine-print p {
+    margin: 0;
   }
 
   .newsletter-section__fine-print a {
@@ -170,61 +189,49 @@
     text-underline-position: from-font;
   }
 
-  /* Responsive */
-  @media (max-width: 1024px) {
-    .newsletter-section {
-      padding: 60px 0;
-    }
-
-    .newsletter-section__container {
-      padding: 0 24px;
-    }
-
-    .newsletter-section__heading {
-      font-size: 56px;
-    }
-  }
-
   @media (max-width: 768px) {
     .newsletter-section {
-      padding: 50px 0;
+      padding: 40px 0;
     }
 
     .newsletter-section__container {
-      padding: 0 16px;
-      gap: 28px;
+      gap: 24px;
+      padding: 0 20px;
+    }
+
+    .newsletter-section__intro,
+    .newsletter-section__signup {
+      gap: 12px;
     }
 
     .newsletter-section__heading {
-      font-size: 42px;
-      line-height: 1.1;
+      font-size: 34px;
     }
 
     .newsletter-section__description {
+      max-width: none;
       font-size: 14px;
+      line-height: 1.5;
     }
 
     .newsletter-section__form {
       flex-direction: column;
-      gap: 12px;
-      width: 100%;
+      gap: 10px;
     }
 
     .newsletter-section__form .newsletter-section__input {
       width: 100%;
-      min-height: 48px;
-      height: 48px;
-      font-size: 15px;
     }
 
     .newsletter-section__form .newsletter-section__button {
-      --button-height: 48px;
+      --button-font-size: 18px;
 
       width: 100%;
     }
 
     .newsletter-section__fine-print {
-      font-size: 9px;
+      max-width: none;
+      font-size: 12px;
     }
   }
 {% endstylesheet %}
