@@ -204,6 +204,7 @@
     },
     "what_makes_different_tVrMDA": {
       "type": "what-makes-different",
+      "disabled": true,
       "name": "t:sections.what_makes_different.name",
       "settings": {
         "heading": "What Makes Baudie Different?",
@@ -218,6 +219,7 @@
     },
     "meet_scents_AbC456": {
       "type": "meet-your-scents",
+      "disabled": true,
       "blocks": {
         "product_dniJjq": {
           "type": "product",
@@ -285,6 +287,7 @@
     },
     "explore_sets_UjtGBG": {
       "type": "explore-sets",
+      "disabled": true,
       "blocks": {
         "bundle_card_DJgHdm": {
           "type": "bundle_card",
@@ -333,6 +336,7 @@
     },
     "reviews_wFhWb3": {
       "type": "reviews",
+      "disabled": true,
       "blocks": {
         "review_ALLATw": {
           "type": "review",
