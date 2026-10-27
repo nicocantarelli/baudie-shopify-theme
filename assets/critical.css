@@ -113,6 +113,9 @@ body {
   border: 2px solid var(--button-border);
   border-radius: var(--radius-pill);
   background: var(--button-background);
+  /* Paint under the transparent border too, so a gradient doesn't repeat
+     a sliver of its other end at the pill's edges. */
+  background-origin: border-box;
   color: var(--button-color);
   font: 700 var(--button-font-size)/1.2 var(--font-sweet-sans);
   letter-spacing: var(--tracking-label-lg);
