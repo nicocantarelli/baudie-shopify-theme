@@ -504,6 +504,8 @@
 
   .how-to-use--card {
     --card-padding: 64px;
+    /* The design ends the panel a little closer under the spray guide. */
+    --card-padding-bottom: 60px;
 
     padding: 64px 0;
     background-color: var(--color-background);
@@ -531,7 +533,7 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
-    padding: var(--card-padding);
+    padding: var(--card-padding) var(--card-padding) var(--card-padding-bottom);
   }
 
   .how-to-use__card-media {
@@ -595,11 +597,12 @@
     font: 400 18px/1.5 var(--font-jokker);
   }
 
-  /* Runs from the panel's left edge to the media, through the padding. */
+  /* Runs from the panel's left edge to the media, through the padding,
+     a little above the middle of its gap like in the design. */
   .how-to-use__card-content .how-to-use__squiggle {
     flex-shrink: 0;
     width: auto;
-    margin: 16px calc(-1 * var(--card-padding));
+    margin: 10px calc(-1 * var(--card-padding)) 22px;
     color: var(--color-lime);
   }
 
@@ -686,6 +689,7 @@
   @media (max-width: 1279px) {
     .how-to-use--card {
       --card-padding: 48px;
+      --card-padding-bottom: var(--card-padding);
     }
 
     .how-to-use__drops {
