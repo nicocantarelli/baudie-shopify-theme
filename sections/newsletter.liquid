@@ -1,11 +1,22 @@
 {% comment %}
   Newsletter signup section
-  Matches Figma design: https://www.figma.com/design/HU0mvwy2CH0bCWJAHTWRhT/Baudie?node-id=399-3440
+  Matches Figma design: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1297
+
+  Colors left empty in the editor fall back to the theme colors set on
+  .newsletter-section in the stylesheet, so only the ones Alex picked are
+  written here. A picked text color also replaces the heading's gradient.
 {% endcomment %}
 
-<div class="newsletter-section full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --button-bg: {{ section.settings.button_background_color }}; --button-text: {{ section.settings.button_text_color }};">
+<div
+  class="newsletter-section full-width"
+  style="
+    {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }}; --text-fill: {{ section.settings.text_color }};{% endif -%}
+    {%- if section.settings.button_background_color != blank %}--button-bg: {{ section.settings.button_background_color }};{% endif -%}
+    {%- if section.settings.button_text_color != blank %}--button-text: {{ section.settings.button_text_color }};{% endif -%}
+  ">
   <div class="newsletter-section__container">
-    <h2 class="newsletter-section__heading">
+    <h2 class="newsletter-section__heading text-gradient">
       {{ section.settings.heading }}
     </h2>
 
@@ -27,11 +38,11 @@
         <input
           type="email"
           name="email"
-          class="newsletter-section__input"
+          class="input newsletter-section__input"
           placeholder="{{ section.settings.placeholder }}"
           aria-label="{{ 'newsletter.email_placeholder' | t }}"
           required>
-        <button type="submit" class="newsletter-section__button">
+        <button type="submit" class="button newsletter-section__button">
           {{ section.settings.button_text }}
         </button>
       </form>
@@ -48,199 +59,113 @@
 
 {% stylesheet %}
   .newsletter-section {
-    background-color: var(--section-bg, #FCE9EC);
-    padding: 80px 0;
+    --section-bg: var(--color-background);
+    --text-color: var(--color-foreground);
+
+    background-color: var(--section-bg);
+    padding: var(--space-section) 0;
   }
 
   .newsletter-section__container {
-    max-width: 765px;
+    max-width: calc(686px + 2 * var(--gutter));
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 var(--gutter);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 33px;
+    gap: var(--space-s);
+    text-align: center;
   }
 
+  /* Shrinks to the text so the gradient runs across the words themselves. */
   .newsletter-section__heading {
-    font-family: var(--font-alyona);
-    font-size: 70px;
-    font-weight: 400;
-    line-height: 1;
-    color: var(--text-color, #3E2027);
-    text-align: center;
+    width: fit-content;
+    max-width: 100%;
     margin: 0;
-    width: 100%;
+    font: var(--type-title-light);
+    letter-spacing: var(--tracking-title-light);
   }
 
   .newsletter-section__description {
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--text-color, #3E2027);
-    text-align: center;
+    max-width: 623px;
     margin: 0;
-    width: 100%;
+    color: var(--text-color);
+    font: var(--type-body-xl);
   }
 
+  /* The extra margin makes the design's 32px between the intro and the form. */
   .newsletter-section__form-group {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
     width: 100%;
+    max-width: 598px;
+    margin-top: var(--space-s);
   }
 
   .newsletter-section__form {
     display: flex;
-    gap: 8px;
-    align-items: center;
+    gap: 12px;
     width: 100%;
-    justify-content: center;
+  }
+
+  .newsletter-section__input {
+    --input-color: var(--text-color);
+    --input-background: transparent;
+
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .newsletter-section__form .newsletter-section__button {
+    --button-background: var(--button-bg, var(--gradient-button));
+    --button-color: var(--button-text, var(--color-on-accent));
+
+    flex-shrink: 0;
   }
 
   .newsletter-section__status {
+    margin: 0;
+    color: var(--text-color);
     font-family: var(--font-jokker);
     font-size: 15px;
     font-weight: 600;
     line-height: 1.4;
-    text-align: center;
-    margin: 0;
-    min-height: 1em;
-    color: var(--text-color, #3E2027);
   }
 
   .newsletter-section__status[data-state="error"] {
-    color: #C0392B;
+    color: var(--color-error);
   }
 
   .newsletter-section__status:empty {
-    min-height: 0;
-  }
-
-  .newsletter-section__input {
-    width: 404px;
-    height: 50px;
-    padding: 10px 25px;
-    font-family: var(--font-jokker);
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--text-color, #3E2027);
-    background-color: transparent;
-    border: 1px solid var(--text-color, #3E2027);
-    outline: none;
-  }
-
-  .newsletter-section__input::placeholder {
-    color: var(--text-color, #3E2027);
-    opacity: 1;
-  }
-
-  .newsletter-section__input:focus {
-    border-color: var(--text-color, #3E2027);
-    outline: 2px solid rgba(62, 32, 39, 0.1);
-    outline-offset: 0;
-  }
-
-  .newsletter-section__button {
-    height: 50px;
-    padding: 10px 20px;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    line-height: normal;
-    letter-spacing: -0.14px;
-    text-transform: uppercase;
-    color: var(--button-text, #FFFAE6);
-    background-color: var(--button-bg, #3E2027);
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.2s ease
-    , transform 0.2s ease;
-    white-space: nowrap;
-  }
-
-  .newsletter-section__button:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
-
-  .newsletter-section__button:active {
-    opacity: 0.8;
-    transform: translateY(0);
+    display: none;
   }
 
   .newsletter-section__fine-print {
-    font-family: var(--font-jokker);
-    font-size: 10px;
-    line-height: 1.5;
-    color: var(--text-color, #3E2027);
-    opacity: 0.7;
-    text-align: center;
-    margin: 0;
-    width: 100%;
+    max-width: 490px;
+    color: var(--text-color);
+    font: var(--type-fine);
   }
 
   .newsletter-section__fine-print a {
-    color: var(--text-color, #3E2027);
+    color: inherit;
     text-decoration: underline;
     text-decoration-skip-ink: none;
     text-underline-position: from-font;
   }
 
-  /* Responsive */
-  @media (max-width: 1024px) {
-    .newsletter-section {
-      padding: 60px 0;
-    }
-
-    .newsletter-section__container {
-      padding: 0 24px;
-    }
-
-    .newsletter-section__heading {
-      font-size: 56px;
-    }
-  }
-
   @media (max-width: 768px) {
-    .newsletter-section {
-      padding: 50px 0;
-    }
-
-    .newsletter-section__container {
-      padding: 0 16px;
-      gap: 28px;
-    }
-
-    .newsletter-section__heading {
-      font-size: 42px;
-      line-height: 1.1;
-    }
-
-    .newsletter-section__description {
-      font-size: 14px;
-    }
-
     .newsletter-section__form {
       flex-direction: column;
-      gap: 12px;
-      width: 100%;
     }
 
     .newsletter-section__input {
-      width: 100%;
-      height: 48px;
-      font-size: 15px;
+      flex: none;
     }
 
-    .newsletter-section__button {
+    .newsletter-section__form .newsletter-section__button {
       width: 100%;
-      height: 48px;
-    }
-
-    .newsletter-section__fine-print {
-      font-size: 9px;
     }
   }
 {% endstylesheet %}
@@ -295,31 +220,28 @@
       },
       {
         "type": "header",
-        "content": "t:labels.colors"
+        "content": "t:labels.colors",
+        "info": "t:labels.colors_info"
       },
       {
         "type": "color",
         "id": "background_color",
-        "label": "t:labels.background_color",
-        "default": "#FCE9EC"
+        "label": "t:labels.background_color"
       },
       {
         "type": "color",
         "id": "text_color",
-        "label": "t:labels.text_color",
-        "default": "#3E2027"
+        "label": "t:labels.text_color"
       },
       {
         "type": "color",
         "id": "button_background_color",
-        "label": "t:labels.button_background_color",
-        "default": "#3E2027"
+        "label": "t:labels.button_background_color"
       },
       {
         "type": "color",
         "id": "button_text_color",
-        "label": "t:labels.button_text_color",
-        "default": "#FFFAE6"
+        "label": "t:labels.button_text_color"
       }
     ],
     "presets": [
