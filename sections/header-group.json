@@ -40,7 +40,7 @@
       ],
       "settings": {
         "sticky_behavior": "hide_on_scroll",
-        "logo": "shopify://shop_images/baudie-logo_daec1455-16f8-4c63-b805-91846285d45b.svg",
+        "logo": "shopify://shop_images/baudie-logo-header.svg",
         "menu": "main-menu"
       }
     }
