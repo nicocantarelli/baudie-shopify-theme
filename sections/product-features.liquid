@@ -56,16 +56,15 @@
     background: var(--section-bg, linear-gradient(90deg, var(--color-blush), var(--color-panel)));
   }
 
-  /* Wavy band: one wave of the design's ribbon, repeated and started half a
-     wave in like in the design. It's taller than the straight band so the
-     icons and text clear the waves. */
+  /* Wavy band: one wave of the design's ribbon at its own size, repeated
+     and started half a wave in like in the design. */
   .product-features--wavy .product-features__container {
-    -webkit-mask: var(--band-mask) -106px 0 / 213px 100% repeat-x;
-    mask: var(--band-mask) -106px 0 / 213px 100% repeat-x;
+    -webkit-mask: var(--band-mask) -88.75px 0 / 177.5px 100% repeat-x;
+    mask: var(--band-mask) -88.75px 0 / 177.5px 100% repeat-x;
   }
 
-  .product-features--wavy .product-features__group {
-    height: 108px;
+  .product-features--wavy .product-features__text {
+    font-size: 13px;
   }
 
   .product-features__viewport {
@@ -153,21 +152,10 @@
       padding-top: 32px;
     }
 
-    .product-features--wavy .product-features__container {
-      -webkit-mask-position: -89px 0;
-      mask-position: -89px 0;
-      -webkit-mask-size: 178px 100%;
-      mask-size: 178px 100%;
-    }
-
     .product-features__group {
       gap: 30px;
       padding: 0 15px;
       height: 70px;
-    }
-
-    .product-features--wavy .product-features__group {
-      height: 90px;
     }
 
     .product-features__icon {
@@ -177,6 +165,36 @@
 
     .product-features__text {
       font-size: 12px;
+    }
+
+    /* On phones the design's band is straight and right under the section
+       above, with smaller badges. */
+    .product-features--wavy.product-features--pad-top {
+      padding-top: 0;
+    }
+
+    .product-features--wavy .product-features__container {
+      -webkit-mask: none;
+      mask: none;
+    }
+
+    .product-features--wavy .product-features__group {
+      gap: 24.8px;
+      padding: 0 12.4px;
+      height: 64px;
+    }
+
+    .product-features--wavy .product-features__item {
+      gap: 6.2px;
+    }
+
+    .product-features--wavy .product-features__icon {
+      width: 24.8px;
+      height: 24.8px;
+    }
+
+    .product-features--wavy .product-features__text {
+      font-size: 10px;
     }
   }
 {% endstylesheet %}
