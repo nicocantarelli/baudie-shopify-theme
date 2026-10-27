@@ -41,13 +41,20 @@
   font-display: swap;
 }
 
-{%- comment -%} Sweet Sans Pro {%- endcomment -%}
+{%- comment -%}
+  Sweet Sans Pro. The metric overrides pin the line box to the font's Mac
+  metrics: Windows otherwise reads its taller win metrics and labels sit
+  off-center in buttons and pills.
+{%- endcomment -%}
 @font-face {
   font-family: 'Sweet Sans Pro';
   src: url('{{ "SweetSansPro-Regular.ttf" | asset_url }}') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 20%;
 }
 
 @font-face {
@@ -56,6 +63,9 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 20%;
 }
 
 @font-face {
@@ -64,6 +74,9 @@
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  ascent-override: 77%;
+  descent-override: 23%;
+  line-gap-override: 20%;
 }
 
 {%- comment -%} Byrd {%- endcomment -%}
