@@ -1,18 +1,168 @@
 {%- comment -%}
   How to Use section — usage steps, dosage guide, and media (image/video).
+
+  Two layouts: "icons", the product pages' steps with icons beside the
+  media, and "card", the redesign's homepage card with numbered steps, a
+  pro tip and the spray guide on a pink panel beside the media (media on
+  top until they fit side by side).
+  Figma (card): https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1198
+  (mobile: node-id=109-11838)
+
+  Colors left empty in the editor fall back to the colors set in the
+  stylesheet, so only the ones picked are written here.
 {%- endcomment -%}
 
 {%- liquid
   assign step_blocks = section.blocks | where: 'type', 'step'
   assign dosage_blocks = section.blocks | where: 'type', 'dosage'
+  assign layout = section.settings.layout | default: 'icons'
+
+  assign has_intro = false
+  if section.settings.title != blank or section.settings.description != blank
+    assign has_intro = true
+  endif
+  if section.settings.mobile_description != blank
+    assign has_intro = true
+  endif
+
+  assign has_guide = false
+  if section.settings.pro_tip != blank or dosage_blocks.size > 0
+    assign has_guide = true
+  endif
 -%}
 
+{%- comment -%} Media (image or video) — product metafield takes priority over section settings {%- endcomment -%}
+{%- capture media -%}
+  {%- liquid
+    assign meta_video = product.metafields.custom.how_to_use_video.value
+    assign meta_image = product.metafields.custom.how_to_use_image.value
+  -%}
+  {% if meta_video != blank %}
+    <video
+      class="how-to-use__video"
+      autoplay
+      loop
+      muted
+      playsinline
+      src="{{ meta_video.sources[1].url | default: meta_video.sources[0].url }}">
+    </video>
+  {% elsif meta_image != blank %}
+    {%- assign how_to_use_alt = product.title | append: ' — ' | append: section.settings.title | default: 'How to use' -%}
+    {{ meta_image | image_url: width: 1440 | image_tag:
+      loading: 'lazy',
+      class: 'how-to-use__image',
+      alt: how_to_use_alt
+    }}
+  {% elsif section.settings.media_video != blank %}
+    {{ section.settings.media_video | video_tag:
+      class: 'how-to-use__video',
+      autoplay: true,
+      loop: true,
+      muted: true,
+      playsinline: true,
+      controls: false
+    }}
+  {% elsif section.settings.media_image %}
+    {%- assign how_to_use_fallback_alt = section.settings.title | default: 'How to use' -%}
+    {{ section.settings.media_image | image_url: width: 1440 | image_tag:
+      loading: 'lazy',
+      class: 'how-to-use__image',
+      alt: how_to_use_fallback_alt
+    }}
+  {% endif %}
+{%- endcapture -%}
+{%- assign media = media | strip -%}
+
 <section
-  class="how-to-use full-width"
+  class="how-to-use{% if layout == 'card' %} how-to-use--card{% endif %} full-width"
   data-section-id="{{ section.id }}"
   aria-label="{{ section.settings.title | default: 'How to use' }}"
-  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }};">
+  style="
+    {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
+    {%- if layout == 'card' %}--drop-mask: url('{{ 'icon-drop.svg' | asset_url }}');{% endif -%}
+  ">
 
+  {%- if layout == 'card' -%}
+    <div class="how-to-use__container">
+      <div class="how-to-use__card">
+        <div class="how-to-use__card-content">
+          {%- if has_intro -%}
+            <div class="how-to-use__intro">
+              {%- if section.settings.title != blank -%}
+                <h2 class="how-to-use__heading">{{ section.settings.title | escape }}</h2>
+              {%- endif -%}
+
+              {%- comment -%} A mobile description replaces the description until the card goes side by side. {%- endcomment -%}
+              {%- if section.settings.description != blank -%}
+                <div class="how-to-use__lead{% if section.settings.mobile_description != blank %} how-to-use__lead--desktop{% endif %}">
+                  {{- section.settings.description -}}
+                </div>
+              {%- endif -%}
+              {%- if section.settings.mobile_description != blank -%}
+                <div class="how-to-use__lead how-to-use__lead--mobile">
+                  {{- section.settings.mobile_description -}}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          {%- if step_blocks.size > 0 -%}
+            <ol class="how-to-use__numbered-steps" role="list">
+              {%- for block in step_blocks -%}
+                <li class="how-to-use__numbered-step" {{ block.shopify_attributes }}>
+                  <span class="how-to-use__step-number sticker" aria-hidden="true">{{ forloop.index }}</span>
+                  <span>{{ block.settings.label | escape }}</span>
+                </li>
+              {%- endfor -%}
+            </ol>
+
+            {%- if has_guide -%}
+              <span class="how-to-use__squiggle squiggle squiggle--bold" aria-hidden="true"></span>
+            {%- endif -%}
+          {%- endif -%}
+
+          {%- if section.settings.pro_tip != blank -%}
+            <div class="how-to-use__tip">
+              {%- if section.settings.pro_tip_label != blank -%}
+                <p class="how-to-use__tip-label">{{ section.settings.pro_tip_label | escape }}</p>
+              {%- endif -%}
+              <p class="how-to-use__tip-text">{{ section.settings.pro_tip | escape }}</p>
+            </div>
+          {%- endif -%}
+
+          {%- if dosage_blocks.size > 0 -%}
+            <div class="how-to-use__guide">
+              {%- if section.settings.sprays_title != blank -%}
+                <h3 class="how-to-use__guide-title">{{ section.settings.sprays_title | escape }}</h3>
+              {%- endif -%}
+              {%- for block in dosage_blocks -%}
+                <div class="how-to-use__guide-row" {{ block.shopify_attributes }}>
+                  <p class="how-to-use__guide-label">{{ block.settings.label | escape }}</p>
+                  <div class="how-to-use__guide-amount">
+                    <span class="how-to-use__drops" aria-hidden="true">
+                      {%- for i in (1..block.settings.drops) -%}
+                        <span class="how-to-use__drop"></span>
+                      {%- endfor -%}
+                    </span>
+                    <p class="how-to-use__guide-text">{{ block.settings.amount | escape }}</p>
+                  </div>
+                </div>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+
+        <div class="how-to-use__card-media">
+          {%- if media != blank -%}
+            {{ media }}
+          {%- else -%}
+            {{ 'lifestyle-2' | placeholder_svg_tag: 'how-to-use__placeholder' }}
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  {%- else -%}
   <div class="how-to-use__inner">
   <div class="how-to-use__content">
     {% if section.settings.title != blank %}
@@ -82,47 +232,12 @@
     {% endif %}
   </div>
 
-  {%- comment -%} Media Column (image or video) — product metafield takes priority over section settings {%- endcomment -%}
+  {%- comment -%} Media Column (image or video) {%- endcomment -%}
   <div class="how-to-use__media">
-    {%- liquid
-      assign meta_video = product.metafields.custom.how_to_use_video.value
-      assign meta_image = product.metafields.custom.how_to_use_image.value
-    -%}
-    {% if meta_video != blank %}
-      <video
-        class="how-to-use__video"
-        autoplay
-        loop
-        muted
-        playsinline
-        src="{{ meta_video.sources[1].url | default: meta_video.sources[0].url }}">
-      </video>
-    {% elsif meta_image != blank %}
-      {%- assign how_to_use_alt = product.title | append: ' — ' | append: section.settings.title | default: 'How to use' -%}
-      {{ meta_image | image_url: width: 1440 | image_tag:
-        loading: 'lazy',
-        class: 'how-to-use__image',
-        alt: how_to_use_alt
-      }}
-    {% elsif section.settings.media_video != blank %}
-      {{ section.settings.media_video | video_tag:
-        class: 'how-to-use__video',
-        autoplay: true,
-        loop: true,
-        muted: true,
-        playsinline: true,
-        controls: false
-      }}
-    {% elsif section.settings.media_image %}
-      {%- assign how_to_use_fallback_alt = section.settings.title | default: 'How to use' -%}
-      {{ section.settings.media_image | image_url: width: 1440 | image_tag:
-        loading: 'lazy',
-        class: 'how-to-use__image',
-        alt: how_to_use_fallback_alt
-      }}
-    {% endif %}
+    {{ media }}
   </div>
   </div>
+  {%- endif -%}
 </section>
 
 {% stylesheet %}
@@ -382,6 +497,345 @@
       padding: 160px 40px 80px;
     }
   }
+
+  /* ============================================
+     Card layout
+     ============================================ */
+
+  .how-to-use--card {
+    --card-padding: 64px;
+
+    padding: 64px 0;
+    background-color: var(--color-background);
+  }
+
+  .how-to-use__container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* Text and media split like the Who card's, so the two line up. The
+     panel runs behind the media too, so it shows in the media's rounded
+     corners like in the design. */
+  .how-to-use__card {
+    display: grid;
+    grid-template-columns: minmax(0, 659fr) minmax(0, 621fr);
+    overflow: hidden;
+    border-radius: var(--radius-panel);
+    background-color: var(--section-bg, var(--color-panel));
+    color: var(--text-color, var(--color-foreground));
+  }
+
+  .how-to-use__card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: var(--card-padding);
+  }
+
+  .how-to-use__card-media {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-panel);
+    background-color: var(--color-blush);
+  }
+
+  .how-to-use__card-media .how-to-use__image,
+  .how-to-use__card-media .how-to-use__video,
+  .how-to-use__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .how-to-use__placeholder {
+    fill: var(--color-panel);
+  }
+
+  .how-to-use__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .how-to-use__heading {
+    margin: 0;
+    font: 700 48px/1.05 var(--font-alyona);
+    color: var(--text-color, var(--color-accent));
+  }
+
+  .how-to-use__lead {
+    font: 400 18px/1.5 var(--font-jokker);
+  }
+
+  .how-to-use__lead p {
+    margin: 0;
+  }
+
+  .how-to-use__lead--mobile {
+    display: none;
+  }
+
+  .how-to-use__numbered-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .how-to-use__numbered-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font: 400 18px/1.5 var(--font-jokker);
+  }
+
+  /* Runs from the panel's left edge to the media, through the padding. */
+  .how-to-use__card-content .how-to-use__squiggle {
+    flex-shrink: 0;
+    width: auto;
+    margin: 16px calc(-1 * var(--card-padding));
+    color: var(--color-lime);
+  }
+
+  .how-to-use__tip {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .how-to-use__tip-label,
+  .how-to-use__guide-title {
+    margin: 0;
+    font: 700 16px/1 var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label-sm);
+    text-transform: uppercase;
+  }
+
+  .how-to-use__tip-text {
+    margin: 0;
+    font: 400 18px/1.5 var(--font-jokker);
+  }
+
+  .how-to-use__guide {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .how-to-use__guide-title {
+    margin-bottom: 8px;
+  }
+
+  .how-to-use__guide-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 2px solid currentColor;
+  }
+
+  .how-to-use__guide-row:last-child {
+    border-bottom: 0;
+  }
+
+  .how-to-use__guide-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font: 700 16px/1.3 var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .how-to-use__guide-amount {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .how-to-use__drops {
+    display: flex;
+    gap: 3.5px;
+  }
+
+  .how-to-use__drop {
+    width: 16px;
+    height: 26px;
+    background-color: currentColor;
+    -webkit-mask: var(--drop-mask) center / contain no-repeat;
+    mask: var(--drop-mask) center / contain no-repeat;
+  }
+
+  /* Same width on every row, so the drops line up on the right. */
+  .how-to-use__guide-text {
+    min-width: 112px;
+    margin: 0;
+    font: 400 18px/1.5 var(--font-jokker);
+    white-space: nowrap;
+  }
+
+  /* Narrower text column: less padding and the phone-size drops, so each
+     spray guide row stays on one line. */
+  @media (max-width: 1279px) {
+    .how-to-use--card {
+      --card-padding: 48px;
+    }
+
+    .how-to-use__drops {
+      gap: 2.5px;
+    }
+
+    .how-to-use__drop {
+      width: 10.5px;
+      height: 17px;
+    }
+
+    .how-to-use__guide-text {
+      min-width: 0;
+    }
+  }
+
+  /* Media on top until text and media fit side by side. Its bottom edge
+     overlaps the panel's rounded top corners, like in the design. */
+  @media (max-width: 1023px) {
+    .how-to-use__card {
+      display: flex;
+      flex-direction: column-reverse;
+      overflow: visible;
+      border-radius: 0;
+      background-color: transparent;
+    }
+
+    .how-to-use__card-content {
+      border-radius: var(--radius-panel);
+      background-color: var(--section-bg, var(--color-panel));
+    }
+
+    .how-to-use__card-media {
+      z-index: 1;
+      height: 440px;
+      margin-bottom: -8px;
+    }
+
+    .how-to-use__lead--desktop {
+      display: none;
+    }
+
+    .how-to-use__lead--mobile {
+      display: block;
+    }
+
+    .how-to-use__card-content .how-to-use__squiggle {
+      margin-right: 0;
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .how-to-use--card {
+      --card-padding: 24px;
+
+      padding: 40px 0;
+    }
+
+    .how-to-use__container {
+      padding: 0 20px;
+    }
+
+    .how-to-use__card-content {
+      gap: 24px;
+      border-radius: 12px;
+    }
+
+    .how-to-use__card-media {
+      border-radius: 12px;
+    }
+
+    .how-to-use__intro {
+      gap: 8px;
+    }
+
+    .how-to-use__heading {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .how-to-use__lead {
+      font-size: 12px;
+    }
+
+    .how-to-use__numbered-steps {
+      gap: 24px;
+    }
+
+    .how-to-use__numbered-step {
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .how-to-use__numbered-step .how-to-use__step-number {
+      width: 26px;
+      height: 26px;
+      font-size: 11px;
+      letter-spacing: var(--tracking-label);
+    }
+
+    /* Starts mid-wave, like in the design. */
+    .how-to-use__card-content .how-to-use__squiggle {
+      height: 9px;
+      margin: 0;
+      -webkit-mask-position: -27px center;
+      mask-position: -27px center;
+    }
+
+    .how-to-use__tip-label,
+    .how-to-use__guide-title {
+      font-size: 13px;
+      line-height: 1.3;
+      letter-spacing: var(--tracking-label-lg);
+    }
+
+    .how-to-use__tip-text {
+      font-size: 14px;
+    }
+
+    .how-to-use__guide-row {
+      min-height: 44px;
+      gap: 9px;
+      padding: 10px 0;
+      border-bottom-width: 1px;
+    }
+
+    .how-to-use__guide-label {
+      font-size: 13px;
+      letter-spacing: var(--tracking-label-lg);
+    }
+
+    .how-to-use__guide-amount {
+      gap: 9px;
+    }
+
+    .how-to-use__drops {
+      gap: 2.5px;
+    }
+
+    .how-to-use__drop {
+      width: 10.5px;
+      height: 17px;
+    }
+
+    .how-to-use__guide-text {
+      min-width: 0;
+      font-size: 12px;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -389,6 +843,16 @@
   "name": "t:sections.how_to_use.name",
   "class": "how-to-use-section",
   "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.how_to_use.layout",
+      "options": [
+        { "value": "icons", "label": "t:sections.how_to_use.layout_icons" },
+        { "value": "card", "label": "t:sections.how_to_use.layout_card" }
+      ],
+      "default": "icons"
+    },
     {
       "type": "text",
       "id": "title",
@@ -408,6 +872,19 @@
     },
     {
       "type": "text",
+      "id": "pro_tip_label",
+      "label": "t:sections.how_to_use.pro_tip_label",
+      "default": "Pro tip:",
+      "visible_if": "{{ section.settings.layout == 'card' }}"
+    },
+    {
+      "type": "text",
+      "id": "pro_tip",
+      "label": "t:sections.how_to_use.pro_tip",
+      "visible_if": "{{ section.settings.layout == 'card' }}"
+    },
+    {
+      "type": "text",
       "id": "sprays_title",
       "label": "t:sections.how_to_use.sprays_title",
       "default": "How many sprays do i need?"
@@ -424,19 +901,18 @@
     },
     {
       "type": "header",
-      "content": "t:labels.colors"
+      "content": "t:labels.colors",
+      "info": "t:labels.colors_info"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "t:labels.background_color",
-      "default": "#FCE9EC"
+      "label": "t:labels.background_color"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "t:labels.text_color",
-      "default": "#3E2027"
+      "label": "t:labels.text_color"
     }
   ],
   "blocks": [
@@ -447,7 +923,8 @@
         {
           "type": "image_picker",
           "id": "icon",
-          "label": "t:sections.how_to_use.step_icon"
+          "label": "t:sections.how_to_use.step_icon",
+          "info": "t:sections.how_to_use.step_icon_info"
         },
         {
           "type": "text",

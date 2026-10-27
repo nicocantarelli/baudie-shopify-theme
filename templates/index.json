@@ -331,6 +331,71 @@
         "title": "Smell good in your Baudie!"
       }
     },
+    "how_to_use_Kp3vTe": {
+      "type": "how-to-use",
+      "blocks": {
+        "step_spray": {
+          "type": "step",
+          "settings": {
+            "label": "Spray on underarms until fully wet and covered"
+          }
+        },
+        "step_wipe": {
+          "type": "step",
+          "settings": {
+            "label": "Wipe off well with our dry cotton wipes or a towel"
+          }
+        },
+        "step_deo": {
+          "type": "step",
+          "settings": {
+            "label": "Apply any deodorant on top"
+          }
+        },
+        "dosage_little": {
+          "type": "dosage",
+          "settings": {
+            "label": "I smell a little",
+            "drops": 4,
+            "amount": "4 - 5 sprays"
+          }
+        },
+        "dosage_noticeable": {
+          "type": "dosage",
+          "settings": {
+            "label": "It’s...noticeable",
+            "drops": 6,
+            "amount": "5 - 8 sprays"
+          }
+        },
+        "dosage_lot": {
+          "type": "dosage",
+          "settings": {
+            "label": "I smell a lot",
+            "drops": 8,
+            "amount": "8 - 12 sprays"
+          }
+        }
+      },
+      "block_order": [
+        "step_spray",
+        "step_wipe",
+        "step_deo",
+        "dosage_little",
+        "dosage_noticeable",
+        "dosage_lot"
+      ],
+      "name": "t:sections.how_to_use.name",
+      "settings": {
+        "layout": "card",
+        "title": "spray, wipe, deo",
+        "mobile_description": "",
+        "description": "<p>Underarm odor control and happy pits<br>in three easy steps!</p>",
+        "pro_tip_label": "Pro tip:",
+        "pro_tip": "Scent meets skin differently, find the scent that works the best with your body chemistry",
+        "sprays_title": ""
+      }
+    },
     "what_makes_different_tVrMDA": {
       "type": "what-makes-different",
       "disabled": true,
@@ -603,6 +668,7 @@
     "subscribe_save_R7m2Qa",
     "product_features_aNgxYb",
     "category_cards_Wd3pLs",
+    "how_to_use_Kp3vTe",
     "what_makes_different_tVrMDA",
     "meet_scents_AbC456",
     "explore_sets_UjtGBG",
