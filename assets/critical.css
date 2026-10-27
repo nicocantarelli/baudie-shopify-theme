@@ -193,6 +193,7 @@ body {
   background: var(--input-background, var(--color-background));
   color: var(--input-color, var(--color-foreground));
   font: var(--type-body-lg);
+  text-align: center;
 }
 
 .input::placeholder {
@@ -246,9 +247,11 @@ body {
   mask: url('shape-burst.svg') center / contain no-repeat;
 }
 
-/* Gradient heading text. Display sizes only: the light end is 3.3:1 on white. */
+/* Gradient heading text. Display sizes only: the light end is 3.3:1 on white.
+   A section that sets --text-fill (e.g. a text color picked in the editor)
+   gets solid text instead of the gradient. */
 .text-gradient {
-  background: var(--gradient-heading);
+  background: var(--text-fill, var(--gradient-heading));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
