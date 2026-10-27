@@ -58,80 +58,74 @@
 </div>
 
 {% stylesheet %}
+  /* Sizes are the section's own from before the redesign; only the colors,
+     the gradient title and the pill field and button are new. */
   .newsletter-section {
     --section-bg: var(--color-background);
     --text-color: var(--color-foreground);
 
     background-color: var(--section-bg);
-    padding: var(--space-section) 0;
+    padding: 80px 0;
   }
 
   .newsletter-section__container {
-    max-width: calc(686px + 2 * var(--gutter));
+    max-width: 765px;
     margin: 0 auto;
-    padding: 0 var(--gutter);
+    padding: 0 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-s);
-    text-align: center;
+    gap: 33px;
   }
 
   /* Shrinks to the text so the gradient runs across the words themselves. */
   .newsletter-section__heading {
+    font-family: var(--font-alyona);
+    font-size: 70px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: var(--tracking-title-light);
+    text-align: center;
+    margin: 0;
     width: fit-content;
     max-width: 100%;
-    margin: 0;
-    font: var(--type-title-light);
-    letter-spacing: var(--tracking-title-light);
   }
 
   .newsletter-section__description {
-    max-width: 623px;
-    margin: 0;
+    font-family: var(--font-jokker);
+    font-size: 16px;
+    line-height: 1.5;
     color: var(--text-color);
-    font: var(--type-body-xl);
+    text-align: center;
+    margin: 0;
+    width: 100%;
   }
 
-  /* The extra margin makes the design's 32px between the intro and the form. */
   .newsletter-section__form-group {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
     width: 100%;
-    max-width: 598px;
-    margin-top: var(--space-s);
   }
 
   .newsletter-section__form {
     display: flex;
-    gap: 12px;
+    gap: 8px;
+    align-items: center;
     width: 100%;
-  }
-
-  .newsletter-section__input {
-    --input-color: var(--text-color);
-    --input-background: transparent;
-
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-
-  .newsletter-section__form .newsletter-section__button {
-    --button-background: var(--button-bg, var(--gradient-button));
-    --button-color: var(--button-text, var(--color-on-accent));
-
-    flex-shrink: 0;
+    justify-content: center;
   }
 
   .newsletter-section__status {
-    margin: 0;
-    color: var(--text-color);
     font-family: var(--font-jokker);
     font-size: 15px;
     font-weight: 600;
     line-height: 1.4;
+    text-align: center;
+    margin: 0;
+    min-height: 1em;
+    color: var(--text-color);
   }
 
   .newsletter-section__status[data-state="error"] {
@@ -139,13 +133,34 @@
   }
 
   .newsletter-section__status:empty {
-    display: none;
+    min-height: 0;
+  }
+
+  .newsletter-section__form .newsletter-section__input {
+    --input-color: var(--text-color);
+    --input-background: transparent;
+
+    width: 404px;
+    height: 50px;
+    padding: 10px 25px;
+  }
+
+  .newsletter-section__form .newsletter-section__button {
+    --button-height: 50px;
+    --button-background: var(--button-bg, var(--gradient-button));
+    --button-color: var(--button-text, var(--color-on-accent));
+
+    white-space: nowrap;
   }
 
   .newsletter-section__fine-print {
-    max-width: 490px;
+    font-family: var(--font-jokker);
+    font-size: 10px;
+    line-height: 1.5;
     color: var(--text-color);
-    font: var(--type-fine);
+    text-align: center;
+    margin: 0;
+    width: 100%;
   }
 
   .newsletter-section__fine-print a {
@@ -155,17 +170,61 @@
     text-underline-position: from-font;
   }
 
-  @media (max-width: 768px) {
-    .newsletter-section__form {
-      flex-direction: column;
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .newsletter-section {
+      padding: 60px 0;
     }
 
-    .newsletter-section__input {
-      flex: none;
+    .newsletter-section__container {
+      padding: 0 24px;
+    }
+
+    .newsletter-section__heading {
+      font-size: 56px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .newsletter-section {
+      padding: 50px 0;
+    }
+
+    .newsletter-section__container {
+      padding: 0 16px;
+      gap: 28px;
+    }
+
+    .newsletter-section__heading {
+      font-size: 42px;
+      line-height: 1.1;
+    }
+
+    .newsletter-section__description {
+      font-size: 14px;
+    }
+
+    .newsletter-section__form {
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .newsletter-section__form .newsletter-section__input {
+      width: 100%;
+      min-height: 48px;
+      height: 48px;
+      font-size: 15px;
     }
 
     .newsletter-section__form .newsletter-section__button {
+      --button-height: 48px;
+
       width: 100%;
+    }
+
+    .newsletter-section__fine-print {
+      font-size: 9px;
     }
   }
 {% endstylesheet %}
