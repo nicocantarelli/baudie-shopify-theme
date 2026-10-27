@@ -12,6 +12,9 @@
 
   A "Cookie settings" trigger lives in the footer; clicking any
   [data-cookie-settings] element re-opens the preferences modal.
+
+  Colors left empty in the editor fall back to the theme colors in the
+  stylesheet, so only the ones Alex picked are written on the element.
 {%- endcomment -%}
 
 {%- liquid
@@ -33,12 +36,12 @@
     data-show-marketing="{{ s.show_marketing }}"
     data-show-analytics="{{ s.show_analytics }}"
     style="
-      --cb-bg: {{ s.background_color }};
-      --cb-text: {{ s.text_color }};
-      --cb-accept-bg: {{ s.accept_bg_color }};
-      --cb-accept-text: {{ s.accept_text_color }};
-      --cb-outline-bg: {{ s.reject_bg_color }};
-      --cb-outline-text: {{ s.reject_text_color }};
+      {%- if s.background_color != blank %}--cb-bg: {{ s.background_color }};{% endif -%}
+      {%- if s.text_color != blank %}--cb-text: {{ s.text_color }};{% endif -%}
+      {%- if s.accept_bg_color != blank %}--cb-accept-bg: {{ s.accept_bg_color }};{% endif -%}
+      {%- if s.accept_text_color != blank %}--cb-accept-text: {{ s.accept_text_color }};{% endif -%}
+      {%- if s.reject_bg_color != blank %}--cb-outline-bg: {{ s.reject_bg_color }};{% endif -%}
+      {%- if s.reject_text_color != blank %}--cb-outline-text: {{ s.reject_text_color }};{% endif -%}
     "
   >
     {%- comment -%} Compact corner banner {%- endcomment -%}
@@ -66,10 +69,10 @@
             {{ s.label_manage }}
           </button>
           <div class="cookie-banner__buttons">
-            <button type="button" class="cookie-btn cookie-btn--accept" data-action="accept">
+            <button type="button" class="button button--small cookie-btn cookie-btn--accept" data-action="accept">
               {{ s.label_accept }}
             </button>
-            <button type="button" class="cookie-btn cookie-btn--outline" data-action="decline">
+            <button type="button" class="button button--small button--secondary button--outlined cookie-btn cookie-btn--outline" data-action="decline">
               {{ s.label_decline }}
             </button>
           </div>
@@ -99,13 +102,13 @@
           </button>
           <p id="cookie-modal-title" class="cookie-modal__title">{{ s.modal_heading }}</p>
           <div class="cookie-modal__actions">
-            <button type="button" class="cookie-btn cookie-btn--accept" data-action="accept">
+            <button type="button" class="button button--small cookie-btn cookie-btn--accept" data-action="accept">
               {{ s.modal_accept }}
             </button>
-            <button type="button" class="cookie-btn cookie-btn--outline" data-action="decline">
+            <button type="button" class="button button--small button--secondary button--outlined cookie-btn cookie-btn--outline" data-action="decline">
               {{ s.modal_decline }}
             </button>
-            <button type="button" class="cookie-btn cookie-btn--outline" data-action="save">
+            <button type="button" class="button button--small button--secondary button--outlined cookie-btn cookie-btn--outline" data-action="save">
               {{ s.modal_save }}
             </button>
           </div>
@@ -165,40 +168,20 @@
     display: contents;
   }
 
-  /* Shared buttons */
+  /* The buttons are the theme's small pill buttons; these rules only bring in
+     the colors picked in the editor, when there are any. */
   .cookie-btn {
-    min-height: 42px;
-    padding: 10px 18px;
-    border: 1px solid transparent;
-    border-radius: 0;
-    font-family: var(--font-sweet-sans);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: -0.13px;
-    text-transform: uppercase;
     white-space: nowrap;
-    cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
-  .cookie-btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+  .cookie-consent .cookie-btn--accept {
+    --button-background: var(--cb-accept-bg, var(--gradient-button));
+    --button-color: var(--cb-accept-text, var(--color-on-accent));
   }
 
-  .cookie-btn:active {
-    transform: translateY(0);
-  }
-
-  .cookie-btn--accept {
-    background: var(--cb-accept-bg, #3E2027);
-    color: var(--cb-accept-text, #FFFAE6);
-  }
-
-  .cookie-btn--outline {
-    background: var(--cb-outline-bg, transparent);
-    color: var(--cb-outline-text, #3E2027);
-    border-color: currentColor;
+  .cookie-consent .cookie-btn--outline {
+    --button-background: var(--cb-outline-bg, transparent);
+    --button-color: var(--cb-outline-text, var(--cb-text, var(--color-foreground)));
   }
 
   /* Compact corner banner. Above the page (whose layers stop at 30) but under
@@ -234,12 +217,11 @@
 
   .cookie-banner__card {
     pointer-events: auto;
-    background: var(--cb-bg, #FCE9EC);
-    color: var(--cb-text, #3E2027);
-    border-radius: 0;
-    padding: 22px;
-    box-shadow: 0 12px 40px rgba(62, 32, 39, 0.18);
-    font-family: var(--font-sweet-sans);
+    padding: 24px;
+    border-radius: var(--radius-card);
+    background: var(--cb-bg, var(--color-panel));
+    color: var(--cb-text, var(--color-foreground));
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--color-foreground) 12%, transparent);
     outline: none;
   }
 
@@ -262,18 +244,14 @@
 
   .cookie-banner__heading {
     margin: 0 0 8px;
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: -0.15px;
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    color: var(--cb-text, #3E2027);
   }
 
   .cookie-banner__body {
     margin: 0 0 16px;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--cb-text, #3E2027);
+    font: var(--type-fine);
   }
 
   .cookie-banner__body p {
@@ -296,9 +274,8 @@
     padding: 0;
     background: none;
     border: none;
-    font-family: var(--font-sweet-sans);
-    font-size: 12px;
-    color: var(--cb-text, #3E2027);
+    color: inherit;
+    font: var(--type-fine);
     text-decoration: underline;
     text-underline-offset: 2px;
     cursor: pointer;
@@ -306,7 +283,7 @@
 
   .cookie-banner__buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
   }
 
   .cookie-banner__buttons .cookie-btn {
@@ -331,7 +308,7 @@
   .cookie-modal__backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(62, 32, 39, 0.4);
+    background: var(--color-scrim);
   }
 
   .cookie-modal__dialog {
@@ -340,11 +317,10 @@
     max-width: 720px;
     max-height: 90vh;
     overflow-y: auto;
-    background: var(--cb-bg, #FCE9EC);
-    color: var(--cb-text, #3E2027);
-    border-radius: 0;
-    box-shadow: 0 24px 60px rgba(62, 32, 39, 0.28);
-    font-family: var(--font-sweet-sans);
+    border-radius: var(--radius-card);
+    background: var(--cb-bg, var(--color-background));
+    color: var(--cb-text, var(--color-foreground));
+    box-shadow: 0 24px 60px color-mix(in srgb, var(--color-foreground) 20%, transparent);
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -367,7 +343,7 @@
   .cookie-modal__head {
     position: relative;
     padding: 24px 24px 20px;
-    border-bottom: 1px solid color-mix(in srgb, var(--cb-text, #3E2027) 18%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--cb-text, var(--color-foreground)) 18%, transparent);
     text-align: center;
   }
 
@@ -383,7 +359,7 @@
     padding: 0;
     background: none;
     border: none;
-    color: var(--cb-text, #3E2027);
+    color: inherit;
     cursor: pointer;
     transition: opacity 0.2s ease;
   }
@@ -394,18 +370,16 @@
 
   .cookie-modal__title {
     margin: 0 0 18px;
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: -0.16px;
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    color: var(--cb-text, #3E2027);
   }
 
   .cookie-modal__actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
   }
 
   .cookie-modal__body {
@@ -414,18 +388,14 @@
 
   .cookie-modal__intro-heading {
     margin: 0 0 8px;
-    font-size: 14px;
-    font-weight: 500;
+    font: var(--type-label-sm);
+    letter-spacing: var(--tracking-label-sm);
     text-transform: uppercase;
-    letter-spacing: -0.14px;
-    color: var(--cb-text, #3E2027);
   }
 
   .cookie-modal__intro-text {
     margin: 0 0 8px;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--cb-text, #3E2027);
+    font: var(--type-fine);
   }
 
   .cookie-modal__categories {
@@ -435,7 +405,7 @@
 
   .cookie-cat {
     padding: 20px 0;
-    border-top: 1px solid color-mix(in srgb, var(--cb-text, #3E2027) 18%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--cb-text, var(--color-foreground)) 18%, transparent);
   }
 
   .cookie-cat__row {
@@ -455,7 +425,7 @@
     width: 18px;
     height: 18px;
     flex-shrink: 0;
-    accent-color: var(--cb-text, #3E2027);
+    accent-color: var(--cb-text, var(--color-accent));
   }
 
   .cookie-cat__row--locked input {
@@ -463,22 +433,17 @@
   }
 
   .cookie-cat__title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--cb-text, #3E2027);
+    font: var(--type-label-sm);
   }
 
   .cookie-cat__desc {
     margin: 0;
     padding-left: 30px;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--cb-text, #3E2027);
-    opacity: 0.85;
+    font: var(--type-fine);
   }
 
   .cookie-consent :focus-visible {
-    outline: 2px solid var(--cb-text, #3E2027);
+    outline: 2px solid var(--cb-text, var(--color-foreground));
     outline-offset: 2px;
   }
 
@@ -501,6 +466,7 @@
       width: 100%;
       height: 100%;
       max-height: 100%;
+      border-radius: 0;
     }
 
     .cookie-modal__head {
@@ -516,7 +482,6 @@
     .cookie-modal__title {
       margin-bottom: 16px;
       padding-right: 36px;
-      font-size: 14px;
     }
 
     .cookie-modal__actions {
@@ -921,43 +886,38 @@
     },
     {
       "type": "header",
-      "content": "t:sections.cookie_banner.colors_header"
+      "content": "t:sections.cookie_banner.colors_header",
+      "info": "t:labels.colors_info"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "t:sections.cookie_banner.background_color",
-      "default": "#FCE9EC"
+      "label": "t:sections.cookie_banner.background_color"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "t:sections.cookie_banner.text_color",
-      "default": "#3E2027"
+      "label": "t:sections.cookie_banner.text_color"
     },
     {
       "type": "color",
       "id": "accept_bg_color",
-      "label": "t:sections.cookie_banner.accept_bg_color",
-      "default": "#3E2027"
+      "label": "t:sections.cookie_banner.accept_bg_color"
     },
     {
       "type": "color",
       "id": "accept_text_color",
-      "label": "t:sections.cookie_banner.accept_text_color",
-      "default": "#FFFAE6"
+      "label": "t:sections.cookie_banner.accept_text_color"
     },
     {
       "type": "color",
       "id": "reject_bg_color",
-      "label": "t:sections.cookie_banner.reject_bg_color",
-      "default": "#FCE9EC"
+      "label": "t:sections.cookie_banner.reject_bg_color"
     },
     {
       "type": "color",
       "id": "reject_text_color",
-      "label": "t:sections.cookie_banner.reject_text_color",
-      "default": "#3E2027"
+      "label": "t:sections.cookie_banner.reject_text_color"
     }
   ]
 }

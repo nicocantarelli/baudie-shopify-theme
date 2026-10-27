@@ -64,13 +64,7 @@
         "show_personalization": true,
         "show_marketing": true,
         "show_analytics": true,
-        "position": "bottom-left",
-        "background_color": "#ffcad2",
-        "text_color": "#3e2027",
-        "accept_bg_color": "#3e2027",
-        "accept_text_color": "#fffae6",
-        "reject_bg_color": "#ffcad2",
-        "reject_text_color": "#3e2027"
+        "position": "bottom-left"
       }
     }
   },
