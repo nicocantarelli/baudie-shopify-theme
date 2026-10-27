@@ -364,6 +364,7 @@
         "band_shape": "Band shape",
         "band_shape_straight": "Straight",
         "band_shape_wavy": "Wavy",
+        "padding_top": "Add top spacing",
         "icon_color": "Icon color"
       },
       "blocks": {

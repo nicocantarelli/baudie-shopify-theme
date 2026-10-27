@@ -284,7 +284,8 @@
       ],
       "name": "t:sections.product_features.name",
       "settings": {
-        "band_shape": "wavy"
+        "band_shape": "wavy",
+        "padding_top": true
       }
     },
     "category_cards_Wd3pLs": {

@@ -9,7 +9,7 @@
 {% endcomment %}
 
 <div
-  class="product-features product-features--{{ section.settings.band_shape | default: 'straight' }} full-width"
+  class="product-features product-features--{{ section.settings.band_shape | default: 'straight' }}{% if section.settings.padding_top %} product-features--pad-top{% endif %} full-width"
   style="
     --band-mask: url('{{ 'shape-ribbon.svg' | asset_url }}');
     {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
@@ -46,6 +46,11 @@
 </div>
 
 {% stylesheet %}
+  /* Same space for both band shapes, so switching the shape doesn't move the band. */
+  .product-features--pad-top {
+    padding-top: 48px;
+  }
+
   .product-features__container {
     margin: 0 auto;
     background: var(--section-bg, linear-gradient(90deg, var(--color-blush), var(--color-panel)));
@@ -144,6 +149,10 @@
   }
 
   @media (max-width: 768px) {
+    .product-features--pad-top {
+      padding-top: 32px;
+    }
+
     .product-features--wavy .product-features__container {
       -webkit-mask-position: -89px 0;
       mask-position: -89px 0;
@@ -268,6 +277,12 @@
           { "value": "wavy", "label": "t:sections.product_features.settings.band_shape_wavy" }
         ],
         "default": "straight"
+      },
+      {
+        "type": "checkbox",
+        "id": "padding_top",
+        "label": "t:sections.product_features.settings.padding_top",
+        "default": false
       },
       {
         "type": "header",
