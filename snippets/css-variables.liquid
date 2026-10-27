@@ -209,6 +209,10 @@
   --tracking-label: 0.04em;
   --tracking-label-sm: 0.06em;
 
+  /* The side margin of the sections' content: the design's 80px from 1440
+     up, narrowing with the screen down to 40px. Phones set their own. */
+  --page-gutter: clamp(40px, 100vw * 80 / 1440, 80px);
+
   /* Shape */
   --radius-card: 20px;
   --radius-panel: 32px;
