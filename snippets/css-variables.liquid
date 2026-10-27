@@ -202,57 +202,16 @@
   --gradient-blush: {{ blush_gradient }};
   --gradient-sunshine: {{ sunshine_gradient }};
 
-  /* Type. Display sizes scale with the viewport between the phone and desktop designs. */
-  --text-hero: clamp(40px, 6.667vw, 96px);
-  --text-title: clamp(34px, 5vw, 72px);
-  --text-title-sm: clamp(34px, 3.333vw, 48px);
-  --text-body-xl: 22px;
-  --text-body-lg: 18px;
-  --text-body: 16px;
-  --text-fine: 13px;
-  --text-label-lg: 20px;
-  --text-label: 16px;
-  --text-label-sm: 13px;
-
-  --type-hero: 700 var(--text-hero)/0.9 var(--font-alyona);
-  --type-title: 700 var(--text-title)/1 var(--font-alyona);
-  --type-title-sm: 700 var(--text-title-sm)/1.05 var(--font-alyona);
-  --type-title-light: 400 var(--text-title)/1 var(--font-alyona);
-  --type-body-xl: 400 var(--text-body-xl)/1.5 var(--font-jokker);
-  --type-body-lg: 400 var(--text-body-lg)/1.5 var(--font-jokker);
-  --type-body: 400 var(--text-body)/1.5 var(--font-jokker);
-  --type-fine: 400 var(--text-fine)/1.5 var(--font-jokker);
-  --type-label-lg: 700 var(--text-label-lg)/1.2 var(--font-sweet-sans);
-  --type-label: 700 var(--text-label)/1.2 var(--font-sweet-sans);
-  --type-label-sm: 700 var(--text-label-sm)/1.2 var(--font-sweet-sans);
-
+  /* Letter spacing of the redesign's labels and light titles. Font sizes and
+     spacing stay each section's own, so there are no size tokens here. */
   --tracking-title-light: -0.01em;
   --tracking-label-lg: 0.02em;
   --tracking-label: 0.04em;
   --tracking-label-sm: 0.06em;
 
-  /* Spacing and shape */
-  --space-xs: 8px;
-  --space-s: 16px;
-  --space-m: 32px;
-  --space-l: 48px;
-  --space-section: 64px;
-  --gutter: clamp(20px, 5.556vw, 80px);
+  /* Shape */
   --radius-card: 20px;
   --radius-panel: 32px;
   --radius-pill: 999px;
-}
-
-@media screen and (max-width: 768px) {
-  :root {
-    --text-body-xl: 18px;
-    --text-body-lg: 16px;
-    --text-body: 14px;
-    --text-fine: 12px;
-    --text-label-lg: 13px;
-    --text-label: 12px;
-    --text-label-sm: 12px;
-    --space-section: 48px;
-  }
 }
 {% endstyle %}
