@@ -1,8 +1,20 @@
 {% comment %}
-  In Press section - marquee scrolling logos with horizontal line
+  In Press section - marquee scrolling logos on a band with a wavy top edge.
+  Matches Figma design: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-983
+
+  Colors left empty in the editor fall back to the theme colors set in the
+  stylesheet: a yellow band, so only the ones Alex picked are written here.
+  The divider line only shows when it has a color.
 {% endcomment %}
 
-<div class="in-press full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --divider-color: {{ section.settings.divider_color }};">
+<div
+  class="in-press wave-top full-width in-press--title-{{ section.settings.title_style | default: 'label' }}{% if section.settings.tint_logos %} in-press--tinted{% endif %}"
+  style="
+    {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
+    {%- if section.settings.divider_color != blank %}--divider-color: {{ section.settings.divider_color }};{% endif -%}
+    {%- if section.settings.logo_color != blank %}--logo-color: {{ section.settings.logo_color }};{% endif -%}
+  ">
   <div class="in-press__container">
     {% if section.settings.title != blank %}
       <p class="in-press__title">{{ section.settings.title }}</p>
@@ -15,7 +27,10 @@
             {% for block in section.blocks %}
               {% if block.type == 'press_logo' and block.settings.logo %}
                 <div class="in-press__logo-wrapper" {{ block.shopify_attributes }}>
-                  {{ block.settings.logo | image_url: width: 400 | image_tag: alt: block.settings.alt_text, class: 'in-press__logo', loading: 'lazy' }}
+                  {%- comment -%} The tint paints the logo's shape in one color; the image underneath keeps the size and alt text. {%- endcomment -%}
+                  <span class="in-press__logo-tint" style="--logo-mask: url('{{ block.settings.logo | image_url: width: 400 }}');">
+                    {{ block.settings.logo | image_url: width: 400 | image_tag: alt: block.settings.alt_text, class: 'in-press__logo', loading: 'lazy' }}
+                  </span>
                 </div>
               {% endif %}
             {% endfor %}
@@ -23,15 +38,28 @@
         </div>
       </div>
 
-      <div class="in-press__line"></div>
+      {% if section.settings.divider_color != blank %}
+        <div class="in-press__line"></div>
+      {% endif %}
     {% endif %}
   </div>
 </div>
 
 {% stylesheet %}
+  /* The band (.wave-top in critical.css): a flat color or the yellow gradient. */
   .in-press {
-    background-color: var(--section-bg, #FCE9EC);
-    padding: 50px 0 60px;
+    --wave-height: 60px;
+    --wave-fill: var(
+      --section-bg,
+      linear-gradient(
+        90deg,
+        var(--color-yellow),
+        var(--color-cream) 64%,
+        color-mix(in srgb, var(--color-yellow), var(--color-cream))
+      )
+    );
+
+    padding: calc(var(--wave-height) + 6px) 0 35px;
     overflow: hidden;
   }
 
@@ -42,21 +70,25 @@
   }
 
   .in-press__title {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 16px;
-    line-height: normal;
-    letter-spacing: -0.16px;
+    font: 700 16px/normal var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     text-align: center;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     margin-bottom: 30px;
+  }
+
+  .in-press--title-script .in-press__title {
+    font: 700 48px/1.05 var(--font-alyona);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--text-color, var(--color-pink));
+    margin-bottom: 56px;
   }
 
   .in-press__viewport {
     overflow: hidden;
     position: relative;
-    margin-bottom: 30px;
   }
 
   .in-press__track {
@@ -96,11 +128,25 @@
     object-fit: contain;
   }
 
+  .in-press__logo-tint {
+    display: flex;
+  }
+
+  .in-press--tinted .in-press__logo-tint {
+    background-color: var(--logo-color, var(--color-pink));
+    -webkit-mask: var(--logo-mask) center / 100% 100% no-repeat;
+    mask: var(--logo-mask) center / 100% 100% no-repeat;
+  }
+
+  .in-press--tinted .in-press__logo {
+    opacity: 0;
+  }
+
   .in-press__line {
     width: calc(100% - 80px);
-    margin: 20px auto 0;
+    margin: 30px auto 0;
     height: 1px;
-    background-color: var(--divider-color, #3E2027);
+    background-color: var(--divider-color);
     opacity: 0.1;
   }
 
@@ -127,7 +173,9 @@
 
   @media (max-width: 768px) {
     .in-press {
-      padding: 40px 0 50px;
+      --wave-height: 20px;
+
+      padding-bottom: 24px;
     }
 
     .in-press__container {
@@ -138,6 +186,11 @@
       font-size: 14px;
       margin-bottom: 25px;
       padding: 0 16px;
+    }
+
+    .in-press--title-script .in-press__title {
+      font-size: 24px;
+      margin-bottom: 10px;
     }
 
     .in-press__line {
@@ -264,26 +317,48 @@
         "default": "IN PRESS"
       },
       {
+        "type": "select",
+        "id": "title_style",
+        "label": "t:sections.in_press.title_style",
+        "options": [
+          { "value": "label", "label": "t:sections.in_press.title_style_label" },
+          { "value": "script", "label": "t:sections.in_press.title_style_script" }
+        ],
+        "default": "label"
+      },
+      {
+        "type": "checkbox",
+        "id": "tint_logos",
+        "label": "t:sections.in_press.tint_logos",
+        "info": "t:sections.in_press.tint_logos_info",
+        "default": false
+      },
+      {
         "type": "header",
-        "content": "t:labels.colors"
+        "content": "t:labels.colors",
+        "info": "t:labels.colors_info"
       },
       {
         "type": "color",
         "id": "background_color",
-        "label": "t:labels.background_color",
-        "default": "#FCE9EC"
+        "label": "t:labels.background_color"
       },
       {
         "type": "color",
         "id": "text_color",
-        "label": "t:labels.text_color",
-        "default": "#3E2027"
+        "label": "t:labels.text_color"
+      },
+      {
+        "type": "color",
+        "id": "logo_color",
+        "label": "t:sections.in_press.logo_color",
+        "visible_if": "{{ section.settings.tint_logos }}"
       },
       {
         "type": "color",
         "id": "divider_color",
         "label": "t:labels.divider_color",
-        "default": "#3E2027"
+        "info": "t:sections.in_press.divider_color_info"
       }
     ],
     "blocks": [

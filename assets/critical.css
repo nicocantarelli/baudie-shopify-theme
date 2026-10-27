@@ -201,6 +201,29 @@ body {
   mask: url('shape-squiggle.svg') left center / auto 100% repeat-x;
 }
 
+/* Band with a wavy top edge, painted behind the element's content.
+   Set its paint with --wave-fill and the wave's height with --wave-height.
+   Like in the design, the wave is wider than the page (1853px on a 1440px
+   frame), so its crest sits near the middle. */
+.wave-top {
+  position: relative;
+  isolation: isolate;
+}
+
+.wave-top::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--wave-fill, var(--color-cream));
+  -webkit-mask:
+    url('shape-wave.svg') left top / 128.7% var(--wave-height, 60px) no-repeat,
+    linear-gradient(#000 0 0) 0 calc(var(--wave-height, 60px) - 1px) / 100% 100% no-repeat;
+  mask:
+    url('shape-wave.svg') left top / 128.7% var(--wave-height, 60px) no-repeat,
+    linear-gradient(#000 0 0) 0 calc(var(--wave-height, 60px) - 1px) / 100% 100% no-repeat;
+}
+
 /* Round badge for a step number or a plus sign. */
 .sticker {
   display: inline-grid;

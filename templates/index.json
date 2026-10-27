@@ -110,10 +110,9 @@
       ],
       "name": "t:general.in_press",
       "settings": {
-        "title": "IN PRESS",
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027",
-        "divider_color": "#3e2027"
+        "title": "in the press",
+        "title_style": "script",
+        "tint_logos": true
       }
     },
     "product_details_XyZ123": {

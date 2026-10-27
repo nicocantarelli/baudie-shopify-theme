@@ -278,6 +278,15 @@
       "editor_preview_banner": "Banner",
       "editor_preview_modal": "Preferences modal"
     },
+    "in_press": {
+      "title_style": "Title style",
+      "title_style_label": "Small caps label",
+      "title_style_script": "Script heading",
+      "tint_logos": "Tint logos",
+      "tint_logos_info": "Shows every logo in one color. Upload logos with a transparent background.",
+      "logo_color": "Logo color",
+      "divider_color_info": "Leave empty to hide the line under the logos."
+    },
     "product_details": {
       "content_header": "Content",
       "image_header": "Image",
