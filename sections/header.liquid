@@ -11,17 +11,32 @@
   if request.page_type == 'index'
     assign is_homepage = true
   endif
+
+  # The category strip falls back to the links under the main menu's first dropdown.
+  assign category_links = section.settings.mobile_category_menu.links
+  if category_links == blank
+    for link in section.settings.menu.links
+      if link.links.size > 0
+        assign category_links = link.links
+        break
+      endif
+    endfor
+  endif
 -%}
 
+{%- comment -%}
+  Colors left empty in the editor fall back to the theme colors (see the
+  defaults on .header-wrapper below).
+{%- endcomment -%}
 <div
   class="header-wrapper full-width{% unless is_homepage %} header-wrapper--bordered{% endunless %}"
   data-sticky-behavior="{{ section.settings.sticky_behavior }}"
   style="
-    --header-bg: {{ section.settings.header_bg_color }};
-    --header-text: {{ section.settings.header_text_color }};
-    --header-icon: {{ section.settings.header_icon_color | default: section.settings.header_text_color }};
-    --announcement-bg: {{ section.settings.announcement_bg_color }};
-    --announcement-text: {{ section.settings.announcement_text_color }};
+    {%- if section.settings.header_bg_color != blank %}--header-bg: {{ section.settings.header_bg_color }};{% endif -%}
+    {%- if section.settings.header_text_color != blank %}--header-text: {{ section.settings.header_text_color }};{% endif -%}
+    {%- if section.settings.header_icon_color != blank %}--header-icon: {{ section.settings.header_icon_color }};{% endif -%}
+    {%- if section.settings.announcement_bg_color != blank %}--announcement-bg: {{ section.settings.announcement_bg_color }};{% endif -%}
+    {%- if section.settings.announcement_text_color != blank %}--announcement-text: {{ section.settings.announcement_text_color }};{% endif -%}
   ">
 
   {% if has_announcements %}
@@ -60,10 +75,31 @@
 
   <header class="header">
     <div class="header__inner">
+      <button
+        type="button"
+        class="header__icon header__menu-toggle"
+        aria-label="{{ 'header.menu' | t }}"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        id="mobile-menu-toggle">
+        <svg
+          aria-hidden="true"
+          focusable="false"
+          xmlns="http://www.w3.org/2000/svg"
+          width="26"
+          height="26"
+          viewBox="0 0 26 26"
+          fill="currentColor">
+          <path d="M20.8 7.67C21.11 7.67 21.36 7.92 21.36 8.23C21.36 8.54 21.11 8.8 20.8 8.8H5.2C4.89 8.8 4.64 8.54 4.64 8.23C4.64 7.92 4.89 7.67 5.2 7.67H20.8Z" />
+          <path d="M20.8 12.44C21.11 12.44 21.36 12.69 21.36 13C21.36 13.31 21.11 13.56 20.8 13.56H5.2C4.89 13.56 4.64 13.31 4.64 13C4.64 12.69 4.89 12.44 5.2 12.44H20.8Z" />
+          <path d="M20.8 17.2C21.11 17.2 21.36 17.46 21.36 17.77C21.36 18.08 21.11 18.33 20.8 18.33H5.2C4.89 18.33 4.64 18.08 4.64 17.77C4.64 17.46 4.89 17.2 5.2 17.2H20.8Z" />
+        </svg>
+      </button>
+
       <div class="header__logo">
         {% if section.settings.logo %}
           <a href="{{ routes.root_url }}">
-            {{ section.settings.logo | image_url: width: 200 | image_tag: alt: shop.name, class: 'header__logo-image' }}
+            {{ section.settings.logo | image_url: width: 400 | image_tag: alt: shop.name, class: 'header__logo-image' }}
           </a>
         {% else %}
           <a href="{{ routes.root_url }}" class="header__logo-text">
@@ -189,32 +225,28 @@
         {% else %}
           </a>
         {% endif %}
-
-        <button
-          type="button"
-          class="header__icon header__menu-toggle"
-          aria-label="{{ 'header.menu' | t }}"
-          aria-expanded="false"
-          aria-controls="mobile-menu"
-          id="mobile-menu-toggle">
-          <svg
-            aria-hidden="true"
-            focusable="false"
-            xmlns="http://www.w3.org/2000/svg"
-            width="28"
-            height="28"
-            viewBox="0 0 28 28"
-            fill="none">
-            <path
-              d="M4 7H24M4 14H24M4 21H24"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round" />
-          </svg>
-        </button>
       </div>
     </div>
   </header>
+
+  {% if section.settings.show_mobile_categories and category_links.size > 0 %}
+    <nav class="header__categories" aria-label="{{ 'header.categories' | t }}">
+      <ul class="header__categories-list" role="list">
+        {% for link in category_links %}
+          <li>
+            <a
+              href="{{ link.url }}"
+              class="header__categories-link"
+              {% if link.current %}
+                aria-current="page"
+              {% endif %}>
+              {{- link.title -}}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  {% endif %}
 
   {% render 'promo-banner', location: 'site' %}
 
@@ -301,8 +333,14 @@
 </div>
 
 {% stylesheet %}
-  /* Header Wrapper */
+  /* Header Wrapper. The section's color pickers override these when set. */
   .header-wrapper {
+    --header-bg: var(--color-background);
+    --header-text: var(--color-foreground);
+    --header-icon: var(--header-text);
+    --announcement-bg: var(--color-cocoa);
+    --announcement-text: var(--color-on-accent);
+
     position: fixed;
     top: 0;
     left: 0;
@@ -315,11 +353,10 @@
     content: '';
     position: absolute;
     bottom: 0;
-    left: 40px;
-    right: 40px;
+    left: var(--gutter);
+    right: var(--gutter);
     height: 1px;
-    background: #3E2027;
-    opacity: 0.1;
+    background: var(--color-panel);
   }
 
   .header-wrapper.header--hidden {
@@ -330,7 +367,7 @@
   .announcement-bar {
     background-color: var(--announcement-bg);
     color: var(--announcement-text);
-    height: 40px;
+    height: 38px;
     position: relative;
     display: flex;
     align-items: center;
@@ -354,11 +391,8 @@
 
   .announcement-bar__text,
   .announcement-bar__link-text {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 12px;
-    line-height: normal;
-    letter-spacing: -0.12px;
+    font: var(--type-label-sm);
+    letter-spacing: var(--tracking-label-sm);
     text-transform: uppercase;
     color: var(--announcement-text);
   }
@@ -383,7 +417,7 @@
   /* Stacked layout - link text below main text */
   .announcement-bar--has-stacked {
     height: auto;
-    min-height: 40px;
+    min-height: 38px;
     padding: 8px 0;
   }
 
@@ -399,28 +433,28 @@
     text-align: center;
   }
 
-  /* Header */
+  /* Header: menu on the left, logo centered, icons on the right. */
   .header {
     background-color: var(--header-bg);
-    height: 70px;
+    height: 110px;
   }
 
   .header__inner {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: 'nav logo icons';
     align-items: center;
-    justify-content: space-between;
+    column-gap: var(--space-s);
     height: 100%;
-    margin: 0 auto;
+    padding: 0 var(--gutter);
     position: relative;
-    padding: 0 40px;
   }
 
   /* Logo */
   .header__logo {
-    flex-shrink: 0;
-    margin: 17px 0;
-    height: 35px;
-    width: 103px;
+    grid-area: logo;
+    display: flex;
+    justify-content: center;
   }
 
   .header__logo a {
@@ -447,36 +481,33 @@
   }
 
   .header__logo-image {
-    max-height: 50px;
-    width: auto;
+    display: block;
+    width: 165px;
+    height: auto;
   }
 
   .header__logo-text {
-    font-family: 'Jokker', Georgia, serif;
-    font-size: 24px;
+    font: var(--type-title-sm);
     color: var(--header-text);
     text-decoration: none;
   }
 
   /* Navigation Menu */
   .header__menu {
+    grid-area: nav;
+    justify-self: start;
     display: flex;
-    gap: 30px;
+    gap: 22px;
     align-items: center;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    /* The transform makes the menu its own stacking layer, so the dropdown's
-       z-index only counts inside it. Lift the whole menu above the header's
-       bottom line (.header-wrapper--bordered::after), which is painted later. */
+    position: relative;
+    /* Lift the menu and its dropdown above the header's bottom line
+       (.header-wrapper--bordered::after), which is painted later. */
     z-index: 1;
   }
 
   .header__menu-link {
-    font-family: 'Sweet Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.14px;
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     color: var(--header-text);
     text-decoration: none;
@@ -510,7 +541,6 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    line-height: normal;
     background: none;
     border: none;
     padding: 0;
@@ -529,12 +559,12 @@
   }
 
   /* The panel's own padding-top bridges the gap under the link, so the pointer
-     never leaves the item on its way down to the submenu. */
+     never leaves the item on its way down to the submenu. It lines its links
+     up with the trigger's text. */
   .header__submenu {
     position: absolute;
     top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    left: -24px;
     padding-top: 22px;
     opacity: 0;
     visibility: hidden;
@@ -567,29 +597,27 @@
   .header__submenu-inner {
     display: flex;
     flex-direction: column;
-    min-width: 190px;
-    padding: 8px 0;
+    min-width: 200px;
+    padding: var(--space-xs) 0;
     background-color: var(--header-bg);
-    border: 1px solid rgba(62, 32, 39, 0.1);
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(62, 32, 39, 0.12);
+    border: 1px solid var(--color-panel);
+    border-radius: var(--radius-card);
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--color-foreground) 12%, transparent);
   }
 
   .header__submenu-link {
-    font-family: 'Sweet Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-weight: 500;
-    font-size: 13px;
-    letter-spacing: -0.13px;
+    font: var(--type-label-sm);
+    letter-spacing: var(--tracking-label-sm);
     text-transform: uppercase;
     white-space: nowrap;
     color: var(--header-text);
     text-decoration: none;
-    padding: 11px 24px;
+    padding: 12px 24px;
     transition: background-color 0.2s ease, opacity 0.2s ease;
   }
 
   .header__submenu-link:hover {
-    background-color: rgba(62, 32, 39, 0.05);
+    background-color: var(--color-blush);
   }
 
   .header__submenu-link:active {
@@ -611,8 +639,10 @@
 
   /* Header Icons */
   .header__icons {
+    grid-area: icons;
+    justify-self: end;
     display: flex;
-    gap: 14px;
+    gap: 22px;
     align-items: center;
   }
 
@@ -647,29 +677,33 @@
   }
 
   .header__icon svg {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
   }
 
   .header__cart-count {
     position: absolute;
     top: -4px;
     right: -8px;
-    background-color: var(--header-icon);
-    color: var(--header-bg);
-    font-size: 10px;
-    font-weight: 600;
-    border-radius: 10px;
-    padding: 2px 6px;
-    line-height: 1;
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    font: 700 12px/1 var(--font-sweet-sans);
+    border-radius: var(--radius-pill);
+    padding: 3px 5px;
     min-width: 18px;
     text-align: center;
   }
 
   .header__menu-toggle {
+    grid-area: toggle;
+    justify-self: start;
     display: none;
   }
 
+  /* Category strip under the header, phones only */
+  .header__categories {
+    display: none;
+  }
 
   /* Mobile Menu */
   .mobile-menu {
@@ -691,7 +725,7 @@
   .mobile-menu__overlay {
     position: absolute;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: color-mix(in srgb, var(--color-cocoa) 50%, transparent);
     opacity: 0;
     transition: opacity 0.3s ease;
     cursor: pointer;
@@ -701,15 +735,16 @@
     opacity: 1;
   }
 
+  /* Opens from the left, where the menu button sits. */
   .mobile-menu__drawer {
     position: absolute;
     top: 0;
-    right: 0;
+    left: 0;
     width: 80%;
     max-width: 400px;
     height: 100%;
     background-color: var(--header-bg);
-    transform: translateX(100%);
+    transform: translateX(-100%);
     transition: transform 0.3s ease;
     overflow-y: auto;
     display: flex;
@@ -724,8 +759,8 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 20px;
-    border-bottom: 1px solid rgba(62, 32, 39, 0.1);
+    padding: 16px var(--gutter);
+    border-bottom: 1px solid var(--color-panel);
   }
 
   .mobile-menu__close {
@@ -753,23 +788,21 @@
   .mobile-menu__nav {
     display: flex;
     flex-direction: column;
-    padding: 20px 0;
+    padding: var(--space-s) 0;
   }
 
   .mobile-menu__link {
-    font-family: 'Sweet Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    letter-spacing: -0.16px;
+    font: 700 16px/1.2 var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     color: var(--header-text);
     text-decoration: none;
-    padding: 16px 20px;
+    padding: 16px var(--gutter);
     transition: background-color 0.2s ease;
   }
 
   .mobile-menu__link:hover {
-    background-color: rgba(62, 32, 39, 0.05);
+    background-color: var(--color-blush);
   }
 
   .mobile-menu__link:focus-visible {
@@ -790,7 +823,6 @@
     gap: 12px;
     width: 100%;
     text-align: left;
-    line-height: normal;
     background: none;
     border: none;
     cursor: pointer;
@@ -817,19 +849,17 @@
   }
 
   .mobile-menu__sublink {
-    font-family: 'Sweet Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.14px;
+    font: 700 14px/1.2 var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     color: var(--header-text);
     text-decoration: none;
-    padding: 12px 20px 12px 36px;
+    padding: 12px var(--gutter) 12px calc(var(--gutter) + 16px);
     transition: background-color 0.2s ease;
   }
 
   .mobile-menu__sublink:hover {
-    background-color: rgba(62, 32, 39, 0.05);
+    background-color: var(--color-blush);
   }
 
   .mobile-menu__sublink:focus-visible {
@@ -839,13 +869,8 @@
 
   /* Tablet */
   @media (max-width: 1024px) {
-    .header__inner {
-      padding: 0 24px;
-    }
-
-    .header-wrapper--bordered::after {
-      left: 24px;
-      right: 24px;
+    .header__menu {
+      gap: 16px;
     }
   }
 
@@ -853,8 +878,9 @@
   @media (max-width: 768px) {
     .announcement-bar {
       height: auto;
+      min-height: 28px;
       flex-direction: column;
-      padding: 10px 12px;
+      padding: 6px 12px;
       gap: 4px;
     }
 
@@ -864,33 +890,20 @@
       justify-content: center;
     }
 
-    .announcement-bar__text,
-    .announcement-bar__link-text {
-      font-size: 11px;
-      letter-spacing: 0;
-    }
-
     .announcement-bar__link {
       justify-content: center;
     }
 
     .header {
-      height: 60px;
-      padding: 0 12px;
+      height: 56px;
     }
 
     .header__inner {
-      padding: 0;
-    }
-
-    .header__logo {
-      margin: 13.5px auto 13.5px 0;
-      height: 33px;
-      width: auto;
+      grid-template-areas: 'toggle logo icons';
     }
 
     .header__logo-image {
-      max-height: 33px;
+      width: 74px;
     }
 
     .header__menu {
@@ -901,9 +914,61 @@
       display: flex;
     }
 
-    .header-wrapper--bordered::after {
-      left: 12px;
-      right: 12px;
+    .header__icons {
+      gap: 14px;
+    }
+
+    .header__icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .header__menu-toggle svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .header__categories {
+      display: block;
+      background: linear-gradient(90deg, var(--color-panel), var(--color-blush));
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+    }
+
+    .header__categories::-webkit-scrollbar {
+      display: none;
+    }
+
+    .header__categories-list {
+      display: flex;
+      gap: 26px;
+      width: max-content;
+      margin: 0;
+      padding: 0 var(--gutter);
+      list-style: none;
+    }
+
+    .header__categories-link {
+      display: block;
+      padding: 13px 0;
+      font: var(--type-label-sm);
+      letter-spacing: var(--tracking-label-sm);
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--header-text);
+      text-decoration: none;
+    }
+
+    .header__categories-link[aria-current='page'] {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+    }
+
+    .header__categories-link:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: -2px;
     }
   }
 {% endstylesheet %}
@@ -1186,32 +1251,41 @@
         "default": "main-menu"
       }, {
         "type": "header",
-        "content": "t:header.settings.colors_header"
+        "content": "t:header.settings.categories_header"
+      }, {
+        "type": "checkbox",
+        "id": "show_mobile_categories",
+        "label": "t:header.settings.show_mobile_categories",
+        "default": true
+      }, {
+        "type": "link_list",
+        "id": "mobile_category_menu",
+        "label": "t:header.settings.mobile_category_menu",
+        "info": "t:header.settings.mobile_category_menu_info"
+      }, {
+        "type": "header",
+        "content": "t:header.settings.colors_header",
+        "info": "t:header.settings.colors_info"
       }, {
         "type": "color",
         "id": "header_bg_color",
-        "label": "t:header.settings.header_bg_color",
-        "default": "#FCE9EC"
+        "label": "t:header.settings.header_bg_color"
       }, {
         "type": "color",
         "id": "header_text_color",
-        "label": "t:header.settings.header_text_color",
-        "default": "#3E2027"
+        "label": "t:header.settings.header_text_color"
       }, {
         "type": "color",
         "id": "header_icon_color",
-        "label": "t:header.settings.header_icon_color",
-        "default": "#3E2027"
+        "label": "t:header.settings.header_icon_color"
       }, {
         "type": "color",
         "id": "announcement_bg_color",
-        "label": "t:header.settings.announcement_bg_color",
-        "default": "#3E2027"
+        "label": "t:header.settings.announcement_bg_color"
       }, {
         "type": "color",
         "id": "announcement_text_color",
-        "label": "t:header.settings.announcement_text_color",
-        "default": "#FFFAE6"
+        "label": "t:header.settings.announcement_text_color"
       }
     ],
     "blocks": [
