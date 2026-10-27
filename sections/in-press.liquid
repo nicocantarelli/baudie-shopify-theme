@@ -63,6 +63,18 @@
     overflow: hidden;
   }
 
+  /* Right after the hero, the band moves up by its wave's height so the wave
+     sits over the bottom of the hero's photo and product panel instead of the
+     page. The hero runs on under it by the same height (the --wave-height
+     above, set again for phones below). */
+  .hero-product-section:has(+ .in-press-section) .hero-product {
+    --hero-product-tail: 60px;
+  }
+
+  .hero-product-section + .in-press-section .in-press {
+    margin-top: calc(-1 * var(--wave-height));
+  }
+
   .in-press__container {
     /* max-width: 1360px; */
     margin: 0 auto;
@@ -176,6 +188,10 @@
       --wave-height: 20px;
 
       padding-bottom: 24px;
+    }
+
+    .hero-product-section:has(+ .in-press-section) .hero-product {
+      --hero-product-tail: 20px;
     }
 
     .in-press__container {

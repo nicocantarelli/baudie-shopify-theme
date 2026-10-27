@@ -345,8 +345,15 @@
     --hero-product-card-inline-offset: 40px;
     --hero-product-card-top-offset: 16px;
     --hero-product-card-bottom-offset: 20px;
+    /* Extra height under the hero's bottom edge, for a next section that
+       overlaps it (In the press sets it to its wave's height). Only the
+       photos, overlays and product panel run on into it; the heading and the
+       product card keep their place. */
+    --hero-product-tail: 0px;
     position: relative;
+    isolation: isolate;
     width: 100%;
+    padding-bottom: var(--hero-product-tail);
     background-color: var(--color-blush);
     overflow: hidden;
     margin-top: var(--total-header-height, 105px);
@@ -363,7 +370,7 @@
   /* Hero Images - spans left column */
   .hero-product__images {
     position: absolute;
-    inset: 0;
+    inset: 0 0 calc(-1 * var(--hero-product-tail));
     pointer-events: none;
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -418,14 +425,19 @@
     object-position: center 30%;
   }
 
-  /* Gradient Overlay */
+  /* Gradient Overlay. It fades out the same way above the hero's bottom edge
+     and stays at its darkest through the tail. */
   .hero-product__image-gradient {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 66.67%;
-    height: 288px;
-    background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
+    height: calc(288px + var(--hero-product-tail));
+    background: linear-gradient(
+      to top,
+      rgba(62, 32, 39, 0.5) var(--hero-product-tail),
+      rgba(62, 32, 39, 0) calc(var(--hero-product-tail) + 288px * 0.95)
+    );
     pointer-events: none;
     z-index: 1;
   }
@@ -435,7 +447,7 @@
     position: absolute;
     right: 0;
     width: 33.33%;
-    height: calc(100% - var(--hero-product-card-panel-height));
+    height: calc(100% - var(--hero-product-card-panel-height) - var(--hero-product-tail));
     overflow: hidden;
   }
 
@@ -475,10 +487,10 @@
   /* Color Block - separate from images, always visible, only color changes */
   .hero-product__color-block {
     position: absolute;
-    bottom: 0;
+    bottom: calc(-1 * var(--hero-product-tail));
     right: 0;
     width: 33.33%;
-    height: var(--hero-product-card-panel-height);
+    height: calc(var(--hero-product-card-panel-height) + var(--hero-product-tail));
     background-color: var(--card-bg, var(--color-panel));
     transition: background-color 0.6s ease-in-out;
     z-index: 1;
@@ -826,8 +838,12 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 288px;
-      background: linear-gradient(to top, rgba(62, 32, 39, 0.5) 0%, rgba(62, 32, 39, 0) 95%);
+      height: calc(288px + var(--hero-product-tail));
+      background: linear-gradient(
+        to top,
+        rgba(62, 32, 39, 0.5) var(--hero-product-tail),
+        rgba(62, 32, 39, 0) calc(var(--hero-product-tail) + 288px * 0.95)
+      );
       pointer-events: none;
     }
 
