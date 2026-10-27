@@ -1,0 +1,268 @@
+{% comment %}
+  Category cards: a title over a row of photo cards, each linking to a
+  category with its label on a soft pink strip under the photo. Two by two
+  on phones.
+  Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1175
+  (mobile: node-id=109-11313)
+
+  Colors left empty in the editor fall back to the theme colors set in the
+  stylesheet, so only the ones picked are written here. A picked text color
+  also replaces the title's gradient.
+{% endcomment %}
+
+<div
+  class="category-cards full-width"
+  style="
+    {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }}; --text-fill: {{ section.settings.text_color }};{% endif -%}
+  ">
+  <div class="category-cards__container">
+    {%- if section.settings.title != blank -%}
+      <h2 class="category-cards__title text-gradient">{{ section.settings.title | escape }}</h2>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="category-cards__grid">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            if block.settings.link != blank
+              assign card_tag = 'a'
+            else
+              assign card_tag = 'div'
+            endif
+          -%}
+          <{{ card_tag }}
+            class="category-cards__card"
+            {% if block.settings.link != blank %}href="{{ block.settings.link }}"{% endif %}
+            {{ block.shopify_attributes }}>
+            <span class="category-cards__image">
+              {%- comment -%} The label names the card, so the photo stays out of the link's name. {%- endcomment -%}
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 800
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '300, 400, 600, 800',
+                    sizes: '(min-width: 769px) 25vw, 50vw',
+                    alt: '',
+                    class: 'category-cards__img'
+                }}
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'category-cards__img category-cards__img--placeholder' }}
+              {%- endif -%}
+            </span>
+            <span class="category-cards__label">{{ block.settings.label | escape }}</span>
+          </{{ card_tag }}>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .category-cards {
+    --card-radius: var(--radius-card);
+
+    padding: 64px 0;
+    background-color: var(--section-bg, var(--color-background));
+  }
+
+  .category-cards__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* Shrinks to the text so the gradient runs across the words themselves. */
+  .category-cards__title {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0;
+    font: 700 70px/1 var(--font-alyona);
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .category-cards__grid {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    width: 100%;
+  }
+
+  /* Four to a row; fewer cards keep the same size and center. */
+  .category-cards__card {
+    flex: 1 1 0;
+    max-width: calc((100% - 3 * 32px) / 4);
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color, var(--color-foreground));
+    text-decoration: none;
+  }
+
+  .category-cards__card:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 4px;
+    border-radius: var(--card-radius);
+  }
+
+  .category-cards__image {
+    position: relative;
+    z-index: 1;
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--card-radius);
+    background-color: var(--color-blush);
+  }
+
+  .category-cards__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .category-cards__img--placeholder {
+    fill: var(--color-panel);
+  }
+
+  .category-cards__card:hover .category-cards__img {
+    transform: scale(1.04);
+  }
+
+  /* The strip starts behind the photo, so its gradient shows in the photo's
+     rounded bottom corners like in the design. */
+  .category-cards__label {
+    margin-top: calc(-1 * var(--card-radius));
+    padding: calc(var(--card-radius) + 16px) 12px 16px;
+    border-radius: var(--card-radius);
+    background: linear-gradient(90deg, var(--color-panel), var(--color-blush));
+    font: 700 20px/1.3 var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label-lg);
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .category-cards__img {
+      transition: none;
+    }
+
+    .category-cards__card:hover .category-cards__img {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .category-cards__title {
+      font-size: 56px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .category-cards {
+      --card-radius: 12px;
+
+      padding: 40px 0;
+    }
+
+    .category-cards__container {
+      gap: 32px;
+      padding: 0 20px;
+    }
+
+    .category-cards__title {
+      font-size: 42px;
+    }
+
+    .category-cards__grid {
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .category-cards__card {
+      flex: 0 0 calc((100% - 16px) / 2);
+      max-width: none;
+    }
+
+    .category-cards__label {
+      padding: calc(var(--card-radius) + 10px) 8px 10px;
+      font-size: 11px;
+      letter-spacing: var(--tracking-label);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.category_cards.name",
+  "class": "category-cards-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:labels.title",
+      "default": "Smell good in your Baudie!"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.colors",
+      "info": "t:labels.colors_info"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background_color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text_color"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "t:sections.category_cards.card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:labels.image",
+          "info": "t:sections.category_cards.image_info"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.category_cards.label",
+          "default": "All scents"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.category_cards.link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.category_cards.name",
+      "blocks": [
+        { "type": "card", "settings": { "label": "All scents" } },
+        { "type": "card", "settings": { "label": "Bundles" } },
+        { "type": "card", "settings": { "label": "Shop men" } },
+        { "type": "card", "settings": { "label": "Shop wipes" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

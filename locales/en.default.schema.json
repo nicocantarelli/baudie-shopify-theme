@@ -337,6 +337,13 @@
       "yotpo_app_key_info": "Find this in your Yotpo dashboard under Settings > API",
       "product_info": "Leave empty to show site-wide reviews"
     },
+    "category_cards": {
+      "name": "Category cards",
+      "card": "Card",
+      "image_info": "Shown as a square; the sides or top and bottom are cropped to fit.",
+      "label": "Label",
+      "link": "Link"
+    },
     "subscribe_save": {
       "name": "Subscribe & save",
       "image_info": "Shown on the right on desktop and under the text on phones.",

@@ -287,6 +287,49 @@
         "band_shape": "wavy"
       }
     },
+    "category_cards_Wd3pLs": {
+      "type": "category-cards",
+      "blocks": {
+        "card_all_scents": {
+          "type": "card",
+          "settings": {
+            "label": "All scents",
+            "link": "shopify://collections/shop"
+          }
+        },
+        "card_bundles": {
+          "type": "card",
+          "settings": {
+            "label": "Bundles",
+            "link": "shopify://collections/bundles"
+          }
+        },
+        "card_men": {
+          "type": "card",
+          "settings": {
+            "label": "Shop men",
+            "link": "shopify://pages/for-men"
+          }
+        },
+        "card_wipes": {
+          "type": "card",
+          "settings": {
+            "label": "Shop wipes",
+            "link": "shopify://collections/wipes-collection"
+          }
+        }
+      },
+      "block_order": [
+        "card_all_scents",
+        "card_bundles",
+        "card_men",
+        "card_wipes"
+      ],
+      "name": "t:sections.category_cards.name",
+      "settings": {
+        "title": "Smell good in your Baudie!"
+      }
+    },
     "what_makes_different_tVrMDA": {
       "type": "what-makes-different",
       "disabled": true,
@@ -558,6 +601,7 @@
     "product_details_XyZ123",
     "subscribe_save_R7m2Qa",
     "product_features_aNgxYb",
+    "category_cards_Wd3pLs",
     "what_makes_different_tVrMDA",
     "meet_scents_AbC456",
     "explore_sets_UjtGBG",
