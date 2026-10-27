@@ -290,7 +290,24 @@
     "product_details": {
       "content_header": "Content",
       "image_header": "Image",
-      "heading_info": "Each line or paragraph becomes a new heading line. Press enter to add more lines."
+      "heading_info": "Each line or paragraph becomes a new heading line. Press enter to add more lines.",
+      "layout": "Layout",
+      "layout_info": "Benefits shows the body odor card, with a pop-up for each benefit block. Steps shows the heading, the description and the four steps.",
+      "layout_steps": "Steps",
+      "layout_benefits": "Benefits",
+      "lockup_top": "Heading, small line",
+      "lockup_main": "Heading, big line",
+      "button_link": "Button link",
+      "benefit": "Benefit",
+      "icon": "Icon",
+      "icon_patent": "Patent",
+      "icon_drops": "Drops",
+      "icon_deodorant": "Deodorant",
+      "icon_leaf": "Leaf",
+      "custom_icon": "Custom icon",
+      "custom_icon_info": "Replaces the icon above. Use a one-color icon on a transparent background; it's shown in the text color.",
+      "benefit_title_info": "Shown under the icon and as the pop-up's title.",
+      "popup_text": "Pop-up text"
     },
     "meet_scents": {
       "name": "Meet Your Scents",

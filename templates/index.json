@@ -121,9 +121,52 @@
         "heading": "<p>Does your deodorant fail mid-day?<br/>Body odor making you self-conscious?<br/>Tired of doing the sniff check?<br/></p>",
         "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
         "product_image": "shopify://shop_images/Group_Shot_14.png",
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
-      }
+        "layout": "benefits",
+        "lockup_top": "body odor",
+        "lockup_main": "who?",
+        "button_text": "Shop the scents",
+        "button_link": "shopify://collections/shop"
+      },
+      "blocks": {
+        "benefit_patent": {
+          "type": "benefit",
+          "settings": {
+            "icon": "patent",
+            "title": "Science-backed patented formula",
+            "text": "<p>Baudie is the world’s first and only patented Deodorant Enhancer®, powered by odor-eliminating bacterial technology. It targets the real cause of body odor: the bacteria that makes sweat smell.</p>"
+          }
+        },
+        "benefit_primer": {
+          "type": "benefit",
+          "settings": {
+            "icon": "drops",
+            "title": "World’s first pre-deodorant primer",
+            "text": "<p>Spray it on before your deodorant. A refined blend of gentle AHAs and a synergistic botanical complex creates an optimized environment where bacteria can’t thrive, while maintaining a balanced skin microbiome.</p>"
+          }
+        },
+        "benefit_all_day": {
+          "type": "benefit",
+          "settings": {
+            "icon": "deodorant",
+            "title": "Helps any deodorant last all day",
+            "text": "<p>Baudie works with any deodorant you already use. The result is science-backed freshness that helps your deodorant last longer and helps keep your sweat odorless.</p>"
+          }
+        },
+        "benefit_plant_based": {
+          "type": "benefit",
+          "settings": {
+            "icon": "leaf",
+            "title": "Plant-based formula",
+            "text": "<p>Made with plant-based ingredients. Vegan, cruelty free, and free of aluminum, parabens, sulfates and phthalates.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "benefit_patent",
+        "benefit_primer",
+        "benefit_all_day",
+        "benefit_plant_based"
+      ]
     },
     "product_features_aNgxYb": {
       "type": "product-features",

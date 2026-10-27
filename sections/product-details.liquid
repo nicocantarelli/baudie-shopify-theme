@@ -1,8 +1,137 @@
 {% comment %}
-  Product details section - Two-column layout with image on RIGHT side.
+  Product details section, in one of two layouts picked in the editor:
+  - Steps (the original): heading, description, the four how-to steps and
+    the product image on the right.
+  - Benefits: the redesign's "body odor / who?" card. Each benefit block
+    shows an icon and a label and opens a pop-up with its text. The photo
+    sits on the right with a button over it.
+    Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1018
+    Pop-ups: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=89-1172
+
+  Colors left empty in the editor fall back to the colors in the
+  stylesheet, so only the ones picked are written here.
 {% endcomment %}
 
-<div class="product-details full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }};">
+{%- capture color_vars -%}
+  {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
+  {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
+{%- endcapture -%}
+
+{% if section.settings.layout == 'benefits' %}
+  <div
+    class="product-details product-details--benefits full-width"
+    style="
+      --frame-mask: url('{{ 'shape-wavy-frame.svg' | asset_url }}');
+      --plus-mask: url('{{ 'icon-plus-circle.svg' | asset_url }}');
+      --close-mask: url('{{ 'icon-plus.svg' | asset_url }}');
+      {{ color_vars }}
+    ">
+    <div class="product-details__grid">
+      {%- comment -%} The panel runs on under the photo, so the photo's rounded corners show pink behind them. {%- endcomment -%}
+      <span class="product-details__panel" aria-hidden="true"></span>
+      <span class="product-details__frame" aria-hidden="true"></span>
+
+      <div class="product-details__card">
+        {% if section.settings.lockup_top != blank or section.settings.lockup_main != blank %}
+          <h2 class="product-details__lockup">
+            {%- if section.settings.lockup_top != blank -%}
+              <span class="product-details__lockup-top">{{ section.settings.lockup_top | escape }}</span>
+            {%- endif -%}
+            {%- if section.settings.lockup_main != blank -%}
+              <span class="product-details__lockup-main">{{ section.settings.lockup_main | escape }}</span>
+            {%- endif -%}
+          </h2>
+        {% endif %}
+
+        {% if section.blocks.size > 0 %}
+          <ul class="product-details__benefits" role="list">
+            {% for block in section.blocks %}
+              {%- capture icon_style -%}
+                --icon: url('
+                {%- if block.settings.custom_icon != blank -%}
+                  {{- block.settings.custom_icon | image_url: width: 96 -}}
+                {%- else -%}
+                  {%- case block.settings.icon -%}
+                    {%- when 'drops' -%}
+                      {{- 'icon-drops.svg' | asset_url -}}
+                    {%- when 'deodorant' -%}
+                      {{- 'icon-deodorant.svg' | asset_url -}}
+                    {%- when 'leaf' -%}
+                      {{- 'icon-leaf.svg' | asset_url -}}
+                    {%- else -%}
+                      {{- 'icon-patent.svg' | asset_url -}}
+                  {%- endcase -%}
+                {%- endif -%}
+                ');
+              {%- endcapture -%}
+
+              <li {{ block.shopify_attributes }}>
+                <button
+                  type="button"
+                  class="product-details__benefit"
+                  aria-haspopup="dialog"
+                  aria-controls="Benefit-{{ section.id }}-{{ block.id }}"
+                  data-benefit-open>
+                  <span class="product-details__benefit-icons" aria-hidden="true">
+                    <span class="product-details__icon" style="{{ icon_style }}"></span>
+                    <span class="product-details__plus"></span>
+                  </span>
+                  <span class="product-details__benefit-label">{{ block.settings.title | escape }}</span>
+                </button>
+
+                <dialog
+                  class="product-details__dialog"
+                  id="Benefit-{{ section.id }}-{{ block.id }}"
+                  scroll-lock
+                  aria-labelledby="BenefitTitle-{{ section.id }}-{{ block.id }}">
+                  {%- comment -%} The card is the inner element, so a click on the dialog itself is a click on the backdrop. {%- endcomment -%}
+                  <div class="product-details__dialog-inner">
+                    <span class="product-details__dialog-handle" aria-hidden="true"></span>
+                    <button
+                      type="button"
+                      class="product-details__dialog-close"
+                      data-benefit-close
+                      aria-label="{{ 'sections.product_details.close' | t }}"></button>
+                    <span class="product-details__dialog-badge" aria-hidden="true">
+                      <span class="product-details__icon" style="{{ icon_style }}"></span>
+                    </span>
+                    <div class="product-details__dialog-text">
+                      <h2 class="product-details__dialog-title" id="BenefitTitle-{{ section.id }}-{{ block.id }}">
+                        {{- block.settings.title | escape -}}
+                      </h2>
+                      <div class="product-details__dialog-body">{{ block.settings.text }}</div>
+                    </div>
+                  </div>
+                </dialog>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <div class="product-details__photo">
+        {% if section.settings.product_image %}
+          {{
+            section.settings.product_image
+            | image_url: width: 1600
+            | image_tag:
+              class: 'product-details__photo-img',
+              loading: 'lazy',
+              widths: '400, 600, 800, 1000, 1200, 1600',
+              sizes: '(min-width: 769px) 50vw, 100vw'
+          }}
+        {% endif %}
+
+        {% if section.settings.button_text != blank and section.settings.button_link != blank %}
+          <a class="button product-details__cta" href="{{ section.settings.button_link }}">
+            {{- section.settings.button_text | escape -}}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% else %}
+<div class="product-details full-width" style="{{ color_vars }}">
   <div class="product-details__container">
     {%- comment -%} Left Column - Content {%- endcomment -%}
     <div class="product-details__content">
@@ -134,6 +263,7 @@
     {% endif %}
   </div>
 </div>
+{% endif %}
 
 {% stylesheet %}
   .product-details {
@@ -342,29 +472,515 @@
       margin: 35px 0 0;
     }
   }
+
+  /* Benefits layout. The panel, the yellow frame and the card share the
+     grid's first cell so they can overlap each other and the photo. */
+  .product-details.product-details--benefits {
+    background-color: transparent;
+    padding: 64px 0;
+  }
+
+  .product-details__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 659fr) minmax(0, 621fr);
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .product-details__panel,
+  .product-details__frame,
+  .product-details__card {
+    grid-area: 1 / 1;
+  }
+
+  .product-details__panel {
+    margin-right: -82px;
+    border-radius: var(--radius-panel);
+    background-color: var(--section-bg, var(--color-panel));
+  }
+
+  .product-details__photo {
+    grid-area: 1 / 2;
+    z-index: 1;
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-panel);
+    background-color: var(--color-blush);
+  }
+
+  /* Like in the design, the frame is a little larger than the card and
+     its right edge crosses onto the photo. */
+  .product-details__frame {
+    z-index: 2;
+    margin: -27px -17px -25px -11px;
+    background-color: var(--color-yellow);
+    -webkit-mask: var(--frame-mask) center / 100% 100% no-repeat;
+    mask: var(--frame-mask) center / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+
+  .product-details__card {
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    padding: 110px 60px 105px;
+    text-align: center;
+    container-type: inline-size;
+  }
+
+  /* "body odor" overlaps the top of "who?". The lockup is 72/178px and
+     shrinks with the card on narrower screens. */
+  .product-details__lockup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: min(178px, 38cqi);
+    font-weight: 400;
+    line-height: 1;
+    color: var(--text-color, var(--color-accent));
+  }
+
+  .product-details__lockup-top {
+    font-family: var(--font-alyona);
+    font-size: 0.4045em;
+    letter-spacing: var(--tracking-title-light);
+    translate: -0.13em 0;
+  }
+
+  .product-details__lockup-main {
+    margin-top: -0.275em;
+    font-family: var(--font-jokker);
+    letter-spacing: -0.03em;
+    translate: 0.057em 0;
+  }
+
+  .product-details__benefits {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .product-details__benefit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--text-color, var(--color-foreground));
+    font: 700 16px/1.3 var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    text-wrap: balance;
+    cursor: pointer;
+  }
+
+  .product-details__benefit:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 6px;
+    border-radius: 4px;
+  }
+
+  .product-details__benefit-icons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* One-color icons, painted in the text color. */
+  .product-details__icon,
+  .product-details__plus {
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+  }
+
+  .product-details__benefit .product-details__icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .product-details__plus {
+    --icon: var(--plus-mask);
+
+    width: 27px;
+    height: 27px;
+    transition: rotate 0.3s ease;
+  }
+
+  @media (hover: hover) {
+    .product-details__benefit:hover .product-details__plus {
+      rotate: 90deg;
+    }
+  }
+
+  .product-details__photo-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-details__cta {
+    --button-height: 50px;
+    --button-padding: 36px;
+    --button-font-size: 16px;
+
+    position: absolute;
+    bottom: 96px;
+    left: 50%;
+    translate: -50% 0;
+    white-space: nowrap;
+  }
+
+  /* Benefit pop-up: a white card in the middle of the screen, a sheet from
+     the bottom on phones. */
+  .product-details__dialog {
+    width: min(560px, 100% - 32px);
+    max-width: none;
+    max-height: calc(100dvh - 32px);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-panel);
+    background-color: var(--color-background);
+    color: var(--color-cocoa);
+    box-shadow: 0 24px 32px color-mix(in srgb, var(--color-cocoa) 18%, transparent);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .product-details__dialog[open] {
+    animation: product-details-pop 0.25s ease;
+  }
+
+  .product-details__dialog::backdrop {
+    background-color: var(--color-scrim);
+  }
+
+  .product-details__dialog-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    padding: 48px;
+    text-align: center;
+  }
+
+  .product-details__dialog-handle {
+    display: none;
+  }
+
+  .product-details__dialog-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  /* The design's X is its plus icon turned a quarter. */
+  .product-details__dialog-close::before {
+    content: '';
+    width: 18px;
+    height: 18px;
+    background-color: currentColor;
+    -webkit-mask: var(--close-mask) center / contain no-repeat;
+    mask: var(--close-mask) center / contain no-repeat;
+    rotate: 45deg;
+  }
+
+  .product-details__dialog-close:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .product-details__dialog-badge {
+    display: grid;
+    place-items: center;
+    width: 80px;
+    height: 80px;
+    border: 1.5px solid #ffc8e4;
+    border-radius: 50%;
+    background-color: var(--color-blush);
+    color: var(--color-pink);
+  }
+
+  .product-details__dialog-badge .product-details__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .product-details__dialog-text {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .product-details__dialog-title {
+    font: 700 48px/1.05 var(--font-alyona);
+    color: var(--color-pink);
+    text-wrap: balance;
+  }
+
+  .product-details__dialog-body {
+    font: 400 18px/1.5 var(--font-jokker);
+  }
+
+  .product-details__dialog-body p + p {
+    margin-top: 0.75em;
+  }
+
+  @keyframes product-details-pop {
+    from {
+      opacity: 0;
+      translate: 0 16px;
+    }
+  }
+
+  @keyframes product-details-sheet {
+    from {
+      translate: 0 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .product-details.product-details--benefits {
+      padding: 40px 0;
+    }
+
+    .product-details__grid {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 0 20px;
+    }
+
+    .product-details__panel {
+      margin: 0 0 -54px;
+      border-radius: 12px;
+    }
+
+    /* On phones the photo covers the frame's bottom edge. */
+    .product-details__frame {
+      z-index: 1;
+      margin: -8px -12px -6px;
+    }
+
+    .product-details__photo {
+      grid-area: 2 / 1;
+      z-index: 2;
+      aspect-ratio: 353 / 464;
+      border-radius: 12px;
+    }
+
+    .product-details__card {
+      gap: 21px;
+      padding: 28px 24px 66px;
+    }
+
+    .product-details__lockup {
+      font-size: 78px;
+    }
+
+    .product-details__lockup-top {
+      font-size: 34px;
+      translate: none;
+    }
+
+    .product-details__lockup-main {
+      translate: none;
+    }
+
+    .product-details__benefits {
+      gap: 17px;
+    }
+
+    .product-details__benefit {
+      gap: 8px;
+      font-size: 11px;
+    }
+
+    .product-details__benefit-icons {
+      gap: 10px;
+    }
+
+    .product-details__benefit .product-details__icon {
+      width: 31px;
+      height: 31px;
+    }
+
+    .product-details__plus {
+      width: 18px;
+      height: 18px;
+    }
+
+    .product-details__cta {
+      --button-height: 48px;
+      --button-padding: 32px;
+      --button-font-size: 14px;
+
+      bottom: 60px;
+    }
+
+    .product-details__dialog {
+      width: 100%;
+      max-height: 85dvh;
+      margin: auto 0 0;
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -8px 16px color-mix(in srgb, var(--color-cocoa) 18%, transparent);
+    }
+
+    .product-details__dialog[open] {
+      animation-name: product-details-sheet;
+    }
+
+    .product-details__dialog-inner {
+      gap: 24px;
+      padding: 12px 24px 40px;
+    }
+
+    .product-details__dialog-handle {
+      display: block;
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      background-color: #ffc8e4;
+    }
+
+    .product-details__dialog-close {
+      top: 12px;
+      right: 12px;
+    }
+
+    .product-details__dialog-badge {
+      width: 64px;
+      height: 64px;
+    }
+
+    .product-details__dialog-badge .product-details__icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    .product-details__dialog-text {
+      gap: 12px;
+    }
+
+    .product-details__dialog-title {
+      font-size: 24px;
+    }
+
+    .product-details__dialog-body {
+      font-size: 14px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-details__dialog[open] {
+      animation: none;
+    }
+
+    .product-details__plus {
+      transition: none;
+    }
+  }
 {% endstylesheet %}
+
+{% javascript %}
+  // Benefit pop-ups: a benefit's button opens its dialog, and the X or a
+  // click outside the card closes it. Esc closes it natively.
+  document.addEventListener('click', (event) => {
+    const opener = event.target.closest('[data-benefit-open]');
+    if (opener) {
+      document.getElementById(opener.getAttribute('aria-controls'))?.showModal();
+      return;
+    }
+
+    const dialog = event.target.closest('.product-details__dialog');
+    if (!dialog) return;
+
+    if (event.target === dialog || event.target.closest('[data-benefit-close]')) {
+      dialog.close();
+    }
+  });
+
+  // In the theme editor, selecting a benefit block shows its pop-up.
+  document.addEventListener('shopify:block:select', (event) => {
+    const dialog = document.getElementById(`Benefit-${event.detail.sectionId}-${event.detail.blockId}`);
+    if (dialog && !dialog.open) dialog.showModal();
+  });
+
+  document.addEventListener('shopify:block:deselect', (event) => {
+    document.getElementById(`Benefit-${event.detail.sectionId}-${event.detail.blockId}`)?.close();
+  });
+{% endjavascript %}
 
 {% schema %}
   {
     "name": "t:general.product_details",
     "class": "product-details-section",
+    "max_blocks": 6,
     "settings": [
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "t:sections.product_details.layout",
+        "info": "t:sections.product_details.layout_info",
+        "options": [
+          { "value": "steps", "label": "t:sections.product_details.layout_steps" },
+          { "value": "benefits", "label": "t:sections.product_details.layout_benefits" }
+        ],
+        "default": "steps"
+      },
       {
         "type": "header",
         "content": "t:sections.product_details.content_header"
+      },
+      {
+        "type": "text",
+        "id": "lockup_top",
+        "label": "t:sections.product_details.lockup_top",
+        "default": "body odor",
+        "visible_if": "{{ section.settings.layout == 'benefits' }}"
+      },
+      {
+        "type": "text",
+        "id": "lockup_main",
+        "label": "t:sections.product_details.lockup_main",
+        "default": "who?",
+        "visible_if": "{{ section.settings.layout == 'benefits' }}"
       },
       {
         "type": "richtext",
         "id": "heading",
         "label": "t:labels.heading",
         "info": "t:sections.product_details.heading_info",
-        "default": "<p>Not a deodorant.</p><p>The step your deodorant's been missing.</p>"
+        "default": "<p>Not a deodorant.</p><p>The step your deodorant's been missing.</p>",
+        "visible_if": "{{ section.settings.layout != 'benefits' }}"
       },
       {
         "type": "richtext",
         "id": "description",
         "label": "t:labels.description",
-        "default": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>"
+        "default": "<p>Baudie is the first pre-deodorant spray powered by odor-eliminating bacterial technology. It targets the real cause of body odor — the bacteria that make sweat smell — using gentle AHAs to create a slightly acidic environment where they can't survive. The wipe-off formula cleanses and resets your skin, while plant-powered actives support a balanced microbiome. The result is science-backed freshness that lasts longer and makes your deodorant work better.</p>",
+        "visible_if": "{{ section.settings.layout != 'benefits' }}"
       }, {
         "type": "header",
         "content": "t:sections.product_details.image_header"
@@ -374,20 +990,71 @@
         "label": "t:labels.product_image"
       },
       {
+        "type": "text",
+        "id": "button_text",
+        "label": "t:labels.button_text",
+        "default": "Shop the scents",
+        "visible_if": "{{ section.settings.layout == 'benefits' }}"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "t:sections.product_details.button_link",
+        "visible_if": "{{ section.settings.layout == 'benefits' }}"
+      },
+      {
         "type": "header",
-        "content": "t:labels.colors"
+        "content": "t:labels.colors",
+        "info": "t:labels.colors_info"
       },
       {
         "type": "color",
         "id": "background_color",
-        "label": "t:labels.background_color",
-        "default": "#FCE9EC"
+        "label": "t:labels.background_color"
       },
       {
         "type": "color",
         "id": "text_color",
-        "label": "t:labels.text_color",
-        "default": "#3E2027"
+        "label": "t:labels.text_color"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "benefit",
+        "name": "t:sections.product_details.benefit",
+        "settings": [
+          {
+            "type": "select",
+            "id": "icon",
+            "label": "t:sections.product_details.icon",
+            "options": [
+              { "value": "patent", "label": "t:sections.product_details.icon_patent" },
+              { "value": "drops", "label": "t:sections.product_details.icon_drops" },
+              { "value": "deodorant", "label": "t:sections.product_details.icon_deodorant" },
+              { "value": "leaf", "label": "t:sections.product_details.icon_leaf" }
+            ],
+            "default": "patent"
+          },
+          {
+            "type": "image_picker",
+            "id": "custom_icon",
+            "label": "t:sections.product_details.custom_icon",
+            "info": "t:sections.product_details.custom_icon_info"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "t:labels.title",
+            "info": "t:sections.product_details.benefit_title_info",
+            "default": "Plant-based formula"
+          },
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "t:sections.product_details.popup_text",
+            "default": "<p>Made with plant-based ingredients. Vegan, cruelty free, and free of aluminum, parabens, sulfates and phthalates.</p>"
+          }
+        ]
       }
     ],
     "presets": [

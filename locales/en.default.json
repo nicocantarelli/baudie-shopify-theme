@@ -167,7 +167,8 @@
       "step_apply_deo": "Apply Deo",
       "step_stay_fresh": "Stay Fresh",
       "content_header": "Content",
-      "image_header": "Image"
+      "image_header": "Image",
+      "close": "Close"
     },
     "product_features": {
       "scroll_left": "Scroll left",
