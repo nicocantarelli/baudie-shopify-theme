@@ -16,6 +16,7 @@
     "promo_banner_bg": "#e15374",
     "promo_banner_show_search": false,
     "promo_banner_show_404": false,
+    "cart_subscription_switch": true,
     "content_for_index": [],
     "blocks": {
       "124348908681409149": {
@@ -43,6 +44,16 @@
       "10436698916776057164": {
         "type": "shopify://apps/appstle-subscription/blocks/appstle-subscription-helper/fe257d39-6f88-4f35-ab08-bd437e3aa94e",
         "disabled": true,
+        "settings": {}
+      },
+      "8504176592808321533": {
+        "type": "shopify://apps/nudgify-social-proof-sales-pop/blocks/nudgify-pixel-app-embed/3491acd6-0406-49d3-bc7f-2dcfc24bb07b",
+        "disabled": false,
+        "settings": {}
+      },
+      "2567389343055140935": {
+        "type": "shopify://apps/microsoft-clarity/blocks/clarity_js/31c3d126-8116-4b4a-8ba1-baeda7c4aeea",
+        "disabled": false,
         "settings": {}
       }
     }

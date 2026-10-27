@@ -72,6 +72,14 @@
         "trust_badge_eyweTh"
       ],
       "settings": {
+        "show_patent_stamp": true,
+        "patent_stamp_position": "image_bottom_right",
+        "patent_stamp_heading": "PATENTED FORMULA",
+        "patent_stamp_number": "U.S. PATENT 11,857,668",
+        "patent_stamp_size": 100,
+        "patent_stamp_rotation": 0,
+        "patent_stamp_background": "#3e2027",
+        "patent_stamp_text_color": "#fcf5de",
         "show_watch_in_action": true,
         "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
         "scent_collection": "shop",
@@ -150,7 +158,7 @@
       "settings": {
         "title": "How to use",
         "mobile_description": "",
-        "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
+        "description": "<p>Baudie is NOT A DEODORANT. It is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it works with your microbiome to create an optimized environment where bacteria cannot thrive. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
         "sprays_title": "How many sprays do i need?",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"

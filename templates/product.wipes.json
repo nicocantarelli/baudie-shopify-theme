@@ -86,10 +86,12 @@
         "bundle_upsell_bg_color": "#ffffff",
         "bundle_upsell_text_color": "#3e2027",
         "final_sale_placement": "price",
-        "show_purchase_options": false,
-        "subscription_perk_1": "",
-        "subscription_perk_2": "",
-        "subscription_perk_3": ""
+        "show_purchase_options": true,
+        "show_subscription_badge": false,
+        "subscription_perk_1": "Pause or cancel anytime",
+        "subscription_perk_2": "VIP perks + gifts",
+        "subscription_perk_3": "",
+        "subscription_terms": ""
       }
     },
     "related-products": {
