@@ -2,8 +2,8 @@
   Renders breadcrumb navigation for the current page.
 
   @param {string} [class] - Additional CSS classes to add to the wrapper
-  @param {string} [background_color] - Background color for the breadcrumbs
-  @param {string} [text_color] - Text color for the breadcrumbs
+  @param {string} [background_color] - Background color; the theme background when empty
+  @param {string} [text_color] - Text color; the theme text color when empty
 {% enddoc %}
 
 {%- liquid
@@ -11,9 +11,6 @@
   if class != blank
     assign breadcrumb_class = breadcrumb_class | append: ' ' | append: class
   endif
-
-  assign bc_bg = background_color | default: '#FCE9EC'
-  assign bc_text = text_color | default: '#3E2027'
 
   assign crumbs = ''
   assign is_customer_care = false
@@ -50,7 +47,10 @@
   <svg width="4" height="4" viewBox="0 0 4 4" fill="none" aria-hidden="true"><circle cx="2" cy="2" r="2" fill="currentColor"/></svg>
 {%- endcapture -%}
 
-<nav class="{{ breadcrumb_class }} full-width" aria-label="{{ 'breadcrumbs.navigation' | t }}" style="--bc-bg: {{ bc_bg }}; --bc-text: {{ bc_text }};">
+<nav class="{{ breadcrumb_class }} full-width" aria-label="{{ 'breadcrumbs.navigation' | t }}" style="
+  {%- if background_color != blank %}--bc-bg: {{ background_color }};{% endif -%}
+  {%- if text_color != blank %}--bc-text: {{ text_color }};{% endif -%}
+">
   <ol class="breadcrumbs__list" itemscope itemtype="https://schema.org/BreadcrumbList">
     <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
       <a href="{{ routes.root_url }}" class="breadcrumbs__link" itemprop="item">
@@ -201,8 +201,8 @@
   .breadcrumbs {
     display: block;
     padding: 60px 0 0;
-    background-color: var(--bc-bg, #FCE9EC);
-    color: var(--bc-text, #3E2027);
+    background-color: var(--bc-bg, var(--color-background));
+    color: var(--bc-text, var(--color-foreground));
   }
 
   .breadcrumbs__list {
@@ -212,7 +212,7 @@
     gap: 0;
     list-style: none;
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 var(--gutter);
     max-width: 1600px;
   }
 
@@ -228,7 +228,7 @@
   }
 
   .breadcrumbs__link {
-    color: var(--bc-text, #3E2027);
+    color: var(--bc-text, var(--color-foreground));
     font-family: var(--font-jokker);
     font-size: 12px;
     font-weight: 400;
@@ -242,12 +242,12 @@
   }
 
   .breadcrumbs__link:focus-visible {
-    outline: 2px solid var(--bc-text, #3E2027);
+    outline: 2px solid var(--bc-text, var(--color-foreground));
     outline-offset: 2px;
   }
 
   .breadcrumbs__current {
-    color: var(--bc-text, #3E2027);
+    color: var(--bc-text, var(--color-foreground));
     font-family: var(--font-jokker);
     font-size: 12px;
     font-weight: 600;
