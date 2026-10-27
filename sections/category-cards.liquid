@@ -138,11 +138,12 @@
   }
 
   /* The strip starts behind the photo, so its gradient shows in the photo's
-     rounded bottom corners like in the design. */
+     rounded bottom corners like in the design. Its top corners stay square
+     there, so the card's sides run straight from photo to strip. */
   .category-cards__label {
     margin-top: calc(-1 * var(--card-radius));
     padding: calc(var(--card-radius) + 16px) 12px 16px;
-    border-radius: var(--card-radius);
+    border-radius: 0 0 var(--card-radius) var(--card-radius);
     background: linear-gradient(90deg, var(--color-panel), var(--color-blush));
     font: 700 20px/1.3 var(--font-sweet-sans);
     letter-spacing: var(--tracking-label-lg);
