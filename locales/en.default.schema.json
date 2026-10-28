@@ -419,6 +419,7 @@
         "heading_position": "Heading position",
         "heading_alignment": "Heading alignment",
         "heading_alignment_info": "Also moves the heading to that side of the image",
+        "heading_lines_info": "Press Enter to start a new line",
         "products": "Products",
         "image_mode_header": "Hero image mode",
         "use_static_image": "Use static image",

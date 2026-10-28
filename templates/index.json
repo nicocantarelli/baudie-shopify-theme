@@ -13,7 +13,7 @@
       "type": "hero-product",
       "name": "Hero Section",
       "settings": {
-        "heading": "This helps deo last longer + helps sweat stay odorless.",
+        "heading": "this helps deo\nlast all day + helps\nsweat stay odorless",
         "heading_color": "#ffffff",
         "heading_position": "bottom",
         "heading_alignment": "right",
@@ -32,7 +32,7 @@
         "desktop_overlay_enable": false,
         "desktop_overlay_color": "#000000",
         "desktop_overlay_opacity": 10,
-        "mobile_heading": "This helps deo last longer + helps keep sweat odorless.",
+        "mobile_heading": "this helps deo\nlast all day +\nhelps sweat\nstay odorless",
         "mobile_hero_image": "shopify://shop_images/Screen_Shot_2026-04-13_at_12.29.29_PM.png",
         "mobile_hero_image_alt": "",
         "mobile_content_position": "bottom",

@@ -122,7 +122,7 @@
     <div
       class="hero-product__heading hero-product__heading--{{ section.settings.heading_position }} hero-product__heading--align-{{ section.settings.heading_alignment }}"
       style="{%- if section.settings.heading_color != blank %}--heading-color: {{ section.settings.heading_color }};{% endif -%}">
-      <h1>{{ section.settings.heading }}</h1>
+      <h1>{{ section.settings.heading | newline_to_br }}</h1>
     </div>
 
     {%- liquid
@@ -143,7 +143,7 @@
         <p class="hero-product__mobile-eyebrow">{{ section.settings.mobile_eyebrow }}</p>
       {% endif %}
       {% if section.settings.mobile_heading != blank %}
-        <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading }}</h1>
+        <h1 class="hero-product__mobile-heading">{{ section.settings.mobile_heading | newline_to_br }}</h1>
       {% endif %}
       {% if section.settings.mobile_title != blank %}
         <h2 class="hero-product__mobile-title">{{ section.settings.mobile_title }}</h2>
@@ -1118,9 +1118,10 @@
         "content": "t:sections.hero_product.settings.desktop_header"
       },
       {
-        "type": "text",
+        "type": "textarea",
         "id": "heading",
         "label": "t:labels.heading",
+        "info": "t:sections.hero_product.settings.heading_lines_info",
         "default": "Smelling good shouldn't be a gamble."
       },
       {
@@ -1234,9 +1235,10 @@
         "content": "t:sections.hero_product.settings.mobile_header"
       },
       {
-        "type": "text",
+        "type": "textarea",
         "id": "mobile_heading",
         "label": "t:sections.hero_product.settings.mobile_heading",
+        "info": "t:sections.hero_product.settings.heading_lines_info",
         "default": "Deodorant Enhancer"
       },
       {
