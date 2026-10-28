@@ -18,10 +18,10 @@
         "heading_position": "bottom",
         "heading_alignment": "right",
         "hero_products": [
+          "petal-kiss",
           "capri-seaside",
           "sweet-muse",
           "st-tropez",
-          "petal-kiss",
           "deep-ritual",
           "barely-there"
         ],
@@ -37,13 +37,13 @@
         "mobile_hero_image_alt": "",
         "mobile_content_position": "bottom",
         "mobile_content_alignment": "right",
-        "mobile_eyebrow": "Deodorant enhancer spray",
+        "mobile_eyebrow": "",
         "mobile_heading_gap": 0,
         "mobile_overlay_enable": false,
         "mobile_overlay_color": "#3e2027",
         "mobile_overlay_opacity": 25,
         "mobile_title": "",
-        "mobile_subtitle": "Not deodorant. Your deodorant’s wingwoman.",
+        "mobile_subtitle": "",
         "mobile_button_text": "SHOP OUR SCENTS",
         "mobile_button_url": "shopify://collections/shop"
       }
