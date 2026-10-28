@@ -38,7 +38,7 @@
         "mobile_content_position": "bottom",
         "mobile_content_alignment": "right",
         "mobile_eyebrow": "",
-        "mobile_heading_gap": 0,
+        "mobile_heading_gap": 6,
         "mobile_overlay_enable": false,
         "mobile_overlay_color": "#3e2027",
         "mobile_overlay_opacity": 25,

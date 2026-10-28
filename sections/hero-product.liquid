@@ -351,9 +351,13 @@
     /* The photo's share of the width, 966 of the design's 1440; the product
        panel has the rest. */
     --hero-product-split: 67.08%;
-    /* The design's panel: 40px in, then the rating, the name, up to three
-       lines of description and the buttons, ending 48px above the bottom. */
-    --hero-product-card-panel-height: calc(340 * var(--hero-product-px));
+    /* The product panel and the card in it keep the theme's original sizes,
+       not the design's bigger ones. The panel is 4px taller than the
+       original for the card's 4px taller buttons. */
+    --hero-product-card-panel-height: clamp(264px, calc(28vh + 4px), 324px);
+    --hero-product-card-inline-offset: 40px;
+    --hero-product-card-top-offset: 16px;
+    --hero-product-card-bottom-offset: 20px;
     /* Extra height under the hero's bottom edge, for a next section that
        overlaps it (In the press sets it to its wave's height). Only the
        photos, overlays and product panel run on into it; the heading and the
@@ -605,11 +609,14 @@
     /* The notify-me form colors its field and messages with this. */
     --product-text: var(--card-text, var(--color-foreground));
     position: absolute;
-    inset: 0;
+    top: var(--hero-product-card-top-offset);
+    right: var(--hero-product-card-inline-offset);
+    bottom: var(--hero-product-card-bottom-offset);
+    left: var(--hero-product-card-inline-offset);
     display: flex;
     flex-direction: column;
-    gap: calc(12 * var(--hero-product-px));
-    padding: calc(40 * var(--hero-product-px)) calc(40 * var(--hero-product-px)) calc(48 * var(--hero-product-px));
+    gap: 16px;
+    padding: 16px;
     background-color: var(--card-bg, var(--color-panel));
     opacity: 0;
     visibility: hidden;
@@ -623,23 +630,9 @@
     visibility: visible;
   }
 
-  /* Rating, with the design's 16px stars */
+  /* Rating */
   .hero-product__rating {
-    gap: calc(8 * var(--hero-product-px));
     color: var(--card-text, var(--color-foreground));
-  }
-
-  .hero-product__rating .star-rating__layer {
-    gap: calc(4.5 * var(--hero-product-px));
-  }
-
-  .hero-product__rating .star-rating__layer svg {
-    width: calc(16 * var(--hero-product-px));
-    height: calc(16 * var(--hero-product-px));
-  }
-
-  .hero-product__rating .star-rating__count {
-    font-size: max(11px, 16 * var(--hero-product-px));
   }
 
   /* Product Info */
@@ -654,8 +647,8 @@
   .hero-product__price {
     font-family: var(--font-sweet-sans);
     font-weight: 700;
-    font-size: max(14px, 20 * var(--hero-product-px));
-    line-height: 1.3;
+    font-size: 18px;
+    line-height: normal;
     letter-spacing: var(--tracking-label-lg);
     text-transform: uppercase;
     color: var(--card-text, var(--color-foreground));
@@ -665,8 +658,8 @@
   /* Description */
   .hero-product__description {
     font-family: var(--font-jokker);
-    font-size: max(14px, 22 * var(--hero-product-px));
-    line-height: 1.45;
+    font-size: 16px;
+    line-height: 1.5;
     color: var(--card-text, var(--color-foreground));
     margin: 0;
     display: -webkit-box;
@@ -678,35 +671,32 @@
     padding-bottom: 2px;
   }
 
-  /* Actions: two buttons of the same width at the bottom, at least 32px
-     under the description. */
+  /* Actions */
   .hero-product__actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: calc(16 * var(--hero-product-px));
+    display: flex;
+    gap: 10px;
     width: 100%;
     margin-top: auto;
-    padding-top: calc(20 * var(--hero-product-px));
   }
 
   .hero-product__actions form {
+    flex: 1;
     margin: 0;
   }
 
-  /* The theme's pill buttons (.button), at the design's size. */
+  /* The theme's pill buttons (.button), at the hero's own size: 4px taller
+     than the theme's original 40px. */
   .hero-product__card .hero-product__button {
-    --button-height: calc(48 * var(--hero-product-px));
-    --button-padding: calc(16 * var(--hero-product-px));
-    --button-font-size: max(11px, 16 * var(--hero-product-px));
+    --button-height: 44px;
+    --button-padding: 20px;
+    --button-font-size: 14px;
     width: 100%;
-    gap: calc(8 * var(--hero-product-px));
+    gap: 10px;
     white-space: nowrap;
   }
 
   .hero-product__button svg {
     flex-shrink: 0;
-    width: calc(16 * var(--hero-product-px));
-    height: calc(16 * var(--hero-product-px));
   }
 
   .hero-product__card .hero-product__button--add {
@@ -715,6 +705,7 @@
 
   .hero-product__card .hero-product__button--buy {
     --button-background: var(--card-button, var(--color-accent));
+    flex: 1;
   }
 
   .hero-product__card .button:focus-visible {
@@ -725,9 +716,43 @@
     border-radius: var(--radius-pill);
   }
 
-  /* Responsive - Tablet. The heading and product panel scale down with
-     --hero-product-px. */
+  /* Responsive - Smaller Desktop */
+  @media (max-width: 1400px) {
+    .hero-product {
+      --hero-product-card-inline-offset: 32px;
+      --hero-product-card-top-offset: 12px;
+      --hero-product-card-bottom-offset: 16px;
+    }
+
+    .hero-product__card {
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .hero-product__name,
+    .hero-product__price {
+      font-size: 16px;
+    }
+
+    .hero-product__description {
+      font-size: 14px;
+    }
+
+    .hero-product__card .hero-product__button {
+      --button-padding: 12px;
+      --button-font-size: 12px;
+    }
+  }
+
+  /* Responsive - Tablet. The heading scales down with --hero-product-px. */
   @media (max-width: 1024px) {
+    .hero-product {
+      --hero-product-card-panel-height: clamp(320px, 40vh, 360px);
+      --hero-product-card-inline-offset: 16px;
+      --hero-product-card-top-offset: 12px;
+      --hero-product-card-bottom-offset: 16px;
+    }
+
     .hero-product__inner {
       height: calc(100vh - var(--total-header-height, 95px));
       min-height: 600px;
@@ -737,15 +762,26 @@
       right: 24px;
       top: 24px;
     }
+
+    .hero-product__card {
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .hero-product__actions {
+      flex-direction: column;
+    }
+
+    .hero-product__button {
+      width: 100%;
+    }
   }
 
   /* Switch to mobile layout at 900px instead of 768px for better card display */
   @media (max-width: 900px) {
-    /* The design's 520px phone hero, tail included, in proportion on other
-       phones and never taller than the screen. */
     .hero-product__inner {
-      height: calc(min(100vw * 520 / 393, 100vh - var(--total-header-height, 95px)) - var(--hero-product-tail));
-      min-height: 0;
+      height: calc(100vh - var(--total-header-height, 95px));
+      min-height: 682px;
       grid-template-columns: 1fr;
     }
 
@@ -822,9 +858,9 @@
 
     .hero-product__mobile-heading {
       font-family: var(--font-alyona);
-      font-size: 40px;
+      font-size: 45px;
       font-weight: 700;
-      line-height: 0.9;
+      line-height: 1;
       color: var(--heading-color, #fff);
       margin: 0;
     }
@@ -833,10 +869,10 @@
     .hero-product__mobile-eyebrow {
       margin: 0;
       font-family: var(--font-sweet-sans);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
-      line-height: 1.3;
-      letter-spacing: var(--tracking-label-lg);
+      line-height: normal;
+      letter-spacing: var(--tracking-label-sm);
       text-transform: uppercase;
       color: var(--heading-color, #fff);
     }
@@ -855,22 +891,19 @@
       display: none;
     }
 
-    /* Mobile content block - 20px in from the sides like in the design; its
+    /* Mobile content block - absolute positioned, horizontally centered; its
        content is aligned left, center or right inside it */
     .hero-product__mobile-content {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       position: absolute;
-      right: 20px;
-      left: 20px;
+      left: 50%;
+      width: calc(100% - 24px);
+      max-width: 360px;
       text-align: center;
       z-index: 3;
-    }
-
-    .hero-product__mobile-content > * {
-      max-width: 360px;
     }
 
     .hero-product__mobile-content--align-left {
@@ -885,17 +918,17 @@
 
     .hero-product__mobile-content--top {
       top: 51px;
+      transform: translateX(-50%);
     }
 
     .hero-product__mobile-content--center {
       top: 50%;
-      transform: translateY(-50%);
+      transform: translate(-50%, -50%);
     }
 
-    /* The button ends 27px above the hero's bottom edge, where the next
-       section's wave starts, as in the design. */
     .hero-product__mobile-content--bottom {
-      bottom: 27px;
+      bottom: 60px;
+      transform: translateX(-50%);
     }
 
     /* Adjustable spacing between heading and content */
@@ -922,11 +955,14 @@
       width: 100%;
     }
 
-    /* The theme's gradient pill button, at the design's size. */
+    /* The theme's gradient pill button, at the hero's own size: 4px taller
+       than the theme's original 40px. */
     .hero-product__mobile-content .hero-product__mobile-button {
-      --button-height: 56px;
-      --button-padding: 32px;
-      --button-font-size: 18px;
+      --button-height: 44px;
+      --button-padding: 24px;
+      --button-font-size: 12px;
+      margin-top: 16px;
+      min-width: 138px;
       max-width: 100%;
       white-space: nowrap;
     }
@@ -944,11 +980,17 @@
 
   /* Extra small screens (320px and below) */
   @media (max-width: 320px) {
+    .hero-product__inner {
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
     .hero-product__mobile-heading {
       font-size: 36px;
     }
 
     .hero-product__mobile-content--bottom {
+      bottom: 30px;
       gap: 6px;
     }
 
@@ -961,9 +1003,11 @@
     }
 
     .hero-product__mobile-content .hero-product__mobile-button {
-      --button-height: 48px;
-      --button-padding: 24px;
-      --button-font-size: 16px;
+      --button-height: 38px;
+      --button-padding: 18px;
+      --button-font-size: 10px;
+      margin-top: 10px;
+      min-width: 110px;
     }
   }
 {% endstylesheet %}
