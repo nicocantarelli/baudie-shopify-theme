@@ -80,7 +80,7 @@
       {% if section.settings.mobile_hero_image %}
         {%- comment -%} Static Mobile Hero Image - single uploaded image replaces product cycling {%- endcomment -%}
         <div class="hero-product__mobile-wrapper is-active" data-product-index="0">
-          <div class="hero-product__mobile-image">
+          <div class="hero-product__mobile-image" style="--hero-product-mobile-image-x: {{ section.settings.mobile_image_position }}%;">
             {%- assign mobile_hero_alt = section.settings.mobile_hero_image_alt | default: section.settings.mobile_hero_image.alt | default: section.settings.heading -%}
             {{ section.settings.mobile_hero_image | image_url: width: 1200 | image_tag: loading: 'eager', class: 'hero-product__mobile-img', alt: mobile_hero_alt }}
             <div class="hero-product__mobile-gradient"></div>
@@ -828,11 +828,13 @@
       height: 100%;
     }
 
+    /* A photo wider than the phone is cropped at the sides; the uploaded
+       phone photo slides left or right with the section's position setting. */
     .hero-product__mobile-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center center;
+      object-position: var(--hero-product-mobile-image-x, 50%) center;
     }
 
     /* The design's two cocoa shades: one darkening to 56% between about a
@@ -1252,6 +1254,17 @@
         "id": "mobile_hero_image_alt",
         "label": "t:sections.hero_product.settings.mobile_hero_image_alt",
         "info": "t:sections.hero_product.settings.mobile_hero_image_alt_info"
+      },
+      {
+        "type": "range",
+        "id": "mobile_image_position",
+        "label": "t:sections.hero_product.settings.mobile_image_position",
+        "info": "t:sections.hero_product.settings.mobile_image_position_info",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "default": 50
       },
       {
         "type": "select",

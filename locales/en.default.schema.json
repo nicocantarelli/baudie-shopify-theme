@@ -434,6 +434,8 @@
         "mobile_hero_image_info": "Overrides product images on mobile. Leave empty to cycle through product images.",
         "mobile_hero_image_alt": "Mobile hero image alt text",
         "mobile_hero_image_alt_info": "Describe the image for accessibility (uses heading as fallback)",
+        "mobile_image_position": "Mobile hero image position",
+        "mobile_image_position_info": "Moves the image left or right when it's wider than the phone. 0% shows its left side, 100% its right side.",
         "mobile_title": "Mobile title",
         "mobile_subtitle": "Mobile subtitle",
         "card_colors_header": "Card colors",
