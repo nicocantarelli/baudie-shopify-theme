@@ -705,9 +705,15 @@
     }
   }
 
-  /* Media on top until text and media fit side by side. Its bottom edge
-     overlaps the panel's rounded top corners, like in the design. */
+  /* Media on top until text and media fit side by side. The panel runs up
+     under the media by its corner radius, so the media's rounded bottom
+     corners show the panel's pink like in the design, and the panel's own
+     top corners are square. */
   @media (max-width: 1023px) {
+    .how-to-use--card {
+      --media-radius: var(--radius-panel);
+    }
+
     .how-to-use__card {
       display: flex;
       flex-direction: column-reverse;
@@ -717,14 +723,16 @@
     }
 
     .how-to-use__card-content {
-      border-radius: var(--radius-panel);
+      padding-top: calc(var(--media-radius) + var(--card-padding-top, var(--card-padding)));
+      border-radius: 0 0 var(--media-radius) var(--media-radius);
       background-color: var(--section-bg, var(--color-panel));
     }
 
     .how-to-use__card-media {
       z-index: 1;
       height: 440px;
-      margin-bottom: -8px;
+      margin-bottom: calc(-1 * var(--media-radius));
+      border-radius: var(--media-radius);
     }
 
     .how-to-use__lead--desktop {
@@ -737,8 +745,11 @@
   }
 
   @media (max-width: 768px) {
+    /* More room between the media and the title than the design's. */
     .how-to-use--card {
       --card-padding: 24px;
+      --card-padding-top: 36px;
+      --media-radius: 12px;
 
       padding: 40px 0;
     }
@@ -749,11 +760,6 @@
 
     .how-to-use__card-content {
       gap: 24px;
-      border-radius: 12px;
-    }
-
-    .how-to-use__card-media {
-      border-radius: 12px;
     }
 
     .how-to-use__intro {
@@ -804,20 +810,26 @@
       font-size: 14px;
     }
 
+    /* Each row on one line from 375px up. A label only breaks between
+       words; on a phone too narrow for a row, its drops move under the
+       label, still on the right. */
     .how-to-use__guide-row {
+      flex-wrap: wrap;
       min-height: 44px;
-      gap: 9px;
+      gap: 6px 9px;
       padding: 10px 0;
       border-bottom-width: 1px;
     }
 
     .how-to-use__guide-label {
-      font-size: 13px;
+      font-size: 12px;
       letter-spacing: var(--tracking-label-lg);
+      overflow-wrap: normal;
     }
 
     .how-to-use__guide-amount {
       gap: 9px;
+      margin-left: auto;
     }
 
     .how-to-use__drops {
