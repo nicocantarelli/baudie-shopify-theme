@@ -734,11 +734,6 @@
     .how-to-use__lead--mobile {
       display: block;
     }
-
-    .how-to-use__card-content .how-to-use__squiggle {
-      margin-right: 0;
-      margin-left: 0;
-    }
   }
 
   @media (max-width: 768px) {
@@ -790,10 +785,10 @@
       letter-spacing: var(--tracking-label);
     }
 
-    /* Starts mid-wave, like in the design. */
+    /* Runs across the whole panel and starts mid-wave. */
     .how-to-use__card-content .how-to-use__squiggle {
       height: 9px;
-      margin: 0;
+      margin: 0 calc(-1 * var(--card-padding));
       -webkit-mask-position: -27px center;
       mask-position: -27px center;
     }
