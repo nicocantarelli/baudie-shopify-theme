@@ -179,10 +179,10 @@
       padding: 0 20px;
     }
 
-    /* Wraps like the design, only the last word on the second line. */
+    /* On one line: the title is about 10.5em wide, so it shrinks with the
+       phone (inside its 20px margins) and stops at the design's 34px. */
     .category-cards__title {
-      font-size: 34px;
-      text-wrap: wrap;
+      font-size: min(34px, (100vw - 40px) / 10.8);
     }
 
     .category-cards__grid {
