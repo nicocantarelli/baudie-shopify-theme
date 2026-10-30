@@ -173,12 +173,14 @@
     fill: var(--text-color, var(--color-pink));
   }
 
+  /* Phones: the page's 34px title size, smaller only where the title
+     (about 10.5em long) would run off the screen. */
   .customer-videos__arc--mobile {
-    --wave-title-offset: 36.5px;
+    --wave-title-offset: 44px;
 
     display: none;
-    height: 40px;
-    font-size: 24px;
+    height: 52px;
+    font-size: min(34px, (100vw - 24px) / 10.5);
   }
 
   /* The tiles' sizes and the row's drift, which
@@ -268,15 +270,17 @@
       display: block;
     }
 
-    /* A row running off the right edge, the third tile just cut. */
+    /* Big tiles in a row across the whole screen, starting and ending at
+       the page's margin, the second tile cut at the right edge (more show
+       on small tablets). The drift takes about 2 minutes each way. */
     .customer-videos__carousel {
-      --videos-gap: 20px;
-      --videos-tile-width: calc((100cqw - 2 * var(--videos-gap)) / 2.92);
+      --videos-gap: 16px;
+      --videos-inset: 20px;
+      --videos-tile-width: min(260px, (100cqw - var(--videos-inset) - var(--videos-gap)) / 1.6);
       --videos-tile-height: calc(194 / 114 * 100%);
-      --videos-radius: 8px;
-      --videos-drift-duration: 80s;
+      --videos-drift-duration: 120s;
 
-      margin-right: -20px;
+      margin-inline: -20px;
     }
 
     .customer-videos__title + .customer-videos__carousel {
@@ -285,6 +289,7 @@
 
     .customer-videos__placeholders {
       grid-template-columns: repeat(4, var(--videos-tile-width));
+      padding-left: var(--videos-inset);
       overflow: hidden;
     }
 
@@ -297,7 +302,7 @@
       --button-padding: 32px;
       --button-font-size: 14px;
 
-      margin-top: 12px;
+      margin-top: 20px;
     }
 
     .customer-videos .customer-videos__squiggle {
