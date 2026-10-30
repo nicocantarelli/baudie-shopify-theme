@@ -326,16 +326,16 @@
 
     .in-press--title-script .in-press__title {
       font-size: 24px;
-      margin-bottom: 10px;
+      margin-bottom: 18.3px;
     }
 
     .in-press__curve--desktop {
       display: none;
     }
 
-    /* 43px under the wave's top, where the straight title sat. */
+    /* Just under the wave, its middle on the design's baseline. */
     .in-press__curve--mobile {
-      --wave-title-offset: 43px;
+      --wave-title-offset: 23.5px;
 
       display: block;
       height: 25.2px;
@@ -356,10 +356,12 @@
       max-height: 50px;
     }
 
+    /* The design's title starts 6.4px under the wave's top. */
     .in-press--title-script {
       --logo-row-height: 20px;
       --logo-gap: 52px;
 
+      padding-top: 6.4px;
       padding-bottom: 15.9px;
       margin-bottom: 9.6px;
     }
