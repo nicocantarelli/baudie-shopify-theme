@@ -642,8 +642,9 @@
     white-space: nowrap;
   }
 
-  /* Benefit pop-up: a white card in the middle of the screen, a sheet from
-     the bottom on phones. */
+  /* Benefit pop-up: a card in the middle of the screen, a sheet from the
+     bottom on phones. It has the card's pink and text color, and its title
+     is set like "body odor". */
   .product-details__dialog {
     width: min(560px, 100% - 32px);
     max-width: none;
@@ -652,8 +653,8 @@
     padding: 0;
     border: 0;
     border-radius: var(--radius-panel);
-    background-color: var(--color-background);
-    color: var(--color-cocoa);
+    background-color: var(--section-bg, var(--color-panel));
+    color: var(--text-color, var(--color-foreground));
     box-shadow: 0 24px 32px color-mix(in srgb, var(--color-cocoa) 18%, transparent);
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -713,15 +714,15 @@
     outline-offset: 2px;
   }
 
+  /* The icon in a ring, like the perks in Subscribe & save. */
   .product-details__dialog-badge {
     display: grid;
     place-items: center;
     width: 80px;
     height: 80px;
-    border: 1.5px solid #ffc8e4;
+    border: 2px solid currentColor;
     border-radius: 50%;
     background-color: var(--color-blush);
-    color: var(--color-pink);
   }
 
   .product-details__dialog-badge .product-details__icon {
@@ -736,13 +737,16 @@
   }
 
   .product-details__dialog-title {
-    font: 700 48px/1.05 var(--font-alyona);
-    color: var(--color-pink);
+    font: 400 48px/1.05 var(--font-alyona);
+    letter-spacing: var(--tracking-title-light);
     text-wrap: balance;
   }
 
   .product-details__dialog-body {
+    max-width: 42ch;
+    margin-inline: auto;
     font: 400 18px/1.5 var(--font-jokker);
+    text-wrap: pretty;
   }
 
   .product-details__dialog-body p + p {
@@ -790,17 +794,20 @@
       border-radius: 12px;
     }
 
+    /* Room under the frame's top wave for the bigger lockup. */
     .product-details__card {
       gap: 21px;
-      padding: 28px 24px 66px;
+      padding: 44px 24px 66px;
     }
 
+    /* Bigger than the design's 78/34px: "who?" runs across most of the
+       card, and "body odor" keeps the design's size next to it. */
     .product-details__lockup {
-      font-size: 78px;
+      font-size: min(120px, 36cqi);
     }
 
     .product-details__lockup-top {
-      font-size: 34px;
+      font-size: 0.436em;
       translate: none;
     }
 
@@ -851,44 +858,48 @@
       animation-name: product-details-sheet;
     }
 
+    /* The handle on top, then the ring, title and text with room around
+       them, clear of the phone's home bar. */
     .product-details__dialog-inner {
-      gap: 24px;
-      padding: 12px 24px 40px;
+      gap: 28px;
+      padding: 12px 28px calc(48px + env(safe-area-inset-bottom));
     }
 
     .product-details__dialog-handle {
       display: block;
       width: 40px;
       height: 4px;
+      margin-bottom: 8px;
       border-radius: 2px;
-      background-color: #ffc8e4;
+      background-color: currentColor;
+      opacity: 0.3;
     }
 
     .product-details__dialog-close {
-      top: 12px;
-      right: 12px;
+      top: 8px;
+      right: 8px;
     }
 
     .product-details__dialog-badge {
-      width: 64px;
-      height: 64px;
+      width: 72px;
+      height: 72px;
     }
 
     .product-details__dialog-badge .product-details__icon {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
     }
 
     .product-details__dialog-text {
-      gap: 12px;
+      gap: 14px;
     }
 
     .product-details__dialog-title {
-      font-size: 24px;
+      font-size: 34px;
     }
 
     .product-details__dialog-body {
-      font-size: 14px;
+      font-size: 16px;
     }
   }
 
