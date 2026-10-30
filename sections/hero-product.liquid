@@ -858,11 +858,14 @@
       display: none;
     }
 
+    /* Set in three lines like the desktop headline. Its longest line,
+       "sweat stay odorless", is about 8em, so the size follows the content
+       box (12px margins, 360px at most): about 44px on most phones. */
     .hero-product__mobile-heading {
       font-family: var(--font-alyona);
-      font-size: 45px;
+      font-size: calc(min(100vw - 24px, 360px) / 8.1);
       font-weight: 700;
-      line-height: 1;
+      line-height: 0.9;
       color: var(--heading-color, #fff);
       margin: 0;
     }
