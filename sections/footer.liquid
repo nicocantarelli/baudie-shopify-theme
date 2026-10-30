@@ -268,7 +268,7 @@
   .footer__heading {
     font-family: var(--font-sweet-sans);
     font-weight: 700;
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1.3;
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
@@ -521,8 +521,14 @@
     }
 
     .footer__column--menu .footer__heading {
-      font-size: 13px;
+      font-size: 15px;
       letter-spacing: var(--tracking-label-lg);
+    }
+
+    /* A small label over the signup, so it doesn't echo the newsletter's
+       big title right above the footer. */
+    .footer__column--newsletter .footer__heading {
+      font-size: 12px;
     }
 
     .footer__heading-text {
