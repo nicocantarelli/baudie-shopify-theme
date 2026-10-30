@@ -208,6 +208,11 @@
   --icon-feature: 48px;
   --icon-ring: calc(var(--icon-feature) * 2);
 
+  /* The signup forms' field and button, in the footer and the newsletter:
+     smaller than the page's buttons. Phones set their own size below. */
+  --signup-height: 50px;
+  --signup-font-size: 16px;
+
   /* Letter spacing of the redesign's labels and light titles. Font sizes and
      spacing stay each section's own, so there are no size tokens here. */
   --tracking-title-light: -0.01em;
@@ -228,6 +233,8 @@
 @media (max-width: 768px) {
   :root {
     --icon-feature: 36px;
+    --signup-height: 40px;
+    --signup-font-size: 14px;
   }
 }
 {% endstyle %}

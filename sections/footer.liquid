@@ -330,15 +330,19 @@
 
     flex: 1;
     min-width: 0;
-    height: 50px;
-    font-size: 16px;
+    height: var(--signup-height);
+    min-height: 0;
   }
 
-  /* Smaller than the page's buttons, at the field's height. */
+  /* Typing stays at 16px, so phones don't zoom in on the field. */
+  .footer__newsletter-form .footer__newsletter-input::placeholder {
+    font-size: var(--signup-font-size);
+  }
+
   .footer__newsletter-form .footer__newsletter-button {
-    --button-height: 50px;
+    --button-height: var(--signup-height);
     --button-padding: 32px;
-    --button-font-size: 16px;
+    --button-font-size: var(--signup-font-size);
     --button-background: var(--button-bg, var(--gradient-button));
     --button-color: var(--button-text, var(--color-on-accent));
 

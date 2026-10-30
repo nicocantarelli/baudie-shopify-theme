@@ -154,16 +154,19 @@
     --input-background: transparent;
 
     width: 396px;
-    height: 50px;
-    font-size: 16px;
+    height: var(--signup-height);
+    min-height: 0;
   }
 
-  /* The footer signup's size: smaller than the page's buttons, at the
-     field's height. */
+  /* Typing stays at 16px, so phones don't zoom in on the field. */
+  .newsletter-section__form .newsletter-section__input::placeholder {
+    font-size: var(--signup-font-size);
+  }
+
   .newsletter-section__form .newsletter-section__button {
-    --button-height: 50px;
+    --button-height: var(--signup-height);
     --button-padding: 32px;
-    --button-font-size: 16px;
+    --button-font-size: var(--signup-font-size);
     --button-background: var(--button-bg, var(--gradient-button));
     --button-color: var(--button-text, var(--color-on-accent));
 
