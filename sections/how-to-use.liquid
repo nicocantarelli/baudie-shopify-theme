@@ -558,14 +558,18 @@
   }
 
   .how-to-use__intro {
+    container-type: inline-size;
     display: flex;
     flex-direction: column;
     gap: 16px;
   }
 
+  /* The page's 72px section title size. "spray, wipe, deo" is about 6.5em,
+     so where the column is narrower than that it shrinks to stay on one
+     line. */
   .how-to-use__heading {
     margin: 0;
-    font: 700 48px/1.05 var(--font-alyona);
+    font: 700 min(72px, 100cqi / 6.7)/1.05 var(--font-alyona);
     color: var(--text-color, var(--color-accent));
   }
 
@@ -735,6 +739,10 @@
       border-radius: var(--media-radius);
     }
 
+    .how-to-use__heading {
+      font-size: 48px;
+    }
+
     .how-to-use__lead--desktop {
       display: none;
     }
@@ -767,11 +775,10 @@
     }
 
     /* A little bigger than the other phone titles (34px), as asked, like
-       Subscribe & save's. "spray, wipe, deo" is about 6.5em, so on the
-       smallest phones it shrinks to stay on one line inside the panel. The
-       lead is at the page's 14px phone body text. */
+       Subscribe & save's, shrinking on the smallest phones to stay on one
+       line. The lead is at the page's 14px phone body text. */
     .how-to-use__heading {
-      font-size: min(40px, (100vw - 88px) / 6.7);
+      font-size: min(40px, 100cqi / 6.7);
       line-height: 1;
     }
 
