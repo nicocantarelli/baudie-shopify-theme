@@ -164,8 +164,9 @@
       column-gap: 20px;
     }
 
+    /* Narrower on the smallest phones, so they stay two by two. */
     .subscribe-save__perk {
-      width: 140px;
+      width: min(140px, (100cqi - 20px) / 2);
     }
   }
 
@@ -250,8 +251,9 @@
       padding: 0 16px;
     }
 
+    /* A little bigger than the other phone titles (34px), as asked. */
     .subscribe-save__title {
-      font-size: 34px;
+      font-size: 40px;
     }
 
     /* Two by two (the container rule above), with the page's 14px phone
