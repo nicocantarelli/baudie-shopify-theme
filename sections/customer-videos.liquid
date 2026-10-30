@@ -181,14 +181,18 @@
     font-size: 24px;
   }
 
-  /* The tiles' sizes, which assets/customer-videos-videowise.css applies
-     inside the Videowise widget. */
+  /* The tiles' sizes and the row's drift, which
+     assets/customer-videos-videowise.css applies inside the Videowise widget.
+     Widths are in the carousel's own units (cqw), since the drifting row is
+     as wide as all its videos. The drift takes about 3 minutes each way. */
   .customer-videos__carousel {
     --videos-gap: 32px;
-    --videos-tile-width: calc((100% - 3 * var(--videos-gap)) / 4);
+    --videos-tile-width: calc((100cqw - 3 * var(--videos-gap)) / 4);
     --videos-tile-height: calc(470 / 296 * 100%);
     --videos-radius: var(--radius-card);
+    --videos-drift-duration: 180s;
 
+    container-type: inline-size;
     align-self: stretch;
   }
 
@@ -264,13 +268,13 @@
       display: block;
     }
 
-    /* A row running off the right edge, the third tile just cut, swiped
-       rather than clicked through. */
+    /* A row running off the right edge, the third tile just cut. */
     .customer-videos__carousel {
       --videos-gap: 20px;
-      --videos-tile-width: calc((100% - 2 * var(--videos-gap)) / 2.92);
+      --videos-tile-width: calc((100cqw - 2 * var(--videos-gap)) / 2.92);
       --videos-tile-height: calc(194 / 114 * 100%);
       --videos-radius: 8px;
+      --videos-drift-duration: 80s;
 
       margin-right: -20px;
     }

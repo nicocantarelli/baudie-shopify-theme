@@ -32,3 +32,34 @@
 :host(.customer-videos__widget) .vw-cmp__video-card--play-icon {
   display: none;
 }
+
+/* The row drifts slowly to its last video and back, and stops under the
+   pointer or a finger so a video is easy to pick; a tap still opens it.
+   It moves by its own width less the carousel's (100cqw), so it ends with
+   the last video at the edge. While it runs it replaces the carousel's own
+   sliding, which has no arrows here. */
+@keyframes customer-videos-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(calc(-100% + 100cqw), 0, 0);
+  }
+}
+
+:host(.customer-videos__widget) .vw-embla__container {
+  width: max-content;
+  animation: customer-videos-drift var(--videos-drift-duration, 180s) linear 1s infinite alternate;
+}
+
+:host(.customer-videos__widget:hover) .vw-embla__container {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host(.customer-videos__widget) .vw-embla__container {
+    width: auto;
+    animation: none;
+  }
+}
