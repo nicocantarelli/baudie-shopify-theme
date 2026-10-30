@@ -603,16 +603,18 @@
     mask: var(--icon) center / contain no-repeat;
   }
 
+  /* The theme's feature icon size (snippets/css-variables.liquid); the plus
+     keeps the design's 27/48 of it. */
   .product-details__benefit .product-details__icon {
-    width: 48px;
-    height: 48px;
+    width: var(--icon-feature);
+    height: var(--icon-feature);
   }
 
   .product-details__plus {
     --icon: var(--plus-mask);
 
-    width: 27px;
-    height: 27px;
+    width: calc(var(--icon-feature) * 0.5625);
+    height: calc(var(--icon-feature) * 0.5625);
     transition: rotate 0.3s ease;
   }
 
@@ -716,20 +718,20 @@
     outline-offset: 2px;
   }
 
-  /* The icon in a ring, like the perks in Subscribe & save. */
+  /* The icon in a ring, the same sizes as the perks in Subscribe & save. */
   .product-details__dialog-badge {
     display: grid;
     place-items: center;
-    width: 80px;
-    height: 80px;
+    width: var(--icon-ring);
+    height: var(--icon-ring);
     border: 2px solid currentColor;
     border-radius: 50%;
     background-color: var(--color-blush);
   }
 
   .product-details__dialog-badge .product-details__icon {
-    width: 40px;
-    height: 40px;
+    width: var(--icon-feature);
+    height: var(--icon-feature);
   }
 
   .product-details__dialog-text {
@@ -830,16 +832,6 @@
       gap: 10px;
     }
 
-    .product-details__benefit .product-details__icon {
-      width: 31px;
-      height: 31px;
-    }
-
-    .product-details__plus {
-      width: 18px;
-      height: 18px;
-    }
-
     .product-details__cta {
       --button-height: 48px;
       --button-padding: 32px;
@@ -880,16 +872,6 @@
     .product-details__dialog-close {
       top: 8px;
       right: 8px;
-    }
-
-    .product-details__dialog-badge {
-      width: 72px;
-      height: 72px;
-    }
-
-    .product-details__dialog-badge .product-details__icon {
-      width: 36px;
-      height: 36px;
     }
 
     .product-details__dialog-text {

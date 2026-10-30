@@ -169,19 +169,20 @@
     }
   }
 
+  /* The theme's feature icon in its ring (snippets/css-variables.liquid). */
   .subscribe-save__circle {
     display: grid;
     place-items: center;
-    width: 96px;
-    height: 96px;
+    width: var(--icon-ring);
+    height: var(--icon-ring);
     border: 2px solid currentColor;
     border-radius: var(--radius-pill);
   }
 
   /* One-color icons, painted in the text color. */
   .subscribe-save__icon {
-    width: 48px;
-    height: 48px;
+    width: var(--icon-feature);
+    height: var(--icon-feature);
     background-color: currentColor;
     -webkit-mask: var(--icon) center / contain no-repeat;
     mask: var(--icon) center / contain no-repeat;
@@ -253,28 +254,14 @@
       font-size: 34px;
     }
 
-    .subscribe-save__perks {
-      max-width: 222px;
-      column-gap: 20px;
-    }
-
+    /* Two by two (the container rule above), with the page's 14px phone
+       body text under the rings. */
     .subscribe-save__perk {
-      gap: 11.5px;
-      width: 101px;
-    }
-
-    .subscribe-save__circle {
-      width: 62px;
-      height: 62px;
-    }
-
-    .subscribe-save__icon {
-      width: 31px;
-      height: 31px;
+      gap: 12px;
     }
 
     .subscribe-save__perk-text {
-      font-size: 11px;
+      font-size: 14px;
     }
 
     .subscribe-save__button {

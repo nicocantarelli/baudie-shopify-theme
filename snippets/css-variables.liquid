@@ -202,6 +202,12 @@
   --gradient-blush: {{ blush_gradient }};
   --gradient-sunshine: {{ sunshine_gradient }};
 
+  /* Feature icons, the same size wherever they appear: the Who card's
+     benefits, the Subscribe & save perks and the benefit pop-ups. A ring
+     around one is twice its size. Phones set their own size below. */
+  --icon-feature: 48px;
+  --icon-ring: calc(var(--icon-feature) * 2);
+
   /* Letter spacing of the redesign's labels and light titles. Font sizes and
      spacing stay each section's own, so there are no size tokens here. */
   --tracking-title-light: -0.01em;
@@ -217,5 +223,11 @@
   --radius-card: 20px;
   --radius-panel: 32px;
   --radius-pill: 999px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --icon-feature: 36px;
+  }
 }
 {% endstyle %}
