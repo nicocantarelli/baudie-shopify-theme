@@ -71,7 +71,7 @@
       {
         "type": "color",
         "id": "accent_color",
-        "default": "#D3176C",
+        "default": "#C11562",
         "label": "t:labels.accent",
         "info": "t:labels.accent_info"
       },
@@ -139,13 +139,13 @@
       {
         "type": "color_background",
         "id": "button_gradient",
-        "default": "linear-gradient(90deg, #C81466 0%, #DC1870 47%, #E65C9A 100%)",
+        "default": "linear-gradient(90deg, #C11562 0%, #D2367C 100%)",
         "label": "t:labels.button_gradient"
       },
       {
         "type": "color_background",
         "id": "heading_gradient",
-        "default": "linear-gradient(90deg, #C81466 0%, #D3176C 50%, #E65C9A 100%)",
+        "default": "linear-gradient(90deg, #C11562 0%, #D2367C 100%)",
         "label": "t:labels.heading_gradient"
       },
       {

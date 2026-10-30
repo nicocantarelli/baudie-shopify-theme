@@ -260,9 +260,9 @@ body {
   mask: url('shape-burst.svg') center / contain no-repeat;
 }
 
-/* Gradient heading text. Display sizes only: the light end is 3.3:1 on white.
-   A section that sets --text-fill (e.g. a text color picked in the editor)
-   gets solid text instead of the gradient. */
+/* Gradient heading text. The default gradient runs from the main pink to the
+   lightest pink that is still 4.5:1 on white. A section that sets --text-fill
+   (e.g. a text color picked in the editor) gets solid text instead. */
 .text-gradient {
   background: var(--text-fill, var(--gradient-heading));
   -webkit-background-clip: text;
