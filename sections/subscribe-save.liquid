@@ -5,8 +5,8 @@
   Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1066
   (mobile: node-id=109-11288)
 
-  Sizes follow the design, except the button, which keeps the theme's size
-  like the other buttons. Colors left empty in the editor fall back to the
+  Sizes follow the design, except the button: a little smaller on desktop
+  and the theme's size on phones. Colors left empty in the editor fall back to the
   theme colors set in the stylesheet, so only the ones picked are written
   here. A picked text color also replaces the title's gradient.
 {% endcomment %}
@@ -192,11 +192,12 @@
     white-space: pre-line;
   }
 
-  /* Centered where the design's taller button (72px) sits. */
+  /* Between the theme's button and the design's 72px one, centered where
+     the design's sits. */
   .subscribe-save__button {
-    --button-height: 50px;
-    --button-padding: 36px;
-    --button-font-size: 16px;
+    --button-height: 60px;
+    --button-padding: 40px;
+    --button-font-size: 18px;
 
     margin-block: calc((72px - var(--button-height)) / 2);
   }
