@@ -766,13 +766,17 @@
       gap: 8px;
     }
 
+    /* A little bigger than the other phone titles (34px), as asked, like
+       Subscribe & save's. "spray, wipe, deo" is about 6.5em, so on the
+       smallest phones it shrinks to stay on one line inside the panel. The
+       lead is at the page's 14px phone body text. */
     .how-to-use__heading {
-      font-size: 34px;
+      font-size: min(40px, (100vw - 88px) / 6.7);
       line-height: 1;
     }
 
     .how-to-use__lead {
-      font-size: 12px;
+      font-size: 14px;
     }
 
     .how-to-use__numbered-steps {
