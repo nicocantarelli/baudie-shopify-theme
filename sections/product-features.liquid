@@ -167,15 +167,11 @@
       font-size: 12px;
     }
 
-    /* On phones the design's band is straight and right under the section
-       above, with smaller badges. */
-    .product-features--wavy.product-features--pad-top {
-      padding-top: 0;
-    }
-
+    /* On phones the band keeps its waves, scaled with it to the design's
+       64px phone band, and smaller badges. */
     .product-features--wavy .product-features__container {
-      -webkit-mask: none;
-      mask: none;
+      -webkit-mask: var(--band-mask) -63.1px 0 / 126.2px 100% repeat-x;
+      mask: var(--band-mask) -63.1px 0 / 126.2px 100% repeat-x;
     }
 
     .product-features--wavy .product-features__group {
