@@ -326,16 +326,16 @@
 
     .in-press--title-script .in-press__title {
       font-size: 24px;
-      margin-bottom: 18.3px;
+      margin-bottom: 28px;
     }
 
     .in-press__curve--desktop {
       display: none;
     }
 
-    /* Just under the wave, its middle on the design's baseline. */
+    /* Just under the wave, following its middle. */
     .in-press__curve--mobile {
-      --wave-title-offset: 23.5px;
+      --wave-title-offset: 27px;
 
       display: block;
       height: 25.2px;
@@ -356,19 +356,20 @@
       max-height: 50px;
     }
 
-    /* The design's title starts 6.4px under the wave's top. */
+    /* Roomier than the design's thin phone band: more space around the
+       title and logos, and the logos about three quarters of their desktop
+       size (the design has them at a little over half). */
     .in-press--title-script {
-      --logo-row-height: 20px;
-      --logo-gap: 52px;
+      --logo-row-height: 28px;
+      --logo-gap: 56px;
 
-      padding-top: 6.4px;
-      padding-bottom: 15.9px;
+      padding-top: 10px;
+      padding-bottom: 26px;
       margin-bottom: 9.6px;
     }
 
-    /* The design's phone logos are a little over half their desktop size. */
     .in-press--title-script .in-press__logo-wrapper {
-      width: calc(var(--logo-width) * 0.59);
+      width: calc(var(--logo-width) * 0.75);
     }
   }
 {% endstylesheet %}
