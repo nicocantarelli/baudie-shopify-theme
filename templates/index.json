@@ -25,7 +25,7 @@
           "deep-ritual",
           "barely-there"
         ],
-        "use_default_colors": true,
+        "use_default_colors": false,
         "use_static_image": true,
         "static_hero_image": "shopify://shop_images/hero-petal-kiss-beach.jpg",
         "static_hero_image_alt": "",

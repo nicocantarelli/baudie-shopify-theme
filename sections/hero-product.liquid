@@ -223,6 +223,20 @@
             assign card_text = product.metafields.custom.product_text_color
             assign card_button_color = product.metafields.custom.product_text_color
           endif
+
+          # A text color that reads below 4.5:1 on its card is darkened just
+          # enough to reach it; the product's own color setting is unchanged.
+          assign card_bg = card_bg | append: ''
+          assign card_text = card_text | append: ''
+          if card_bg != blank and card_text != blank
+            for step in (1..30)
+              assign text_contrast = card_text | color_contrast: card_bg
+              if text_contrast >= 4.5
+                break
+              endif
+              assign card_text = card_text | color_darken: 2
+            endfor
+          endif
         -%}
         <div
           class="hero-product__card {% if forloop.first %}is-active{% endif %}"
@@ -1169,7 +1183,7 @@
         "id": "use_default_colors",
         "label": "t:sections.hero_product.settings.use_default_colors",
         "info": "t:sections.hero_product.settings.use_default_colors_info",
-        "default": true
+        "default": false
       },
       {
         "type": "color",
