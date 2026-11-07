@@ -208,29 +208,33 @@
 {%- endif -%}
 
 {% stylesheet %}
-  /* "You might also like": Figma node 118:10033 (phone 118:11363). */
+  /* "You might also like": Figma node 118:10033 (phone 118:11363). The
+     cards, title and spacing are the homepage's category cards
+     (sections/category-cards.liquid), size for size. */
   .related-products {
     --rp-gap: 32px;
     --rp-columns: 4;
     --rp-strip-pad: 16px;
-    background-color: var(--section-bg, transparent);
+    --card-radius: var(--radius-card);
+
+    background-color: var(--section-bg, var(--color-background));
     padding: 64px 0;
   }
 
   .related-products__wrapper {
-    max-width: 1440px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 0 var(--page-gutter);
   }
 
+  /* Shrinks to the text so the gradient runs across the words themselves. */
   .related-products__heading {
-    font-family: var(--font-alyona);
-    font-size: 72px;
-    font-weight: 400;
-    line-height: 1;
-    letter-spacing: var(--tracking-title-light);
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 48px;
+    font: 700 72px/1 var(--font-alyona);
     text-align: center;
-    margin: 0 0 48px;
+    text-wrap: balance;
   }
 
   .related-products__heading:not(.text-gradient) {
@@ -271,7 +275,7 @@
     position: relative;
     z-index: 1;
     aspect-ratio: 1;
-    border-radius: var(--radius-card);
+    border-radius: var(--card-radius);
     background-color: var(--card-bg);
     overflow: hidden;
   }
@@ -399,30 +403,35 @@
     color: var(--color-foreground);
   }
 
-  /* The pink strip under the picture with the name and price. The design's
-     #F15B9E is too light for white text, so it's the buttons' pink. */
+  /* The strip under the picture, as on the category cards: it starts behind
+     the picture, so its gradient shows in the picture's rounded bottom
+     corners. The name and the price share one line; a name too long for it
+     ends in an ellipsis so the price always shows. */
   .related-products__info {
     flex: 1;
     display: flex;
-    flex-direction: column;
+    align-items: baseline;
     justify-content: center;
-    gap: 2px;
-    margin-top: calc(-1 * var(--radius-card));
-    padding: calc(var(--radius-card) + var(--rp-strip-pad)) 12px var(--rp-strip-pad);
-    border-radius: 0 0 var(--radius-card) var(--radius-card);
-    background: var(--gradient-button);
-    color: var(--color-on-accent, #fff);
+    gap: 0.5em;
+    margin-top: calc(-1 * var(--card-radius));
+    padding: calc(var(--card-radius) + var(--rp-strip-pad)) 12px var(--rp-strip-pad);
+    border-radius: 0 0 var(--card-radius) var(--card-radius);
+    background: linear-gradient(90deg, var(--color-panel), var(--color-blush));
+    color: var(--text-color, var(--color-foreground));
+    font: 700 20px/1.3 var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label-lg);
     text-align: center;
+    text-transform: uppercase;
   }
 
   .related-products__title {
+    min-width: 0;
     margin: 0;
-    font-family: var(--font-sweet-sans);
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 1.3;
-    letter-spacing: var(--tracking-label-lg);
-    text-transform: uppercase;
+    overflow: hidden;
+    font: inherit;
+    letter-spacing: inherit;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .related-products__title-link {
@@ -442,11 +451,9 @@
   }
 
   .related-products__price {
-    font-family: var(--font-sweet-sans);
-    font-size: 16px;
+    flex-shrink: 0;
     font-weight: 400;
-    line-height: 1.3;
-    letter-spacing: var(--tracking-label-lg);
+    white-space: nowrap;
   }
 
   .related-products__dots {
@@ -501,47 +508,36 @@
   }
 
   @media (max-width: 1024px) {
-    .related-products {
-      --rp-gap: 24px;
-      --rp-columns: 3;
-      padding: 56px 0;
-    }
-
     .related-products__heading {
       font-size: 56px;
-      margin-bottom: 40px;
-    }
-
-    .related-products__title {
-      font-size: 18px;
     }
   }
 
   @media (max-width: 768px) {
     .related-products {
-      --rp-gap: 17px;
+      --rp-gap: 16px;
       --rp-columns: 2;
       --rp-strip-pad: 10px;
-      padding: 48px 0;
+      --card-radius: 12px;
+
+      padding: 40px 0;
     }
 
     .related-products__wrapper {
-      padding: 0 16px;
+      padding: 0 20px;
     }
 
+    /* On one line, shrinking with the phone and stopping at 34px. */
     .related-products__heading {
-      font-size: 34px;
-      margin-bottom: 24px;
-    }
-
-    .related-products__title,
-    .related-products__price {
-      font-size: 14px;
+      margin-bottom: 32px;
+      font-size: min(34px, (100vw - 40px) / 10.8);
     }
 
     .related-products__info {
       padding-left: 8px;
       padding-right: 8px;
+      font-size: 11px;
+      letter-spacing: var(--tracking-label);
     }
 
     .related-products__actions {
@@ -576,11 +572,11 @@
     }
 
     .related-products__arrow--prev {
-      left: -12px;
+      left: -14px;
     }
 
     .related-products__arrow--next {
-      right: -12px;
+      right: -14px;
     }
   }
 {% endstylesheet %}

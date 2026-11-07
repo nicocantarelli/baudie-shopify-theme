@@ -597,6 +597,9 @@
     --card-gap: 28px;
     --card-radius: var(--radius-panel);
     --card-border: 1px solid var(--color-foreground);
+    /* Extra room at the bottom for the band below to overlap (set by
+       sections/in-press.liquid when the press band comes right after). */
+    --product-main-tail: 0px;
 
     background: linear-gradient(
       to bottom,
@@ -605,7 +608,7 @@
       var(--gradient-3) 100%
     );
     margin-top: var(--total-header-height, 110px);
-    padding: 56px var(--page-gutter) 120px;
+    padding: 56px var(--page-gutter) calc(120px + var(--product-main-tail));
     color: var(--color-foreground);
   }
 
@@ -1432,7 +1435,7 @@
       --card-gap: 18px;
       --card-radius: var(--radius-card);
 
-      padding: 30px 16px 32px;
+      padding: 30px 16px calc(32px + var(--product-main-tail));
     }
 
     .product-main__inner {

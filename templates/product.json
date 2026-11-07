@@ -501,7 +501,7 @@
         "background_color": "",
         "text_color": "",
         "icon_color": "",
-        "padding_bottom": true
+        "padding_bottom": false
       }
     },
     "product_details_who": {
@@ -563,8 +563,8 @@
   "order": [
     "main",
     "in_press_TBfPET",
-    "product_features_marquee",
     "how-to-use",
+    "product_features_marquee",
     "product-faq",
     "product_details_who",
     "related-products",
