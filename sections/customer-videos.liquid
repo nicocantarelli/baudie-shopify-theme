@@ -313,7 +313,176 @@
       mask-position: -15.6px center;
     }
   }
+  /* The Videowise widget is the row's scroll box: swipe, trackpad or drag
+     it (the script below adds mouse dragging and the slow drift). No
+     scrollbar, and a swipe past either end doesn't turn into the browser's
+     back/forward gesture. */
+  .customer-videos__widget {
+    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .customer-videos__widget::-webkit-scrollbar {
+    display: none;
+  }
 {% endstylesheet %}
+
+{% javascript %}
+  /* The customer videos row: it drifts slowly to its last video and back
+     (taking --videos-drift-duration each way), and can be scrolled by hand
+     at any time: swipe, trackpad, or drag with the mouse. The drift waits
+     while the pointer is over the row and for a few seconds after the row
+     is scrolled by hand, then carries on from there. With reduced motion
+     on, the row only moves by hand.
+
+     Videowise draws the row inside a closed shadow root, so its slider
+     can't be driven directly; instead the widget scrolls, and the slider is
+     kept from seeing the touches, drags and wheel turns it would otherwise
+     handle (and block) itself. Taps still reach the videos. */
+  (() => {
+    const RESUME_AFTER = 3000;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function setUp(widget) {
+      if (widget.dataset.videosScroll) return;
+      widget.dataset.videosScroll = 'on';
+
+      let position = widget.scrollLeft;
+      let direction = 1;
+      let last = 0;
+      let hovered = false;
+      let dragging = null;
+      let resumeAt = performance.now() + 1000;
+      let onScreen = false;
+      let frame = 0;
+      let duration = 180;
+      let durationReadAt = 0;
+
+      const pauseForHand = () => {
+        resumeAt = performance.now() + RESUME_AFTER;
+        widget.style.setProperty('--videos-shift', '0px');
+      };
+
+      // The slider's own handlers, which would grab these, sit inside the
+      // shadow root: stopping the events at the widget keeps them away.
+      ['touchstart', 'touchmove', 'touchend'].forEach((type) => {
+        widget.addEventListener(type, (event) => {
+          event.stopPropagation();
+          pauseForHand();
+        }, { capture: true, passive: true });
+      });
+
+      // Only a sideways wheel or trackpad move is aimed at the row; an
+      // up/down one scrolls the page as usual.
+      widget.addEventListener('wheel', (event) => {
+        event.stopPropagation();
+        if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) pauseForHand();
+      }, { capture: true, passive: true });
+
+      widget.addEventListener('dragstart', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+      }, true);
+
+      // Mouse dragging. A drag doesn't count as a click on a video.
+      widget.addEventListener('mousedown', (event) => {
+        event.stopPropagation();
+        if (event.button !== 0) return;
+        dragging = { x: event.clientX, scroll: widget.scrollLeft, moved: false };
+        pauseForHand();
+      }, true);
+
+      window.addEventListener('mousemove', (event) => {
+        if (!dragging) return;
+        const distance = event.clientX - dragging.x;
+        if (!dragging.moved && Math.abs(distance) > 5) {
+          dragging.moved = true;
+          widget.classList.add('is-dragging');
+        }
+        if (dragging.moved) {
+          event.preventDefault();
+          widget.scrollLeft = dragging.scroll - distance;
+          pauseForHand();
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        if (dragging.moved) {
+          widget.addEventListener('click', (event) => {
+            event.stopPropagation();
+            event.preventDefault();
+          }, { capture: true, once: true });
+          setTimeout(() => widget.classList.remove('is-dragging'), 0);
+        }
+        dragging = null;
+        pauseForHand();
+      });
+
+      widget.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse') hovered = true;
+      });
+      widget.addEventListener('pointerleave', () => {
+        hovered = false;
+      });
+
+      const step = (now) => {
+        frame = 0;
+        if (!onScreen) return;
+        frame = requestAnimationFrame(step);
+
+        const elapsed = Math.min(now - last, 100) / 1000;
+        last = now;
+        const range = widget.scrollWidth - widget.clientWidth;
+        if (range <= 0 || reducedMotion.matches || hovered || dragging || now < resumeAt) {
+          position = widget.scrollLeft;
+          return;
+        }
+
+        if (now - durationReadAt > 1000) {
+          duration = parseFloat(getComputedStyle(widget).getPropertyValue('--videos-drift-duration')) || 180;
+          durationReadAt = now;
+        }
+        position += direction * (range / duration) * elapsed;
+        if (position >= range) {
+          position = range;
+          direction = -1;
+        } else if (position <= 0) {
+          position = 0;
+          direction = 1;
+        }
+
+        // Scrolling moves in whole pixels; the remainder is drawn as a
+        // shift so the drift stays smooth.
+        const whole = Math.floor(position);
+        widget.scrollLeft = whole;
+        widget.style.setProperty('--videos-shift', `${(whole - position).toFixed(3)}px`);
+      };
+
+      new IntersectionObserver(([entry]) => {
+        onScreen = entry.isIntersecting;
+        if (onScreen && !frame) {
+          last = performance.now();
+          frame = requestAnimationFrame(step);
+        }
+      }).observe(widget);
+    }
+
+    function init() {
+      document.querySelectorAll('.customer-videos__carousel .reeview-app-widget').forEach(setUp);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+    document.addEventListener('shopify:section:load', init);
+  })();
+{% endjavascript %}
 
 {% schema %}
 {

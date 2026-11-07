@@ -33,36 +33,31 @@
   display: none;
 }
 
-/* The row drifts slowly to its last video and back, and stops under the
-   pointer or a finger so a video is easy to pick; a tap still opens it.
-   It moves by its own width less the carousel's (100cqw), so it ends with
-   the last video at the edge, or at --videos-inset from it where the row
-   runs across the whole screen. While it runs it replaces the carousel's
-   own sliding, which has no arrows here. */
-@keyframes customer-videos-drift {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
+/* The row scrolls. The widget itself (outside, in the section's styles) is
+   the scroll box, so these wrappers let the row overflow into it instead of
+   clipping it, and the slider's own sliding is switched off: the section's
+   script keeps the slider from seeing swipes and drags, and drives the slow
+   drift by scrolling the widget. --videos-shift is the drift's sub-pixel
+   remainder, which scrolling (whole pixels) can't show. */
+:host(.customer-videos__widget) .vw-root__container,
+:host(.customer-videos__widget) .vw-cmp__carousel--root,
+:host(.customer-videos__widget) .vw-embla__viewport {
+  overflow: visible !important;
+}
 
-  to {
-    transform: translate3d(calc(-100% + 100cqw), 0, 0);
-  }
+:host(.customer-videos__widget) .vw-embla__viewport {
+  touch-action: auto !important;
 }
 
 :host(.customer-videos__widget) .vw-embla__container {
   width: max-content;
   padding-inline: var(--videos-inset, 0);
-  animation: customer-videos-drift var(--videos-drift-duration, 180s) linear 1s infinite alternate;
+  transform: none !important;
+  translate: var(--videos-shift, 0px) 0;
 }
 
-:host(.customer-videos__widget:hover) .vw-embla__container {
-  animation-play-state: paused;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :host(.customer-videos__widget) .vw-embla__container {
-    width: auto;
-    padding-inline: 0;
-    animation: none;
-  }
+/* While the row is dragged with the mouse. */
+:host(.customer-videos__widget.is-dragging) * {
+  cursor: grabbing !important;
+  user-select: none;
 }
