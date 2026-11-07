@@ -607,7 +607,7 @@
       "benefit_pill_icon_fragrance_free": "Fragrance free",
       "benefit_pill_icon_hypoallergenic": "Hypoallergenic",
       "benefit_pill_custom_icon": "Custom icon",
-      "benefit_pill_custom_icon_info": "Optional. A one-color icon (SVG or PNG with a transparent background); it's shown in white, replacing the icon above.",
+      "benefit_pill_custom_icon_info": "Optional. A one-color icon (SVG or PNG with a transparent background); it's shown in the badge's pink, replacing the icon above.",
       "benefit_pill_label": "Label",
       "trust_badge_hidden": "Trust badges aren't shown in the current design; the benefit pills are. They're kept here so nothing is lost."
     },
