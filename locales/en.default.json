@@ -133,7 +133,10 @@
       "subscribe": "Subscribe & save",
       "save_percent": "Save {{ percent }}%",
       "frequency_label": "Delivery frequency",
-      "discount_perk": "{{ percent }}% off every order"
+      "discount_perk": "{{ percent }}% off every order",
+      "delivered_once": "Delivered once",
+      "delivered_every": "Delivered every",
+      "delivered": "Delivered"
     }
   },
   "search": {
@@ -263,7 +266,19 @@
       "trust_badge": "Trust badge",
       "trust_badge_icon": "Badge icon",
       "trust_badge_label": "Badge label",
-      "final_sale_label": "Final Sale"
+      "final_sale_label": "Final Sale",
+      "scent_title": "Deodorant Enhancer",
+      "tell_me_more": "Tell me more",
+      "choose_scent": "Choose your scent",
+      "reviews_count": {
+        "one": "{{ number }} Review",
+        "other": "{{ number }} Reviews"
+      },
+      "quantity": "Quantity",
+      "decrease_quantity": "Decrease quantity",
+      "increase_quantity": "Increase quantity",
+      "previous_videos": "Previous videos",
+      "next_videos": "Next videos"
     },
     "customer_care": {
       "name": "Customer Care",

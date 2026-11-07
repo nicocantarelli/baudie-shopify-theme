@@ -10,6 +10,8 @@
   @param {string} [class] - Extra class(es) on the root for scoping/positioning.
   @param {boolean} [scroll_to_reviews] - When true, renders as a button that
     scrolls to the reviews widget on click.
+  @param {string} [count_style] - "reviews" shows the count as "2,687 Reviews"
+    instead of "(2687)".
 
   @example
   {% render 'star-rating', rating: rating, count: review_count, class: 'product-main__rating', scroll_to_reviews: true %}
@@ -24,6 +26,25 @@
     assign sr_percent = sr_rating | divided_by: sr_scale | times: 100
   endif
   assign sr_rating_display = rating | default: 0
+
+  # "2,687 Reviews": the count with thousands separators.
+  if count_style == 'reviews'
+    assign sr_digits = sr_count | append: ''
+    assign sr_number = ''
+    for i in (1..sr_digits.size)
+      assign sr_index = i | minus: 1
+      assign sr_digit = sr_digits | slice: sr_index
+      assign sr_number = sr_number | append: sr_digit
+      assign sr_left = sr_digits.size | minus: i
+      assign sr_group_end = sr_left | modulo: 3
+      if sr_left > 0 and sr_group_end == 0
+        assign sr_number = sr_number | append: ','
+      endif
+    endfor
+    assign sr_count_text = 'sections.product.reviews_count' | t: count: sr_count, number: sr_number
+  else
+    assign sr_count_text = sr_count | prepend: '(' | append: ')'
+  endif
 -%}
 
 {%- capture sr_stars -%}
@@ -42,7 +63,7 @@
       <span class="star-rating__layer star-rating__layer--empty">{{ sr_stars }}</span>
       <span class="star-rating__layer star-rating__layer--filled">{{ sr_stars }}</span>
     </span>
-    <span class="star-rating__count">({{ sr_count }})</span>
+    <span class="star-rating__count">{{ sr_count_text }}</span>
   </button>
   <script>
     (function () {
@@ -64,6 +85,6 @@
       <span class="star-rating__layer star-rating__layer--empty">{{ sr_stars }}</span>
       <span class="star-rating__layer star-rating__layer--filled">{{ sr_stars }}</span>
     </span>
-    <span class="star-rating__count">({{ sr_count }})</span>
+    <span class="star-rating__count">{{ sr_count_text }}</span>
   </div>
 {%- endif -%}

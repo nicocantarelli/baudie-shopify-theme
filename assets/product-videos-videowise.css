@@ -1,0 +1,66 @@
+/*
+  The product page's look for its Videowise videos, under the photo.
+  Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=118-9100
+  (phone: node-id=118-11303)
+
+  Videowise draws the videos in a closed shadow root, out of the theme's
+  reach, but it loads the stylesheets listed in window.videowiseShadow into
+  it. sections/product.liquid lists this file there and marks its widget
+  with .product-main__videos-widget, so Videowise widgets elsewhere keep
+  their own look. The sizes are the section's, set as custom properties on
+  the row, which carry into the shadow root. Videowise sets the gap, the
+  slide widths and the tile heights inline, hence the !important.
+*/
+
+:host(.product-main__videos-widget) .vw-embla__container {
+  gap: var(--videos-gap) !important;
+}
+
+:host(.product-main__videos-widget) .vw-embla__slide {
+  flex: 0 0 var(--videos-tile-width) !important;
+}
+
+/* The design's tiles: tall, rounded, no play button. Each tile is still a
+   button that opens the video. */
+:host(.product-main__videos-widget) .vw-cmp__in-video-card--preview {
+  padding-bottom: var(--videos-tile-height) !important;
+  border-radius: var(--videos-radius);
+  /* Keeps a playing video inside the corners in Safari. */
+  isolation: isolate;
+}
+
+:host(.product-main__videos-widget) .vw-cmp__video-card--play-icon {
+  display: none;
+}
+
+/* Videowise's own arrows and dots; the section has its own arrows. */
+:host(.product-main__videos-widget) .vw-cmp__carousel--arrow,
+:host(.product-main__videos-widget) .vw-embla__button,
+:host(.product-main__videos-widget) .vw-embla__dots {
+  display: none !important;
+}
+
+/* The row scrolls. The widget itself (outside, in the section's styles) is
+   the scroll box, so these wrappers let the row overflow into it instead of
+   clipping it, and the slider's own sliding is switched off: the section's
+   script keeps the slider from seeing swipes and drags. */
+:host(.product-main__videos-widget) .vw-root__container,
+:host(.product-main__videos-widget) .vw-cmp__carousel--root,
+:host(.product-main__videos-widget) .vw-embla__viewport {
+  overflow: visible !important;
+}
+
+:host(.product-main__videos-widget) .vw-embla__viewport {
+  touch-action: auto !important;
+}
+
+:host(.product-main__videos-widget) .vw-embla__container {
+  width: max-content;
+  transform: none !important;
+}
+
+/* While the row is dragged with the mouse. */
+:host(.product-main__videos-widget.is-dragging) * {
+  cursor: grabbing !important;
+  user-select: none;
+}
