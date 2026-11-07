@@ -9,7 +9,7 @@
 {% endcomment %}
 
 <div
-  class="product-features product-features--{{ section.settings.band_shape | default: 'straight' }}{% if section.settings.padding_top %} product-features--pad-top{% endif %} full-width"
+  class="product-features product-features--{{ section.settings.band_shape | default: 'straight' }}{% if section.settings.padding_top %} product-features--pad-top{% endif %}{% if section.settings.padding_bottom %} product-features--pad-bottom{% endif %} full-width"
   style="
     --band-mask: url('{{ 'shape-ribbon.svg' | asset_url }}');
     {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
@@ -49,6 +49,10 @@
   /* Same space for both band shapes, so switching the shape doesn't move the band. */
   .product-features--pad-top {
     padding-top: 48px;
+  }
+
+  .product-features--pad-bottom {
+    padding-bottom: 48px;
   }
 
   .product-features__container {
@@ -150,6 +154,10 @@
   @media (max-width: 768px) {
     .product-features--pad-top {
       padding-top: 32px;
+    }
+
+    .product-features--pad-bottom {
+      padding-bottom: 32px;
     }
 
     .product-features__group {
@@ -296,6 +304,12 @@
         "type": "checkbox",
         "id": "padding_top",
         "label": "t:sections.product_features.settings.padding_top",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "padding_bottom",
+        "label": "t:sections.product_features.settings.padding_bottom",
         "default": false
       },
       {

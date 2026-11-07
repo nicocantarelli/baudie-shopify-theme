@@ -307,7 +307,8 @@
         "padding_top": true,
         "background_color": "",
         "text_color": "",
-        "icon_color": ""
+        "icon_color": "",
+        "padding_bottom": true
       }
     },
     "category_cards_Wd3pLs": {
