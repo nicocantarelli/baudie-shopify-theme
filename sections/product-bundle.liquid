@@ -1,14 +1,16 @@
 {%- comment -%}
   Bundle product page (Bundle of 3): build your own bundle, in the product
-  page's look. On the left, arches that fill with the scents as they're
-  picked, the patent stamp and the Videowise videos; on the right, the white
+  page's look. On the left, bottle-shaped outlines that fill with the
+  scents as they're picked, the patent stamp and the Videowise videos; on
+  the right, the white
   card with the reviews, title, price, benefit pills, the scents to pick
   from, quantity and add to cart, and the dropdowns. On phones the card
-  splits in two around the arches, as on the product page.
+  splits in two around the outlines, as on the product page.
 
-  Tapping a scent puts it in the next empty arch (a scent can go in more
-  than once; its circle then shows how many). A filled arch has an x to take
-  it out. Add to cart says how many are still to pick until the bundle is
+  Tapping a scent puts it in the next empty shape (a scent can go in more
+  than once; its circle then shows how many). A picked scent's circle has
+  an x that takes one of it out, and tapping a filled bottle takes that
+  one out. Add to cart says how many are still to pick until the bundle is
   full.
 
   Everything it shares with the product page (sections/product.liquid) uses
@@ -19,7 +21,7 @@
   (snippets/product-main-script.liquid, rendered by both sections) sets up
   the dropdowns, quantity, pop-up, videos and the sticky left column for any
   .product-main. The styles and script below cover only what's the bundle's
-  own: the arches, the picked scents, the price and adding the bundle to the
+  own: the outlines, the picked scents, the price and adding the bundle to the
   cart.
 
   The bundle goes into the cart as one line that Simple Bundles & Kits
@@ -129,7 +131,7 @@
 >
   <div class="product-main__inner">
 
-    {%- comment -%} The arches, patent stamp and videos {%- endcomment -%}
+    {%- comment -%} The bottle outlines, patent stamp and videos {%- endcomment -%}
     <div class="product-main__media">
       <div class="product-main__image product-bundle__stage">
         <ol
@@ -140,6 +142,9 @@
         >
           {%- for i in (1..bundle_size) -%}
             <li class="product-bundle__slot" data-bundle-slot>
+              <svg class="product-bundle__slot-shape" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 188.7" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <path d="M49.9 0.3C48.6 0.4 47.3 0.6 46 0.9C44.7 1.1 43.4 1.4 42.2 1.8C40.9 2.2 39.7 2.6 38.5 3.1C37.3 3.6 36.1 4.2 34.9 4.8C33.8 5.4 32.6 6.1 31.5 6.8C30.4 7.5 29.4 8.2 28.3 9.1C27.3 9.9 26.4 10.8 25.4 11.7C24.5 12.6 23.5 13.5 22.7 14.5C21.8 15.5 21 16.5 20.2 17.5C19.4 18.6 18.7 19.7 18 20.8C17.4 21.9 16.8 23.1 16.2 24.3C15.6 25.5 15.1 26.7 14.6 27.9C14.1 29.1 13.7 30.3 13.3 31.6C13 32.9 12.7 34.1 12.4 35.4C12.2 36.7 12 38 11.9 39.3C11.7 40.6 11.7 41.9 11.7 43.2C11.6 44.5 11.7 45.9 11.7 47.1C11.8 48.5 12 49.8 12.2 51C12.4 52.3 12.7 53.6 13 54.9C13.3 56.1 13.8 57.4 14.2 58.6C14.5 59.8 14.9 61 14.9 62.1C14.9 63.3 14.6 64.3 14.1 65.4C13.6 66.5 12.8 67.5 12.1 68.6C11.4 69.7 10.6 70.8 10 71.9C9.3 73 8.7 74.2 8.1 75.4C7.6 76.6 7.1 77.8 6.7 79C6.2 80.2 5.8 81.5 5.5 82.8C5.1 84 4.8 85.3 4.5 86.6C4.2 87.8 3.9 89.1 3.6 90.4C3.3 91.7 3.1 93 2.8 94.2C2.6 95.5 2.3 96.8 2.1 98.1C1.9 99.4 1.7 100.7 1.5 102C1.3 103.3 1.1 104.6 1 105.9C0.8 107.2 0.7 108.5 0.5 109.8C0.4 111.1 0.3 112.4 0.2 113.7C0.1 115 0.1 116.3 0 117.7C0 119 0 120.3 0 121.6C0 122.9 0 124.2 0 125.5C0 126.8 0 128.2 0 129.5C0 130.8 0.1 132.1 0.1 133.4C0.2 134.7 0.3 136 0.4 137.3C0.5 138.6 0.6 139.9 0.7 141.2C0.9 142.5 1 143.8 1.2 145.2C1.3 146.5 1.5 147.7 1.7 149C1.9 150.3 2.1 151.6 2.3 152.9C2.6 154.2 2.8 155.5 3.1 156.8C3.4 158.1 3.7 159.3 4.1 160.6C4.4 161.9 4.8 163.1 5.2 164.4C5.7 165.6 6.1 166.8 6.6 168C7.2 169.2 7.7 170.4 8.4 171.5C9 172.7 9.8 173.8 10.5 174.8C11.3 175.9 12.2 176.9 13.1 177.8C13.9 178.8 14.9 179.7 15.8 180.6C16.8 181.5 17.8 182.3 18.9 183C20 183.8 21.1 184.5 22.3 185.1C23.4 185.7 24.6 186.2 25.8 186.7C27 187.1 28.3 187.5 29.6 187.9C30.8 188.2 32.1 188.4 33.4 188.5C34.7 188.7 36 188.7 37.4 188.7C38.7 188.8 40 188.7 41.3 188.7C42.6 188.7 43.9 188.7 45.2 188.7C46.5 188.7 47.8 188.7 49.2 188.7C50.5 188.7 51.8 188.7 53.1 188.7C54.4 188.7 55.7 188.7 57 188.7C58.4 188.7 59.7 188.7 61 188.7C62.3 188.7 63.6 188.7 64.9 188.7C66.2 188.7 67.5 188.7 68.8 188.7C70.2 188.6 71.5 188.6 72.8 188.4C74 188.2 75.3 187.9 76.6 187.5C77.8 187.1 79.1 186.7 80.2 186.1C81.4 185.6 82.6 184.9 83.7 184.2C84.8 183.5 85.8 182.7 86.8 181.9C87.8 181 88.8 180.1 89.7 179.2C90.6 178.3 91.5 177.3 92.3 176.3C93.1 175.2 93.8 174.1 94.4 173C95.1 171.9 95.7 170.7 96.2 169.5C96.7 168.3 97.2 167.1 97.6 165.8C98 164.6 98.3 163.3 98.6 162C98.9 160.8 99.1 159.5 99.3 158.2C99.4 156.9 99.6 155.6 99.7 154.2C99.8 153 99.9 151.6 99.9 150.3C100 149 100 147.7 99.9 146.4C99.9 145.1 99.8 143.8 99.7 142.5C99.6 141.2 99.5 139.9 99.3 138.6C99.1 137.3 98.9 136 98.7 134.7C98.4 133.4 98.1 132.1 97.8 130.9C97.5 129.6 97.1 128.3 96.6 127.1C96.2 125.9 95.7 124.7 95.2 123.4C94.8 122.2 94.2 121 93.9 119.9C93.6 118.7 93.5 117.5 93.7 116.4C93.9 115.2 94.5 114.1 94.9 112.9C95.4 111.7 96.1 110.5 96.6 109.3C97.1 108.1 97.5 106.9 97.9 105.6C98.3 104.4 98.6 103.1 98.9 101.8C99.2 100.5 99.4 99.3 99.6 98C99.8 96.7 99.9 95.4 100 94.1C100 92.8 100 91.4 100 90.1C100 88.8 99.9 87.5 99.7 86.2C99.6 84.9 99.4 83.6 99.1 82.3C98.9 81 98.5 79.8 98.2 78.5C97.8 77.3 97.4 76 96.9 74.8C96.4 73.6 95.9 72.4 95.3 71.2C94.8 70 94 68.9 93.6 67.8C93.2 66.6 92.8 65.5 92.8 64.4C92.8 63.2 93.3 62.1 93.6 60.9C94 59.7 94.6 58.4 95.1 57.2C95.5 56 95.8 54.7 96.1 53.4C96.4 52.2 96.7 50.9 96.9 49.6C97.1 48.3 97.2 47 97.3 45.7C97.4 44.4 97.4 43 97.3 41.7C97.2 40.4 97.1 39.1 96.9 37.8C96.7 36.5 96.5 35.2 96.2 34C95.9 32.7 95.5 31.4 95.1 30.2C94.7 28.9 94.3 27.7 93.8 26.5C93.3 25.3 92.7 24.1 92.1 22.9C91.5 21.8 90.9 20.6 90.2 19.5C89.5 18.4 88.7 17.3 87.9 16.3C87.2 15.2 86.3 14.2 85.4 13.3C84.5 12.3 83.6 11.4 82.6 10.5C81.6 9.7 80.6 8.8 79.6 8C78.5 7.3 77.4 6.6 76.3 5.9C75.2 5.2 74 4.6 72.8 4.1C71.6 3.5 70.4 3 69.2 2.6C68 2.1 66.7 1.7 65.5 1.4C64.2 1.1 62.9 0.8 61.6 0.6C60.3 0.3 59 0.2 57.7 0.1C56.4 0 55.1 0 53.8 0C52.5 0 51.2 0.1 49.9 0.3Z"/>
+              </svg>
               <span class="product-bundle__slot-number" aria-hidden="true">{{ i }}</span>
               <span class="visually-hidden" data-slot-label>
                 {{- 'sections.product_bundle.bottle' | t: number: i }}: {{ 'sections.product_bundle.empty' | t -}}
@@ -149,11 +154,7 @@
                 class="product-bundle__slot-remove"
                 data-bundle-remove
                 hidden
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false">
-                  <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                </svg>
-              </button>
+              ></button>
             </li>
           {%- endfor -%}
         </ol>
@@ -337,6 +338,17 @@
                   </span>
                   <span class="product-main__scent-name">{{ item_scent | escape }}</span>
                   <span class="visually-hidden" data-scent-picked></span>
+                </button>
+                <button
+                  type="button"
+                  class="product-bundle__scent-remove"
+                  data-bundle-scent-remove="{{ item.handle }}"
+                  aria-label="{{ 'sections.product_bundle.remove_scent' | t: scent: item_scent | escape }}"
+                  hidden
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false">
+                    <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
                 </button>
               </li>
             {%- endfor -%}
@@ -533,16 +545,18 @@
      (sections/product.liquid) don't cover.
      ============================================ */
 
-  /* --- The arches ---
-     In the photo's place: one arch per bottle, 156 x 240 and 32px apart in
-     the design's 640px column, filling with the picked scent's color and
-     bottle. */
-  /* Where the design has them in the 640 x 560 box: the arches 136px from
-     the top, the patent stamp 40px off the bottom. */
+  /* --- The bottle shapes ---
+     In the photo's place: one shape per bottle, the Deodorant Enhancer's
+     outline (traced from its photo) with a wide, even border around the
+     bottle, so the cap sits in the shape's cap and the curves line up; all
+     slightly tilted the same way. Empty, it's a line with the number
+     inside; picked, it fills with the scent's color with the bottle in
+     the middle, and the line goes. Tapping a filled one takes it out.
+     They sit above the patent stamp, which stays 40px off the bottom. */
   .product-bundle__stage {
     display: grid;
     place-items: start center;
-    padding-top: 21.25%;
+    padding-top: 14.8%;
   }
 
   .product-bundle__stage .product-main__patent--image {
@@ -552,27 +566,49 @@
   .product-bundle__slots {
     display: grid;
     grid-template-columns: repeat(var(--bundle-size, 3), minmax(0, 1fr));
-    column-gap: 6%;
-    width: 83%;
+    column-gap: 11%;
+    width: 91.8%;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  /* A round top and 20px bottom corners (as percentages, so they scale
-     with the arch). */
+  /* The slot has the shape's proportions; the shape, the bottle and the
+     number are placed in it by percentages, so they scale and tilt
+     together. The line keeps 1.5px at any size. */
   .product-bundle__slot {
     position: relative;
-    display: grid;
-    place-items: center;
-    aspect-ratio: 156 / 240;
-    border: 1.5px solid var(--color-foreground);
-    border-radius: 50% 50% 12.8% 12.8% / 32.5% 32.5% 8.3% 8.3%;
-    background-color: var(--scent-color, transparent);
-    transition: background-color 0.3s ease;
+    aspect-ratio: 100 / 188.7;
+    rotate: -6deg;
   }
 
+  .product-bundle__slot-shape {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .product-bundle__slot-shape path {
+    fill: var(--scent-color, transparent);
+    stroke: var(--color-foreground);
+    stroke-width: 1.5px;
+    vector-effect: non-scaling-stroke;
+    transition: fill 0.3s ease, stroke 0.3s ease;
+  }
+
+  .product-bundle__slot.is-filled .product-bundle__slot-shape path {
+    stroke: transparent;
+  }
+
+  /* In the middle of the bottle's body. */
   .product-bundle__slot-number {
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    translate: -50% -50%;
     font: 400 22px/1.45 var(--font-jokker);
   }
 
@@ -580,73 +616,76 @@
     visibility: hidden;
   }
 
-  /* The bottle stands in the arch, tilted like the scent circles' bottles,
-     and drops in when picked (moving `top`, not a transform, so the photo
-     stays sharp while it moves). */
+  /* The bottle in its shape (the photo's box, placed so the bottle lines
+     up with the shape traced from it). It drops in when
+     picked and lifts a little on hover, moving `top` rather than a
+     transform so the photo stays sharp while it moves. */
   .product-bundle__slot-bottle {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -2.09%;
+    left: -12.82%;
+    z-index: 1;
+    width: 128.35%;
+    height: 101.91%;
+    max-width: none;
     object-fit: contain;
-    rotate: -8deg;
-    scale: 0.9;
     pointer-events: none;
+    transition: top 0.2s ease;
     animation: product-bundle-drop 0.3s ease-out;
   }
 
   @keyframes product-bundle-drop {
     from {
-      top: -16px;
+      top: calc(-2.09% - 16px);
       opacity: 0;
     }
   }
 
-  /* The x on a filled arch's shoulder: a white circle, like the video
-     arrows, growing a little on hover. */
+  @media (hover: hover) {
+    .product-bundle__slot.is-filled:hover .product-bundle__slot-bottle {
+      top: calc(-2.09% - 6px);
+    }
+  }
+
+  /* A filled shape is the button that takes its bottle out: an invisible
+     button over the whole slot. Focused from the keyboard, the shape's
+     line comes back. */
   .product-bundle__slot-remove {
     position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    width: 32px;
-    height: 32px;
+    inset: 0;
+    z-index: 2;
     padding: 0;
-    border: 1px solid var(--color-foreground);
-    border-radius: 50%;
-    background: var(--color-background);
-    color: var(--color-foreground);
+    border: 0;
+    background: none;
     cursor: pointer;
-    transition: scale 0.2s ease;
   }
 
   .product-bundle__slot-remove[hidden] {
     display: none;
   }
 
-  @media (hover: hover) {
-    .product-bundle__slot-remove:hover {
-      scale: 1.15;
-    }
-  }
-
   .product-bundle__slot-remove:focus-visible {
-    outline: 2px solid var(--color-foreground);
-    outline-offset: 2px;
+    outline: none;
   }
 
-  /* Picking a scent when the bundle is full: the x's pulse, pointing at
-     how to swap one. */
-  .product-bundle__slots.is-nudged .product-bundle__slot-remove {
+  .product-bundle__slot:has(.product-bundle__slot-remove:focus-visible) .product-bundle__slot-shape path {
+    stroke: var(--color-foreground);
+    stroke-width: 2px;
+  }
+
+  /* Picking a scent when the bundle is full: the bottles wiggle, pointing
+     at how to swap one. */
+  .product-bundle__slots.is-nudged .product-bundle__slot.is-filled {
     animation: product-bundle-nudge 0.5s ease;
   }
 
   @keyframes product-bundle-nudge {
-    40% {
-      scale: 1.3;
+    25% {
+      rotate: -11deg;
+    }
+
+    60% {
+      rotate: -2deg;
     }
   }
 
@@ -719,14 +758,79 @@
     display: none;
   }
 
+  /* The x on a picked scent's circle, on its edge at the bottom right
+     (opposite the count): takes one of that scent out. It's the circle's
+     sibling, so the list item carries the circle's size (the product
+     page's sizes, below) and is a container, so the circle's width is
+     min(size, the column). */
+  .product-bundle .product-main__scent-list > li {
+    --scent-art: 86px;
+
+    position: relative;
+    container-type: inline-size;
+  }
+
+  .product-bundle__scent-remove {
+    position: absolute;
+    top: calc(min(var(--scent-art), 100cqw) * 0.854);
+    left: calc(50% + min(var(--scent-art), 100cqw) * 0.354);
+    z-index: 1;
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 1px solid var(--color-foreground);
+    border-radius: 50%;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    cursor: pointer;
+    transition: scale 0.2s ease;
+  }
+
+  .product-bundle__scent-remove[hidden] {
+    display: none;
+  }
+
+  @media (hover: hover) {
+    .product-bundle__scent-remove:hover {
+      scale: 1.15;
+    }
+  }
+
+  .product-bundle__scent-remove:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  /* Picking a scent when the bundle is full: the x's pulse too. */
+  .product-main__scent-list.is-nudged .product-bundle__scent-remove {
+    animation: product-bundle-pulse 0.5s ease;
+  }
+
+  @keyframes product-bundle-pulse {
+    40% {
+      scale: 1.3;
+    }
+  }
+
+  @media (max-width: 1279px) {
+    .product-bundle .product-main__scent-list > li {
+      --scent-art: 72px;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .product-bundle__slot,
-    .product-bundle__slot-remove {
+    .product-bundle__slot-shape path,
+    .product-bundle__slot-bottle,
+    .product-bundle__scent-remove {
       transition: none;
     }
 
     .product-bundle__slot-bottle,
-    .product-bundle__slots.is-nudged .product-bundle__slot-remove {
+    .product-bundle__slots.is-nudged .product-bundle__slot.is-filled,
+    .product-main__scent-list.is-nudged .product-bundle__scent-remove {
       animation: none;
     }
   }
@@ -736,15 +840,15 @@
     text-wrap: balance;
   }
 
-  /* --- Phones: the arches across the column ---
-     The stage is as tall as the arches (the product page's photo box has a
-     fixed shape; .product-main__image is doubled to outweigh it). The
-     patent stamp goes under the third arch instead of on its shoulder,
-     where the arch's x is. */
+  /* --- Phones: the shapes across the column ---
+     The stage is as tall as the shapes, with room for their tilt (the
+     product page's photo box has a fixed shape; .product-main__image is
+     doubled to outweigh it). The patent stamp goes under the third
+     shape. */
   @media (max-width: 1023px) {
     .product-main__image.product-bundle__stage {
       aspect-ratio: auto;
-      padding: 4px 0;
+      padding: 10px 0;
     }
 
     .product-main--patent-image_bottom_right .product-main__image.product-bundle__stage {
@@ -758,17 +862,12 @@
     }
 
     .product-bundle__slots {
-      width: 100%;
-      column-gap: 5%;
+      width: 96%;
+      column-gap: 9%;
     }
 
     .product-bundle__slot-number {
       font-size: 18px;
-    }
-
-    .product-bundle__slot-remove {
-      width: 28px;
-      height: 28px;
     }
 
     .product-bundle__price {
@@ -786,11 +885,20 @@
       font-size: 12px;
       line-height: 22px;
     }
+
+    .product-bundle .product-main__scent-list > li {
+      --scent-art: 52px;
+    }
+
+    .product-bundle__scent-remove {
+      width: 24px;
+      height: 24px;
+    }
   }
 {% endstylesheet %}
 
 {% javascript %}
-  /* Bundle product page: picking the scents into the arches and adding the
+  /* Bundle product page: picking the scents into the outlines and adding the
      bundle to the cart. The dropdowns, quantity, ingredients pop-up and
      videos are set up by the product page's script
      (snippets/product-main-script.liquid). */
@@ -815,6 +923,8 @@
         this.slotList = section.querySelector('[data-bundle-slots]');
         this.slotItems = [...section.querySelectorAll('[data-bundle-slot]')];
         this.scentButtons = [...section.querySelectorAll('[data-bundle-scent]')];
+        this.scentRemoveButtons = [...section.querySelectorAll('[data-bundle-scent-remove]')];
+        this.scentList = section.querySelector('.product-main__scent-list');
         this.addButton = section.querySelector('[data-bundle-add]');
         this.addLabel = section.querySelector('[data-bundle-add-label]');
         this.status = section.querySelector('[data-bundle-status]');
@@ -825,6 +935,9 @@
         });
         this.slotItems.forEach((slot, index) => {
           slot.querySelector('[data-bundle-remove]')?.addEventListener('click', () => this.remove(index));
+        });
+        this.scentRemoveButtons.forEach((button) => {
+          button.addEventListener('click', () => this.removeScent(button.dataset.bundleScentRemove, button));
         });
         this.addButton?.addEventListener('click', () => this.addToCart());
 
@@ -849,9 +962,11 @@
         if (!scent) return;
         const index = this.slots.indexOf(null);
         if (index === -1) {
-          this.slotList?.classList.remove('is-nudged');
-          void this.slotList?.offsetWidth;
-          this.slotList?.classList.add('is-nudged');
+          [this.slotList, this.scentList].forEach((list) => {
+            list?.classList.remove('is-nudged');
+            void list?.offsetWidth;
+            list?.classList.add('is-nudged');
+          });
           this.announce(this.text.textFull);
           return;
         }
@@ -866,8 +981,17 @@
         this.slots[index] = null;
         this.render();
         this.announce(this.fill(this.text.textRemoved, { scent: this.scents[handle].name, number: index + 1 }));
-        // The x is gone now; focus goes to that scent's circle.
+        // The bottle's button is gone now; focus goes to that scent's circle.
         this.scentButtons.find((button) => button.dataset.bundleScent === handle)?.focus();
+      }
+
+      // The x on a scent's circle: takes out the last one of it put in,
+      // keeping focus on the x while there's still one in.
+      removeScent(handle, button) {
+        const index = this.slots.lastIndexOf(handle);
+        if (index === -1) return;
+        this.remove(index);
+        if (!button.hidden) button.focus();
       }
 
       render() {
@@ -924,6 +1048,9 @@
           }
           const picked = button.querySelector('[data-scent-picked]');
           if (picked) picked.textContent = count > 0 ? `, ${this.fill(this.text.textPicked, { count })}` : '';
+        });
+        this.scentRemoveButtons.forEach((button) => {
+          button.hidden = !counts[button.dataset.bundleScentRemove];
         });
 
         const remaining = this.slots.filter((handle) => !handle).length;
