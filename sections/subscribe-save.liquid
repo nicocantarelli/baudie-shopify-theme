@@ -84,11 +84,11 @@
 
 {% stylesheet %}
   /* The main pink looks heavy on the cream, so the title keeps the lighter
-     gradient (fine for its display size) and the button stops at the lightest
-     pink that still reads 4.5:1 under its white label. */
+     gradient (fine for its display size) and the button takes the yellow
+     bands' lighter one (snippets/css-variables.liquid). */
   .subscribe-save {
     --gradient-heading: linear-gradient(90deg, #C81466 0%, #D3176C 50%, var(--color-pink) 100%);
-    --gradient-button: linear-gradient(90deg, #C81466 0%, #DC1870 47%, #D2367C 100%);
+    --gradient-button: var(--gradient-button-light);
 
     position: relative;
     isolation: isolate;

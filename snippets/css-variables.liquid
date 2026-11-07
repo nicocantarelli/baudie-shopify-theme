@@ -198,6 +198,10 @@
   --color-scrim: color-mix(in srgb, var(--color-cocoa) 48%, transparent);
 
   --gradient-button: {{ button_gradient }};
+  /* The buttons on the yellow and cream bands (Subscribe & save, Customer
+     videos): the main pink looks heavy there, so the gradient starts lighter
+     and stops at the lightest pink that still reads 4.5:1 under a white label. */
+  --gradient-button-light: linear-gradient(90deg, #C81466 0%, #DC1870 47%, #D2367C 100%);
   --gradient-heading: {{ heading_gradient }};
   --gradient-blush: {{ blush_gradient }};
   --gradient-sunshine: {{ sunshine_gradient }};

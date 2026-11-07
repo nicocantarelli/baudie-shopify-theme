@@ -93,7 +93,7 @@
     {%- endif -%}
 
     {%- if section.settings.button_text != blank and section.settings.button_link != blank -%}
-      <a class="button button--secondary customer-videos__button" href="{{ section.settings.button_link }}">
+      <a class="button customer-videos__button" href="{{ section.settings.button_link }}">
         {{- section.settings.button_text | escape -}}
       </a>
     {%- endif -%}
@@ -215,8 +215,10 @@
     background-color: var(--color-blush);
   }
 
-  /* Between the theme's button and the design's 72px one. */
+  /* Between the theme's button and the design's 72px one, in the yellow
+     bands' gradient like Subscribe & save's (snippets/css-variables.liquid). */
   .customer-videos__button {
+    --button-background: var(--gradient-button-light);
     --button-height: 60px;
     --button-padding: 40px;
     --button-font-size: 18px;
