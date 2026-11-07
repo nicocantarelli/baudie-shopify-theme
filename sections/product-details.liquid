@@ -740,9 +740,11 @@
     gap: 16px;
   }
 
+  /* In Jokker, the page's sans: wider than the script titles, so a size
+     smaller than theirs. */
   .product-details__dialog-title {
-    font: 400 48px/1.05 var(--font-alyona);
-    letter-spacing: var(--tracking-title-light);
+    font: 400 40px/1.1 var(--font-jokker);
+    letter-spacing: -0.02em;
     text-wrap: balance;
   }
 
@@ -881,7 +883,7 @@
     }
 
     .product-details__dialog-title {
-      font-size: 34px;
+      font-size: 28px;
     }
 
     .product-details__dialog-body {
