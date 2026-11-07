@@ -82,7 +82,18 @@
 
     <a href="{{ product.url }}" class="product-card__image-link" aria-label="{{ product.title | escape }}">
       <div class="product-card__image-container">
-        {%- if is_wide and product.images.size > 1 -%}
+        {%- liquid
+          comment
+            A wide card with no picked image stacks the product's first two photos.
+          endcomment
+          assign show_stack = false
+          if is_wide and product.images.size > 1
+            if card_image_override == blank
+              assign show_stack = true
+            endif
+          endif
+        -%}
+        {%- if show_stack -%}
           <div class="product-card__images-stack">
             {%- for image in product.images limit: 2 -%}
               <div class="product-card__stacked-image" style="--stack-index: {{ forloop.index0 }}">

@@ -105,6 +105,7 @@
                     show_badge: block.settings.show_badge,
                     badge_text: block.settings.badge_text,
                     custom_button_text: block.settings.custom_button_text,
+                    card_image_override: block.settings.card_image,
                     lazy_load: should_lazy_load
                   %}
                 </div>
@@ -941,6 +942,12 @@
           "type": "text",
           "id": "badge_text",
           "label": "t:labels.badge_text"
+        },
+        {
+          "type": "image_picker",
+          "id": "card_image",
+          "label": "t:blocks.product_card.settings.card_image",
+          "info": "t:blocks.product_card.settings.card_image_info"
         },
         {
           "type": "text",
