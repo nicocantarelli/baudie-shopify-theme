@@ -637,7 +637,11 @@
       "intro": "Introduction text",
       "faq_item": "FAQ item",
       "question": "Question",
-      "answer": "Answer"
+      "answer": "Answer",
+      "image": "Photo",
+      "image_info": "Shown beside the questions (above them on phones). Without a photo the questions are centered.",
+      "background_color_info": "Leave empty for the design's pink band.",
+      "text_color_info": "Leave empty for white."
     },
     "related_products": {
       "name": "Related products",

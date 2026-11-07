@@ -1,65 +1,89 @@
 {%- comment -%}
-  Product FAQ section — accordion with expand/collapse questions.
+  Product FAQ: a pink band with wavy top and bottom edges, a photo on the
+  left and the questions on the right under a big script title. On phones
+  the photo sits above the title.
+  Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=118-9736
+  (phone: node-id=118-11349)
+
+  Colors left empty in the editor give the design's band; a picked
+  background color fills the band instead, and a picked text color replaces
+  the white.
 {%- endcomment -%}
 
 {%- liquid
   assign faq_blocks = section.blocks | where: 'type', 'faq_item'
-  assign top_padding = section.settings.top_padding | default: 112
+  assign top_padding = section.settings.top_padding | default: 96
+  assign faq_image = section.settings.image
 -%}
 
 <section
-  class="product-faq full-width"
+  class="product-faq full-width{% if faq_image == blank %} product-faq--no-photo{% endif %}"
   data-section-id="{{ section.id }}"
   data-product-faq
-  aria-label="{{ section.settings.title | default: 'FAQ' }}"
-  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --pf-top: {{ top_padding }}px;">
-
+  aria-label="{{ section.settings.title | default: 'FAQ' | escape }}"
+  style="--pf-top: {{ top_padding }}px; --faq-wave-top: url('{{ 'shape-faq-wave-top.svg' | asset_url }}'); --faq-wave-bottom: url('{{ 'shape-faq-wave-bottom.svg' | asset_url }}');
+    {%- if section.settings.background_color != blank %} --section-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.text_color != blank %} --text-color: {{ section.settings.text_color }};{% endif -%}
+  ">
   <div class="product-faq__inner">
-    {% if section.settings.title != blank %}
-      <h2 class="product-faq__title">{{ section.settings.title }}</h2>
-    {% endif %}
+    {%- if faq_image != blank -%}
+      <div class="product-faq__photo">
+        {{ faq_image | image_url: width: 1400 | image_tag:
+          loading: 'lazy',
+          sizes: '(min-width: 1024px) 42vw, 100vw',
+          widths: '600, 800, 1000, 1200, 1400',
+          class: 'product-faq__img',
+          alt: faq_image.alt | default: ''
+        }}
+      </div>
+    {%- endif -%}
 
     <div class="product-faq__body">
-      {% if section.settings.intro != blank %}
+      {%- if section.settings.title != blank -%}
+        <h2 class="product-faq__title">{{ section.settings.title | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.intro != blank -%}
         <div class="product-faq__intro">
           {{ section.settings.intro }}
         </div>
-      {% endif %}
+      {%- endif -%}
 
-      {% if faq_blocks.size > 0 %}
+      {%- if faq_blocks.size > 0 -%}
         <div class="product-faq__list">
-          {% for block in faq_blocks %}
+          {%- for block in faq_blocks -%}
             <div class="product-faq__item" data-accordion-item {{ block.shopify_attributes }}>
-              <hr class="product-faq__divider">
               <button
                 class="product-faq__trigger"
+                id="faq-question-{{ block.id }}"
                 data-accordion-trigger
                 aria-expanded="false"
                 aria-controls="faq-answer-{{ block.id }}"
-                type="button">
+                type="button"
+              >
                 <span class="product-faq__question">{{ block.settings.question }}</span>
-                <svg class="product-faq__icon product-faq__icon--plus" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                <svg class="product-faq__icon product-faq__icon--minus" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
+                <span class="product-faq__toggle" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" focusable="false">
+                    <path d="M1 7H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    <path class="product-faq__toggle-down" d="M7 1V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  </svg>
+                </span>
               </button>
               <div
                 class="product-faq__answer"
                 id="faq-answer-{{ block.id }}"
                 role="region"
-                aria-hidden="true">
+                aria-labelledby="faq-question-{{ block.id }}"
+                inert
+              >
                 <div class="product-faq__answer-inner">
                   {{ block.settings.answer }}
                 </div>
               </div>
             </div>
-          {% endfor %}
-          <hr class="product-faq__divider">
+          {%- endfor -%}
         </div>
-      {% endif %}
+      {%- endif -%}
     </div>
   </div>
 </section>
@@ -87,135 +111,167 @@
 {% endif %}
 
 {% stylesheet %}
+  /* The band: Figma's gradient, deepened on the side the white text sits on
+     so it keeps 4.5:1 (#D2367C and darker), with the design's wave along
+     the top and bottom (assets/shape-faq-wave-*.svg, 1543 wide on a 1440
+     frame, so the edges overhang a little; their URLs come in from the
+     section's style attribute). */
   .product-faq {
-    background-color: var(--section-bg, #FCE9EC);
+    --faq-text: var(--text-color, var(--color-on-accent));
+    --faq-band: var(--section-bg, linear-gradient(90deg, #FFC8E4 0%, #F88EBE 22%, #D2367C 50%, #C11562 100%));
+    --faq-edge: calc(100vw * 180 / 1440);
+    --faq-edge-width: calc(100vw * 1543 / 1440);
+    --faq-edge-left: calc(100vw * -51.5 / 1440);
+
+    position: relative;
+    isolation: isolate;
+    padding-top: var(--pf-top);
+    color: var(--faq-text);
+  }
+
+  /* Without a photo the text starts at the band's light end, so the band
+     takes the buttons' gradient. */
+  .product-faq--no-photo {
+    --faq-band: var(--section-bg, var(--gradient-button));
+  }
+
+  .product-faq::before {
+    content: '';
+    position: absolute;
+    inset: var(--pf-top) 0 0;
+    z-index: -1;
+    background: var(--faq-band);
+    -webkit-mask:
+      var(--faq-wave-top) var(--faq-edge-left) top / var(--faq-edge-width) var(--faq-edge) no-repeat,
+      linear-gradient(#000 0 0) 0 calc(var(--faq-edge) - 1px) / 100% calc(100% - 2 * var(--faq-edge) + 2px) no-repeat,
+      var(--faq-wave-bottom) var(--faq-edge-left) bottom / var(--faq-edge-width) var(--faq-edge) no-repeat;
+    mask:
+      var(--faq-wave-top) var(--faq-edge-left) top / var(--faq-edge-width) var(--faq-edge) no-repeat,
+      linear-gradient(#000 0 0) 0 calc(var(--faq-edge) - 1px) / 100% calc(100% - 2 * var(--faq-edge) + 2px) no-repeat,
+      var(--faq-wave-bottom) var(--faq-edge-left) bottom / var(--faq-edge-width) var(--faq-edge) no-repeat;
   }
 
   .product-faq__inner {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    max-width: 1600px;
+    display: grid;
+    grid-template-columns: minmax(0, 600fr) minmax(0, 616fr);
+    align-items: start;
+    column-gap: clamp(32px, 100vw * 64 / 1440, 64px);
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 80px 12px;
+    padding: calc(var(--faq-edge) + 40px) var(--page-gutter);
+    box-sizing: content-box;
   }
 
-  /* --- Title --- */
-
-  .product-faq__title {
-    font-family: var(--font-alyona);
-    font-weight: 400;
-    font-size: 34px;
-    line-height: 1;
-    color: var(--text-color, #3E2027);
-    margin: 0;
+  .product-faq--no-photo .product-faq__inner {
+    grid-template-columns: minmax(0, 760px);
+    justify-content: center;
   }
 
-  /* --- Body (intro + list) --- */
+  /* 12px below the title's top, as in the design; the photo stays put
+     while answers open. */
+  .product-faq__photo {
+    position: relative;
+    margin-top: 12px;
+    aspect-ratio: 600 / 700;
+    overflow: hidden;
+    border-radius: var(--radius-panel);
+  }
+
+  .product-faq__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
   .product-faq__body {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 32px;
+    min-width: 0;
   }
 
-  /* --- Intro --- */
+  .product-faq__title {
+    margin: 0;
+    font-family: var(--font-alyona);
+    font-weight: 400;
+    font-size: min(104px, 100vw * 104 / 1440);
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    text-align: center;
+    text-transform: none;
+    color: inherit;
+    /* Narrow enough to break "got questions?" over two lines, as in the
+       design. */
+    max-width: 4.6em;
+    margin-inline: auto;
+  }
 
   .product-faq__intro {
-    font-family: var(--font-jokker);
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--text-color, #3E2027);
+    margin-top: -12px;
+    font: 400 16px/1.5 var(--font-jokker);
+    text-align: center;
   }
 
-  .product-faq__intro p {
-    margin: 0;
+  .product-faq__intro > :first-child {
+    margin-top: 0;
   }
 
-  /* --- FAQ List --- */
-
-  .product-faq__list {
-    display: flex;
-    flex-direction: column;
+  .product-faq__intro > :last-child {
+    margin-bottom: 0;
   }
-
-  /* --- Divider --- */
-
-  .product-faq__divider {
-    width: 100%;
-    height: 0;
-    border: none;
-    border-top: 1px solid color-mix(in srgb, var(--text-color, #3E2027) 20%, transparent);
-    margin: 0;
-  }
-
-  /* --- Item --- */
 
   .product-faq__item {
-    display: flex;
-    flex-direction: column;
+    border-bottom: 1px solid currentColor;
   }
-
-  /* --- Trigger --- */
 
   .product-faq__trigger {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 16px;
     width: 100%;
-    padding: 20px 0;
-    margin: 0;
+    padding: 16px 0;
+    border: 0;
     background: none;
-    border: none;
-    cursor: pointer;
+    color: inherit;
     text-align: left;
-    -webkit-appearance: none;
-    appearance: none;
+    cursor: pointer;
+  }
+
+  .product-faq__trigger:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
   }
 
   .product-faq__question {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    line-height: normal;
-    letter-spacing: -0.14px;
-    text-transform: uppercase;
-    color: var(--text-color, #3E2027);
+    font: 700 16px/1.3 var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label);
   }
 
-  /* The global .reg-mark utility (layout/theme.liquid) defaults to 0.4em for
-     large headings. This trigger is small text in a <span>, not a <p>/<li>, so
-     it needs the same body treatment paragraphs get or the ® renders too small. */
-  .product-faq__question .reg-mark {
-    font-size: 0.8em;
-    vertical-align: 0.35em;
-  }
-
-  /* --- Icons --- */
-
-  .product-faq__icon {
+  /* White circle, pink plus; the plus turns into a minus when open. */
+  .product-faq__toggle {
+    display: grid;
     flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    margin-top: 2px;
-    color: var(--text-color, #3E2027);
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--faq-text);
+    /* The band's own color when one is picked, so the plus still shows
+       against a picked text color. */
+    color: var(--section-bg, var(--color-foreground));
   }
 
-  .product-faq__icon--minus {
-    display: none;
+  .product-faq__toggle-down {
+    transform-origin: center;
+    transition: transform 0.25s ease;
   }
 
-  .product-faq__item--open .product-faq__icon--plus {
-    display: none;
+  .product-faq__item--open .product-faq__toggle-down {
+    transform: scaleY(0);
   }
-
-  .product-faq__item--open .product-faq__icon--minus {
-    display: block;
-  }
-
-  /* --- Answer --- */
 
   .product-faq__answer {
     height: 0;
@@ -224,150 +280,148 @@
   }
 
   .product-faq__answer-inner {
-    font-family: var(--font-jokker);
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 1.5;
-    letter-spacing: -0.14px;
-    color: var(--text-color, #3E2027);
-    padding-bottom: 20px;
+    padding: 0 44px 20px 0;
+    font: 400 16px/1.5 var(--font-jokker);
   }
 
-  .product-faq__answer-inner p {
-    margin: 0 0 0.5em;
+  .product-faq__answer-inner > :first-child {
+    margin-top: 0;
   }
 
-  .product-faq__answer-inner p:last-child {
+  .product-faq__answer-inner > :last-child {
     margin-bottom: 0;
   }
 
-  .product-faq__answer-inner ul,
-  .product-faq__answer-inner ol {
-    margin: 0 0 0.5em;
-    padding-left: 1.2em;
+  .product-faq__answer-inner a {
+    color: inherit;
   }
 
-  .product-faq__answer-inner strong,
-  .product-faq__answer-inner b {
-    font-weight: 700;
+  @media (prefers-reduced-motion: reduce) {
+    .product-faq__answer,
+    .product-faq__toggle-down {
+      transition: none;
+    }
   }
 
-  .product-faq__answer-inner em,
-  .product-faq__answer-inner i {
-    font-style: italic;
-  }
-
-  /* ============================================
-     Desktop (1024px+)
-     ============================================ */
-
-  @media (min-width: 1024px) {
-    .product-faq__inner {
-      flex-direction: row;
-      align-items: flex-start;
-      gap: 80px;
-      padding: var(--pf-top, 112px) 40px 112px;
+  /* Phones and small tablets: the photo above the title, the band's
+     gradient running down so the text sits on its deep end. */
+  @media (max-width: 1023px) {
+    .product-faq {
+      --faq-band: var(--section-bg, linear-gradient(180deg, #F88EBE 0%, #D2367C 42%, #C11562 100%));
+      --faq-edge: calc(100vw * 64 / 393);
     }
 
-    .product-faq__title {
-      font-size: 70px;
-      width: 428px;
-      flex-shrink: 0;
+    .product-faq--no-photo {
+      --faq-band: var(--section-bg, var(--gradient-button));
+    }
+
+    .product-faq__inner {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 16px;
+      max-width: 640px;
+      padding: calc(var(--faq-edge) + 8px) 16px;
+    }
+
+    .product-faq--no-photo .product-faq__inner {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .product-faq__photo {
+      margin-top: 0;
+      aspect-ratio: 361 / 400;
+      border-radius: var(--radius-card);
     }
 
     .product-faq__body {
-      flex: 1;
+      gap: 16px;
+    }
+
+    .product-faq__title {
+      font-size: 60px;
     }
 
     .product-faq__intro {
-      font-size: 18px;
-      letter-spacing: -0.18px;
+      margin-top: 0;
+      font-size: 14px;
+    }
+
+    .product-faq__trigger {
+      padding: 12px 0;
     }
 
     .product-faq__question {
-      font-size: 16px;
-      letter-spacing: -0.16px;
+      font-size: 14px;
+    }
+
+    .product-faq__toggle {
+      width: 24px;
+      height: 24px;
+    }
+
+    .product-faq__toggle svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .product-faq__answer-inner {
+      padding-right: 36px;
+      font-size: 14px;
     }
   }
 {% endstylesheet %}
 
 {% javascript %}
-class ProductFaq {
-  constructor() {
-    this.section = document.querySelector('[data-product-faq]');
-    if (!this.section) return;
+  /* FAQ accordions: one answer open at a time, animated open and shut. */
+  (() => {
+    function setUp(section) {
+      if (section.dataset.faqReady) return;
+      section.dataset.faqReady = 'on';
+      const triggers = section.querySelectorAll('[data-accordion-trigger]');
 
-    this.triggers = this.section.querySelectorAll('[data-accordion-trigger]');
-    this.bindEvents();
-  }
+      const close = (trigger) => {
+        const content = document.getElementById(trigger.getAttribute('aria-controls'));
+        content.style.height = `${content.scrollHeight}px`;
+        content.offsetHeight;
+        trigger.setAttribute('aria-expanded', 'false');
+        trigger.closest('[data-accordion-item]').classList.remove('product-faq__item--open');
+        content.inert = true;
+        content.style.height = '0';
+      };
 
-  bindEvents() {
-    this.triggers.forEach(trigger => {
-      trigger.addEventListener('click', () => this.toggle(trigger));
-    });
-  }
+      const open = (trigger) => {
+        const content = document.getElementById(trigger.getAttribute('aria-controls'));
+        trigger.setAttribute('aria-expanded', 'true');
+        trigger.closest('[data-accordion-item]').classList.add('product-faq__item--open');
+        content.inert = false;
+        content.style.height = `${content.scrollHeight}px`;
+        content.addEventListener('transitionend', () => {
+          if (trigger.getAttribute('aria-expanded') === 'true') content.style.height = 'auto';
+        }, { once: true });
+      };
 
-  toggle(trigger) {
-    const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+      triggers.forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+          const expanded = trigger.getAttribute('aria-expanded') === 'true';
+          triggers.forEach((other) => {
+            if (other !== trigger && other.getAttribute('aria-expanded') === 'true') close(other);
+          });
+          if (expanded) close(trigger);
+          else open(trigger);
+        });
+      });
+    }
 
-    this.triggers.forEach(otherTrigger => {
-      if (otherTrigger !== trigger && otherTrigger.getAttribute('aria-expanded') === 'true') {
-        this.close(otherTrigger);
-      }
-    });
+    function init(root = document) {
+      root.querySelectorAll('[data-product-faq]').forEach(setUp);
+    }
 
-    if (isExpanded) {
-      this.close(trigger);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => init());
     } else {
-      this.open(trigger);
+      init();
     }
-  }
-
-  open(trigger) {
-    const contentId = trigger.getAttribute('aria-controls');
-    const content = document.getElementById(contentId);
-    const item = trigger.closest('[data-accordion-item]');
-
-    trigger.setAttribute('aria-expanded', 'true');
-    content.setAttribute('aria-hidden', 'false');
-    item.classList.add('product-faq__item--open');
-    content.style.height = content.scrollHeight + 'px';
-
-    content.addEventListener('transitionend', function handler() {
-      if (trigger.getAttribute('aria-expanded') === 'true') {
-        content.style.height = 'auto';
-      }
-      content.removeEventListener('transitionend', handler);
-    }, { once: true });
-  }
-
-  close(trigger) {
-    const contentId = trigger.getAttribute('aria-controls');
-    const content = document.getElementById(contentId);
-    const item = trigger.closest('[data-accordion-item]');
-
-    content.style.height = content.scrollHeight + 'px';
-    content.offsetHeight;
-    trigger.setAttribute('aria-expanded', 'false');
-    content.setAttribute('aria-hidden', 'true');
-    item.classList.remove('product-faq__item--open');
-    content.style.height = '0';
-  }
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => new ProductFaq());
-} else {
-  new ProductFaq();
-}
-
-if (Shopify.designMode) {
-  document.addEventListener('shopify:section:load', (e) => {
-    if (e.target.querySelector('[data-product-faq]')) {
-      new ProductFaq();
-    }
-  });
-}
+    document.addEventListener('shopify:section:load', (event) => init(event.target));
+  })();
 {% endjavascript %}
 
 {% schema %}
@@ -379,12 +433,18 @@ if (Shopify.designMode) {
       "type": "text",
       "id": "title",
       "label": "t:sections.product_faq.title",
-      "default": "Frequently Asked Questions"
+      "default": "got questions?"
     },
     {
       "type": "richtext",
       "id": "intro",
       "label": "t:sections.product_faq.intro"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.product_faq.image",
+      "info": "t:sections.product_faq.image_info"
     },
     {
       "type": "range",
@@ -394,7 +454,7 @@ if (Shopify.designMode) {
       "max": 160,
       "step": 8,
       "unit": "px",
-      "default": 112
+      "default": 96
     },
     {
       "type": "header",
@@ -404,13 +464,13 @@ if (Shopify.designMode) {
       "type": "color",
       "id": "background_color",
       "label": "t:labels.background_color",
-      "default": "#FCE9EC"
+      "info": "t:sections.product_faq.background_color_info"
     },
     {
       "type": "color",
       "id": "text_color",
       "label": "t:labels.text_color",
-      "default": "#3E2027"
+      "info": "t:sections.product_faq.text_color_info"
     }
   ],
   "blocks": [
@@ -435,20 +495,68 @@ if (Shopify.designMode) {
     {
       "name": "Product FAQ",
       "blocks": [
-        { "type": "faq_item", "settings": { "question": "Is Baudie a deodorant?" } },
-        { "type": "faq_item", "settings": { "question": "How do I use it?" } },
-        { "type": "faq_item", "settings": { "question": "Why do I need a pre-deodorant?" } },
-        { "type": "faq_item", "settings": { "question": "What does \"odor-eliminating bacterial technology\" mean?" } },
-        { "type": "faq_item", "settings": { "question": "Will the enhancer scent mix with my deodorant or perfume?" } },
-        { "type": "faq_item", "settings": { "question": "Can I use Baudie without deodorant?" } },
-        { "type": "faq_item", "settings": { "question": "Can I use it before workouts?" } },
-        { "type": "faq_item", "settings": { "question": "Is it suitable for sensitive skin?" } },
-        { "type": "faq_item", "settings": { "question": "Can teens use Baudie?" } }
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is Baudie a deodorant?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I use it?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Why do I need a pre-deodorant?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What does \"odor-eliminating bacterial technology\" mean?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Will the enhancer scent mix with my deodorant or perfume?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I use Baudie without deodorant?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I use it before workouts?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is it suitable for sensitive skin?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can teens use Baudie?"
+          }
+        }
       ]
     }
   ],
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": [
+      "header",
+      "footer"
+    ]
   }
 }
 {% endschema %}
