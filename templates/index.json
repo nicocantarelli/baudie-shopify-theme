@@ -26,6 +26,9 @@
           "barely-there"
         ],
         "use_default_colors": false,
+        "default_card_background_color": "",
+        "default_card_text_color": "",
+        "default_card_button_color": "",
         "use_static_image": true,
         "static_hero_image": "shopify://shop_images/hero-petal-kiss-beach.jpg",
         "static_hero_image_alt": "",
@@ -119,21 +122,15 @@
       "settings": {
         "title": "in the press",
         "title_style": "script",
-        "tint_logos": true
+        "tint_logos": true,
+        "background_color": "",
+        "text_color": "",
+        "logo_color": "",
+        "divider_color": ""
       }
     },
     "product_details_XyZ123": {
       "type": "product-details",
-      "settings": {
-        "heading": "<p>Does your deodorant fail mid-day?<br/>Body odor making you self-conscious?<br/>Tired of doing the sniff check?<br/></p>",
-        "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
-        "product_image": "shopify://shop_images/Group_Shot_14.png",
-        "layout": "benefits",
-        "lockup_top": "body odor",
-        "lockup_main": "who?",
-        "button_text": "Shop the scents",
-        "button_link": "shopify://collections/shop"
-      },
       "blocks": {
         "benefit_patent": {
           "type": "benefit",
@@ -173,7 +170,19 @@
         "benefit_primer",
         "benefit_all_day",
         "benefit_plant_based"
-      ]
+      ],
+      "settings": {
+        "layout": "benefits",
+        "lockup_top": "body odor",
+        "lockup_main": "who?",
+        "heading": "<p>Does your deodorant fail mid-day?<br/>Body odor making you self-conscious?<br/>Tired of doing the sniff check?<br/></p>",
+        "description": "<p>Baudie is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it creates an optimized environment where bacteria cannot thrive, while maintaining a balanced skin microbiome. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
+        "product_image": "shopify://shop_images/Group_Shot_14.png",
+        "button_text": "Shop the scents",
+        "button_link": "shopify://collections/shop",
+        "background_color": "",
+        "text_color": ""
+      }
     },
     "subscribe_save_R7m2Qa": {
       "type": "subscribe-save",
@@ -215,10 +224,12 @@
       ],
       "name": "t:sections.subscribe_save.name",
       "settings": {
+        "image": "shopify://shop_images/subscribe-save-sweet-muse.jpg",
         "title": "Save 15% for life and smell good",
         "button_text": "Subscribe + save",
         "button_link": "shopify://collections/shop",
-        "image": "shopify://shop_images/subscribe-save-sweet-muse.jpg"
+        "background_color": "",
+        "text_color": ""
       }
     },
     "product_features_aNgxYb": {
@@ -293,7 +304,10 @@
       "name": "t:sections.product_features.name",
       "settings": {
         "band_shape": "wavy",
-        "padding_top": true
+        "padding_top": true,
+        "background_color": "",
+        "text_color": "",
+        "icon_color": ""
       }
     },
     "category_cards_Wd3pLs": {
@@ -340,7 +354,9 @@
       ],
       "name": "t:sections.category_cards.name",
       "settings": {
-        "title": "Smell good in your Baudie!"
+        "title": "Smell good in your Baudie!",
+        "background_color": "",
+        "text_color": ""
       }
     },
     "how_to_use_Kp3vTe": {
@@ -401,12 +417,15 @@
       "settings": {
         "layout": "card",
         "title": "spray, wipe, deo",
-        "media_image": "shopify://shop_images/how-to-use-petal-kiss.jpg",
         "mobile_description": "",
-        "description": "<p>Underarm odor control and happy pits<br>in three easy steps!</p>",
+        "description": "<p>Underarm odor control and happy pits<br/>in three easy steps!</p>",
         "pro_tip_label": "Pro tip:",
         "pro_tip": "Scent meets skin differently, find the scent that works the best with your body chemistry",
-        "sprays_title": ""
+        "sprays_title": "",
+        "media_image": "shopify://shop_images/how-to-use-petal-kiss.jpg",
+        "media_video": "shopify://files/videos/4adf8d3d066c4601b34a896a1852e848.MOV",
+        "background_color": "",
+        "text_color": ""
       }
     },
     "customer_videos_Vq7nXa": {
@@ -416,7 +435,9 @@
         "title": "Baudie looks good on you",
         "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
         "button_text": "Shop all scents",
-        "button_link": "shopify://collections/shop"
+        "button_link": "shopify://collections/shop",
+        "background_color": "",
+        "text_color": ""
       }
     },
     "what_makes_different_tVrMDA": {
@@ -436,7 +457,6 @@
     },
     "meet_scents_AbC456": {
       "type": "meet-your-scents",
-      "disabled": true,
       "blocks": {
         "product_dniJjq": {
           "type": "product",
@@ -495,6 +515,7 @@
         "product_qEfH7c",
         "product_E4JWyD"
       ],
+      "disabled": true,
       "settings": {
         "background_color": "#fce9ec",
         "heading": "Meet Your Scents",
@@ -504,7 +525,6 @@
     },
     "explore_sets_UjtGBG": {
       "type": "explore-sets",
-      "disabled": true,
       "blocks": {
         "bundle_card_DJgHdm": {
           "type": "bundle_card",
@@ -539,6 +559,7 @@
         "bundle_card_DJgHdm",
         "bundle_card_Y7MARn"
       ],
+      "disabled": true,
       "name": "t:general.explore_sets",
       "settings": {
         "background_image": "shopify://shop_images/explore-our-sets-background_3a24be6f-5c93-4c77-b6ee-9d5633ec779a.png",
@@ -553,7 +574,6 @@
     },
     "reviews_wFhWb3": {
       "type": "reviews",
-      "disabled": true,
       "blocks": {
         "review_ALLATw": {
           "type": "review",
@@ -621,6 +641,7 @@
         "review_TAYYY7",
         "review_PkXwU8"
       ],
+      "disabled": true,
       "name": "t:general.reviews",
       "settings": {
         "heading": "People Are Raving...",
@@ -680,7 +701,11 @@
         "description": "Be the first to know when new scents drop, bundles launch, and good pit news happens.",
         "placeholder": "Enter your email",
         "button_text": "SUBSCRIBE",
-        "fine_print": "<p>We'll only email you when it's worth it — new scents, early access, or something good for your pits. See our <a href=\"/pages/customer-care#privacy\" target=\"_blank\">Privacy Policy</a> and <a href=\"/pages/customer-care#terms\" target=\"_blank\">Terms</a>.</p>"
+        "fine_print": "<p>We'll only email you when it's worth it — new scents, early access, or something good for your pits. See our <a href=\"/pages/customer-care#privacy\" target=\"_blank\">Privacy Policy</a> and <a href=\"/pages/customer-care#terms\" target=\"_blank\">Terms</a>.</p>",
+        "background_color": "",
+        "text_color": "",
+        "button_background_color": "",
+        "button_text_color": ""
       }
     }
   },
