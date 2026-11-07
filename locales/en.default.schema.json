@@ -648,7 +648,9 @@
       "settings": {
         "collection": "Collection",
         "collection_info": "Choose a collection to display. Leave empty to auto-detect from the product.",
-        "max_products": "Maximum products"
+        "max_products": "Maximum products",
+        "background_color_info": "Leave empty for white.",
+        "text_color_info": "Leave empty for the design's pink gradient title."
       }
     },
     "about_hero": {

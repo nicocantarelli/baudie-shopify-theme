@@ -44,14 +44,42 @@
   endfor
 -%}
 
+{%- comment -%}
+  Related products, in the design's "You might also like" cards: the
+  product on its card color in a rounded square, over a pink strip with its
+  name and price. Quick add (or Choose your scents for the scent-pick
+  bundles) shows over the image on hover. Four across on computers, two on
+  phones; the row scrolls when there are more, with arrows.
+  Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=118-10033
+  (phone: node-id=118-11363)
+
+  Colors left empty in the editor give the design's white section and
+  gradient title; picked ones replace them.
+{%- endcomment -%}
 {%- if related_count > 0 -%}
-  <related-products class="related-products full-width" style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }};">
+  <related-products
+    class="related-products full-width"
+    style="
+      {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
+      {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
+    "
+  >
     <div class="related-products__wrapper">
       {%- if section.settings.heading != blank -%}
-        <h2 class="related-products__heading">{{ section.settings.heading | escape }}</h2>
+        <h2 class="related-products__heading{% if section.settings.text_color == blank %} text-gradient{% endif %}">
+          {{- section.settings.heading | escape -}}
+        </h2>
       {%- endif -%}
 
-      <div class="related-products__track" data-track aria-label="{{ 'sections.related_products.aria_label' | t }}">
+      <div class="related-products__row">
+        <button type="button" class="related-products__arrow related-products__arrow--prev" data-prev aria-label="{{ 'general.previous' | t }}">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1.5 7H12.5M12.5 7L7.5 2M12.5 7L7.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button type="button" class="related-products__arrow related-products__arrow--next" data-next aria-label="{{ 'general.next' | t }}">
+          <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1.5 7H12.5M12.5 7L7.5 2M12.5 7L7.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <div class="related-products__track" data-track aria-label="{{ 'sections.related_products.aria_label' | t }}">
         {%- assign card_index = 0 -%}
         {%- for item in collection_products -%}
           {%- liquid
@@ -77,10 +105,9 @@
             {%- assign card_bg = item.metafields.custom.product_card_background | default: '#FCF0D2' -%}
             {%- assign card_image = item.metafields.custom.card_image_portrait | default: item.metafields.custom.card_image | default: item.featured_image -%}
             {%- assign card_hover_image = item.metafields.custom.card_hover_image -%}
-            {%- assign short_description = item.metafields.custom.short_description | default: item.description | strip_html | truncate: 120 -%}
             {%- assign selected_variant = item.selected_or_first_available_variant -%}
             <div class="related-products__card" data-card>
-              <div class="related-products__image" style="background-color: {{ card_bg }};">
+              <div class="related-products__image" style="--card-bg: {{ card_bg }};">
                 <a href="{{ item.url }}" class="related-products__image-link" aria-label="{{ item.title }}">
                   {%- if card_image -%}
                     {{ card_image | image_url: width: 500 | image_tag:
@@ -149,29 +176,16 @@
                 </div>
               </div>
               <div class="related-products__info">
-                <div class="related-products__meta">
-                  <h3 class="related-products__title">
-                    <a href="{{ item.url }}" class="related-products__title-link">{{ item.title }}</a>
-                  </h3>
-                  <span class="related-products__price">{{ item.price | money }}</span>
-                </div>
-                {%- if short_description != blank -%}
-                  <p class="related-products__description">{{ short_description }}</p>
-                {%- endif -%}
+                <h3 class="related-products__title">
+                  <a href="{{ item.url }}" class="related-products__title-link">{{ item.title }}</a>
+                </h3>
+                <span class="related-products__price">{{ item.price | money_without_trailing_zeros }}</span>
               </div>
             </div>
             {%- assign card_index = card_index | plus: 1 -%}
           {%- endif -%}
         {%- endfor -%}
-      </div>
-
-      <div class="related-products__nav">
-        <button type="button" class="related-products__arrow related-products__arrow--prev" data-prev aria-label="{{ 'general.previous' | t }}">
-          <svg aria-hidden="true" width="12" height="24" viewBox="0 0 12 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.84306 12.7106L7.50006 18.3676L8.91406 16.9536L3.96406 12.0036L8.91406 7.05365L7.50006 5.63965L1.84306 11.2966C1.65559 11.4842 1.55028 11.7385 1.55028 12.0036C1.55028 12.2688 1.65559 12.5231 1.84306 12.7106Z" fill="currentColor"/></svg>
-        </button>
-        <button type="button" class="related-products__arrow related-products__arrow--next" data-next aria-label="{{ 'general.next' | t }}">
-          <svg aria-hidden="true" width="12" height="24" viewBox="0 0 12 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.1569 12.7106L4.49994 18.3676L3.08594 16.9536L8.03594 12.0036L3.08594 7.05365L4.49994 5.63965L10.1569 11.2966C10.3444 11.4842 10.4497 11.7385 10.4497 12.0036C10.4497 12.2688 10.3444 12.5231 10.1569 12.7106Z" fill="currentColor"/></svg>
-        </button>
+        </div>
       </div>
 
       {%- if related_count > 1 -%}
@@ -194,34 +208,49 @@
 {%- endif -%}
 
 {% stylesheet %}
+  /* "You might also like": Figma node 118:10033 (phone 118:11363). */
   .related-products {
-    background-color: var(--section-bg, #FCE9EC);
-    padding: 53px 0 0;
+    --rp-gap: 32px;
+    --rp-columns: 4;
+    --rp-strip-pad: 16px;
+    background-color: var(--section-bg, transparent);
+    padding: 64px 0;
   }
 
   .related-products__wrapper {
-    max-width: 1600px;
-    margin: 0 auto 90px;
+    max-width: 1440px;
+    margin: 0 auto;
     padding: 0 var(--page-gutter);
   }
 
   .related-products__heading {
     font-family: var(--font-alyona);
-    font-size: 70px;
+    font-size: 72px;
     font-weight: 400;
     line-height: 1;
-    color: var(--text-color, #3E2027);
-    margin: 0 0 40px;
+    letter-spacing: var(--tracking-title-light);
+    text-align: center;
+    margin: 0 0 48px;
+  }
+
+  .related-products__heading:not(.text-gradient) {
+    color: var(--text-color);
+  }
+
+  /* The row: the cards scroll sideways when there are more than fit. It's a
+     container so the arrows can sit on the middle of the pictures. */
+  .related-products__row {
+    position: relative;
+    container-type: inline-size;
   }
 
   .related-products__track {
     display: flex;
-    gap: 20px;
+    gap: var(--rp-gap);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding-bottom: 4px;
   }
 
   .related-products__track::-webkit-scrollbar {
@@ -231,46 +260,54 @@
   .related-products__card {
     display: flex;
     flex-direction: column;
-    gap: 30px;
-    color: var(--text-color, #3E2027);
-    flex: 0 0 calc(25% - 15px);
+    flex: 0 0 calc((100% - (var(--rp-columns) - 1) * var(--rp-gap)) / var(--rp-columns));
+    min-width: 0;
     scroll-snap-align: start;
   }
 
+  /* The picture: a rounded square on the product's card color, above the
+     strip (the strip tucks under its bottom corners). */
   .related-products__image {
     position: relative;
-    height: 420px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    z-index: 1;
+    aspect-ratio: 1;
+    border-radius: var(--radius-card);
+    background-color: var(--card-bg);
     overflow: hidden;
   }
 
   .related-products__image-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: absolute;
     inset: 0;
     z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+  }
+
+  .related-products__image-link:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: -4px;
   }
 
   .related-products__img {
-    width: 247px;
-    height: 370px;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
   }
 
   .related-products__placeholder {
-    width: 247px;
-    height: 370px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 70%;
+    height: 70%;
     opacity: 0.3;
   }
 
-  /* Hover Image */
+  .related-products__placeholder-svg {
+    width: 100%;
+    height: 100%;
+  }
+
   .related-products__hover-image {
     position: absolute;
     inset: 0;
@@ -290,26 +327,31 @@
     opacity: 1;
   }
 
-  /* Hover Actions */
+  /* Quick add (or Choose your scents), over the picture on hover. */
   .related-products__actions {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 5;
     display: flex;
     justify-content: center;
-    gap: 10px;
-    padding: 15px;
     opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 5;
+    translate: 0 8px;
+    transition: opacity 0.3s ease, translate 0.3s ease;
   }
 
   .related-products__image:hover .related-products__actions,
   .related-products__image:focus-within .related-products__actions {
     opacity: 1;
-    transform: translateY(0);
+    translate: 0 0;
+  }
+
+  @media (hover: none) {
+    .related-products__actions {
+      opacity: 1;
+      translate: 0 0;
+    }
   }
 
   .related-products__form {
@@ -321,43 +363,66 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    height: 40px;
-    padding: 10px 20px;
+    max-width: 100%;
+    height: 44px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-background, #fff);
+    color: var(--color-foreground);
+    box-shadow: 0 4px 16px rgb(193 21 98 / 0.16);
     font-family: var(--font-sweet-sans);
     font-size: 14px;
-    font-weight: 500;
-    letter-spacing: -0.14px;
+    font-weight: 700;
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.2s ease;
     white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   .related-products__action-btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+    background: var(--gradient-button);
+    color: var(--color-on-accent, #fff);
   }
 
   .related-products__action-btn:focus-visible {
-    outline: 2px solid var(--text-color, #3E2027);
+    outline: 2px solid var(--color-foreground);
     outline-offset: 2px;
   }
 
-  .related-products__action-btn--add {
-    background-color: #FFFFFF;
-    color: var(--text-color, #3E2027);
-  }
-
-  .related-products__action-btn--add:disabled {
+  .related-products__action-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    background: var(--color-background, #fff);
+    color: var(--color-foreground);
   }
 
-  .related-products__action-btn--buy {
-    background-color: var(--text-color, #3E2027);
-    color: #FFFFFF;
+  /* The pink strip under the picture with the name and price. The design's
+     #F15B9E is too light for white text, so it's the buttons' pink. */
+  .related-products__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    margin-top: calc(-1 * var(--radius-card));
+    padding: calc(var(--radius-card) + var(--rp-strip-pad)) 12px var(--rp-strip-pad);
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+    background: var(--gradient-button);
+    color: var(--color-on-accent, #fff);
+    text-align: center;
+  }
+
+  .related-products__title {
+    margin: 0;
+    font-family: var(--font-sweet-sans);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: var(--tracking-label-lg);
+    text-transform: uppercase;
   }
 
   .related-products__title-link {
@@ -367,189 +432,156 @@
 
   .related-products__title-link:hover {
     text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .related-products__title-link:focus-visible {
-    outline: 2px solid var(--text-color, #3E2027);
+    outline: 2px solid currentColor;
     outline-offset: 2px;
-  }
-
-  .related-products__info {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .related-products__meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .related-products__title {
-    font-family: var(--font-sweet-sans);
-    font-size: 18px;
-    font-weight: 500;
-    line-height: normal;
-    letter-spacing: -0.18px;
-    text-transform: uppercase;
-    margin: 0;
-    flex: 1;
+    border-radius: 2px;
   }
 
   .related-products__price {
     font-family: var(--font-sweet-sans);
-    font-size: 18px;
-    font-weight: 400;
-    line-height: normal;
-    letter-spacing: -0.18px;
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  .related-products__description {
-    font-family: var(--font-jokker);
     font-size: 16px;
     font-weight: 400;
-    line-height: 1.5;
-    margin: 0;
+    line-height: 1.3;
+    letter-spacing: var(--tracking-label-lg);
   }
 
   .related-products__dots {
     display: none;
   }
 
-  .related-products__nav {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 30px;
-  }
-
+  /* Arrows on the middle of the pictures, at the row's ends; only when there
+     are more cards than fit. */
   .related-products__arrow {
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--text-color, #3E2027);
-    border-radius: 50%;
-    background: transparent;
-    color: var(--text-color, #3E2027);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease, opacity 0.2s ease;
+    position: absolute;
+    top: calc((100cqw - (var(--rp-columns) - 1) * var(--rp-gap)) / var(--rp-columns) / 2);
+    z-index: 6;
+    display: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
     padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-background, #fff);
+    color: var(--color-foreground);
+    box-shadow: 0 4px 16px rgb(193 21 98 / 0.16);
+    cursor: pointer;
+    translate: 0 -50%;
+    transition: opacity 0.2s ease;
   }
 
-  .related-products__arrow:hover {
-    background-color: color-mix(in srgb, var(--text-color, #3E2027) 10%, transparent);
+  .related-products[data-overflows] .related-products__arrow {
+    display: grid;
+  }
+
+  .related-products__arrow--prev {
+    left: -22px;
+  }
+
+  .related-products__arrow--prev svg {
+    rotate: 180deg;
+  }
+
+  .related-products__arrow--next {
+    right: -22px;
   }
 
   .related-products__arrow:disabled {
-    opacity: 0.3;
-    cursor: default;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .related-products__arrow:focus-visible {
-    outline: 2px solid var(--text-color, #3E2027);
+    outline: 2px solid var(--color-foreground);
     outline-offset: 2px;
   }
 
-  /* Tablet */
   @media (max-width: 1024px) {
     .related-products {
-      padding: 40px 0 60px;
+      --rp-gap: 24px;
+      --rp-columns: 3;
+      padding: 56px 0;
     }
 
     .related-products__heading {
-      font-size: 50px;
+      font-size: 56px;
       margin-bottom: 40px;
     }
 
-    .related-products__card {
-      flex: 0 0 calc(33.33% - 14px);
-    }
-
-    .related-products__image {
-      height: 340px;
-    }
-
-    .related-products__img {
-      width: 200px;
-      height: 300px;
+    .related-products__title {
+      font-size: 18px;
     }
   }
 
-  /* Mobile */
   @media (max-width: 768px) {
     .related-products {
-      padding: 43px 0 20px;
+      --rp-gap: 17px;
+      --rp-columns: 2;
+      --rp-strip-pad: 10px;
+      padding: 48px 0;
     }
 
     .related-products__wrapper {
-      padding: 0 15px;
-      margin-bottom: 30px;
+      padding: 0 16px;
     }
 
     .related-products__heading {
       font-size: 34px;
-      text-align: center;
-      margin: 0 0 24px;
+      margin-bottom: 24px;
     }
 
-    .related-products__track {
-      gap: 12px;
-    }
-
-    .related-products__card {
-      flex: 0 0 calc(50% - 8px);
-      gap: 18px;
-    }
-
-    .related-products__image {
-      height: 264px;
-    }
-
-    .related-products__img {
-      width: 155px;
-      height: 233px;
+    .related-products__title,
+    .related-products__price {
+      font-size: 14px;
     }
 
     .related-products__info {
-      gap: 8px;
-    }
-
-    .related-products__title {
-      font-size: 14px;
-      letter-spacing: -0.14px;
-    }
-
-    .related-products__price {
-      font-size: 14px;
-      letter-spacing: -0.14px;
-    }
-
-    .related-products__description {
-      font-size: 10px;
-      line-height: 1.4;
+      padding-left: 8px;
+      padding-right: 8px;
     }
 
     .related-products__actions {
-      opacity: 1;
-      transform: translateY(0);
-      flex-direction: column;
-      padding: 10px;
-      gap: 6px;
+      left: 6px;
+      right: 6px;
+      bottom: 6px;
     }
 
     .related-products__action-btn {
       width: 100%;
       height: 36px;
-      padding: 8px 12px;
+      padding: 0 8px;
       font-size: 12px;
+      letter-spacing: var(--tracking-label-lg);
     }
 
+    /* Choose your scents shrinks with the screen to stay on one line. */
+    .related-products__action-btn--buy {
+      padding: 0 4px;
+      font-size: clamp(10px, 2.8vw, 12px);
+      letter-spacing: 0;
+    }
+
+    .related-products__action-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .related-products__arrow {
+      width: 32px;
+      height: 32px;
+    }
+
+    .related-products__arrow--prev {
+      left: -12px;
+    }
+
+    .related-products__arrow--next {
+      right: -12px;
+    }
   }
 {% endstylesheet %}
 
@@ -565,7 +597,9 @@
 
       this.setupArrows();
       this.updateArrows();
-      this.track.addEventListener('scroll', () => this.updateArrows());
+      this.track.addEventListener('scroll', () => this.updateArrows(), { passive: true });
+      this.resizeObserver = new ResizeObserver(() => this.updateArrows());
+      this.resizeObserver.observe(this.track);
     }
 
     setupArrows() {
@@ -580,21 +614,25 @@
     scroll(direction) {
       const card = this.cards[0];
       if (!card) return;
-      const scrollAmount = card.offsetWidth + 20;
+      const gap = parseFloat(getComputedStyle(this.track).columnGap) || 0;
+      const scrollAmount = card.offsetWidth + gap;
       this.track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
     }
 
     updateArrows() {
       const { scrollLeft, scrollWidth, clientWidth } = this.track;
+      this.toggleAttribute('data-overflows', scrollWidth - clientWidth > 2);
       if (this.prevBtn) {
-        this.prevBtn.disabled = scrollLeft <= 0;
+        this.prevBtn.disabled = scrollLeft <= 1;
       }
       if (this.nextBtn) {
         this.nextBtn.disabled = scrollLeft + clientWidth >= scrollWidth - 1;
       }
     }
 
-    disconnectedCallback() {}
+    disconnectedCallback() {
+      this.resizeObserver?.disconnect();
+    }
   }
 
   if (!customElements.get('related-products')) {
@@ -611,7 +649,7 @@
       "type": "text",
       "id": "heading",
       "label": "t:labels.heading",
-      "default": "You may also like"
+      "default": "You might also like"
     },
     {
       "type": "collection",
@@ -636,13 +674,13 @@
       "type": "color",
       "id": "background_color",
       "label": "t:labels.background_color",
-      "default": "#FCE9EC"
+      "info": "t:sections.related_products.settings.background_color_info"
     },
     {
       "type": "color",
       "id": "text_color",
       "label": "t:labels.text_color",
-      "default": "#3E2027"
+      "info": "t:sections.related_products.settings.text_color_info"
     }
   ],
   "templates": ["product", "cart", "404"],
