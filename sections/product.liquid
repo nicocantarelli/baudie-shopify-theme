@@ -443,15 +443,43 @@
         {%- if is_final_sale and final_sale_placement == 'button' -%}{{ final_sale_mark }}{%- endif -%}
 
         {%- if has_bundle_upsell -%}
+          {%- comment -%}
+            The design's pink banner: the bundle's picture on the left, the
+            text (split in two lines at " - ", so "Bundle and save - Shop 3
+            pack" reads as in the design) and a round arrow. Colors picked in
+            the editor replace the pink.
+          {%- endcomment -%}
+          {%- liquid
+            assign upsell_image = bundle_upsell_product.metafields.custom.card_image | default: bundle_upsell_product.featured_image
+            assign upsell_lines = bundle_upsell_text | split: ' - '
+          -%}
           <a
             href="{{ bundle_upsell_product.url }}"
-            class="product-main__bundle-upsell"
-            style="--bundle-upsell-bg: {{ section.settings.bundle_upsell_bg_color }}; --bundle-upsell-text: {{ section.settings.bundle_upsell_text_color }}"
+            class="product-main__bundle-upsell{% if upsell_image == blank %} product-main__bundle-upsell--no-image{% endif %}"
+            style="
+              {%- if section.settings.bundle_upsell_bg_color != blank %}--bundle-upsell-bg: {{ section.settings.bundle_upsell_bg_color }};{% endif -%}
+              {%- if section.settings.bundle_upsell_text_color != blank %}--bundle-upsell-text: {{ section.settings.bundle_upsell_text_color }};{% endif -%}
+            "
           >
-            <span>{{ bundle_upsell_text }}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            {%- if upsell_image != blank -%}
+              {{ upsell_image | image_url: width: 300 | image_tag:
+                class: 'product-main__bundle-upsell-image',
+                loading: 'lazy',
+                alt: '',
+                width: 124,
+                height: 108
+              }}
+            {%- endif -%}
+            <span class="product-main__bundle-upsell-text">
+              {%- for line in upsell_lines -%}
+                <span class="product-main__bundle-upsell-line">{{ line | strip }}</span>
+              {%- endfor -%}
+            </span>
+            <span class="product-main__bundle-upsell-arrow" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none" focusable="false">
+                <path d="M8.4627 6.9373C8.27655 6.75116 8.27655 6.44885 8.4627 6.2627C8.64885 6.07655 8.95115 6.07655 9.1373 6.2627L13.5373 10.6627C13.7235 10.8488 13.7235 11.1512 13.5373 11.3373L9.1373 15.7373C8.95115 15.9235 8.64885 15.9235 8.4627 15.7373C8.27655 15.5512 8.27655 15.2488 8.4627 15.0627L12.5254 11L8.4627 6.9373Z" fill="currentColor"/>
+              </svg>
+            </span>
           </a>
         {%- endif -%}
 
@@ -1074,35 +1102,75 @@
     width: 100%;
   }
 
-  /* Bundle upsell */
+  /* Bundle upsell: the design's pink banner (Figma "PDP/Upsell"). Light
+     pink behind the picture, deepening to the buttons' pink before the white
+     text starts, so the text keeps its contrast. */
   .product-main__bundle-upsell {
-    display: flex;
+    position: relative;
+    display: grid;
+    grid-template-columns: 124px minmax(0, 1fr) 52px;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 48px;
-    padding: 10px 20px;
-    border: var(--card-border);
+    column-gap: 20px;
+    height: 96px;
+    padding: 0 22px 0 20px;
     border-radius: var(--radius-pill);
-    background: var(--bundle-upsell-bg, var(--color-background));
-    color: var(--bundle-upsell-text, var(--color-foreground));
-    font: 700 14px/1.2 var(--font-sweet-sans);
-    letter-spacing: var(--tracking-label-sm);
-    text-transform: uppercase;
+    background: var(--bundle-upsell-bg, linear-gradient(90deg, #FFC8E4 0%, #F88EBE 18%, #D2367C 31%, #C11562 100%));
+    color: var(--bundle-upsell-text, var(--color-on-accent));
     text-decoration: none;
     transition: filter 0.2s ease;
   }
 
+  .product-main__bundle-upsell--no-image {
+    grid-template-columns: minmax(0, 1fr) 52px;
+    padding-left: 32px;
+  }
+
   @media (hover: hover) {
     .product-main__bundle-upsell:hover {
-      filter: brightness(0.96);
+      filter: brightness(1.05);
     }
   }
 
-  .product-main__bundle-upsell svg {
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
+  .product-main__bundle-upsell:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
+  /* The picture sits on the banner's bottom and rises 12px above it. */
+  .product-main__bundle-upsell-image {
+    align-self: end;
+    width: 124px;
+    height: 108px;
+    object-fit: contain;
+    object-position: bottom center;
+  }
+
+  .product-main__bundle-upsell-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font: 700 16px/1.3 var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .product-main__bundle-upsell-line:first-child {
+    line-height: 1;
+    letter-spacing: var(--tracking-label-sm);
+  }
+
+  .product-main__bundle-upsell-arrow {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+  }
+
+  .product-main__bundle-upsell-arrow svg {
+    width: 22px;
+    height: 22px;
   }
 
   /* --- Accordions --- */
@@ -1479,6 +1547,41 @@
       gap: 6px;
     }
 
+    .product-main__bundle-upsell {
+      grid-template-columns: 80px minmax(0, 1fr) 36px;
+      column-gap: 10px;
+      height: 72px;
+      padding: 0 14px 0 12px;
+      background: var(--bundle-upsell-bg, linear-gradient(90deg, #FFC8E4 0%, #F88EBE 20%, #D2367C 36%, #C11562 100%));
+    }
+
+    .product-main__bundle-upsell--no-image {
+      grid-template-columns: minmax(0, 1fr) 40px;
+      padding-left: 24px;
+    }
+
+    .product-main__bundle-upsell-image {
+      width: 80px;
+      height: 70px;
+    }
+
+    /* Each line stays on one line: the text shrinks with the room left
+       beside the picture and the arrow (about 11.4em for "Bundle and save"). */
+    .product-main__bundle-upsell-text {
+      font-size: clamp(10px, (100vw - 234px) / 11.4, 14px);
+      white-space: nowrap;
+    }
+
+    .product-main__bundle-upsell-arrow {
+      width: 36px;
+      height: 36px;
+    }
+
+    .product-main__bundle-upsell-arrow svg {
+      width: 18px;
+      height: 18px;
+    }
+
     .product-main__pill {
       gap: 5px;
       height: 34px;
@@ -1563,6 +1666,39 @@
 
   /* Small phones: the scents go three to a row, and the quantity and the
      button's padding narrow so "Add to cart" stays on one line. */
+  /* Narrow phones: a smaller picture and arrow leave the text more room. */
+  @media (max-width: 374px) {
+    .product-main__bundle-upsell {
+      grid-template-columns: 60px minmax(0, 1fr) 32px;
+      column-gap: 8px;
+      padding: 0 12px;
+    }
+
+    .product-main__bundle-upsell--no-image {
+      grid-template-columns: minmax(0, 1fr) 32px;
+      padding-left: 20px;
+    }
+
+    .product-main__bundle-upsell-image {
+      width: 60px;
+      height: 56px;
+    }
+
+    .product-main__bundle-upsell-text {
+      font-size: clamp(10px, (100vw - 204px) / 11.4, 14px);
+    }
+
+    .product-main__bundle-upsell-arrow {
+      width: 32px;
+      height: 32px;
+    }
+
+    .product-main__bundle-upsell-arrow svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
   @media (max-width: 359px) {
     .product-main__scent-list {
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1872,13 +2008,13 @@
       "type": "color",
       "id": "bundle_upsell_bg_color",
       "label": "t:sections.product.bundle_upsell_bg_color",
-      "default": "#FFFFFF"
+      "info": "t:sections.product.bundle_upsell_bg_color_info"
     },
     {
       "type": "color",
       "id": "bundle_upsell_text_color",
       "label": "t:sections.product.bundle_upsell_text_color",
-      "default": "#3E2027"
+      "info": "t:sections.product.bundle_upsell_text_color_info"
     },
     {
       "type": "header",
@@ -1969,6 +2105,18 @@
             {
               "value": "ph_balancing",
               "label": "t:sections.product.benefit_pill_icon_ph_balancing"
+            },
+            {
+              "value": "organic_cotton",
+              "label": "t:sections.product.benefit_pill_icon_organic_cotton"
+            },
+            {
+              "value": "fragrance_free",
+              "label": "t:sections.product.benefit_pill_icon_fragrance_free"
+            },
+            {
+              "value": "hypoallergenic",
+              "label": "t:sections.product.benefit_pill_icon_hypoallergenic"
             }
           ],
           "default": "plant_based"
