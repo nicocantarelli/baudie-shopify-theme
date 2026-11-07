@@ -1,7 +1,32 @@
 {%- comment -%}
-  Bundle product page — fully custom build-your-own-bundle.
-  Customers pick scents from a collection, images update dynamically,
-  and selected items are added to cart individually with a bundle note.
+  Bundle product page (Bundle of 3): build your own bundle, in the product
+  page's look. On the left, arches that fill with the scents as they're
+  picked, the patent stamp and the Videowise videos; on the right, the white
+  card with the reviews, title, price, benefit pills, the scents to pick
+  from, quantity and add to cart, and the dropdowns. On phones the card
+  splits in two around the arches, as on the product page.
+
+  Tapping a scent puts it in the next empty arch (a scent can go in more
+  than once; its circle then shows how many). A filled arch has an x to take
+  it out. Add to cart says how many are still to pick until the bundle is
+  full.
+
+  Everything it shares with the product page (sections/product.liquid) uses
+  that section's classes: the gradient, the card, title, pills, scent
+  circles, quantity, button, dropdowns, ingredients pop-up and videos row.
+  Shopify loads every section's styles on every page, so those
+  look the same here, and the product page's script
+  (snippets/product-main-script.liquid, rendered by both sections) sets up
+  the dropdowns, quantity, pop-up, videos and the sticky left column for any
+  .product-main. The styles and script below cover only what's the bundle's
+  own: the arches, the picked scents, the price and adding the bundle to the
+  cart.
+
+  The bundle goes into the cart as one line that Simple Bundles & Kits
+  expands into its scents ("First Scent", "Second Scent", ... properties,
+  as its own widget sends them).
+
+  Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=26-4008
 {%- endcomment -%}
 
 {%- liquid
@@ -12,22 +37,35 @@
   assign patent_stamp_position = section.settings.patent_stamp_position | default: 'image_bottom_right'
   assign patent_stamp_size = section.settings.patent_stamp_size | default: 100
   assign patent_stamp_mobile_size = patent_stamp_size | times: 82 | divided_by: 100
-  assign gradient_1 = section.settings.gradient_color_1 | default: '#F4D2A4'
-  assign gradient_2 = section.settings.gradient_color_2 | default: '#FCF5DE'
+  assign gradient_1 = section.settings.gradient_color_1 | default: '#FFEFFF'
+  assign gradient_2 = section.settings.gradient_color_2 | default: '#FFCEE7'
+  assign gradient_3 = section.settings.gradient_color_3 | default: gradient_2
   assign bottle_size = product.metafields.custom.bottle_size
+  assign short_description = product.metafields.custom.short_description.value
   assign product_details = product.metafields.custom.product_details
   assign scent_notes = product.metafields.custom.scent_notes
+  assign how_to_use = product.metafields.custom.how_to_use
   assign key_ingredients = product.metafields.custom.key_ingredients
   assign full_ingredient_list = product.metafields.custom.full_ingredient_list
   assign scent_collection = section.settings.scent_collection
   assign bundle_size = section.settings.bundle_size | default: 3
+  assign title_text = section.settings.title | default: product.title
 
   comment
-    Coming-soon state for the BUNDLE itself (the checks further down filter
-    coming-soon scents out of the picker, which is a different thing). Matches
-    the tag spellings product.liquid accepts. A bundle parent carries no
-    inventory of its own, so there is no out-of-stock case to gate on here —
-    availability comes from the components via Simple Bundles.
+    The scents to pick from: the ones chosen in the section, in that order,
+    or else the scent collection's. Only scents that can be bought now (in
+    stock, not tagged coming soon) are offered.
+  endcomment
+  if section.settings.scent_products != blank
+    assign scent_source = section.settings.scent_products
+  else
+    assign scent_source = scent_collection.products
+  endif
+
+  comment
+    Coming-soon state for the bundle itself. A bundle parent carries no
+    inventory of its own, so there is no out-of-stock case to gate on here:
+    availability comes from the scents via Simple Bundles.
   endcomment
   assign is_coming_soon = false
   if product.tags contains 'coming-soon' or product.tags contains 'Coming soon' or product.tags contains 'coming soon' or product.tags contains 'Coming Soon'
@@ -41,6 +79,16 @@
   assign rating = product.metafields.reviews.rating.value.rating | default: 0 | round: 1
   assign rating_scale = product.metafields.reviews.rating.value.scale_max | default: 5
   assign review_count = product.metafields.reviews.rating_count.value | default: 0
+
+  assign show_watch_in_action = false
+  if section.settings.show_watch_in_action
+    if section.settings.videowise_embed != blank or request.design_mode
+      assign show_watch_in_action = true
+    endif
+  endif
+
+  assign benefit_pills = section.blocks | where: 'type', 'benefit_pill'
+  assign accordion_keys = 'details,scent_notes,how_to_use,key_ingredients' | split: ','
 -%}
 
 {%- if show_patent_stamp -%}
@@ -49,1484 +97,916 @@
   {%- endcapture -%}
 {%- endif -%}
 
+{%- capture plus_icon -%}
+  <svg class="product-main__plus" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+    <path class="product-main__plus-across" d="M1 10H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path class="product-main__plus-down" d="M10 1V19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+{%- endcapture -%}
+
+{%- capture arrow_icon -%}
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+    <path d="M1.5 7H12.5M12.5 7L7.5 2M12.5 7L7.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+{%- endcapture -%}
+
 <section
-  class="bundle-main{% if show_patent_stamp %} bundle-main--patent-{{ patent_stamp_position }}{% endif %} full-width"
+  class="product-main product-bundle{% if show_patent_stamp %} product-main--patent-{{ patent_stamp_position }}{% endif %} full-width"
   data-section-id="{{ section.id }}"
   data-bundle-size="{{ bundle_size }}"
-  aria-label="{{ product.title }}"
-  style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }}; --patent-stamp-size: {{ patent_stamp_size }}px; --patent-stamp-mobile-size: {{ patent_stamp_mobile_size }}px; --patent-stamp-rotation: {{ section.settings.patent_stamp_rotation | default: 0 }}deg; --patent-stamp-background: {{ section.settings.patent_stamp_background | default: '#3E2027' }}; --patent-stamp-text: {{ section.settings.patent_stamp_text_color | default: '#FCF5DE' }};">
+  data-text-bottle="{{ 'sections.product_bundle.bottle' | t: number: '[number]' | escape }}"
+  data-text-empty="{{ 'sections.product_bundle.empty' | t | escape }}"
+  data-text-remove="{{ 'sections.product_bundle.remove_scent' | t: scent: '[scent]' | escape }}"
+  data-text-added="{{ 'sections.product_bundle.scent_added' | t: scent: '[scent]', number: '[number]' | escape }}"
+  data-text-removed="{{ 'sections.product_bundle.scent_removed' | t: scent: '[scent]', number: '[number]' | escape }}"
+  data-text-full="{{ 'sections.product_bundle.bundle_full' | t | escape }}"
+  data-text-picked="{{ 'sections.product_bundle.picked_count' | t: count: '[count]' | escape }}"
+  data-text-pick-scents="{{ 'sections.product_bundle.pick_scents' | t: count: '[count]' | escape }}"
+  data-text-pick-more="{{ 'sections.product_bundle.pick_more' | t: count: '[count]' | escape }}"
+  data-text-add="{{ 'sections.product.add_to_cart' | t | escape }}"
+  aria-label="{{ product.title | escape }}"
+  style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --gradient-3: {{ gradient_3 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }}; --patent-stamp-size: {{ patent_stamp_size }}px; --patent-stamp-mobile-size: {{ patent_stamp_mobile_size }}px; --patent-stamp-rotation: {{ section.settings.patent_stamp_rotation | default: 0 }}deg; --patent-stamp-background: {{ section.settings.patent_stamp_background | default: '#3E2027' }}; --patent-stamp-text: {{ section.settings.patent_stamp_text_color | default: '#FCF5DE' }}; --bundle-size: {{ bundle_size }};"
+>
+  <div class="product-main__inner">
 
-  {%- comment -%} Mobile Header {%- endcomment -%}
-  <div class="bundle-main__mobile-header">
-    <div class="bundle-main__mobile-subtitle-row">
-      <p class="bundle-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
-    </div>
-    <h1 class="bundle-main__title" data-bundle-title>{{ product.title }}</h1>
-    {% if bottle_size %}
-      <p class="bundle-main__size bundle-main__size--mobile">{{ bundle_size }} x {{ bottle_size }}</p>
-    {% endif %}
-    {%- if show_patent_stamp and patent_stamp_position == 'title_right' -%}
-      <div class="bundle-main__patent-position bundle-main__patent-position--title">
-        {{ patent_stamp }}
-      </div>
-    {%- endif -%}
-  </div>
-
-  {%- comment -%} Image Column — bottle slots {%- endcomment -%}
-  <div class="bundle-main__image-column">
-    <div class="bundle-main__bottles" data-bundle-bottles>
-      {% for i in (1..bundle_size) %}
-        <div class="bundle-main__bottle-slot" data-bottle-slot="{{ i }}">
-          <img
-            class="bundle-main__bottle-img"
-            src=""
-            alt=""
-            loading="{% if i == 1 %}eager{% else %}lazy{% endif %}"
-            style="display: none;">
-          <div class="bundle-main__bottle-placeholder">
-            <span class="bundle-main__bottle-number">{{ i }}</span>
+    {%- comment -%} The arches, patent stamp and videos {%- endcomment -%}
+    <div class="product-main__media">
+      <div class="product-main__image product-bundle__stage">
+        <ol
+          class="product-bundle__slots"
+          role="list"
+          aria-label="{{ 'sections.product_bundle.your_bundle' | t | escape }}"
+          data-bundle-slots
+        >
+          {%- for i in (1..bundle_size) -%}
+            <li class="product-bundle__slot" data-bundle-slot>
+              <span class="product-bundle__slot-number" aria-hidden="true">{{ i }}</span>
+              <span class="visually-hidden" data-slot-label>
+                {{- 'sections.product_bundle.bottle' | t: number: i }}: {{ 'sections.product_bundle.empty' | t -}}
+              </span>
+              <button
+                type="button"
+                class="product-bundle__slot-remove"
+                data-bundle-remove
+                hidden
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </li>
+          {%- endfor -%}
+        </ol>
+        {%- if show_patent_stamp and patent_stamp_position == 'image_bottom_right' -%}
+          <div class="product-main__patent product-main__patent--image">
+            {{ patent_stamp }}
           </div>
-        </div>
-      {% endfor %}
-    </div>
-    {%- if show_patent_stamp and patent_stamp_position == 'image_bottom_right' -%}
-      <div class="bundle-main__patent-position bundle-main__patent-position--image">
-        {{ patent_stamp }}
+        {%- endif -%}
       </div>
-    {%- endif -%}
-  </div>
 
-  {%- comment -%} Info Column {%- endcomment -%}
-  <div class="bundle-main__info-column">
-
-    {%- comment -%} Desktop Header {%- endcomment -%}
-    <div class="bundle-main__desktop-header">
-      <p class="bundle-main__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
-      <h1 class="bundle-main__title">{{ product.title }}</h1>
-      {% if bottle_size %}
-        <p class="bundle-main__size-line">{{ bundle_size }} x {{ bottle_size }}</p>
-      {% endif %}
-      {%- if show_patent_stamp and patent_stamp_position == 'title_right' -%}
-        <div class="bundle-main__patent-position bundle-main__patent-position--title">
-          {{ patent_stamp }}
+      {%- if show_watch_in_action -%}
+        <div class="product-main__videos" data-product-videos>
+          <button
+            type="button"
+            class="product-main__videos-arrow product-main__videos-arrow--prev"
+            data-videos-prev
+            aria-label="{{ 'sections.product.previous_videos' | t }}"
+            hidden
+          >
+            {{ arrow_icon }}
+          </button>
+          <div class="product-main__videos-row" role="region" aria-label="{{ 'sections.product.watch_in_action' | t }}">
+            {%- if section.settings.videowise_embed != blank -%}
+              {{ section.settings.videowise_embed }}
+              {%- comment -%}
+                Videowise draws the videos in a closed shadow root, but loads
+                the stylesheets listed in window.videowiseShadow into it. That's
+                how the design's tiles get there; the class keeps them to this
+                widget.
+              {%- endcomment -%}
+              <script>
+                (() => {
+                  const stylesheet = {{ 'product-videos-videowise.css' | asset_url | json }};
+                  const config = (window.videowiseShadow = window.videowiseShadow || {});
+                  config.assets = config.assets || [];
+                  if (!config.assets.some((asset) => asset.src === stylesheet)) {
+                    config.assets.push({ type: 'style', src: stylesheet });
+                  }
+                  document.currentScript.parentElement
+                    .querySelectorAll('.reeview-app-widget')
+                    .forEach((widget) => widget.classList.add('product-main__videos-widget'));
+                })();
+              </script>
+            {%- else -%}
+              <div class="product-main__videos-placeholders">
+                {%- for i in (1..4) -%}
+                  <span class="product-main__videos-placeholder"></span>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+          <button
+            type="button"
+            class="product-main__videos-arrow product-main__videos-arrow--next"
+            data-videos-next
+            aria-label="{{ 'sections.product.next_videos' | t }}"
+            hidden
+          >
+            {{ arrow_icon }}
+          </button>
         </div>
       {%- endif -%}
     </div>
 
-    {%- comment -%} Rating (synced from Klaviyo Reviews metafields) {%- endcomment -%}
-    {% if review_count > 0 %}
-      {% render 'star-rating',
-        rating: rating,
-        count: review_count,
-        scale_max: rating_scale,
-        class: 'bundle-main__rating',
-        scroll_to_reviews: true
-      %}
-    {% endif %}
+    {%- comment -%} The white card (two cards on phones) {%- endcomment -%}
+    <div class="product-main__card">
+      <div class="product-main__info">
+        {%- if review_count > 0 -%}
+          {% render 'star-rating',
+            rating: rating,
+            count: review_count,
+            scale_max: rating_scale,
+            class: 'product-main__rating',
+            scroll_to_reviews: true,
+            count_style: 'reviews'
+          %}
+        {%- endif -%}
 
-    {%- comment -%} Scent Selectors {%- endcomment -%}
-    <div class="bundle-main__selectors" data-bundle-selectors>
-      {% for i in (1..bundle_size) %}
-        <div class="bundle-main__selector" data-scent-selector="{{ i }}">
-          <button
-            type="button"
-            class="bundle-main__selector-trigger"
-            aria-expanded="false"
-            aria-haspopup="listbox"
-            aria-controls="scent-list-{{ i }}-{{ section.id }}">
-            <span class="bundle-main__selector-label" data-selector-label>{{ i }}. {{ 'sections.product_bundle.choose_scent' | t }}</span>
-            <svg class="bundle-main__selector-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none" aria-hidden="true" focusable="false">
-              <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <ul
-            class="bundle-main__selector-list"
-            id="scent-list-{{ i }}-{{ section.id }}"
-            role="listbox"
-            aria-label="{{ i }}. {{ 'sections.product_bundle.choose_scent' | t }}">
-            {% if scent_collection %}
-              {% for scent_product in scent_collection.products %}
-                {%- comment -%} Skip scents that are sold out or tagged coming soon so they can't be picked in the bundle. {%- endcomment -%}
-                {%- assign scent_coming_soon = false -%}
-                {%- if scent_product.tags contains 'coming-soon' or scent_product.tags contains 'Coming soon' or scent_product.tags contains 'coming soon' or scent_product.tags contains 'Coming Soon' -%}
-                  {%- assign scent_coming_soon = true -%}
-                {%- endif -%}
-                {% if scent_product.metafields.custom.scent_name != blank and scent_product.available and scent_coming_soon == false %}
-                  <li
-                    role="option"
-                    aria-selected="false"
-                    class="bundle-main__selector-option"
-                    data-product-handle="{{ scent_product.handle }}"
-                    data-product-title="{{ scent_product.title | escape }}"
-                    data-variant-id="{{ scent_product.selected_or_first_available_variant.id }}"
-                    data-variant-gid="{{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' }}"
-                    data-card-image="{% if scent_product.metafields.custom.card_image != blank %}{{ scent_product.metafields.custom.card_image | image_url: width: 800 }}{% elsif scent_product.featured_image %}{{ scent_product.featured_image | image_url: width: 800 }}{% endif %}">
-                    {{ scent_product.title }}
-                  </li>
-                {% endif %}
-              {% endfor %}
-            {% endif %}
-          </ul>
+        <div class="product-main__heading">
+          {%- if product.vendor != blank -%}
+            <p class="product-main__eyebrow">{{ product.vendor | escape }}</p>
+          {%- endif -%}
+          {%- comment -%} A dash stays with the word before it, so "Bundle of 3" starts the second line. {%- endcomment -%}
+          <h1 class="product-main__title">{{ title_text | escape | replace: ' - ', '&nbsp;- ' }}</h1>
+          <p class="product-bundle__price">
+            {%- if current_variant.compare_at_price > current_variant.price -%}
+              <span class="visually-hidden">{{ 'sections.product_bundle.sale_price' | t }}</span>
+            {%- endif -%}
+            <span>{{ current_variant.price | money_without_trailing_zeros }}</span>
+            {%- if current_variant.compare_at_price > current_variant.price -%}
+              <span class="visually-hidden">{{ 'sections.product_bundle.regular_price' | t }}</span>
+              <s class="product-bundle__compare">{{ current_variant.compare_at_price | money_without_trailing_zeros }}</s>
+            {%- endif -%}
+          </p>
+          {%- if short_description != blank -%}
+            <p class="product-main__description">{{ short_description | escape | newline_to_br }}</p>
+          {%- endif -%}
         </div>
-      {% endfor %}
-    </div>
 
-    {%- comment -%} Divider {%- endcomment -%}
-    <hr class="bundle-main__divider">
+        {%- if bottle_size != blank or benefit_pills.size > 0 -%}
+          <div class="product-main__meta">
+            {%- if bottle_size != blank -%}
+              <p class="product-main__size">
+                <svg class="product-main__size-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 17.6" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M14.3101 9.80512L11.9118 9.1129C11.5957 9.02166 11.5957 8.57834 11.9118 8.4871L14.3101 7.79488C15.7694 7.37229 16.4435 5.70624 15.6865 4.4C14.9254 3.09375 13.131 2.83938 12.0347 3.8839L10.2327 5.59539C9.99491 5.82122 9.60666 5.59949 9.68502 5.28266L10.2796 2.87879C10.6384 1.41212 9.52221 0 8 0C6.47779 0 5.3616 1.41212 5.72454 2.87879L6.31885 5.28272C6.39718 5.59955 6.00886 5.82122 5.77114 5.59536L3.96947 3.8839C2.87317 2.83938 1.07873 3.09375 0.317624 4.4C-0.443485 5.70624 0.230587 7.37229 1.69401 7.79488L4.09168 8.48691C4.40781 8.57818 4.40774 9.0216 4.09158 9.11274L1.68984 9.80512C0.230587 10.2277 -0.443485 11.8938 0.313457 13.2C1.07457 14.5062 2.869 14.7606 3.96528 13.7161L5.7673 12.0046C6.00509 11.7788 6.39334 12.0005 6.31498 12.3173L5.72038 14.7212C5.35789 16.1879 6.47779 17.6 7.99584 17.6C9.5185 17.6 10.6342 16.1879 10.2717 14.7212L9.67715 12.3173C9.59878 12.0005 9.98704 11.7788 10.2248 12.0046L12.0268 13.7161C13.1231 14.7606 14.9176 14.5062 15.6787 13.2C16.4435 11.8938 15.7694 10.2277 14.3101 9.80512ZM8 10.302C7.1639 10.302 6.48566 9.62912 6.48566 8.8C6.48566 7.97088 7.1639 7.29805 8 7.29805C8.8361 7.29805 9.51434 7.97088 9.51434 8.8C9.51434 9.62912 8.8361 10.302 8 10.302Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/>
+                </svg>
+                {{ 'sections.product_bundle.size_line' | t: count: bundle_size, size: bottle_size }}
+              </p>
+            {%- endif -%}
 
-    {%- comment -%} Price + Actions {%- endcomment -%}
-    <div class="bundle-main__purchase-row">
-      <p class="bundle-main__price" data-bundle-price>{{ current_variant.price | money }}</p>
-      <div class="bundle-main__actions">
+            {%- if benefit_pills.size > 0 -%}
+              <ul class="product-main__pills" role="list">
+                {%- for block in benefit_pills -%}
+                  <li class="product-main__pill" {{ block.shopify_attributes }}>
+                    {%- if block.settings.custom_icon != blank -%}
+                      <span
+                        class="product-main__pill-icon"
+                        aria-hidden="true"
+                        style="-webkit-mask-image: url('{{ block.settings.custom_icon | image_url: width: 60 }}'); mask-image: url('{{ block.settings.custom_icon | image_url: width: 60 }}');"
+                      ></span>
+                    {%- else -%}
+                      {% render 'benefit-icon', icon: block.settings.icon %}
+                    {%- endif -%}
+                    <span>{{ block.settings.label | escape }}</span>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if show_patent_stamp and patent_stamp_position == 'title_right' -%}
+          <div class="product-main__patent product-main__patent--title">
+            {{ patent_stamp }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="product-main__buy">
+        {%- comment -%} The scents to pick from: each one's bottle on its own color {%- endcomment -%}
+        <div
+          class="product-main__scents"
+          role="group"
+          aria-labelledby="BundlePickerLabel-{{ section.id }}"
+        >
+          <p class="product-main__label" id="BundlePickerLabel-{{ section.id }}">
+            {{- 'sections.product_bundle.choose_scents' | t: count: bundle_size -}}
+          </p>
+          <ul class="product-main__scent-list" role="list">
+            {%- for item in scent_source -%}
+              {%- liquid
+                assign item_scent = item.metafields.custom.scent_name.value
+                assign item_coming_soon = false
+                if item.tags contains 'coming-soon' or item.tags contains 'Coming soon' or item.tags contains 'coming soon' or item.tags contains 'Coming Soon'
+                  assign item_coming_soon = true
+                endif
+                if item_scent == blank or item.available == false or item_coming_soon
+                  continue
+                endif
+                assign item_color = item.metafields.custom.swatch_color.value | default: item.metafields.custom.card_background_color.value | default: item.metafields.custom.gradient_color_1.value | default: '#FFDCED'
+                assign item_bottle = item.metafields.custom.card_image | default: item.featured_image
+              -%}
+              <li>
+                <button
+                  type="button"
+                  class="product-main__scent product-bundle__scent"
+                  data-bundle-scent="{{ item.handle }}"
+                  style="--scent-color: {{ item_color }};"
+                >
+                  <span class="product-main__scent-art" aria-hidden="true">
+                    <span class="product-main__scent-disc"></span>
+                    {%- if item_bottle -%}
+                      {{ item_bottle | image_url: width: 240 | image_tag:
+                        loading: 'lazy',
+                        alt: '',
+                        sizes: '(min-width: 1024px) 72px, 48px',
+                        class: 'product-main__scent-bottle'
+                      }}
+                    {%- endif -%}
+                    <span class="product-bundle__count" data-scent-count hidden></span>
+                  </span>
+                  <span class="product-main__scent-name">{{ item_scent | escape }}</span>
+                  <span class="visually-hidden" data-scent-picked></span>
+                </button>
+              </li>
+            {%- endfor -%}
+          </ul>
+          <p class="visually-hidden" role="status" data-bundle-status></p>
+        </div>
+
         {%- if is_coming_soon -%}
-          {%- comment -%}
-            The JS null-guards [data-bundle-add], so omitting the button here is
-            safe — the picker still works, there is just nothing to add with.
-          {%- endcomment -%}
           {% render 'notify-me-form',
             variant: current_variant,
-            button_class: 'bundle-main__button bundle-main__button--add'
+            button_class: 'button product-main__button'
           %}
         {%- else -%}
-          <button
-            type="button"
-            class="bundle-main__button bundle-main__button--add"
-            disabled
-            data-bundle-add>
-            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>{{ 'sections.product_bundle.add_to_cart' | t }}</span>
-          </button>
+          <div class="product-main__form">
+            <div class="product-main__quantity" data-quantity>
+              <button
+                type="button"
+                class="product-main__quantity-button"
+                data-quantity-step="-1"
+                aria-label="{{ 'sections.product.decrease_quantity' | t }}"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M1 7H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <input
+                class="product-main__quantity-input"
+                type="number"
+                name="quantity"
+                value="1"
+                min="1"
+                max="99"
+                inputmode="numeric"
+                aria-label="{{ 'sections.product.quantity' | t }}"
+              >
+              <button
+                type="button"
+                class="product-main__quantity-button"
+                data-quantity-step="1"
+                aria-label="{{ 'sections.product.increase_quantity' | t }}"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M1 7H13M7 1V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+            <button type="button" class="button product-main__button" data-bundle-add disabled>
+              <span data-bundle-add-label>{{ 'sections.product_bundle.pick_scents' | t: count: bundle_size }}</span>
+            </button>
+          </div>
+        {%- endif -%}
+
+        {%- if show_patent_stamp and patent_stamp_position == 'below_purchase' -%}
+          <div class="product-main__patent product-main__patent--flow">
+            {{ patent_stamp }}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Accordions {%- endcomment -%}
+        <div class="product-main__accordions" data-product-accordions>
+          {%- for key in accordion_keys -%}
+            {%- liquid
+              case key
+                when 'details'
+                  assign accordion_value = product_details
+                  assign accordion_label = 'sections.product.tell_me_more' | t
+                when 'scent_notes'
+                  assign accordion_value = scent_notes
+                  assign accordion_label = 'sections.product.scent_notes' | t
+                when 'how_to_use'
+                  assign accordion_value = how_to_use
+                  assign accordion_label = 'sections.product.how_to_use' | t
+                when 'key_ingredients'
+                  assign accordion_value = key_ingredients
+                  assign accordion_label = 'sections.product.key_ingredients' | t
+              endcase
+            -%}
+            {%- if accordion_value -%}
+              <div class="product-main__accordion" data-accordion>
+                <button
+                  type="button"
+                  id="AccordionTrigger-{{ key }}-{{ section.id }}"
+                  class="product-main__accordion-trigger"
+                  aria-expanded="false"
+                  aria-controls="AccordionPanel-{{ key }}-{{ section.id }}"
+                >
+                  <span>{{ accordion_label }}</span>
+                  {{ plus_icon }}
+                </button>
+                <div
+                  class="product-main__accordion-content"
+                  id="AccordionPanel-{{ key }}-{{ section.id }}"
+                  role="region"
+                  aria-labelledby="AccordionTrigger-{{ key }}-{{ section.id }}"
+                  inert
+                >
+                  <div class="product-main__accordion-body">
+                    {{ accordion_value | metafield_tag }}
+                    {%- if key == 'key_ingredients' and full_ingredient_list -%}
+                      <button
+                        type="button"
+                        class="product-main__ingredients-link"
+                        data-open-ingredients
+                        aria-haspopup="dialog"
+                      >
+                        {{ 'sections.product.all_ingredients' | t }}
+                      </button>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if show_patent_stamp and patent_stamp_position == 'above_badges' -%}
+          <div class="product-main__patent product-main__patent--flow">
+            {{ patent_stamp }}
+          </div>
         {%- endif -%}
       </div>
     </div>
-
-    {%- if show_patent_stamp and patent_stamp_position == 'below_purchase' -%}
-      <div class="bundle-main__patent-position bundle-main__patent-position--flow">
-        {{ patent_stamp }}
-      </div>
-    {%- endif -%}
-
-    {%- comment -%} Accordions {%- endcomment -%}
-    {%- liquid
-      assign show_watch_in_action = false
-      if section.settings.show_watch_in_action
-        if section.settings.videowise_embed != blank or request.design_mode
-          assign show_watch_in_action = true
-        endif
-      endif
-    -%}
-    <div class="bundle-main__accordions" data-bundle-accordions>
-      {%- comment -%} Top divider is skipped when the videos lead, so they sit flush {%- endcomment -%}
-      {%- unless show_watch_in_action -%}
-        <hr class="bundle-main__divider">
-      {%- endunless -%}
-
-      {%- comment -%} Watch It In Action {%- endcomment -%}
-      {% if show_watch_in_action %}
-        <div class="bundle-main__accordion is-open">
-          <div
-            class="bundle-main__accordion-content"
-            role="region"
-            aria-label="{{ 'sections.product_bundle.watch_in_action' | t }}">
-            <div class="bundle-main__accordion-body">
-              {%- if section.settings.videowise_embed != blank -%}
-                <div class="bundle-main__video-embed">
-                  {{ section.settings.videowise_embed }}
-                </div>
-              {%- else -%}
-                <div class="bundle-main__video-grid">
-                  <div class="bundle-main__video-placeholder"></div>
-                  <div class="bundle-main__video-placeholder"></div>
-                  <div class="bundle-main__video-placeholder"></div>
-                  <div class="bundle-main__video-placeholder"></div>
-                  <div class="bundle-main__video-placeholder"></div>
-                </div>
-              {%- endif -%}
-            </div>
-          </div>
-          <hr class="bundle-main__divider">
-        </div>
-      {% endif %}
-
-      {% if product_details %}
-        <div class="bundle-main__accordion" data-accordion>
-          <button
-            type="button"
-            id="accordion-details-trigger-{{ section.id }}"
-            class="bundle-main__accordion-trigger"
-            aria-expanded="false"
-            aria-controls="accordion-details-{{ section.id }}">
-            <span>{{ 'sections.product_bundle.details' | t }}</span>
-            <svg class="bundle-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div
-            class="bundle-main__accordion-content"
-            id="accordion-details-{{ section.id }}"
-            role="region"
-            aria-labelledby="accordion-details-trigger-{{ section.id }}"
-            aria-hidden="true">
-            <div class="bundle-main__accordion-body">
-              {{ product.metafields.custom.product_details | metafield_tag }}
-            </div>
-          </div>
-          <hr class="bundle-main__divider">
-        </div>
-      {% endif %}
-
-      {% if scent_notes %}
-        <div class="bundle-main__accordion" data-accordion>
-          <button
-            type="button"
-            id="accordion-scent-trigger-{{ section.id }}"
-            class="bundle-main__accordion-trigger"
-            aria-expanded="false"
-            aria-controls="accordion-scent-{{ section.id }}">
-            <span>{{ 'sections.product_bundle.scent_notes' | t }}</span>
-            <svg class="bundle-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div
-            class="bundle-main__accordion-content"
-            id="accordion-scent-{{ section.id }}"
-            role="region"
-            aria-labelledby="accordion-scent-trigger-{{ section.id }}"
-            aria-hidden="true">
-            <div class="bundle-main__accordion-body">
-              {{ product.metafields.custom.scent_notes | metafield_tag }}
-            </div>
-          </div>
-          <hr class="bundle-main__divider">
-        </div>
-      {% endif %}
-
-      {% if key_ingredients %}
-        <div class="bundle-main__accordion is-open" data-accordion>
-          <button
-            type="button"
-            id="accordion-ingredients-trigger-{{ section.id }}"
-            class="bundle-main__accordion-trigger"
-            aria-expanded="true"
-            aria-controls="accordion-ingredients-{{ section.id }}">
-            <span>{{ 'sections.product_bundle.key_ingredients' | t }}</span>
-            <svg class="bundle-main__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div
-            class="bundle-main__accordion-content"
-            id="accordion-ingredients-{{ section.id }}"
-            role="region"
-            aria-labelledby="accordion-ingredients-trigger-{{ section.id }}"
-            aria-hidden="false">
-            <div class="bundle-main__accordion-body">
-              {{ product.metafields.custom.key_ingredients | metafield_tag }}
-              {% if full_ingredient_list %}
-                <button
-                  type="button"
-                  class="bundle-main__ingredients-link"
-                  data-open-ingredients
-                  aria-haspopup="dialog">
-                  {{ 'sections.product_bundle.all_ingredients' | t }}
-                </button>
-              {% endif %}
-            </div>
-          </div>
-          <hr class="bundle-main__divider">
-        </div>
-      {% endif %}
-    </div>
-
-    {%- if show_patent_stamp and patent_stamp_position == 'above_badges' -%}
-      <div class="bundle-main__patent-position bundle-main__patent-position--flow">
-        {{ patent_stamp }}
-      </div>
-    {%- endif -%}
-
-    {%- comment -%} Trust Badges {%- endcomment -%}
-    {% if section.blocks.size > 0 %}
-      <div class="bundle-main__badges">
-        {% for block in section.blocks %}
-          {% if block.type == 'trust_badge' %}
-            <div class="bundle-main__badge" {{ block.shopify_attributes }}>
-              {% if block.settings.icon %}
-                <span
-                  class="bundle-main__badge-icon"
-                  role="img"
-                  aria-label="{{ block.settings.label | default: '' }}"
-                  style="-webkit-mask-image: url('{{ block.settings.icon | image_url: width: 60 }}'); mask-image: url('{{ block.settings.icon | image_url: width: 60 }}');">
-                </span>
-              {% endif %}
-              {% if block.settings.label %}
-                <p class="bundle-main__badge-label">{{ block.settings.label }}</p>
-              {% endif %}
-            </div>
-          {% endif %}
-        {% endfor %}
-      </div>
-    {% endif %}
   </div>
 
-  {%- comment -%} Ingredients Popup {%- endcomment -%}
+  {%- comment -%} Ingredients pop-up, as on the product page {%- endcomment -%}
   {% if full_ingredient_list %}
     <dialog
-      class="bundle-main__dialog"
+      class="product-main__dialog"
       id="ingredients-dialog-{{ section.id }}"
       scroll-lock
-      aria-labelledby="dialog-title-{{ section.id }}">
-      <div class="bundle-main__dialog-inner">
-        <div class="bundle-main__dialog-header">
-          <h2 id="dialog-title-{{ section.id }}" class="bundle-main__dialog-title">{{ 'sections.product_bundle.ingredients_popup_title' | t }}</h2>
-          <button
-            type="button"
-            class="bundle-main__dialog-close"
-            data-close-ingredients
-            aria-label="{{ 'sections.product_bundle.close' | t }}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
-              <path d="M2 2L18 18M18 2L2 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-        <div class="bundle-main__dialog-body">
+      aria-labelledby="dialog-title-{{ section.id }}"
+      style="--close-mask: url('{{ 'icon-plus.svg' | asset_url }}');"
+    >
+      <div class="product-main__dialog-inner">
+        <span class="product-main__dialog-handle" aria-hidden="true"></span>
+        <button
+          type="button"
+          class="product-main__dialog-close"
+          data-close-ingredients
+          aria-label="{{ 'sections.product.close' | t }}"
+        ></button>
+        <h2 id="dialog-title-{{ section.id }}" class="product-main__dialog-title">
+          {{- 'sections.product.ingredients_popup_title' | t -}}
+        </h2>
+        <div class="product-main__dialog-body">
           {{ product.metafields.custom.full_ingredient_list | metafield_tag }}
         </div>
       </div>
     </dialog>
   {% endif %}
 
-  {%- comment -%} Product data JSON for JS {%- endcomment -%}
-  {% if scent_collection %}
-    <script type="application/json" data-bundle-products>
-      {
-        "bundleVariantId": {{ current_variant.id | json }},
-        "scents": {
-          {%- assign scent_comma = '' -%}
-          {% for scent_product in scent_collection.products %}
-            {%- assign scent_coming_soon = false -%}
-            {%- if scent_product.tags contains 'coming-soon' or scent_product.tags contains 'Coming soon' or scent_product.tags contains 'coming soon' or scent_product.tags contains 'Coming Soon' -%}
-              {%- assign scent_coming_soon = true -%}
-            {%- endif -%}
-            {% if scent_product.metafields.custom.scent_name != blank and scent_product.available and scent_coming_soon == false %}
-              {{ scent_comma }}
-              "{{ scent_product.handle }}": {
-                "title": {{ scent_product.title | json }},
-                "variantId": {{ scent_product.selected_or_first_available_variant.id | json }},
-                "variantGid": {{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' | json }},
-                {%- if scent_product.metafields.custom.card_image != blank -%}
-                  "cardImage": {{ scent_product.metafields.custom.card_image | image_url: width: 800 | json }},
-                {%- elsif scent_product.featured_image -%}
-                  "cardImage": {{ scent_product.featured_image | image_url: width: 800 | json }},
-                {%- else -%}
-                  "cardImage": "",
-                {%- endif -%}
-                "price": {{ scent_product.price | json }},
-                "available": {{ scent_product.available | json }},
-                "variantAvailable": {{ scent_product.selected_or_first_available_variant.available | json }}
-              }
-              {%- assign scent_comma = ',' -%}
-            {% endif %}
-          {% endfor %}
-        }
+  {%- comment -%}
+    The scents' details for the script: the product title is what Simple
+    Bundles matches on, the scent name is what the page shows.
+  {%- endcomment -%}
+  <script type="application/json" data-bundle-products>
+    {
+      "bundleVariantId": {{ current_variant.id | json }},
+      "scents": {
+        {%- assign scent_comma = '' -%}
+        {%- for item in scent_source -%}
+          {%- liquid
+            assign item_scent = item.metafields.custom.scent_name.value
+            assign item_coming_soon = false
+            if item.tags contains 'coming-soon' or item.tags contains 'Coming soon' or item.tags contains 'coming soon' or item.tags contains 'Coming Soon'
+              assign item_coming_soon = true
+            endif
+            if item_scent == blank or item.available == false or item_coming_soon
+              continue
+            endif
+            assign item_color = item.metafields.custom.swatch_color.value | default: item.metafields.custom.card_background_color.value | default: item.metafields.custom.gradient_color_1.value | default: '#FFDCED'
+            assign item_bottle = item.metafields.custom.card_image | default: item.featured_image
+          -%}
+          {{ scent_comma }}
+          {{ item.handle | json }}: {
+            "title": {{ item.title | json }},
+            "name": {{ item_scent | json }},
+            "color": {{ item_color | json }},
+            "image": {% if item_bottle %}{{ item_bottle | image_url: width: 480 | json }}{% else %}""{% endif %},
+            "variantId": {{ item.selected_or_first_available_variant.id | json }}
+          }
+          {%- assign scent_comma = ',' -%}
+        {%- endfor -%}
       }
-    </script>
-  {% endif %}
+    }
+  </script>
 </section>
+
+{% render 'product-main-script' %}
 
 {% stylesheet %}
   /* ============================================
-     Base styles (Mobile-first, matching product.liquid)
+     Bundle product page: what the product page's styles
+     (sections/product.liquid) don't cover.
      ============================================ */
 
-  .bundle-main {
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(to bottom, var(--gradient-1) 1.4%, var(--gradient-2) 55%);
-    margin-top: var(--total-header-height, 110px);
-    color: var(--product-text, #3E2027);
+  /* --- The arches ---
+     In the photo's place: one arch per bottle, 156 x 240 and 32px apart in
+     the design's 640px column, filling with the picked scent's color and
+     bottle. */
+  /* Where the design has them in the 640 x 560 box: the arches 136px from
+     the top, the patent stamp 40px off the bottom. */
+  .product-bundle__stage {
+    display: grid;
+    place-items: start center;
+    padding-top: 21.25%;
   }
 
-  /* --- Mobile Header (above image on mobile) --- */
-
-  .bundle-main__mobile-header {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 50px 12px 0;
+  .product-bundle__stage .product-main__patent--image {
+    bottom: 7%;
   }
 
-  .bundle-main__mobile-subtitle-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  /* --- Desktop-only header (hidden on mobile) --- */
-
-  .bundle-main__desktop-header {
-    display: none;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  /* --- Image Column --- */
-
-  .bundle-main__image-column {
-    position: relative;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 12px 30px;
-  }
-
-  .bundle-main__bottles {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    width: 100%;
-    max-width: 416px;
-    min-height: 340px;
-    overflow: hidden;
-  }
-
-  .bundle-main__bottle-slot {
-    flex: 1;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 -30px;
-  }
-
-  .bundle-main__bottle-img {
-    width: 100%;
-    height: auto;
-    max-height: 340px;
-    object-fit: contain;
-    transition: opacity 0.4s ease;
-  }
-
-  .bundle-main__bottle-placeholder {
-    width: 45%;
-    aspect-ratio: 3 / 4;
-    border: 2px dashed var(--product-text, #3E2027);
-    border-radius: 40% 40% 10% 10%;
-    opacity: 0.15;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .bundle-main__bottle-number {
-    font-family: var(--font-alyona);
-    font-size: 32px;
-    opacity: 0.5;
-  }
-
-  /* --- Patent Stamp Positions --- */
-
-  .bundle-main__patent-position {
-    z-index: 3;
-  }
-
-  .bundle-main__patent-position--image {
-    position: absolute;
-    right: 32px;
-    bottom: 32px;
-  }
-
-  .bundle-main__patent-position--title {
-    position: absolute;
-    top: 42px;
-    right: 12px;
-  }
-
-  .bundle-main__patent-position--flow {
-    display: flex;
-    align-self: flex-start;
-  }
-
-  .bundle-main--patent-title_right .bundle-main__mobile-header {
-    position: relative;
-    min-height: var(--patent-stamp-mobile-size);
-    padding-right: calc(var(--patent-stamp-mobile-size) + 28px);
-  }
-
-  @media (max-width: 1023px) {
-    .bundle-main--patent-image_bottom_right .bundle-main__image-column {
-      flex-direction: column;
-      padding-bottom: 16px;
-    }
-
-    .bundle-main__patent-position--image {
-      position: relative;
-      right: auto;
-      bottom: auto;
-      align-self: flex-end;
-      margin: 16px 4px 0 0;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .bundle-main--patent-title_right .bundle-main__desktop-header {
-      position: relative;
-      min-height: var(--patent-stamp-size);
-      padding-right: calc(var(--patent-stamp-size) + 20px);
-    }
-
-    .bundle-main__patent-position--title {
-      top: 0;
-      right: 0;
-    }
-  }
-
-  /* --- Info Column --- */
-
-  .bundle-main__info-column {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    padding: 0 12px 40px;
-    position: relative;
-  }
-
-  /* --- Rating --- */
-
-  .bundle-main__rating {
-    gap: 8px;
-    color: var(--product-text);
-  }
-
-  .bundle-main__rating .star-rating__layer {
-    gap: 6px;
-  }
-
-  .bundle-main__rating .star-rating__layer svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .bundle-main__rating .star-rating__count {
-    font-size: 13px;
-  }
-
-  /* --- Header Typography --- */
-
-  .bundle-main__subtitle {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 16px;
-    line-height: normal;
-    letter-spacing: -0.16px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-  }
-
-  .bundle-main__title {
-    font-family: var(--font-alyona);
-    font-weight: 400;
-    font-size: 34px;
-    line-height: 1;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-  }
-
-  .bundle-main__size,
-  .bundle-main__size-line {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 13px;
-    line-height: normal;
-    letter-spacing: -0.13px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-  }
-
-  /* --- Scent Selectors --- */
-
-  .bundle-main__selectors {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .bundle-main__selector {
-    position: relative;
-    width: 100%;
-  }
-
-  .bundle-main__selector-trigger {
-    width: 100%;
-    height: 40px;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.14px;
-    color: var(--product-text, #3E2027);
-    background: transparent;
-    border: 1px solid var(--product-text, #3E2027);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .bundle-main__selector.is-selected .bundle-main__selector-trigger {
-    background-color: #FFFFFF;
-    border-color: transparent;
-  }
-
-  .bundle-main__selector-chevron {
-    transition: transform 0.2s ease;
-    flex-shrink: 0;
-  }
-
-  .bundle-main__selector-trigger[aria-expanded="true"] .bundle-main__selector-chevron {
-    transform: rotate(180deg);
-  }
-
-  .bundle-main__selector-list {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: #FFFFFF;
-    border: 1px solid var(--product-text, #3E2027);
-    list-style: none;
+  .product-bundle__slots {
+    display: grid;
+    grid-template-columns: repeat(var(--bundle-size, 3), minmax(0, 1fr));
+    column-gap: 6%;
+    width: 83%;
     margin: 0;
     padding: 0;
-    z-index: 10;
-    max-height: none;
-    overflow-y: visible;
+    list-style: none;
   }
 
-  .bundle-main__selector-trigger[aria-expanded="true"] + .bundle-main__selector-list {
-    display: block;
+  /* A round top and 20px bottom corners (as percentages, so they scale
+     with the arch). */
+  .product-bundle__slot {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 156 / 240;
+    border: 1.5px solid var(--color-foreground);
+    border-radius: 50% 50% 12.8% 12.8% / 32.5% 32.5% 8.3% 8.3%;
+    background-color: var(--scent-color, transparent);
+    transition: background-color 0.3s ease;
   }
 
-  .bundle-main__selector-option {
-    padding: 10px 20px;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.14px;
-    color: var(--product-text, #3E2027);
-    cursor: pointer;
-    transition: background-color 0.15s ease;
+  .product-bundle__slot-number {
+    font: 400 22px/1.45 var(--font-jokker);
   }
 
-  .bundle-main__selector-option:hover {
-    background-color: var(--gradient-1);
+  .product-bundle__slot.is-filled .product-bundle__slot-number {
+    visibility: hidden;
   }
 
-  .bundle-main__selector-option[aria-disabled="true"] {
-    opacity: 0.35;
-    text-decoration: line-through;
-    cursor: not-allowed;
+  /* The bottle stands in the arch, tilted like the scent circles' bottles,
+     and drops in when picked (moving `top`, not a transform, so the photo
+     stays sharp while it moves). */
+  .product-bundle__slot-bottle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    rotate: -8deg;
+    scale: 0.9;
     pointer-events: none;
+    animation: product-bundle-drop 0.3s ease-out;
   }
 
-  .bundle-main__selector-option[aria-selected="true"] {
+  @keyframes product-bundle-drop {
+    from {
+      top: -16px;
+      opacity: 0;
+    }
+  }
+
+  /* The x on a filled arch's shoulder: a white circle, like the video
+     arrows, growing a little on hover. */
+  .product-bundle__slot-remove {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--color-foreground);
+    border-radius: 50%;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    cursor: pointer;
+    transition: scale 0.2s ease;
+  }
+
+  .product-bundle__slot-remove[hidden] {
+    display: none;
+  }
+
+  @media (hover: hover) {
+    .product-bundle__slot-remove:hover {
+      scale: 1.15;
+    }
+  }
+
+  .product-bundle__slot-remove:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  /* Picking a scent when the bundle is full: the x's pulse, pointing at
+     how to swap one. */
+  .product-bundle__slots.is-nudged .product-bundle__slot-remove {
+    animation: product-bundle-nudge 0.5s ease;
+  }
+
+  @keyframes product-bundle-nudge {
+    40% {
+      scale: 1.3;
+    }
+  }
+
+  /* --- Price, under the title --- */
+  .product-bundle__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0;
+    font: 700 20px/1.3 var(--font-sweet-sans);
+    letter-spacing: 0.02em;
+  }
+
+  .product-bundle__compare {
+    font-size: 16px;
+    opacity: 0.6;
+  }
+
+  /* --- The scents to pick from ---
+     Buttons in the product page's scent circles. A picked scent gets the
+     ring, its full size and a bold name; one picked more than once shows
+     how many. */
+  .product-bundle__scent {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .product-bundle__scent.is-picked .product-main__scent-art {
+    box-shadow: inset 0 0 0 2px var(--color-foreground);
+  }
+
+  .product-bundle__scent.is-picked .product-main__scent-bottle {
+    scale: 1;
+  }
+
+  .product-bundle__scent.is-picked .product-main__scent-name {
     font-weight: 700;
   }
 
-  /* --- Divider --- */
-
-  .bundle-main__divider {
-    border: none;
-    border-top: 1px solid var(--product-text, #3E2027);
-    opacity: 0.2;
-    margin: 0;
+  .product-bundle__count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    z-index: 1;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 6px;
+    border-radius: var(--radius-pill);
+    background: var(--color-foreground);
+    color: var(--color-on-accent);
+    font: 700 13px/26px var(--font-sweet-sans);
+    text-align: center;
   }
 
-  /* --- Purchase Row --- */
-
-  .bundle-main__purchase-row {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .bundle-main__price {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 26px;
-    line-height: normal;
-    letter-spacing: -0.26px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-    white-space: nowrap;
-  }
-
-  .bundle-main__actions {
-    display: flex;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .bundle-main__button {
-    flex: 1;
-    width: 100%;
-    height: 48px;
-    padding: 10px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 12px;
-    line-height: normal;
-    letter-spacing: -0.12px;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    white-space: nowrap;
-  }
-
-  .bundle-main__button:hover:not(:disabled) {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
-
-  .bundle-main__button:active:not(:disabled) {
-    opacity: 0.8;
-    transform: translateY(0);
-  }
-
-  .bundle-main__button--add {
-    background-color: var(--product-text, #3E2027);
-    color: #FFFFFF;
-  }
-
-  .bundle-main__button--buy {
-    background-color: var(--product-text, #3E2027);
-    color: #FFFFFF;
-  }
-
-  .bundle-main__button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  .bundle-main__button:focus-visible {
-    outline: 2px solid var(--product-text, #3E2027);
-    outline-offset: 2px;
-  }
-
-  .bundle-main__status {
-    width: 100%;
-    margin: 10px 0 0;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 1.3;
-    color: #B42318;
-  }
-
-  /* --- Watch It In Action --- */
-
-  .bundle-main__video-grid {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .bundle-main__video-grid::-webkit-scrollbar {
+  .product-bundle__count[hidden] {
     display: none;
   }
 
-  .bundle-main__video-placeholder {
-    width: 90px;
-    height: 125px;
-    background-color: #D9D9D9;
-    flex-shrink: 0;
-  }
-
-  .bundle-main__video-embed {
-    width: 100%;
-  }
-
-  /* --- Accordions --- */
-
-  .bundle-main__accordion-trigger {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 0;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.14px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-  }
-
-  .bundle-main__accordion-trigger:focus-visible {
-    outline: 2px solid var(--product-text, #3E2027);
-    outline-offset: 2px;
-  }
-
-  .bundle-main__accordion-icon {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
-  }
-
-  .bundle-main__accordion.is-open .bundle-main__accordion-icon {
-    transform: rotate(45deg);
-  }
-
-  .bundle-main__accordion-content {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.3s ease;
-  }
-
-  .bundle-main__accordion.is-open .bundle-main__accordion-content {
-    grid-template-rows: 1fr;
-  }
-
-  .bundle-main__accordion-body {
-    overflow: hidden;
-    font-family: var(--font-jokker);
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--product-text, #3E2027);
-    padding-bottom: 0;
-    transition: padding-bottom 0.3s ease;
-  }
-
-  .bundle-main__accordion-body a {
-    color: inherit;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-    font-weight: 500;
-    transition: opacity 0.2s ease;
-  }
-
-  .bundle-main__accordion-body a:hover,
-  .bundle-main__accordion-body a:focus-visible {
-    opacity: 0.7;
-  }
-
-  .bundle-main__accordion-body a:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
-    border-radius: 1px;
-  }
-
-  .bundle-main__accordion.is-open .bundle-main__accordion-body {
-    padding-bottom: 15px;
-  }
-
-  .bundle-main__ingredients-link {
-    display: inline;
-    background: none;
-    border: none;
-    padding: 0;
-    font-family: var(--font-jokker);
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--product-text, #3E2027);
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
-  .bundle-main__ingredients-link:hover {
-    opacity: 0.7;
-  }
-
-  .bundle-main__ingredients-link:focus-visible {
-    outline: 2px solid var(--product-text, #3E2027);
-    outline-offset: 2px;
-  }
-
-  /* --- Trust Badges --- */
-
-  .bundle-main__badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding-top: 10px;
-    justify-content: center;
-  }
-
-  .bundle-main__badge {
-    width: 130px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .bundle-main__badge-icon {
-    width: 30px;
-    height: 30px;
-    flex-shrink: 0;
-    display: inline-block;
-    background-color: var(--product-text, #3E2027);
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    mask-position: center;
-  }
-
-  .bundle-main__badge-label {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 12px;
-    letter-spacing: -0.12px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-    line-height: normal;
-    white-space: pre-line;
-  }
-
-  /* --- Ingredients Dialog (mobile: bottom sheet) --- */
-
-  .bundle-main__dialog {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    border: none;
-    padding: 0;
-    margin: 0;
-    background: transparent;
-    z-index: 999;
-  }
-
-  .bundle-main__dialog::backdrop {
-    background-color: rgba(62, 32, 39, 0.5);
-  }
-
-  .bundle-main__dialog-inner {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-height: 80vh;
-    background: #FCE9EC;
-    color: var(--popup-text, #3E2027);
-    padding: 30px 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .bundle-main__dialog-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .bundle-main__dialog-title {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 18px;
-    text-transform: uppercase;
-    letter-spacing: -0.18px;
-    color: var(--popup-text, #3E2027);
-    margin: 0;
-  }
-
-  .bundle-main__dialog-close {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    color: var(--popup-text, #3E2027);
-  }
-
-  .bundle-main__dialog-close:focus-visible {
-    outline: 2px solid var(--popup-text, #3E2027);
-    outline-offset: 2px;
-  }
-
-  .bundle-main__dialog-body {
-    font-family: var(--font-jokker);
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--popup-text, #3E2027);
-  }
-
-  .bundle-main__dialog-body a {
-    color: inherit;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-    font-weight: 500;
-    transition: opacity 0.2s ease;
-  }
-
-  .bundle-main__dialog-body a:hover,
-  .bundle-main__dialog-body a:focus-visible {
-    opacity: 0.7;
-  }
-
-  .bundle-main__dialog-body a:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
-    border-radius: 1px;
-  }
-
-  /* ============================================
-     Desktop (1024px+) — matching product.liquid
-     ============================================ */
-
-  @media (min-width: 1024px) {
-    .bundle-main {
-      flex-direction: row;
-      min-height: calc(100vh - var(--total-header-height, 110px));
+  @media (prefers-reduced-motion: reduce) {
+    .product-bundle__slot,
+    .product-bundle__slot-remove {
+      transition: none;
     }
 
-    .bundle-main__mobile-header {
-      display: none;
+    .product-bundle__slot-bottle,
+    .product-bundle__slots.is-nudged .product-bundle__slot-remove {
+      animation: none;
+    }
+  }
+
+  /* Two even lines, as in the design ("Deodorant Enhancer - / Bundle of 3"). */
+  .product-bundle .product-main__title {
+    text-wrap: balance;
+  }
+
+  /* --- Phones: the arches across the column ---
+     The stage is as tall as the arches (the product page's photo box has a
+     fixed shape; .product-main__image is doubled to outweigh it). The
+     patent stamp goes under the third arch instead of on its shoulder,
+     where the arch's x is. */
+  @media (max-width: 1023px) {
+    .product-main__image.product-bundle__stage {
+      aspect-ratio: auto;
+      padding: 4px 0;
     }
 
-    .bundle-main__desktop-header {
-      display: flex;
-      gap: 16px;
+    .product-main--patent-image_bottom_right .product-main__image.product-bundle__stage {
+      padding-bottom: calc(var(--patent-stamp-mobile-size) + 4px);
     }
 
-    /* Desktop: rating pinned to top-right of the info column */
-    .bundle-main__rating {
-      position: absolute;
-      top: 30px;
-      right: var(--page-gutter);
-      gap: 8px;
-      z-index: 2;
+    .product-bundle__stage .product-main__patent--image {
+      top: auto;
+      right: 0;
+      bottom: 0;
     }
 
-    .bundle-main__rating .star-rating__layer {
-      gap: 4px;
+    .product-bundle__slots {
+      width: 100%;
+      column-gap: 5%;
     }
 
-    .bundle-main__rating .star-rating__layer svg {
-      width: 13px;
-      height: 13px;
+    .product-bundle__slot-number {
+      font-size: 18px;
     }
 
-    .bundle-main__rating .star-rating__count {
-      font-size: 14px;
+    .product-bundle__slot-remove {
+      width: 28px;
+      height: 28px;
     }
 
-    .bundle-main__image-column {
-      width: 52%;
-      position: sticky;
-      top: var(--total-header-height, 110px);
-      height: calc(100vh - var(--total-header-height, 110px));
-      padding: 40px;
-      flex-shrink: 0;
-    }
-
-    .bundle-main__bottles {
-      max-width: 700px;
-      min-height: 500px;
-    }
-
-    .bundle-main__bottle-slot {
-      margin: 0 -70px;
-    }
-
-    .bundle-main__bottle-img {
-      max-height: 600px;
-    }
-
-    .bundle-main__bottle-placeholder {
-      width: 55%;
-      aspect-ratio: 3 / 5;
-    }
-
-    .bundle-main__bottle-number {
-      font-size: 48px;
-    }
-
-    .bundle-main__info-column {
-      width: 48%;
-      padding: 120px var(--page-gutter) 60px 40px;
-    }
-
-    .bundle-main__subtitle {
-      font-size: 20px;
-      letter-spacing: -0.2px;
-    }
-
-    .bundle-main__title {
-      font-size: 74px;
-    }
-
-    .bundle-main__size,
-    .bundle-main__size-line {
+    .product-bundle__price {
       font-size: 16px;
-      letter-spacing: -0.16px;
     }
 
-    .bundle-main__selector {
-      width: 255px;
-    }
-
-    .bundle-main__purchase-row {
-      flex-direction: row;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .bundle-main__price {
-      font-size: 26px;
-      letter-spacing: -0.26px;
-    }
-
-    .bundle-main__actions {
-      gap: 10px;
-      width: auto;
-    }
-
-    .bundle-main__button {
-      flex: 0 0 auto;
-      width: auto;
-      min-width: 200px;
-      height: 40px;
-      padding: 10px 28px;
-      gap: 10px;
+    .product-bundle__compare {
       font-size: 14px;
-      letter-spacing: -0.14px;
     }
 
-    .bundle-main__badges {
-      justify-content: flex-start;
-    }
-
-    .bundle-main__dialog-inner {
-      top: 50%;
-      left: 50%;
-      right: auto;
-      bottom: auto;
-      transform: translate(-50%, -50%);
-      width: 90%;
-      max-width: 560px;
-      max-height: 70vh;
-      padding: 40px;
+    .product-bundle__count {
+      min-width: 22px;
+      height: 22px;
+      padding: 0 5px;
+      font-size: 12px;
+      line-height: 22px;
     }
   }
 {% endstylesheet %}
 
 {% javascript %}
-  (function () {
-    class BundleSection {
+  /* Bundle product page: picking the scents into the arches and adding the
+     bundle to the cart. The dropdowns, quantity, ingredients pop-up and
+     videos are set up by the product page's script
+     (snippets/product-main-script.liquid). */
+  (() => {
+    class BundlePicker {
       constructor(section) {
         this.section = section;
-        this.bundleSize = parseInt(section.getAttribute('data-bundle-size')) || 3;
-        this.selections = {};
-        this.productData = {};
-
-        this.parseProductData();
-        this.initSelectors();
-        this.initAccordions();
-        this.initIngredientsDialog();
-        this.initCartButtons();
-      }
-
-      parseProductData() {
-        const jsonEl = this.section.querySelector('[data-bundle-products]');
-        if (jsonEl) {
-          try {
-            const data = JSON.parse(jsonEl.textContent);
-            this.productData = data.scents || {};
-            this.bundleVariantId = data.bundleVariantId;
-          } catch (e) {
-            console.error('Bundle: failed to parse product data', e);
-          }
-        }
-      }
-
-      initSelectors() {
-        this.selectors = this.section.querySelectorAll('[data-scent-selector]');
-        this.selectors.forEach(selector => {
-          const trigger = selector.querySelector('.bundle-main__selector-trigger');
-          const options = selector.querySelectorAll('.bundle-main__selector-option');
-          const selectorIndex = selector.getAttribute('data-scent-selector');
-
-          trigger.addEventListener('click', () => this.toggleDropdown(selector));
-
-          options.forEach(option => {
-            option.addEventListener('click', () => {
-              if (option.getAttribute('aria-disabled') === 'true') return;
-              this.selectScent(selector, selectorIndex, option);
-            });
-          });
-        });
-
-        document.addEventListener('click', (e) => {
-          if (!e.target.closest('[data-scent-selector]')) {
-            this.closeAllDropdowns();
-          }
-        });
-
-        this.syncDisabledStates();
-      }
-
-      toggleDropdown(selector) {
-        const trigger = selector.querySelector('.bundle-main__selector-trigger');
-        const isOpen = trigger.getAttribute('aria-expanded') === 'true';
-
-        this.closeAllDropdowns();
-
-        if (!isOpen) {
-          trigger.setAttribute('aria-expanded', 'true');
-        }
-      }
-
-      closeAllDropdowns() {
-        this.selectors.forEach(s => {
-          s.querySelector('.bundle-main__selector-trigger').setAttribute('aria-expanded', 'false');
-        });
-      }
-
-      selectScent(selector, selectorIndex, option) {
-        const handle = option.getAttribute('data-product-handle');
-        let product = this.productData[handle];
-        if (!product) {
-          const variantId = option.getAttribute('data-variant-id');
-          if (!variantId) return;
-          product = {
-            title: option.getAttribute('data-product-title') || option.textContent.trim(),
-            variantId: variantId,
-            variantGid: option.getAttribute('data-variant-gid') || ('gid://shopify/ProductVariant/' + variantId),
-            cardImage: option.getAttribute('data-card-image') || '',
-          };
-          this.productData[handle] = product;
-        }
-        if (!product) return;
-
-        this.selections[selectorIndex] = handle;
-
-        const label = selector.querySelector('[data-selector-label]');
-        label.textContent = selectorIndex + '. ' + product.title;
-        selector.classList.add('is-selected');
-
-        option.setAttribute('aria-selected', 'true');
-        selector.querySelectorAll('.bundle-main__selector-option').forEach(opt => {
-          if (opt !== option) opt.setAttribute('aria-selected', 'false');
-        });
-
-        this.closeAllDropdowns();
-        this.syncDisabledStates();
-        this.updateBottleImage(selectorIndex, product);
-        this.updateButtons();
-      }
-
-      syncDisabledStates() {
-        this.selectors.forEach(selector => {
-          selector.querySelectorAll('.bundle-main__selector-option').forEach(option => {
-            option.setAttribute('aria-disabled', 'false');
-          });
-        });
-      }
-
-      updateBottleImage(selectorIndex, product) {
-        const slot = this.section.querySelector('[data-bottle-slot="' + selectorIndex + '"]');
-        if (!slot) return;
-
-        const img = slot.querySelector('.bundle-main__bottle-img');
-        const placeholder = slot.querySelector('.bundle-main__bottle-placeholder');
-
-        if (product.cardImage) {
-          img.src = product.cardImage;
-          img.alt = product.title;
-          img.style.display = 'block';
-          if (placeholder) placeholder.style.display = 'none';
-        }
-      }
-
-      updateButtons() {
-        const allSelected = Object.keys(this.selections).length >= this.bundleSize;
-        const canAdd = allSelected;
-        const addBtn = this.section.querySelector('[data-bundle-add]');
-        const buyBtn = this.section.querySelector('[data-bundle-buy]');
-
-        if (addBtn) addBtn.disabled = !canAdd;
-        if (buyBtn) buyBtn.disabled = !canAdd;
-      }
-
-      getSelectedProducts() {
-        return Object.entries(this.selections).map(([index, handle]) => {
-          const product = this.productData[handle];
-          return product ? { index, handle, ...product } : null;
-        }).filter(Boolean);
-      }
-
-      initCartButtons() {
-        const addBtn = this.section.querySelector('[data-bundle-add]');
-        const buyBtn = this.section.querySelector('[data-bundle-buy]');
-
-        if (addBtn) {
-          addBtn.addEventListener('click', () => this.addToCart(false));
-        }
-        if (buyBtn) {
-          buyBtn.addEventListener('click', () => this.addToCart(true));
-        }
-      }
-
-      async addToCart(goToCart) {
-        const selected = this.getSelectedProducts().sort((a, b) => Number(a.index) - Number(b.index));
-        if (selected.length < this.bundleSize) return;
-        if (!this.bundleVariantId) {
-          console.error('Bundle: no bundle variant ID found');
-          return;
-        }
-
-        const addBtn = this.section.querySelector('[data-bundle-add]');
-        const buyBtn = this.section.querySelector('[data-bundle-buy]');
-        if (addBtn) addBtn.disabled = true;
-        if (buyBtn) buyBtn.disabled = true;
+        this.text = section.dataset;
+        this.size = Number(section.dataset.bundleSize) || 3;
+        this.slots = new Array(this.size).fill(null);
+        this.scents = {};
+        this.bundleVariantId = null;
 
         try {
-          const formBody = new URLSearchParams();
-          formBody.append('id', this.bundleVariantId);
-          formBody.append('quantity', '1');
+          const data = JSON.parse(section.querySelector('[data-bundle-products]')?.textContent || '{}');
+          this.scents = data.scents || {};
+          this.bundleVariantId = data.bundleVariantId;
+        } catch (error) {
+          console.error('Bundle: could not read the scents', error);
+        }
 
-          // Simple Bundles & Kits expands this line into its component scents
-          // (and decrements each scent's stock) server-side via its Cart
-          // Transform. It keys off the option-group properties ("First Scent",
-          // "Second Scent", ...) plus a "_bundle_selection" summary, exactly as
-          // its own widget submits them. We replicate that format here so the
-          // custom picker drives the same mechanism without the widget.
+        this.slotList = section.querySelector('[data-bundle-slots]');
+        this.slotItems = [...section.querySelectorAll('[data-bundle-slot]')];
+        this.scentButtons = [...section.querySelectorAll('[data-bundle-scent]')];
+        this.addButton = section.querySelector('[data-bundle-add]');
+        this.addLabel = section.querySelector('[data-bundle-add-label]');
+        this.status = section.querySelector('[data-bundle-status]');
+        this.adding = false;
+
+        this.scentButtons.forEach((button) => {
+          button.addEventListener('click', () => this.pick(button.dataset.bundleScent));
+        });
+        this.slotItems.forEach((slot, index) => {
+          slot.querySelector('[data-bundle-remove]')?.addEventListener('click', () => this.remove(index));
+        });
+        this.addButton?.addEventListener('click', () => this.addToCart());
+
+        this.render();
+      }
+
+      // Fills "[name]" placeholders in the section's texts.
+      fill(template, values) {
+        return (template || '').replace(/\[(\w+)\]/g, (match, key) => (key in values ? values[key] : match));
+      }
+
+      announce(message) {
+        if (!this.status) return;
+        this.status.textContent = '';
+        requestAnimationFrame(() => {
+          this.status.textContent = message;
+        });
+      }
+
+      pick(handle) {
+        const scent = this.scents[handle];
+        if (!scent) return;
+        const index = this.slots.indexOf(null);
+        if (index === -1) {
+          this.slotList?.classList.remove('is-nudged');
+          void this.slotList?.offsetWidth;
+          this.slotList?.classList.add('is-nudged');
+          this.announce(this.text.textFull);
+          return;
+        }
+        this.slots[index] = handle;
+        this.render();
+        this.announce(this.fill(this.text.textAdded, { scent: scent.name, number: index + 1 }));
+      }
+
+      remove(index) {
+        const handle = this.slots[index];
+        if (!handle) return;
+        this.slots[index] = null;
+        this.render();
+        this.announce(this.fill(this.text.textRemoved, { scent: this.scents[handle].name, number: index + 1 }));
+        // The x is gone now; focus goes to that scent's circle.
+        this.scentButtons.find((button) => button.dataset.bundleScent === handle)?.focus();
+      }
+
+      render() {
+        this.slotItems.forEach((slot, index) => {
+          const handle = this.slots[index];
+          const scent = handle ? this.scents[handle] : null;
+          const bottleLabel = this.fill(this.text.textBottle, { number: index + 1 });
+
+          slot.classList.toggle('is-filled', Boolean(scent));
+          if (scent) {
+            slot.style.setProperty('--scent-color', scent.color);
+          } else {
+            slot.style.removeProperty('--scent-color');
+          }
+
+          let bottle = slot.querySelector('.product-bundle__slot-bottle');
+          if (scent && scent.image) {
+            if (!bottle || bottle.dataset.handle !== handle) {
+              bottle?.remove();
+              bottle = document.createElement('img');
+              bottle.className = 'product-bundle__slot-bottle';
+              bottle.alt = '';
+              bottle.width = 480;
+              bottle.height = 720;
+              bottle.src = scent.image;
+              bottle.dataset.handle = handle;
+              slot.prepend(bottle);
+            }
+          } else {
+            bottle?.remove();
+          }
+
+          const label = slot.querySelector('[data-slot-label]');
+          if (label) label.textContent = `${bottleLabel}: ${scent ? scent.name : this.text.textEmpty}`;
+
+          const removeButton = slot.querySelector('[data-bundle-remove]');
+          if (removeButton) {
+            removeButton.hidden = !scent;
+            removeButton.setAttribute('aria-label', scent ? this.fill(this.text.textRemove, { scent: `${scent.name} (${bottleLabel})` }) : '');
+          }
+        });
+
+        const counts = {};
+        this.slots.forEach((handle) => {
+          if (handle) counts[handle] = (counts[handle] || 0) + 1;
+        });
+        this.scentButtons.forEach((button) => {
+          const count = counts[button.dataset.bundleScent] || 0;
+          button.classList.toggle('is-picked', count > 0);
+          const badge = button.querySelector('[data-scent-count]');
+          if (badge) {
+            badge.hidden = count < 2;
+            badge.textContent = `×${count}`;
+          }
+          const picked = button.querySelector('[data-scent-picked]');
+          if (picked) picked.textContent = count > 0 ? `, ${this.fill(this.text.textPicked, { count })}` : '';
+        });
+
+        const remaining = this.slots.filter((handle) => !handle).length;
+        if (this.addButton) this.addButton.disabled = remaining > 0 || this.adding;
+        if (this.addLabel) {
+          if (remaining === this.size) {
+            this.addLabel.textContent = this.fill(this.text.textPickScents, { count: remaining });
+          } else if (remaining > 0) {
+            this.addLabel.textContent = this.fill(this.text.textPickMore, { count: remaining });
+          } else {
+            this.addLabel.textContent = this.text.textAdd;
+          }
+        }
+      }
+
+      async addToCart() {
+        const picked = this.slots.map((handle) => this.scents[handle]);
+        if (this.adding || picked.some((scent) => !scent) || !this.bundleVariantId) return;
+
+        const input = this.section.querySelector('[data-quantity] input');
+        const quantity = Math.max(1, parseInt(input?.value, 10) || 1);
+
+        this.adding = true;
+        this.render();
+        this.addButton?.setAttribute('aria-busy', 'true');
+
+        try {
+          const body = new URLSearchParams();
+          body.append('id', this.bundleVariantId);
+          body.append('quantity', String(quantity));
+
+          // Simple Bundles & Kits expands this line into its scents (and takes
+          // each from stock) through its Cart Transform. It reads the
+          // option-group properties ("First Scent", "Second Scent", ...) and a
+          // "_bundle_selection" summary, exactly as its own widget sends them.
           const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth'];
-          const titles = selected.map(p => p.title);
-          selected.forEach((p, i) => {
-            const groupName = (ordinals[i] || ('Scent ' + (i + 1))) + ' Scent';
-            formBody.append(`properties[${groupName}]`, p.title);
+          picked.forEach((scent, index) => {
+            body.append(`properties[${ordinals[index] || `Scent ${index + 1}`} Scent]`, scent.title);
           });
-          formBody.append('properties[_bundle_selection]', titles.join(' <> '));
+          body.append('properties[_bundle_selection]', picked.map((scent) => scent.title).join(' <> '));
 
           const response = await fetch('/cart/add.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formBody
+            body,
           });
-
           if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            console.error('Bundle: cart response', response.status, errorData);
-            throw new Error('Failed to add to cart');
+            const error = await response.json().catch(() => null);
+            console.error('Bundle: cart response', response.status, error);
+            throw new Error('Could not add the bundle to the cart');
           }
 
-          if (goToCart) {
-            window.location.href = '/cart';
-          } else {
-            const cartResponse = await fetch('/cart.js');
-            const cartData = await cartResponse.json();
-            document.dispatchEvent(new CustomEvent('cart:updated', { detail: cartData }));
-            document.dispatchEvent(new CustomEvent('cart:open'));
-            if (addBtn) addBtn.disabled = false;
-            if (buyBtn) buyBtn.disabled = false;
-          }
+          const cart = await (await fetch('/cart.js')).json();
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+          document.dispatchEvent(new CustomEvent('cart:open'));
         } catch (error) {
           console.error('Bundle: add to cart failed', error);
-          if (addBtn) addBtn.disabled = false;
-          if (buyBtn) buyBtn.disabled = false;
+        } finally {
+          this.adding = false;
+          this.addButton?.removeAttribute('aria-busy');
+          this.render();
         }
-      }
-
-      initAccordions() {
-        const accordions = this.section.querySelectorAll('[data-accordion]');
-        accordions.forEach(accordion => {
-          const trigger = accordion.querySelector('.bundle-main__accordion-trigger');
-          if (!trigger) return;
-
-          trigger.addEventListener('click', () => {
-            const isOpen = accordion.classList.contains('is-open');
-            accordion.classList.toggle('is-open');
-            trigger.setAttribute('aria-expanded', !isOpen);
-
-            const content = accordion.querySelector('.bundle-main__accordion-content');
-            if (content) {
-              content.setAttribute('aria-hidden', isOpen);
-            }
-          });
-        });
-      }
-
-      initIngredientsDialog() {
-        const sectionId = this.section.getAttribute('data-section-id');
-        const dialog = this.section.querySelector('#ingredients-dialog-' + sectionId);
-        if (!dialog) return;
-
-        const openBtn = this.section.querySelector('[data-open-ingredients]');
-        const closeBtn = this.section.querySelector('[data-close-ingredients]');
-
-        if (openBtn) {
-          openBtn.addEventListener('click', () => dialog.showModal());
-        }
-        if (closeBtn) {
-          closeBtn.addEventListener('click', () => dialog.close());
-        }
-        dialog.addEventListener('click', (e) => {
-          if (e.target === dialog) dialog.close();
-        });
       }
     }
 
-    function init() {
-      const section = document.querySelector('.bundle-main');
-      if (section) new BundleSection(section);
+    function init(root = document) {
+      root.querySelectorAll('.product-bundle').forEach((section) => {
+        if (section.dataset.bundleReady) return;
+        section.dataset.bundleReady = 'on';
+        new BundlePicker(section);
+      });
     }
 
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
+      document.addEventListener('DOMContentLoaded', () => init());
     } else {
       init();
     }
-
-    document.addEventListener('shopify:section:load', (e) => {
-      if (e.target.querySelector('.bundle-main')) {
-        init();
-      }
-    });
+    document.addEventListener('shopify:section:load', (event) => init(event.target));
   })();
 {% endjavascript %}
 
 {% schema %}
 {
   "name": "t:sections.product_bundle.name",
-  "class": "bundle-main-section",
+  "class": "bundle-main-section product-main-section",
   "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.product_bundle.settings.title",
+      "info": "t:sections.product_bundle.settings.title_info"
+    },
     {
       "type": "header",
       "content": "t:sections.product.patent_stamp_header"
@@ -1611,6 +1091,13 @@
       "label": "t:sections.product_bundle.settings.scent_collection"
     },
     {
+      "type": "product_list",
+      "id": "scent_products",
+      "label": "t:sections.product_bundle.settings.scent_products",
+      "info": "t:sections.product_bundle.settings.scent_products_info",
+      "limit": 12
+    },
+    {
       "type": "range",
       "id": "bundle_size",
       "label": "t:sections.product_bundle.settings.bundle_size",
@@ -1627,13 +1114,19 @@
       "type": "color",
       "id": "gradient_color_1",
       "label": "t:sections.product_bundle.settings.gradient_color_1",
-      "default": "#F4D2A4"
+      "default": "#FFEFFF"
     },
     {
       "type": "color",
       "id": "gradient_color_2",
       "label": "t:sections.product_bundle.settings.gradient_color_2",
-      "default": "#FCF5DE"
+      "default": "#FFCEE7"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_3",
+      "label": "t:sections.product_bundle.settings.gradient_color_3",
+      "default": "#F2D593"
     },
     {
       "type": "color",
@@ -1644,9 +1137,64 @@
   ],
   "blocks": [
     {
+      "type": "benefit_pill",
+      "name": "t:sections.product.benefit_pill",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.product.benefit_pill_icon",
+          "options": [
+            {
+              "value": "plant_based",
+              "label": "t:sections.product.benefit_pill_icon_plant_based"
+            },
+            {
+              "value": "no_aluminum",
+              "label": "t:sections.product.benefit_pill_icon_no_aluminum"
+            },
+            {
+              "value": "ph_balancing",
+              "label": "t:sections.product.benefit_pill_icon_ph_balancing"
+            },
+            {
+              "value": "organic_cotton",
+              "label": "t:sections.product.benefit_pill_icon_organic_cotton"
+            },
+            {
+              "value": "fragrance_free",
+              "label": "t:sections.product.benefit_pill_icon_fragrance_free"
+            },
+            {
+              "value": "hypoallergenic",
+              "label": "t:sections.product.benefit_pill_icon_hypoallergenic"
+            }
+          ],
+          "default": "plant_based"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "t:sections.product.benefit_pill_custom_icon",
+          "info": "t:sections.product.benefit_pill_custom_icon_info"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.product.benefit_pill_label",
+          "default": "Plant-based"
+        }
+      ]
+    },
+    {
       "type": "trust_badge",
       "name": "t:sections.product.trust_badge",
       "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:sections.product.trust_badge_hidden"
+        },
         {
           "type": "image_picker",
           "id": "icon",
@@ -1665,14 +1213,9 @@
     {
       "name": "t:sections.product_bundle.name",
       "blocks": [
-        { "type": "trust_badge", "settings": { "label": "Aluminum\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Paraben\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Sulfate\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Cruelty\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Plant-Based\nIngredients" } },
-        { "type": "trust_badge", "settings": { "label": "Phthalate\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Vegan" } },
-        { "type": "trust_badge", "settings": { "label": "U.S. Patent\n11,857,668" } }
+        { "type": "benefit_pill", "settings": { "icon": "plant_based", "label": "Plant-based" } },
+        { "type": "benefit_pill", "settings": { "icon": "no_aluminum", "label": "No aluminum" } },
+        { "type": "benefit_pill", "settings": { "icon": "ph_balancing", "label": "pH balancing" } }
       ]
     }
   ],

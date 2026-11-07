@@ -490,7 +490,12 @@
         "colors_header": "Colors",
         "gradient_color_1": "Gradient color 1",
         "gradient_color_2": "Gradient color 2",
-        "popup_text_color": "Popup text color"
+        "gradient_color_3": "Gradient color 3",
+        "popup_text_color": "Popup text color",
+        "title": "Title",
+        "title_info": "Shown instead of the product's title. Leave blank to use the product's title.",
+        "scent_products": "Scents",
+        "scent_products_info": "The scents to pick from, in this order. Leave empty to use the scent collection. Only scents with a scent name that are in stock are shown. The circle behind each bottle is the product's Swatch color metafield, or else its Card background color."
       }
     },
     "product_bundle_duo": {

@@ -240,7 +240,21 @@
       "key_ingredients": "Key ingredients",
       "all_ingredients": "All ingredients",
       "ingredients_popup_title": "Full ingredient list",
-      "close": "Close"
+      "close": "Close",
+      "choose_scents": "Choose {{ count }} scents:",
+      "pick_scents": "Pick {{ count }} scents",
+      "pick_more": "Pick {{ count }} more",
+      "your_bundle": "Your bundle",
+      "bottle": "Bottle {{ number }}",
+      "empty": "empty",
+      "remove_scent": "Take out {{ scent }}",
+      "scent_added": "{{ scent }} added as bottle {{ number }}",
+      "scent_removed": "{{ scent }} taken out of bottle {{ number }}",
+      "bundle_full": "Your bundle is full. Take a bottle out to swap it.",
+      "picked_count": "{{ count }} in your bundle",
+      "size_line": "{{ count }} × {{ size }}",
+      "sale_price": "Sale price",
+      "regular_price": "Regular price"
     },
     "list_collections": {
       "name": "Collections list",
