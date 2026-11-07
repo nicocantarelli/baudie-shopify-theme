@@ -802,10 +802,33 @@
 
   /* The chevron sits over the button's right padding, so a click on it
      opens the list too. */
+  /* The chip behind "month" and its chevron: one painted box, always its
+     full size (padding, with the same negative margin so the sentence
+     doesn't move), so hovering only fades its color in. Its color comes
+     from the page's pink, not currentColor, so the fade is smooth. */
   .purchase-options--stacked .purchase-options__select-wrapper {
+    --select-chip-pad: 4px;
+
     position: relative;
     display: inline-flex;
     align-items: center;
+    margin: calc(-1 * var(--select-chip-pad));
+    padding: var(--select-chip-pad);
+    border-radius: 6px;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+  }
+
+  /* Shown while the button is hovered and while the list is open, so moving
+     from the button onto the list doesn't switch it off and on. */
+  .purchase-options--stacked .purchase-options__select-wrapper:has(.select-menu.is-open) {
+    background-color: color-mix(in srgb, var(--color-foreground) 10%, transparent);
+  }
+
+  @media (hover: hover) {
+    .purchase-options--stacked .purchase-options__select-wrapper:has(.select-menu__button:hover) {
+      background-color: color-mix(in srgb, var(--color-foreground) 10%, transparent);
+    }
   }
 
   /* The frequency reads as part of the sentence: underlined, no box. */
@@ -826,7 +849,7 @@
   .purchase-options--stacked .purchase-options__chevron {
     position: absolute;
     top: 50%;
-    right: 0;
+    right: var(--select-chip-pad);
     width: 10px;
     height: 5px;
     transform: translateY(-50%);

@@ -248,6 +248,7 @@
   .product-faq__question {
     font: 700 16px/1.3 var(--font-sweet-sans);
     letter-spacing: var(--tracking-label);
+    transition: translate 0.2s ease;
   }
 
   /* White circle, pink plus; the plus turns into a minus when open. */
@@ -262,6 +263,23 @@
     /* The band's own color when one is picked, so the plus still shows
        against a picked text color. */
     color: var(--section-bg, var(--color-foreground));
+    transition: rotate 0.3s ease;
+  }
+
+  /* Hover, as on the product page's dropdowns: the question slides over a
+     little and the plus spins (a half turn once it's a minus). */
+  @media (hover: hover) {
+    .product-faq__trigger:hover .product-faq__question {
+      translate: 4px 0;
+    }
+
+    .product-faq__trigger:hover .product-faq__toggle {
+      rotate: 90deg;
+    }
+
+    .product-faq__item--open .product-faq__trigger:hover .product-faq__toggle {
+      rotate: 180deg;
+    }
   }
 
   .product-faq__toggle-down {
@@ -298,7 +316,9 @@
 
   @media (prefers-reduced-motion: reduce) {
     .product-faq__answer,
-    .product-faq__toggle-down {
+    .product-faq__toggle-down,
+    .product-faq__toggle,
+    .product-faq__question {
       transition: none;
     }
   }

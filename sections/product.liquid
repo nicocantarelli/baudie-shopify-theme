@@ -896,7 +896,15 @@
     color: var(--color-foreground);
     cursor: pointer;
     translate: 0 -50%;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.2s ease, scale 0.2s ease;
+  }
+
+  /* Hover: the circle grows, arrow and all, and stays white (a pink fill
+     would sink into the pink backgrounds behind it). */
+  @media (hover: hover) {
+    .product-main__videos-arrow:not(:disabled):hover {
+      scale: 1.15;
+    }
   }
 
   .product-main__videos-arrow[hidden] {
@@ -1246,6 +1254,42 @@
     outline-offset: -4px;
   }
 
+  /* Hover: a soft pink circle behind the sign. */
+  .product-main__quantity-button {
+    position: relative;
+  }
+
+  .product-main__quantity-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: currentColor;
+    opacity: 0;
+    translate: -50% -50%;
+    scale: 0.6;
+    transition: opacity 0.2s ease, scale 0.2s ease;
+  }
+
+  .product-main__quantity-button svg {
+    position: relative;
+  }
+
+  @media (hover: hover) {
+    .product-main__quantity-button:hover::before {
+      opacity: 0.1;
+      scale: 1;
+    }
+  }
+
+  .product-main__quantity-button:active::before {
+    opacity: 0.18;
+    scale: 1;
+  }
+
   .product-main__quantity-input {
     flex: 1 1 auto;
     width: 100%;
@@ -1500,6 +1544,31 @@
     flex-shrink: 0;
     width: 20px;
     height: 20px;
+    transition: rotate 0.3s ease;
+  }
+
+  .product-main__accordion-trigger > span {
+    transition: translate 0.2s ease;
+  }
+
+  /* Hover: the title slides over a little and the plus spins, like the
+     homepage's benefits (a quarter turn, a half turn once it's a minus). */
+  @media (hover: hover) {
+    .product-main__accordion-trigger:hover > span {
+      translate: 4px 0;
+    }
+
+    .product-main__accordion-trigger:hover .product-main__plus {
+      rotate: 90deg;
+    }
+
+    .product-main__accordion.is-open .product-main__accordion-trigger:hover .product-main__plus {
+      rotate: 180deg;
+    }
+
+    .product-main__ingredients-link:hover {
+      text-decoration-thickness: 2px;
+    }
   }
 
   .product-main__plus-down {
@@ -1574,9 +1643,12 @@
 
   @media (prefers-reduced-motion: reduce) {
     .product-main__accordion-content,
+    .product-main__plus,
+    .product-main__accordion-trigger > span,
     .product-main__plus-down,
     .product-main__scent-bottle,
-    .product-main__media {
+    .product-main__media,
+    .product-main__videos-arrow {
       transition: none;
     }
 
