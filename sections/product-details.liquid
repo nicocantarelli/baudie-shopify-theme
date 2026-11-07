@@ -33,7 +33,8 @@
 
       <div class="product-details__card">
         {% if section.settings.lockup_top != blank or section.settings.lockup_main != blank %}
-          <h2 class="product-details__lockup">
+          {%- comment -%} A main line of several words ("We are not a deodorant") reads as a heading instead of one big word. {%- endcomment -%}
+          <h2 class="product-details__lockup{% if section.settings.lockup_main contains ' ' %} product-details__lockup--words{% endif %}">
             {%- if section.settings.lockup_top != blank -%}
               <span class="product-details__lockup-top">{{ section.settings.lockup_top | escape }}</span>
             {%- endif -%}
@@ -559,6 +560,21 @@
     translate: 0.057em 0;
   }
 
+  /* Several words ("We are not a deodorant"): two even lines of Jokker at
+     one size, as in Alex's version, shrinking with the card. */
+  .product-details__lockup--words {
+    margin-bottom: 0.35em;
+    font-size: min(76px, 13.5cqi);
+    line-height: 1.05;
+  }
+
+  .product-details__lockup--words .product-details__lockup-main {
+    margin-top: 0;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    translate: none;
+  }
+
   .product-details__benefits {
     display: flex;
     flex-direction: column;
@@ -821,6 +837,10 @@
 
     .product-details__lockup-main {
       translate: none;
+    }
+
+    .product-details__lockup--words {
+      font-size: min(48px, 13.5cqi);
     }
 
     /* Each benefit (icons over label) reads as its own block: more space
