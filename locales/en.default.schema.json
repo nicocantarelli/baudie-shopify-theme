@@ -612,7 +612,19 @@
       "benefit_pill_custom_icon": "Custom icon",
       "benefit_pill_custom_icon_info": "Optional. A one-color icon (SVG or PNG with a transparent background); it's shown in the badge's pink, replacing the icon above.",
       "benefit_pill_label": "Label",
-      "trust_badge_hidden": "Trust badges aren't shown in the current design; the benefit pills are. They're kept here so nothing is lost."
+      "trust_badge_hidden": "Trust badges aren't shown in the current design; the benefit pills are. They're kept here so nothing is lost.",
+      "dropdowns_header": "Dropdowns",
+      "key_ingredients_heading": "Key ingredients title",
+      "key_ingredients_heading_info": "Leave empty for \"Key ingredients\". The wipes use \"Materials\".",
+      "key_ingredients_first": "Show Key ingredients before How to use",
+      "show_full_ingredients": "Show the full ingredient list link",
+      "show_full_ingredients_info": "Opens the product's Full ingredient list in a pop-up.",
+      "pair_it_with": "Pair it with",
+      "pair_heading": "Tab",
+      "pair_title": "Title",
+      "pair_text": "Text",
+      "pair_products": "Products",
+      "pair_products_info": "Each one is a swatch (its Swatch color behind its card image); the first is picked to start. Products that are sold out or only sold by subscription are left out."
     },
     "how_to_use": {
       "name": "How to use",

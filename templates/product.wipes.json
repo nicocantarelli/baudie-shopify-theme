@@ -12,6 +12,43 @@
     "main": {
       "type": "product",
       "blocks": {
+        "benefit_pill_organic_cotton": {
+          "type": "benefit_pill",
+          "settings": {
+            "icon": "organic_cotton",
+            "label": "Organic cotton"
+          }
+        },
+        "benefit_pill_fragrance_free": {
+          "type": "benefit_pill",
+          "settings": {
+            "icon": "fragrance_free",
+            "label": "Fragrance free"
+          }
+        },
+        "benefit_pill_hypoallergenic": {
+          "type": "benefit_pill",
+          "settings": {
+            "icon": "hypoallergenic",
+            "label": "Hypoallergenic"
+          }
+        },
+        "pair_it_with_enhancer": {
+          "type": "pair_it_with",
+          "settings": {
+            "heading": "Pair it with",
+            "title": "Deodorant Enhancer",
+            "text": "Helps any deodorant last all day and helps keep sweat odorless.",
+            "products": [
+              "st-tropez",
+              "sweet-muse",
+              "petal-kiss",
+              "deep-ritual",
+              "capri-seaside",
+              "barely-there"
+            ]
+          }
+        },
         "trust_badge_34WD9G": {
           "type": "trust_badge",
           "settings": {
@@ -63,6 +100,10 @@
         }
       },
       "block_order": [
+        "benefit_pill_organic_cotton",
+        "benefit_pill_fragrance_free",
+        "benefit_pill_hypoallergenic",
+        "pair_it_with_enhancer",
         "trust_badge_34WD9G",
         "trust_badge_NUR9qx",
         "trust_badge_wQxwFt",
@@ -91,7 +132,10 @@
         "subscription_perk_1": "Pause or cancel anytime",
         "subscription_perk_2": "VIP perks + gifts",
         "subscription_perk_3": "",
-        "subscription_terms": ""
+        "subscription_terms": "",
+        "key_ingredients_heading": "Materials",
+        "key_ingredients_first": true,
+        "show_full_ingredients": false
       }
     },
     "related-products": {
@@ -102,7 +146,8 @@
         "max_products": 8,
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
-      }
+      },
+      "disabled": true
     },
     "product-faq": {
       "type": "product-faq",
@@ -127,10 +172,207 @@
         "klaviyo_reviews_product_reviews_87iP9c"
       ],
       "settings": {}
+    },
+    "in_press_TBfPET": {
+      "type": "in-press",
+      "blocks": {
+        "press_logo_pqQMPB": {
+          "type": "press_logo",
+          "name": "Popsugar Logo",
+          "settings": {
+            "logo": "shopify://shop_images/press-popsugar.png",
+            "alt_text": "Popsugar",
+            "logo_width": 218
+          }
+        },
+        "press_logo_rih9t3": {
+          "type": "press_logo",
+          "name": "NewBeauty Logo",
+          "settings": {
+            "logo": "shopify://shop_images/press-newbeauty.svg",
+            "alt_text": "NewBeauty",
+            "logo_width": 172
+          }
+        },
+        "press_logo_ghD8X7": {
+          "type": "press_logo",
+          "name": "Vogue Logo",
+          "settings": {
+            "logo": "shopify://shop_images/press-vogue.png",
+            "alt_text": "Vogue",
+            "logo_width": 129
+          }
+        },
+        "press_logo_YXxpJy": {
+          "type": "press_logo",
+          "name": "Byrdie Logo",
+          "settings": {
+            "logo": "shopify://shop_images/press-byrdie.png",
+            "alt_text": "Byrdie",
+            "logo_width": 145
+          }
+        },
+        "press_logo_Acaiwg": {
+          "type": "press_logo",
+          "name": "Instyle Logo",
+          "settings": {
+            "logo": "shopify://shop_images/press-instyle.png",
+            "alt_text": "InStyle",
+            "logo_width": 136
+          }
+        },
+        "press_logo_aKkAft": {
+          "type": "press_logo",
+          "name": "Cosmopolitan Logo",
+          "settings": {
+            "logo": "shopify://shop_images/press-cosmopolitan.png",
+            "alt_text": "Cosmopolitan",
+            "logo_width": 175
+          }
+        }
+      },
+      "block_order": [
+        "press_logo_pqQMPB",
+        "press_logo_rih9t3",
+        "press_logo_ghD8X7",
+        "press_logo_YXxpJy",
+        "press_logo_Acaiwg",
+        "press_logo_aKkAft"
+      ],
+      "name": "t:general.in_press",
+      "settings": {
+        "title": "in the press",
+        "title_style": "script",
+        "tint_logos": true,
+        "background_color": "",
+        "text_color": "",
+        "logo_color": "",
+        "divider_color": ""
+      }
+    },
+    "how-to-use": {
+      "type": "how-to-use",
+      "blocks": {
+        "step_spray": {
+          "type": "step",
+          "settings": {
+            "label": "Spray on underarms until fully wet and covered"
+          }
+        },
+        "step_wipe": {
+          "type": "step",
+          "settings": {
+            "label": "Wipe off well with our dry cotton wipes or a towel"
+          }
+        },
+        "step_deo": {
+          "type": "step",
+          "settings": {
+            "label": "Apply any deodorant on top"
+          }
+        },
+        "dosage_little": {
+          "type": "dosage",
+          "settings": {
+            "label": "I smell a little",
+            "drops": 4,
+            "amount": "4 - 5 sprays"
+          }
+        },
+        "dosage_noticeable": {
+          "type": "dosage",
+          "settings": {
+            "label": "It’s...noticeable",
+            "drops": 6,
+            "amount": "5 - 8 sprays"
+          }
+        },
+        "dosage_lot": {
+          "type": "dosage",
+          "settings": {
+            "label": "I smell a lot",
+            "drops": 8,
+            "amount": "8 - 12 sprays"
+          }
+        }
+      },
+      "block_order": [
+        "step_spray",
+        "step_wipe",
+        "step_deo",
+        "dosage_little",
+        "dosage_noticeable",
+        "dosage_lot"
+      ],
+      "name": "t:sections.how_to_use.name",
+      "settings": {
+        "layout": "card",
+        "title": "spray, wipe, deo",
+        "mobile_description": "",
+        "description": "<p>Underarm odor control and happy pits<br/>in three easy steps!</p>",
+        "pro_tip_label": "Pro tip:",
+        "pro_tip": "Scent meets skin differently, find the scent that works the best with your body chemistry",
+        "sprays_title": "",
+        "media_image": "shopify://shop_images/how-to-use-petal-kiss.jpg",
+        "media_video": "shopify://files/videos/4adf8d3d066c4601b34a896a1852e848.MOV",
+        "background_color": "",
+        "text_color": ""
+      }
+    },
+    "category_cards_also_like": {
+      "type": "category-cards",
+      "blocks": {
+        "card_all_scents": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-all-scents.jpg",
+            "label": "All scents",
+            "link": "shopify://collections/shop"
+          }
+        },
+        "card_bundles": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-bundles.jpg",
+            "label": "Bundles",
+            "link": "shopify://collections/bundles"
+          }
+        },
+        "card_men": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-men.jpg",
+            "label": "Shop men",
+            "link": "shopify://pages/for-men"
+          }
+        },
+        "card_wipes": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-wipes.jpg",
+            "label": "Shop wipes",
+            "link": "shopify://collections/wipes-collection"
+          }
+        }
+      },
+      "block_order": [
+        "card_all_scents",
+        "card_bundles",
+        "card_men",
+        "card_wipes"
+      ],
+      "settings": {
+        "title": "You might also like",
+        "background_color": "",
+        "text_color": ""
+      }
     }
   },
   "order": [
     "main",
+    "in_press_TBfPET",
+    "how-to-use",
+    "category_cards_also_like",
     "related-products",
     "product-faq",
     "1781651804992d6d43"
