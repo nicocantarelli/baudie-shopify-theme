@@ -124,10 +124,23 @@
      design's cream tile, turned upright and stretched to the panel's height;
      the content is centered in the part left of the curve. */
   .subscribe-save__panel {
+    position: relative;
+    isolation: isolate;
     display: flex;
     align-items: center;
     width: 58.8%;
     padding: 64px 4.36% 64px 0;
+  }
+
+  /* The panel's color and curved edge, on a layer behind the content: the
+     band with the photo on the left turns only this layer around. Turning
+     the text with it (and back) made it flicker whenever the button's hover
+     redrew it. */
+  .subscribe-save__panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background: var(--panel-bg, var(--panel-fill));
     -webkit-mask:
       linear-gradient(#000 0 0) left / 50% 100% no-repeat,
@@ -282,16 +295,11 @@
     fill: var(--color-panel);
   }
 
-  /* Photo on the left: the panel is turned half around, so its curved edge
-     runs over the photo on that side, bulging deepest near the top, and its
-     content is turned back the right way. */
+  /* Photo on the left: the panel's color layer is turned half around, so
+     its curved edge runs over the photo on that side, bulging deepest near
+     the top. */
   .subscribe-save--photo-left {
     justify-content: flex-end;
-  }
-
-  .subscribe-save--photo-left .subscribe-save__panel,
-  .subscribe-save--photo-left .subscribe-save__content {
-    transform: scale(-1);
   }
 
   .subscribe-save--photo-left .subscribe-save__photo {
@@ -299,15 +307,20 @@
     left: 0;
   }
 
-  /* Turned around, the curve's deepest point (11.2% of the screen's width
-     into the panel) comes low, beside the perks and the button, so the
-     content keeps 16px clear of it with its own 40px padding. */
   @media (min-width: 769px) {
-    .subscribe-save--photo-left .subscribe-save__panel {
-      padding-right: calc(11.2% + 16px - 40px);
+    .subscribe-save--photo-left .subscribe-save__panel::before {
+      transform: scale(-1);
     }
 
-    /* The turned panel turns its gradient too, so it's set the other way
+    /* Turned around, the curve's deepest point (11.2% of the screen's width
+       into the panel) comes low, beside the perks and the button, so the
+       content keeps 16px clear of it with its own 40px padding. */
+    .subscribe-save--photo-left .subscribe-save__panel {
+      padding-right: 0;
+      padding-left: calc(11.2% + 16px - 40px);
+    }
+
+    /* The turned layer turns its gradient too, so it's set the other way
        round to still run from top left to bottom right. */
     .subscribe-save--photo-left.subscribe-save--pink {
       --panel-fill: linear-gradient(to top left, var(--color-panel), var(--color-blush));
@@ -335,6 +348,9 @@
     .subscribe-save__panel {
       width: 100%;
       padding: 40px 0 65.4px;
+    }
+
+    .subscribe-save__panel::before {
       -webkit-mask: var(--wave-mask) 0 0 / 100% 100% no-repeat;
       mask: var(--wave-mask) 0 0 / 100% 100% no-repeat;
     }
@@ -355,12 +371,6 @@
 
     .subscribe-save__subtitle {
       font-size: 18px;
-    }
-
-    /* Phones stack the panel over the photo whichever side it's on. */
-    .subscribe-save--photo-left .subscribe-save__panel,
-    .subscribe-save--photo-left .subscribe-save__content {
-      transform: none;
     }
 
     /* Two by two (the container rule above), with the page's 14px phone
