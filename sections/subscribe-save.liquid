@@ -282,20 +282,30 @@
     fill: var(--color-panel);
   }
 
-  /* Photo on the left: the panel is mirrored, so its curved edge runs over
-     the photo on that side, and its content turned back the right way. */
+  /* Photo on the left: the panel is turned half around, so its curved edge
+     runs over the photo on that side, bulging deepest near the top, and its
+     content is turned back the right way. */
   .subscribe-save--photo-left {
     justify-content: flex-end;
   }
 
   .subscribe-save--photo-left .subscribe-save__panel,
   .subscribe-save--photo-left .subscribe-save__content {
-    transform: scaleX(-1);
+    transform: scale(-1);
   }
 
   .subscribe-save--photo-left .subscribe-save__photo {
     right: auto;
     left: 0;
+  }
+
+  /* Turned around, the curve's deepest point (11.2% of the screen's width
+     into the panel) comes low, beside the perks and the button, so the
+     content keeps 16px clear of it with its own 40px padding. */
+  @media (min-width: 769px) {
+    .subscribe-save--photo-left .subscribe-save__panel {
+      padding-right: calc(11.2% + 16px - 40px);
+    }
   }
 
   @media (max-width: 1024px) {
