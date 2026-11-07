@@ -393,7 +393,8 @@
         "max_products": 4,
         "background_color": "",
         "text_color": ""
-      }
+      },
+      "disabled": true
     },
     "178164549175380437": {
       "type": "apps",
@@ -558,6 +559,54 @@
         "background_color": "",
         "text_color": ""
       }
+    },
+    "category_cards_also_like": {
+      "type": "category-cards",
+      "blocks": {
+        "card_all_scents": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-all-scents.jpg",
+            "label": "All scents",
+            "link": "shopify://collections/shop"
+          }
+        },
+        "card_bundles": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-bundles.jpg",
+            "label": "Bundles",
+            "link": "shopify://collections/bundles"
+          }
+        },
+        "card_men": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-men.jpg",
+            "label": "Shop men",
+            "link": "shopify://pages/for-men"
+          }
+        },
+        "card_wipes": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-wipes.jpg",
+            "label": "Shop wipes",
+            "link": "shopify://collections/wipes-collection"
+          }
+        }
+      },
+      "block_order": [
+        "card_all_scents",
+        "card_bundles",
+        "card_men",
+        "card_wipes"
+      ],
+      "settings": {
+        "title": "You might also like",
+        "background_color": "",
+        "text_color": ""
+      }
     }
   },
   "order": [
@@ -567,6 +616,7 @@
     "product_features_marquee",
     "product-faq",
     "product_details_who",
+    "category_cards_also_like",
     "related-products",
     "1772843462a5334ed3",
     "what_makes_different_HFC6bE",

@@ -800,17 +800,19 @@
     cursor: pointer;
   }
 
+  /* The chevron sits over the button's right padding, so a click on it
+     opens the list too. */
   .purchase-options--stacked .purchase-options__select-wrapper {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
   }
 
   /* The frequency reads as part of the sentence: underlined, no box. */
   .purchase-options--stacked .purchase-options__select {
     width: auto;
     height: auto;
-    padding: 0;
+    padding: 0 16px 0 0;
     border-radius: 0;
     background: none;
     font: inherit;
@@ -822,17 +824,20 @@
   }
 
   .purchase-options--stacked .purchase-options__chevron {
-    position: static;
+    position: absolute;
+    top: 50%;
+    right: 0;
     width: 10px;
     height: 5px;
-    transform: none;
+    transform: translateY(-50%);
   }
 
   .purchase-options--stacked .purchase-options__select-wrapper .select-menu.is-open + .purchase-options__chevron {
-    transform: rotate(180deg);
+    transform: translateY(-50%) rotate(180deg);
   }
 
   .purchase-options--stacked .select-menu__list {
+    color: var(--color-foreground);
     font-family: var(--font-sweet-sans);
     font-weight: 400;
     font-size: 16px;
