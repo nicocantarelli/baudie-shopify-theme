@@ -1,18 +1,35 @@
 {%- comment -%}
-  Duo bundle product page — 1 Deodorant Enhancer (customer picks the scent)
-  + 1 fixed companion product (Cotton Dry Wipes).
+  Duo bundle product page (Essentials Duo): one Deodorant Enhancer, in the
+  scent the customer picks, plus a fixed companion (the Cotton Dry Wipes),
+  in the product page's look. On the left, the picked scent's bottle next to
+  the wipes, the patent stamp and the Videowise videos; on the right, the
+  white card with the reviews, title, price, benefit pills, the scents to
+  pick from, quantity and add to cart, and the dropdowns. On phones the card
+  splits in two around the photo, as on the product page.
 
-  Adapted from sections/product-bundle.liquid. It is a separate section rather
-  than a shared one because stylesheet / javascript blocks are concatenated
-  theme-wide, so the two pages must not share a class prefix or a JS root
-  selector — everything here is `bundle-duo` / `data-duo-*`. (The tag names
-  are written without braces on purpose: `shopify theme dev` picks up those
-  tags even inside comments, which breaks its local script bundle.)
+  Tapping a scent rings its circle and drops its bottle in beside the wipes.
+  Until then the bottle is the default scent's, as artwork only: nothing is
+  picked for the customer, and Add to cart reads "Pick a scent" and stays
+  off until they pick. When a scent used to be pre-picked, a mismatch
+  between its title and its option in Simple Bundles broke the bundle
+  silently: the whole duo price landed on the wipe and the enhancer came out
+  as a loose full-price line, so the customer paid for it twice (order
+  #6835).
 
-  Only the scent is chosen, so only the scent is submitted as an option-group
-  property. The companion is a fixed component of the bundle in Simple Bundles
-  & Kits, which expands both into separate line items server-side (see
-  addToCart below).
+  Everything it shares with the product page (sections/product.liquid) uses
+  that section's classes: the gradient, the card, title, pills, scent
+  circles, quantity, button, dropdowns, ingredients pop-up and videos row.
+  Shopify loads every section's styles on every page, so those look the
+  same here, and the product page's script (snippets/product-main-script
+  .liquid, rendered by both sections) sets up the dropdowns, quantity,
+  pop-up, videos and the sticky left column for any .product-main. The
+  styles and script below cover only what's the duo's own: the bottle and
+  wipes photo, the picked scent, the price and adding the duo to the cart.
+
+  The duo goes into the cart as one line that Simple Bundles & Kits expands
+  into the enhancer and the wipe (see addToCart below).
+
+  Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=26-4310
 {%- endcomment -%}
 
 {%- liquid
@@ -23,67 +40,66 @@
   assign patent_stamp_position = section.settings.patent_stamp_position | default: 'image_bottom_right'
   assign patent_stamp_size = section.settings.patent_stamp_size | default: 100
   assign patent_stamp_mobile_size = patent_stamp_size | times: 82 | divided_by: 100
+
   comment
-    Gradient resolves metafield first, then the section setting. The scent pages
-    (sections/product.liquid) have always been metafield-driven, so colors get
-    authored on the product; this page only read its section setting, and a
-    template with the setting saved meant no metafield could ever show through.
+    The section's colors, as on the Bundle of 3 (the design's lilac, pink
+    and gold). The product's own gradient metafields aren't used here: they
+    hold the old page's dusty pink, and the live site still reads them.
   endcomment
-  assign gradient_1 = product.metafields.custom.gradient_color_1 | default: section.settings.gradient_color_1 | default: '#F4D2A4'
-  assign gradient_2 = product.metafields.custom.gradient_color_2 | default: section.settings.gradient_color_2 | default: '#FCF5DE'
-  assign bottle_size = product.metafields.custom.bottle_size
+  assign gradient_1 = section.settings.gradient_color_1 | default: '#FFEFFF'
+  assign gradient_2 = section.settings.gradient_color_2 | default: '#FFCEE7'
+  assign gradient_3 = section.settings.gradient_color_3 | default: gradient_2
+
+  assign size_line = section.settings.size_line | default: product.metafields.custom.bottle_size
+  assign short_description = product.metafields.custom.short_description.value
   assign product_details = product.metafields.custom.product_details
   assign scent_notes = product.metafields.custom.scent_notes
+  assign how_to_use = product.metafields.custom.how_to_use
   assign key_ingredients = product.metafields.custom.key_ingredients
   assign full_ingredient_list = product.metafields.custom.full_ingredient_list
-  assign scent_collection = section.settings.scent_collection
+  assign title_text = section.settings.title | default: product.title
 
   comment
-    Default scent — for the BOTTLE ART ONLY. An empty slot reads fine on the
-    three-bottle bundle, where the whole row starts empty, but next to the fixed
-    wipe it looks broken, so slot 1 opens on this scent.
+    The scents to pick from: the ones chosen in the section, in that order,
+    or else the scent collection's. Only scents that can be bought now (in
+    stock, not tagged coming soon) are offered.
+  endcomment
+  if section.settings.scent_products != blank
+    assign scent_source = section.settings.scent_products
+  else
+    assign scent_source = section.settings.scent_collection.products
+  endif
 
-    It is deliberately not a pre-made selection. When it was one, the page could
-    add a scent the customer never consciously chose, and any mismatch between
-    that scent's title and its option in Simple Bundles broke the bundle
-    silently: the Scents group went unresolved, the whole duo price landed on
-    the wipe, and the enhancer came out as a loose full-price line — the
-    customer paid for the duo and for the enhancer again (order #6835).
-    Add to cart now stays disabled until the customer picks, so nothing is ever
-    submitted on their behalf.
-
-    Resolved against the same eligibility filter the picker uses, and falls back
-    to the first eligible scent when the configured one is sold out or coming
-    soon, so the slot is never empty.
+  comment
+    The bottle shown before a pick: the section's default scent, or the
+    first scent on offer when that one can't be bought now.
   endcomment
   assign default_scent_handle = section.settings.default_scent_product.handle
   assign default_scent = ''
-  assign first_eligible_scent = ''
-  if scent_collection
-    for scent_product in scent_collection.products
-      assign scent_coming_soon = false
-      if scent_product.tags contains 'coming-soon' or scent_product.tags contains 'Coming soon' or scent_product.tags contains 'coming soon' or scent_product.tags contains 'Coming Soon'
-        assign scent_coming_soon = true
-      endif
-      if scent_product.metafields.custom.scent_name != blank and scent_product.available and scent_coming_soon == false
-        if first_eligible_scent == blank
-          assign first_eligible_scent = scent_product
-        endif
-        if scent_product.handle == default_scent_handle
-          assign default_scent = scent_product
-        endif
-      endif
-    endfor
-  endif
+  assign first_scent = ''
+  for item in scent_source
+    assign item_coming_soon = false
+    if item.tags contains 'coming-soon' or item.tags contains 'Coming soon' or item.tags contains 'coming soon' or item.tags contains 'Coming Soon'
+      assign item_coming_soon = true
+    endif
+    if item.metafields.custom.scent_name == blank or item.available == false or item_coming_soon
+      continue
+    endif
+    if first_scent == blank
+      assign first_scent = item
+    endif
+    if item.handle == default_scent_handle
+      assign default_scent = item
+    endif
+  endfor
   if default_scent == blank
-    assign default_scent = first_eligible_scent
+    assign default_scent = first_scent
   endif
   assign default_scent_image = default_scent.metafields.custom.card_image | default: default_scent.featured_image
 
   comment
-    The companion slot is fixed art, not a picker. Prefer an explicit image
-    override, then the product's card image, then its featured image — matching
-    how the scent bottles resolve in the bundle.
+    The companion is fixed artwork beside the bottle: the image set in the
+    section, or else the product's card image, or its featured image.
   endcomment
   assign companion_product = section.settings.companion_product
   assign companion_image = section.settings.companion_image | default: companion_product.metafields.custom.card_image | default: companion_product.featured_image
@@ -91,23 +107,22 @@
 
   comment
     Simple Bundles matches each component by OPTION GROUP name, and the value
-    must be the option name inside that group. Both must match the app exactly
-    or the line will not expand into separate order lines.
+    must be the option name inside that group. Both must match the app
+    exactly or the line will not expand into separate order lines.
 
-    This bundle is built in the app's "Manually build" mode, which makes every
-    component an option group — including the wipe. So the wipe is NOT a fixed
-    component the app resolves on its own: it has to be submitted just like the
-    scent, even though the customer never picks it (its group holds one option).
+    This bundle is built in the app's "Manually build" mode, which makes
+    every component an option group, the wipe included. So the wipe is NOT a
+    fixed component the app resolves on its own: it has to be sent just like
+    the scent, even though the customer never picks it (its group holds one
+    option).
   endcomment
   assign scent_property_name = section.settings.scent_property_name | default: 'Scents'
   assign companion_property_name = section.settings.companion_property_name | default: 'Wipes'
   assign companion_property_value = section.settings.companion_property_value | default: companion_product.title
 
   comment
-    Coming-soon state for the BUNDLE itself (the checks further down filter
-    coming-soon scents out of the picker, which is a different thing). Matches
-    the tag spellings product.liquid accepts. A bundle parent carries no
-    inventory of its own, so there is no out-of-stock case to gate on here —
+    Coming-soon state for the duo itself. A bundle parent carries no
+    inventory of its own, so there is no out-of-stock case to gate on here:
     availability comes from the components via Simple Bundles.
   endcomment
   assign is_coming_soon = false
@@ -122,6 +137,16 @@
   assign rating = product.metafields.reviews.rating.value.rating | default: 0 | round: 1
   assign rating_scale = product.metafields.reviews.rating.value.scale_max | default: 5
   assign review_count = product.metafields.reviews.rating_count.value | default: 0
+
+  assign show_watch_in_action = false
+  if section.settings.show_watch_in_action
+    if section.settings.videowise_embed != blank or request.design_mode
+      assign show_watch_in_action = true
+    endif
+  endif
+
+  assign benefit_pills = section.blocks | where: 'type', 'benefit_pill'
+  assign accordion_keys = 'details,scent_notes,how_to_use,key_ingredients' | split: ','
 -%}
 
 {%- if show_patent_stamp -%}
@@ -130,1570 +155,734 @@
   {%- endcapture -%}
 {%- endif -%}
 
+{%- capture plus_icon -%}
+  <svg class="product-main__plus" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+    <path class="product-main__plus-across" d="M1 10H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path class="product-main__plus-down" d="M10 1V19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+{%- endcapture -%}
+
+{%- capture arrow_icon -%}
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+    <path d="M1.5 7H12.5M12.5 7L7.5 2M12.5 7L7.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+{%- endcapture -%}
+
 <section
-  class="bundle-duo{% if show_patent_stamp %} bundle-duo--patent-{{ patent_stamp_position }}{% endif %} full-width"
+  class="product-main product-duo{% if show_patent_stamp %} product-main--patent-{{ patent_stamp_position }}{% endif %} full-width"
   data-section-id="{{ section.id }}"
-  aria-label="{{ product.title }}"
-  style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }}; --patent-stamp-size: {{ patent_stamp_size }}px; --patent-stamp-mobile-size: {{ patent_stamp_mobile_size }}px; --patent-stamp-rotation: {{ section.settings.patent_stamp_rotation | default: 0 }}deg; --patent-stamp-background: {{ section.settings.patent_stamp_background | default: '#3E2027' }}; --patent-stamp-text: {{ section.settings.patent_stamp_text_color | default: '#FCF5DE' }};">
+  data-text-pick="{{ 'sections.product_bundle_duo.pick_scent' | t | escape }}"
+  data-text-picked="{{ 'sections.product_bundle_duo.scent_picked' | t: scent: '[scent]' | escape }}"
+  data-text-add="{{ 'sections.product.add_to_cart' | t | escape }}"
+  aria-label="{{ product.title | escape }}"
+  style="--gradient-1: {{ gradient_1 }}; --gradient-2: {{ gradient_2 }}; --gradient-3: {{ gradient_3 }}; --product-text: {{ product_text_color }}; --popup-text: {{ popup_text_color }}; --patent-stamp-size: {{ patent_stamp_size }}px; --patent-stamp-mobile-size: {{ patent_stamp_mobile_size }}px; --patent-stamp-rotation: {{ section.settings.patent_stamp_rotation | default: 0 }}deg; --patent-stamp-background: {{ section.settings.patent_stamp_background | default: '#3E2027' }}; --patent-stamp-text: {{ section.settings.patent_stamp_text_color | default: '#FCF5DE' }};"
+>
+  <div class="product-main__inner">
 
-  {%- comment -%} Mobile Header {%- endcomment -%}
-  <div class="bundle-duo__mobile-header">
-    <div class="bundle-duo__mobile-subtitle-row">
-      <p class="bundle-duo__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
-    </div>
-    <h1 class="bundle-duo__title" data-duo-title>{{ product.title }}</h1>
-    {% if bottle_size %}
-      <p class="bundle-duo__size bundle-duo__size--mobile">{{ bottle_size }}{% if companion_title != blank %} + {{ companion_title }}{% endif %}</p>
-    {% endif %}
-    {%- if show_patent_stamp and patent_stamp_position == 'title_right' -%}
-      <div class="bundle-duo__patent-position bundle-duo__patent-position--title">
-        {{ patent_stamp }}
-      </div>
-    {%- endif -%}
-  </div>
-
-  {%- comment -%}
-    Image Column — the picked bottle on the left, the fixed companion on the
-    right. Slot 1 opens on the default scent so the pair never reads as broken
-    before a pick; the JS swaps the same <img> on every pick after that. It is
-    artwork only — it stands in for "a bottle goes here", and does NOT stand in
-    for a choice. The dashed placeholder is only rendered as a safety net for
-    when no scent is eligible at all (every one sold out or coming soon).
-    Slot 2 is static and never changes.
-
-    No srcset here on purpose — the JS swap only sets .src, and a srcset would
-    win over it and freeze the bottle on the default scent.
-  {%- endcomment -%}
-  <div class="bundle-duo__image-column">
-    <div class="bundle-duo__bottles" data-duo-bottles>
-      <div class="bundle-duo__bottle-slot" data-duo-slot="1">
+    {%- comment -%} The bottle and wipes, patent stamp and videos {%- endcomment -%}
+    <div class="product-main__media">
+      {%- comment -%}
+        The bottle's <img> has no srcset: the script swaps its src on each
+        pick, and a srcset would win over it.
+      {%- endcomment -%}
+      <div class="product-main__image product-duo__stage" data-duo-stage>
         {%- if default_scent_image -%}
           <img
-            class="bundle-duo__bottle-img"
-            src="{{ default_scent_image | image_url: width: 800 }}"
+            class="product-duo__bottle"
+            src="{{ default_scent_image | image_url: width: 900 }}"
             alt="{{ default_scent.title | escape }}"
-            loading="eager"
             width="{{ default_scent_image.width }}"
-            height="{{ default_scent_image.height }}">
-        {%- else -%}
-          <div class="bundle-duo__bottle-placeholder">
-            <span class="bundle-duo__bottle-number">1</span>
-          </div>
+            height="{{ default_scent_image.height }}"
+            fetchpriority="high"
+            data-duo-bottle
+          >
         {%- endif -%}
-      </div>
-
-      <div class="bundle-duo__bottle-slot bundle-duo__bottle-slot--companion">
         {%- if companion_image -%}
-          <img
-            class="bundle-duo__companion-img"
-            src="{{ companion_image | image_url: width: 800 }}"
-            srcset="{{ companion_image | image_url: width: 400 }} 400w, {{ companion_image | image_url: width: 800 }} 800w, {{ companion_image | image_url: width: 1200 }} 1200w"
-            sizes="(min-width: 990px) 350px, 200px"
-            alt="{{ companion_title | escape }}"
-            loading="eager"
-            width="800"
-            height="800">
-        {%- else -%}
-          <div class="bundle-duo__bottle-placeholder">
-            <span class="bundle-duo__bottle-number">2</span>
+          {{ companion_image | image_url: width: 1000 | image_tag:
+            widths: '400, 600, 800, 1000',
+            sizes: '(min-width: 1440px) 326px, (min-width: 1024px) 23vw, 50vw',
+            fetchpriority: 'high',
+            alt: companion_title,
+            class: 'product-duo__companion'
+          }}
+        {%- endif -%}
+        {%- if show_patent_stamp and patent_stamp_position == 'image_bottom_right' -%}
+          <div class="product-main__patent product-main__patent--image">
+            {{ patent_stamp }}
           </div>
         {%- endif -%}
       </div>
-    </div>
-    {%- if show_patent_stamp and patent_stamp_position == 'image_bottom_right' -%}
-      <div class="bundle-duo__patent-position bundle-duo__patent-position--image">
-        {{ patent_stamp }}
-      </div>
-    {%- endif -%}
-  </div>
 
-  {%- comment -%} Info Column {%- endcomment -%}
-  <div class="bundle-duo__info-column">
-
-    {%- comment -%} Desktop Header {%- endcomment -%}
-    <div class="bundle-duo__desktop-header">
-      <p class="bundle-duo__subtitle">{{ product.type | default: 'Deodorant Enhancer®' }}</p>
-      <h1 class="bundle-duo__title">{{ product.title }}</h1>
-      {% if bottle_size %}
-        <p class="bundle-duo__size-line">{{ bottle_size }}{% if companion_title != blank %} + {{ companion_title }}{% endif %}</p>
-      {% endif %}
-      {%- if show_patent_stamp and patent_stamp_position == 'title_right' -%}
-        <div class="bundle-duo__patent-position bundle-duo__patent-position--title">
-          {{ patent_stamp }}
+      {%- if show_watch_in_action -%}
+        <div class="product-main__videos" data-product-videos>
+          <button
+            type="button"
+            class="product-main__videos-arrow product-main__videos-arrow--prev"
+            data-videos-prev
+            aria-label="{{ 'sections.product.previous_videos' | t }}"
+            hidden
+          >
+            {{ arrow_icon }}
+          </button>
+          <div class="product-main__videos-row" role="region" aria-label="{{ 'sections.product.watch_in_action' | t }}">
+            {%- if section.settings.videowise_embed != blank -%}
+              {{ section.settings.videowise_embed }}
+              {%- comment -%}
+                Videowise draws the videos in a closed shadow root, but loads
+                the stylesheets listed in window.videowiseShadow into it. That's
+                how the design's tiles get there; the class keeps them to this
+                widget.
+              {%- endcomment -%}
+              <script>
+                (() => {
+                  const stylesheet = {{ 'product-videos-videowise.css' | asset_url | json }};
+                  const config = (window.videowiseShadow = window.videowiseShadow || {});
+                  config.assets = config.assets || [];
+                  if (!config.assets.some((asset) => asset.src === stylesheet)) {
+                    config.assets.push({ type: 'style', src: stylesheet });
+                  }
+                  document.currentScript.parentElement
+                    .querySelectorAll('.reeview-app-widget')
+                    .forEach((widget) => widget.classList.add('product-main__videos-widget'));
+                })();
+              </script>
+            {%- else -%}
+              <div class="product-main__videos-placeholders">
+                {%- for i in (1..4) -%}
+                  <span class="product-main__videos-placeholder"></span>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+          <button
+            type="button"
+            class="product-main__videos-arrow product-main__videos-arrow--next"
+            data-videos-next
+            aria-label="{{ 'sections.product.next_videos' | t }}"
+            hidden
+          >
+            {{ arrow_icon }}
+          </button>
         </div>
       {%- endif -%}
     </div>
 
-    {%- comment -%} Rating (synced from Klaviyo Reviews metafields) {%- endcomment -%}
-    {% if review_count > 0 %}
-      {% render 'star-rating',
-        rating: rating,
-        count: review_count,
-        scale_max: rating_scale,
-        class: 'bundle-duo__rating',
-        scroll_to_reviews: true
-      %}
-    {% endif %}
+    {%- comment -%} The white card (two cards on phones) {%- endcomment -%}
+    <div class="product-main__card">
+      <div class="product-main__info">
+        {%- if review_count > 0 -%}
+          {% render 'star-rating',
+            rating: rating,
+            count: review_count,
+            scale_max: rating_scale,
+            class: 'product-main__rating',
+            scroll_to_reviews: true,
+            count_style: 'reviews'
+          %}
+        {%- endif -%}
 
-    {%- comment -%}
-      Scent Selector — one only. The `data-duo-scent-selector="1"` index is kept
-      (rather than dropped) so the JS selection/rendering path stays identical to
-      the bundle's, and so a second picked component could be added later without
-      reworking it.
-    {%- endcomment -%}
-    <div class="bundle-duo__selectors" data-duo-selectors>
-      <div class="bundle-duo__selector" data-duo-scent-selector="1">
-        <button
-          type="button"
-          class="bundle-duo__selector-trigger"
-          aria-expanded="false"
-          aria-haspopup="listbox"
-          aria-controls="duo-scent-list-{{ section.id }}">
-          {%- comment -%}
-            Reads as a prompt until the customer picks, and nothing is added to
-            the cart before they do — the bottle beside it is a preview of the
-            pair, not a selection. See the default-scent note at the top.
-          {%- endcomment -%}
-          <span class="bundle-duo__selector-label" data-selector-label>{{ 'sections.product_bundle.choose_scent' | t }}</span>
-          <svg class="bundle-duo__selector-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none" aria-hidden="true" focusable="false">
-            <path d="M1 0.5L6 5.5L11 0.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <ul
-          class="bundle-duo__selector-list"
-          id="duo-scent-list-{{ section.id }}"
-          role="listbox"
-          aria-label="{{ 'sections.product_bundle.choose_scent' | t }}">
-          {% if scent_collection %}
-            {% for scent_product in scent_collection.products %}
-              {%- comment -%} Skip scents that are sold out or tagged coming soon so they can't be picked in the bundle. {%- endcomment -%}
-              {%- assign scent_coming_soon = false -%}
-              {%- if scent_product.tags contains 'coming-soon' or scent_product.tags contains 'Coming soon' or scent_product.tags contains 'coming soon' or scent_product.tags contains 'Coming Soon' -%}
-                {%- assign scent_coming_soon = true -%}
-              {%- endif -%}
-              {% if scent_product.metafields.custom.scent_name != blank and scent_product.available and scent_coming_soon == false %}
-                <li
-                  role="option"
-                  aria-selected="false"
-                  class="bundle-duo__selector-option"
-                  data-product-handle="{{ scent_product.handle }}"
-                  data-product-title="{{ scent_product.title | escape }}"
-                  data-variant-id="{{ scent_product.selected_or_first_available_variant.id }}"
-                  data-variant-gid="{{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' }}"
-                  data-card-image="{% if scent_product.metafields.custom.card_image != blank %}{{ scent_product.metafields.custom.card_image | image_url: width: 800 }}{% elsif scent_product.featured_image %}{{ scent_product.featured_image | image_url: width: 800 }}{% endif %}">
-                  {{ scent_product.title }}
-                </li>
-              {% endif %}
-            {% endfor %}
-          {% endif %}
-        </ul>
+        <div class="product-main__heading">
+          {%- if product.vendor != blank -%}
+            <p class="product-main__eyebrow">{{ product.vendor | escape }}</p>
+          {%- endif -%}
+          {%- comment -%} A dash stays with the word before it, so "Essentials Duo" starts the second line. {%- endcomment -%}
+          <h1 class="product-main__title">{{ title_text | escape | replace: ' - ', '&nbsp;- ' }}</h1>
+          <p class="product-duo__price">
+            {%- if current_variant.compare_at_price > current_variant.price -%}
+              <span class="visually-hidden">{{ 'sections.product_bundle.sale_price' | t }}</span>
+            {%- endif -%}
+            <span>{{ current_variant.price | money_without_trailing_zeros }}</span>
+            {%- if current_variant.compare_at_price > current_variant.price -%}
+              <span class="visually-hidden">{{ 'sections.product_bundle.regular_price' | t }}</span>
+              <s class="product-duo__compare">{{ current_variant.compare_at_price | money_without_trailing_zeros }}</s>
+            {%- endif -%}
+          </p>
+          {%- if short_description != blank -%}
+            <p class="product-main__description">{{ short_description | escape | newline_to_br }}</p>
+          {%- endif -%}
+        </div>
+
+        {%- if size_line != blank or benefit_pills.size > 0 -%}
+          <div class="product-main__meta">
+            {%- if size_line != blank -%}
+              <p class="product-main__size">
+                <svg class="product-main__size-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 17.6" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M14.3101 9.80512L11.9118 9.1129C11.5957 9.02166 11.5957 8.57834 11.9118 8.4871L14.3101 7.79488C15.7694 7.37229 16.4435 5.70624 15.6865 4.4C14.9254 3.09375 13.131 2.83938 12.0347 3.8839L10.2327 5.59539C9.99491 5.82122 9.60666 5.59949 9.68502 5.28266L10.2796 2.87879C10.6384 1.41212 9.52221 0 8 0C6.47779 0 5.3616 1.41212 5.72454 2.87879L6.31885 5.28272C6.39718 5.59955 6.00886 5.82122 5.77114 5.59536L3.96947 3.8839C2.87317 2.83938 1.07873 3.09375 0.317624 4.4C-0.443485 5.70624 0.230587 7.37229 1.69401 7.79488L4.09168 8.48691C4.40781 8.57818 4.40774 9.0216 4.09158 9.11274L1.68984 9.80512C0.230587 10.2277 -0.443485 11.8938 0.313457 13.2C1.07457 14.5062 2.869 14.7606 3.96528 13.7161L5.7673 12.0046C6.00509 11.7788 6.39334 12.0005 6.31498 12.3173L5.72038 14.7212C5.35789 16.1879 6.47779 17.6 7.99584 17.6C9.5185 17.6 10.6342 16.1879 10.2717 14.7212L9.67715 12.3173C9.59878 12.0005 9.98704 11.7788 10.2248 12.0046L12.0268 13.7161C13.1231 14.7606 14.9176 14.5062 15.6787 13.2C16.4435 11.8938 15.7694 10.2277 14.3101 9.80512ZM8 10.302C7.1639 10.302 6.48566 9.62912 6.48566 8.8C6.48566 7.97088 7.1639 7.29805 8 7.29805C8.8361 7.29805 9.51434 7.97088 9.51434 8.8C9.51434 9.62912 8.8361 10.302 8 10.302Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/>
+                </svg>
+                {{ size_line | escape }}
+              </p>
+            {%- endif -%}
+
+            {%- if benefit_pills.size > 0 -%}
+              <ul class="product-main__pills" role="list">
+                {%- for block in benefit_pills -%}
+                  <li class="product-main__pill" {{ block.shopify_attributes }}>
+                    {%- if block.settings.custom_icon != blank -%}
+                      <span
+                        class="product-main__pill-icon"
+                        aria-hidden="true"
+                        style="-webkit-mask-image: url('{{ block.settings.custom_icon | image_url: width: 60 }}'); mask-image: url('{{ block.settings.custom_icon | image_url: width: 60 }}');"
+                      ></span>
+                    {%- else -%}
+                      {% render 'benefit-icon', icon: block.settings.icon %}
+                    {%- endif -%}
+                    <span>{{ block.settings.label | escape }}</span>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if show_patent_stamp and patent_stamp_position == 'title_right' -%}
+          <div class="product-main__patent product-main__patent--title">
+            {{ patent_stamp }}
+          </div>
+        {%- endif -%}
       </div>
-    </div>
 
-    {%- comment -%} Divider {%- endcomment -%}
-    <hr class="bundle-duo__divider">
+      <div class="product-main__buy">
+        {%- comment -%} The scents to pick from: each one's bottle on its own color {%- endcomment -%}
+        <div
+          class="product-main__scents"
+          role="group"
+          aria-labelledby="DuoPickerLabel-{{ section.id }}"
+        >
+          <p class="product-main__label" id="DuoPickerLabel-{{ section.id }}">
+            {{- 'sections.product_bundle_duo.choose_scent' | t -}}
+          </p>
+          <ul class="product-main__scent-list" role="list">
+            {%- for item in scent_source -%}
+              {%- liquid
+                assign item_scent = item.metafields.custom.scent_name.value
+                assign item_coming_soon = false
+                if item.tags contains 'coming-soon' or item.tags contains 'Coming soon' or item.tags contains 'coming soon' or item.tags contains 'Coming Soon'
+                  assign item_coming_soon = true
+                endif
+                if item_scent == blank or item.available == false or item_coming_soon
+                  continue
+                endif
+                assign item_color = item.metafields.custom.swatch_color.value | default: item.metafields.custom.card_background_color.value | default: item.metafields.custom.gradient_color_1.value | default: '#FFDCED'
+                assign item_bottle = item.metafields.custom.card_image | default: item.featured_image
+              -%}
+              <li>
+                <button
+                  type="button"
+                  class="product-main__scent product-duo__scent"
+                  data-duo-scent="{{ item.handle }}"
+                  aria-pressed="false"
+                  style="--scent-color: {{ item_color }};"
+                >
+                  <span class="product-main__scent-art" aria-hidden="true">
+                    <span class="product-main__scent-disc"></span>
+                    {%- if item_bottle -%}
+                      {{ item_bottle | image_url: width: 240 | image_tag:
+                        loading: 'lazy',
+                        alt: '',
+                        sizes: '(min-width: 1024px) 72px, 48px',
+                        class: 'product-main__scent-bottle'
+                      }}
+                    {%- endif -%}
+                  </span>
+                  <span class="product-main__scent-name">{{ item_scent | escape }}</span>
+                </button>
+              </li>
+            {%- endfor -%}
+          </ul>
+          <p class="visually-hidden" role="status" data-duo-status></p>
+        </div>
 
-    {%- comment -%} Price + Actions {%- endcomment -%}
-    <div class="bundle-duo__purchase-row">
-      <p class="bundle-duo__price" data-duo-price>{{ current_variant.price | money }}</p>
-      <div class="bundle-duo__actions">
         {%- if is_coming_soon -%}
-          {%- comment -%}
-            The JS null-guards [data-duo-add], so omitting the button here is
-            safe — the picker still works, there is just nothing to add with.
-          {%- endcomment -%}
           {% render 'notify-me-form',
             variant: current_variant,
-            button_class: 'bundle-duo__button bundle-duo__button--add'
+            button_class: 'button product-main__button'
           %}
         {%- else -%}
-          <button
-            type="button"
-            class="bundle-duo__button bundle-duo__button--add"
-            disabled
-            data-duo-add>
-            <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>{{ 'sections.product_bundle.add_to_cart' | t }}</span>
-          </button>
+          <div class="product-main__form">
+            <div class="product-main__quantity" data-quantity>
+              <button
+                type="button"
+                class="product-main__quantity-button"
+                data-quantity-step="-1"
+                aria-label="{{ 'sections.product.decrease_quantity' | t }}"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M1 7H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <input
+                class="product-main__quantity-input"
+                type="number"
+                name="quantity"
+                value="1"
+                min="1"
+                max="99"
+                inputmode="numeric"
+                aria-label="{{ 'sections.product.quantity' | t }}"
+              >
+              <button
+                type="button"
+                class="product-main__quantity-button"
+                data-quantity-step="1"
+                aria-label="{{ 'sections.product.increase_quantity' | t }}"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M1 7H13M7 1V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+            <button type="button" class="button product-main__button" data-duo-add disabled>
+              <span data-duo-add-label>{{ 'sections.product_bundle_duo.pick_scent' | t }}</span>
+            </button>
+          </div>
+        {%- endif -%}
+
+        {%- if show_patent_stamp and patent_stamp_position == 'below_purchase' -%}
+          <div class="product-main__patent product-main__patent--flow">
+            {{ patent_stamp }}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Accordions {%- endcomment -%}
+        <div class="product-main__accordions" data-product-accordions>
+          {%- for key in accordion_keys -%}
+            {%- liquid
+              case key
+                when 'details'
+                  assign accordion_value = product_details
+                  assign accordion_label = 'sections.product.tell_me_more' | t
+                when 'scent_notes'
+                  assign accordion_value = scent_notes
+                  assign accordion_label = 'sections.product.scent_notes' | t
+                when 'how_to_use'
+                  assign accordion_value = how_to_use
+                  assign accordion_label = 'sections.product.how_to_use' | t
+                when 'key_ingredients'
+                  assign accordion_value = key_ingredients
+                  assign accordion_label = 'sections.product.key_ingredients' | t
+              endcase
+            -%}
+            {%- if accordion_value -%}
+              <div class="product-main__accordion" data-accordion>
+                <button
+                  type="button"
+                  id="AccordionTrigger-{{ key }}-{{ section.id }}"
+                  class="product-main__accordion-trigger"
+                  aria-expanded="false"
+                  aria-controls="AccordionPanel-{{ key }}-{{ section.id }}"
+                >
+                  <span>{{ accordion_label }}</span>
+                  {{ plus_icon }}
+                </button>
+                <div
+                  class="product-main__accordion-content"
+                  id="AccordionPanel-{{ key }}-{{ section.id }}"
+                  role="region"
+                  aria-labelledby="AccordionTrigger-{{ key }}-{{ section.id }}"
+                  inert
+                >
+                  <div class="product-main__accordion-body">
+                    {{ accordion_value | metafield_tag }}
+                    {%- if key == 'key_ingredients' and full_ingredient_list -%}
+                      <button
+                        type="button"
+                        class="product-main__ingredients-link"
+                        data-open-ingredients
+                        aria-haspopup="dialog"
+                      >
+                        {{ 'sections.product.all_ingredients' | t }}
+                      </button>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if show_patent_stamp and patent_stamp_position == 'above_badges' -%}
+          <div class="product-main__patent product-main__patent--flow">
+            {{ patent_stamp }}
+          </div>
         {%- endif -%}
       </div>
     </div>
-
-    {%- if show_patent_stamp and patent_stamp_position == 'below_purchase' -%}
-      <div class="bundle-duo__patent-position bundle-duo__patent-position--flow">
-        {{ patent_stamp }}
-      </div>
-    {%- endif -%}
-
-    {%- comment -%} Accordions {%- endcomment -%}
-    {%- liquid
-      assign show_watch_in_action = false
-      if section.settings.show_watch_in_action
-        if section.settings.videowise_embed != blank or request.design_mode
-          assign show_watch_in_action = true
-        endif
-      endif
-    -%}
-    <div class="bundle-duo__accordions" data-duo-accordions>
-      {%- comment -%} Top divider is skipped when the videos lead, so they sit flush {%- endcomment -%}
-      {%- unless show_watch_in_action -%}
-        <hr class="bundle-duo__divider">
-      {%- endunless -%}
-
-      {%- comment -%} Watch It In Action {%- endcomment -%}
-      {% if show_watch_in_action %}
-        <div class="bundle-duo__accordion is-open">
-          <div
-            class="bundle-duo__accordion-content"
-            role="region"
-            aria-label="{{ 'sections.product_bundle.watch_in_action' | t }}">
-            <div class="bundle-duo__accordion-body">
-              {%- if section.settings.videowise_embed != blank -%}
-                <div class="bundle-duo__video-embed">
-                  {{ section.settings.videowise_embed }}
-                </div>
-              {%- else -%}
-                <div class="bundle-duo__video-grid">
-                  <div class="bundle-duo__video-placeholder"></div>
-                  <div class="bundle-duo__video-placeholder"></div>
-                  <div class="bundle-duo__video-placeholder"></div>
-                  <div class="bundle-duo__video-placeholder"></div>
-                  <div class="bundle-duo__video-placeholder"></div>
-                </div>
-              {%- endif -%}
-            </div>
-          </div>
-          <hr class="bundle-duo__divider">
-        </div>
-      {% endif %}
-
-      {% if product_details %}
-        <div class="bundle-duo__accordion" data-accordion>
-          <button
-            type="button"
-            id="accordion-details-trigger-{{ section.id }}"
-            class="bundle-duo__accordion-trigger"
-            aria-expanded="false"
-            aria-controls="accordion-details-{{ section.id }}">
-            <span>{{ 'sections.product_bundle.details' | t }}</span>
-            <svg class="bundle-duo__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div
-            class="bundle-duo__accordion-content"
-            id="accordion-details-{{ section.id }}"
-            role="region"
-            aria-labelledby="accordion-details-trigger-{{ section.id }}"
-            aria-hidden="true">
-            <div class="bundle-duo__accordion-body">
-              {{ product.metafields.custom.product_details | metafield_tag }}
-            </div>
-          </div>
-          <hr class="bundle-duo__divider">
-        </div>
-      {% endif %}
-
-      {% if scent_notes %}
-        <div class="bundle-duo__accordion" data-accordion>
-          <button
-            type="button"
-            id="accordion-scent-trigger-{{ section.id }}"
-            class="bundle-duo__accordion-trigger"
-            aria-expanded="false"
-            aria-controls="accordion-scent-{{ section.id }}">
-            <span>{{ 'sections.product_bundle.scent_notes' | t }}</span>
-            <svg class="bundle-duo__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div
-            class="bundle-duo__accordion-content"
-            id="accordion-scent-{{ section.id }}"
-            role="region"
-            aria-labelledby="accordion-scent-trigger-{{ section.id }}"
-            aria-hidden="true">
-            <div class="bundle-duo__accordion-body">
-              {{ product.metafields.custom.scent_notes | metafield_tag }}
-            </div>
-          </div>
-          <hr class="bundle-duo__divider">
-        </div>
-      {% endif %}
-
-      {% if key_ingredients %}
-        <div class="bundle-duo__accordion" data-accordion>
-          <button
-            type="button"
-            id="accordion-ingredients-trigger-{{ section.id }}"
-            class="bundle-duo__accordion-trigger"
-            aria-expanded="false"
-            aria-controls="accordion-ingredients-{{ section.id }}">
-            <span>{{ 'sections.product_bundle.key_ingredients' | t }}</span>
-            <svg class="bundle-duo__accordion-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-              <path d="M1 8H15M8 1V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div
-            class="bundle-duo__accordion-content"
-            id="accordion-ingredients-{{ section.id }}"
-            role="region"
-            aria-labelledby="accordion-ingredients-trigger-{{ section.id }}"
-            aria-hidden="true">
-            <div class="bundle-duo__accordion-body">
-              {{ product.metafields.custom.key_ingredients | metafield_tag }}
-              {% if full_ingredient_list %}
-                <button
-                  type="button"
-                  class="bundle-duo__ingredients-link"
-                  data-open-ingredients
-                  aria-haspopup="dialog">
-                  {{ 'sections.product_bundle.all_ingredients' | t }}
-                </button>
-              {% endif %}
-            </div>
-          </div>
-          <hr class="bundle-duo__divider">
-        </div>
-      {% endif %}
-    </div>
-
-    {%- if show_patent_stamp and patent_stamp_position == 'above_badges' -%}
-      <div class="bundle-duo__patent-position bundle-duo__patent-position--flow">
-        {{ patent_stamp }}
-      </div>
-    {%- endif -%}
-
-    {%- comment -%} Trust Badges {%- endcomment -%}
-    {% if section.blocks.size > 0 %}
-      <div class="bundle-duo__badges">
-        {% for block in section.blocks %}
-          {% if block.type == 'trust_badge' %}
-            <div class="bundle-duo__badge" {{ block.shopify_attributes }}>
-              {% if block.settings.icon %}
-                <span
-                  class="bundle-duo__badge-icon"
-                  role="img"
-                  aria-label="{{ block.settings.label | default: '' }}"
-                  style="-webkit-mask-image: url('{{ block.settings.icon | image_url: width: 60 }}'); mask-image: url('{{ block.settings.icon | image_url: width: 60 }}');">
-                </span>
-              {% endif %}
-              {% if block.settings.label %}
-                <p class="bundle-duo__badge-label">{{ block.settings.label }}</p>
-              {% endif %}
-            </div>
-          {% endif %}
-        {% endfor %}
-      </div>
-    {% endif %}
   </div>
 
-  {%- comment -%} Ingredients Popup {%- endcomment -%}
+  {%- comment -%} Ingredients pop-up, as on the product page {%- endcomment -%}
   {% if full_ingredient_list %}
     <dialog
-      class="bundle-duo__dialog"
+      class="product-main__dialog"
       id="ingredients-dialog-{{ section.id }}"
       scroll-lock
-      aria-labelledby="dialog-title-{{ section.id }}">
-      <div class="bundle-duo__dialog-inner">
-        <div class="bundle-duo__dialog-header">
-          <h2 id="dialog-title-{{ section.id }}" class="bundle-duo__dialog-title">{{ 'sections.product_bundle.ingredients_popup_title' | t }}</h2>
-          <button
-            type="button"
-            class="bundle-duo__dialog-close"
-            data-close-ingredients
-            aria-label="{{ 'sections.product_bundle.close' | t }}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
-              <path d="M2 2L18 18M18 2L2 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-        <div class="bundle-duo__dialog-body">
+      aria-labelledby="dialog-title-{{ section.id }}"
+      style="--close-mask: url('{{ 'icon-plus.svg' | asset_url }}');"
+    >
+      <div class="product-main__dialog-inner">
+        <span class="product-main__dialog-handle" aria-hidden="true"></span>
+        <button
+          type="button"
+          class="product-main__dialog-close"
+          data-close-ingredients
+          aria-label="{{ 'sections.product.close' | t }}"
+        ></button>
+        <h2 id="dialog-title-{{ section.id }}" class="product-main__dialog-title">
+          {{- 'sections.product.ingredients_popup_title' | t -}}
+        </h2>
+        <div class="product-main__dialog-body">
           {{ product.metafields.custom.full_ingredient_list | metafield_tag }}
         </div>
       </div>
     </dialog>
   {% endif %}
 
-  {%- comment -%} Product data JSON for JS {%- endcomment -%}
-  {% if scent_collection %}
-    <script type="application/json" data-duo-products>
-      {
-        "bundleVariantId": {{ current_variant.id | json }},
-        "scentPropertyName": {{ scent_property_name | json }},
-        "companionPropertyName": {{ companion_property_name | json }},
-        "companionPropertyValue": {{ companion_property_value | json }},
-        "scents": {
-          {%- assign scent_comma = '' -%}
-          {% for scent_product in scent_collection.products %}
-            {%- assign scent_coming_soon = false -%}
-            {%- if scent_product.tags contains 'coming-soon' or scent_product.tags contains 'Coming soon' or scent_product.tags contains 'coming soon' or scent_product.tags contains 'Coming Soon' -%}
-              {%- assign scent_coming_soon = true -%}
-            {%- endif -%}
-            {% if scent_product.metafields.custom.scent_name != blank and scent_product.available and scent_coming_soon == false %}
-              {{ scent_comma }}
-              "{{ scent_product.handle }}": {
-                "title": {{ scent_product.title | json }},
-                "variantId": {{ scent_product.selected_or_first_available_variant.id | json }},
-                "variantGid": {{ scent_product.selected_or_first_available_variant.id | prepend: 'gid://shopify/ProductVariant/' | json }},
-                {%- if scent_product.metafields.custom.card_image != blank -%}
-                  "cardImage": {{ scent_product.metafields.custom.card_image | image_url: width: 800 | json }},
-                {%- elsif scent_product.featured_image -%}
-                  "cardImage": {{ scent_product.featured_image | image_url: width: 800 | json }},
-                {%- else -%}
-                  "cardImage": "",
-                {%- endif -%}
-                "price": {{ scent_product.price | json }},
-                "available": {{ scent_product.available | json }},
-                "variantAvailable": {{ scent_product.selected_or_first_available_variant.available | json }}
-              }
-              {%- assign scent_comma = ',' -%}
-            {% endif %}
-          {% endfor %}
-        }
+  {%- comment -%}
+    The scents' details for the script: the product title is what Simple
+    Bundles matches on, the scent name is what the page shows.
+  {%- endcomment -%}
+  <script type="application/json" data-duo-products>
+    {
+      "bundleVariantId": {{ current_variant.id | json }},
+      "scentPropertyName": {{ scent_property_name | json }},
+      "companionPropertyName": {{ companion_property_name | json }},
+      "companionPropertyValue": {{ companion_property_value | json }},
+      "scents": {
+        {%- assign scent_comma = '' -%}
+        {%- for item in scent_source -%}
+          {%- liquid
+            assign item_scent = item.metafields.custom.scent_name.value
+            assign item_coming_soon = false
+            if item.tags contains 'coming-soon' or item.tags contains 'Coming soon' or item.tags contains 'coming soon' or item.tags contains 'Coming Soon'
+              assign item_coming_soon = true
+            endif
+            if item_scent == blank or item.available == false or item_coming_soon
+              continue
+            endif
+            assign item_bottle = item.metafields.custom.card_image | default: item.featured_image
+          -%}
+          {{ scent_comma }}
+          {{ item.handle | json }}: {
+            "title": {{ item.title | json }},
+            "name": {{ item_scent | json }},
+            "image": {% if item_bottle %}{{ item_bottle | image_url: width: 900 | json }}{% else %}""{% endif %},
+            "variantId": {{ item.selected_or_first_available_variant.id | json }}
+          }
+          {%- assign scent_comma = ',' -%}
+        {%- endfor -%}
       }
-    </script>
-  {% endif %}
+    }
+  </script>
 </section>
+
+{% render 'product-main-script' %}
 
 {% stylesheet %}
   /* ============================================
-     Base styles (Mobile-first, matching product.liquid)
+     Duo product page: what the product page's styles
+     (sections/product.liquid) don't cover.
      ============================================ */
 
-  .bundle-duo {
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(to bottom, var(--gradient-1) 1.4%, var(--gradient-2) 55%);
-    margin-top: var(--total-header-height, 110px);
-    color: var(--product-text, #3E2027);
-  }
-
-  /* --- Mobile Header (above image on mobile) --- */
-
-  .bundle-duo__mobile-header {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 50px 12px 0;
-  }
-
-  .bundle-duo__mobile-subtitle-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  /* --- Desktop-only header (hidden on mobile) --- */
-
-  .bundle-duo__desktop-header {
-    display: none;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  /* --- Image Column --- */
-
-  .bundle-duo__image-column {
-    position: relative;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 12px 30px;
-  }
-
-  .bundle-duo__bottles {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    width: 100%;
-    max-width: 416px;
-    min-height: 340px;
-    overflow: hidden;
-  }
-
-  /* Two slots, not three: the bundle's heavy -30px overlap is meant to fan out
-     a row of identical bottles. A tall bottle beside a flat wipes pouch needs
-     them separated, not stacked — just enough negative margin to absorb the
-     transparent padding around each image. */
-  .bundle-duo__bottle-slot {
-    flex: 1;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 -12px;
-  }
-
-  .bundle-duo__bottle-img {
-    width: 100%;
-    height: auto;
-    max-height: 340px;
+  /* --- The bottle and the wipes ---
+     In the photo's place, where the design has them in its 640 x 560 box:
+     the bottle on the left (its photo 334 x 500 at 10, 55, the bottle
+     itself filling 54% of its width and 81% of its height), the wipes
+     (326 x 283 at 297, 162) on the right. Percentages, so the pair keeps
+     its shape at any width. */
+  .product-duo__bottle,
+  .product-duo__companion {
+    position: absolute;
     object-fit: contain;
-    transition: opacity 0.4s ease;
-  }
-
-  /* The wipes pouch is wider and shorter than a bottle; cap it so the bottle
-     still reads as the hero of the pair. */
-  .bundle-duo__companion-img {
-    width: 100%;
-    height: auto;
-    max-height: 260px;
-    object-fit: contain;
-  }
-
-  .bundle-duo__bottle-placeholder {
-    width: 45%;
-    aspect-ratio: 3 / 4;
-    border: 2px dashed var(--product-text, #3E2027);
-    border-radius: 40% 40% 10% 10%;
-    opacity: 0.15;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .bundle-duo__bottle-number {
-    font-family: var(--font-alyona);
-    font-size: 32px;
-    opacity: 0.5;
-  }
-
-  /* --- Patent Stamp Positions --- */
-
-  .bundle-duo__patent-position {
-    z-index: 3;
-  }
-
-  .bundle-duo__patent-position--image {
-    position: absolute;
-    right: 32px;
-    bottom: 32px;
-  }
-
-  .bundle-duo__patent-position--title {
-    position: absolute;
-    top: 42px;
-    right: 12px;
-  }
-
-  .bundle-duo__patent-position--flow {
-    display: flex;
-    align-self: flex-start;
-  }
-
-  .bundle-duo--patent-title_right .bundle-duo__mobile-header {
-    position: relative;
-    min-height: var(--patent-stamp-mobile-size);
-    padding-right: calc(var(--patent-stamp-mobile-size) + 28px);
-  }
-
-  @media (max-width: 1023px) {
-    .bundle-duo--patent-image_bottom_right .bundle-duo__image-column {
-      flex-direction: column;
-      padding-bottom: 16px;
-    }
-
-    .bundle-duo__patent-position--image {
-      position: relative;
-      right: auto;
-      bottom: auto;
-      align-self: flex-end;
-      margin: 16px 4px 0 0;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .bundle-duo--patent-title_right .bundle-duo__desktop-header {
-      position: relative;
-      min-height: var(--patent-stamp-size);
-      padding-right: calc(var(--patent-stamp-size) + 20px);
-    }
-
-    .bundle-duo__patent-position--title {
-      top: 0;
-      right: 0;
-    }
-  }
-
-  /* --- Info Column --- */
-
-  .bundle-duo__info-column {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    padding: 0 12px 40px;
-    position: relative;
-  }
-
-  /* --- Rating --- */
-
-  .bundle-duo__rating {
-    gap: 8px;
-    color: var(--product-text);
-  }
-
-  .bundle-duo__rating .star-rating__layer {
-    gap: 6px;
-  }
-
-  .bundle-duo__rating .star-rating__layer svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .bundle-duo__rating .star-rating__count {
-    font-size: 13px;
-  }
-
-  /* --- Header Typography --- */
-
-  .bundle-duo__subtitle {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 16px;
-    line-height: normal;
-    letter-spacing: -0.16px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-  }
-
-  .bundle-duo__title {
-    font-family: var(--font-alyona);
-    font-weight: 400;
-    font-size: 34px;
-    line-height: 1;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-  }
-
-  .bundle-duo__size,
-  .bundle-duo__size-line {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 13px;
-    line-height: normal;
-    letter-spacing: -0.13px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-  }
-
-  /* --- Scent Selectors --- */
-
-  .bundle-duo__selectors {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .bundle-duo__selector {
-    position: relative;
-    width: 100%;
-  }
-
-  .bundle-duo__selector-trigger {
-    width: 100%;
-    height: 40px;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.14px;
-    color: var(--product-text, #3E2027);
-    background: transparent;
-    border: 1px solid var(--product-text, #3E2027);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .bundle-duo__selector.is-selected .bundle-duo__selector-trigger {
-    background-color: #FFFFFF;
-    border-color: transparent;
-  }
-
-  .bundle-duo__selector-chevron {
-    transition: transform 0.2s ease;
-    flex-shrink: 0;
-  }
-
-  .bundle-duo__selector-trigger[aria-expanded="true"] .bundle-duo__selector-chevron {
-    transform: rotate(180deg);
-  }
-
-  .bundle-duo__selector-list {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: #FFFFFF;
-    border: 1px solid var(--product-text, #3E2027);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    z-index: 10;
-    max-height: none;
-    overflow-y: visible;
-  }
-
-  .bundle-duo__selector-trigger[aria-expanded="true"] + .bundle-duo__selector-list {
-    display: block;
-  }
-
-  .bundle-duo__selector-option {
-    padding: 10px 20px;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.14px;
-    color: var(--product-text, #3E2027);
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-  }
-
-  .bundle-duo__selector-option:hover {
-    background-color: var(--gradient-1);
-  }
-
-  .bundle-duo__selector-option[aria-disabled="true"] {
-    opacity: 0.35;
-    text-decoration: line-through;
-    cursor: not-allowed;
     pointer-events: none;
   }
 
-  .bundle-duo__selector-option[aria-selected="true"] {
+  .product-duo__bottle {
+    top: 9.8%;
+    left: 1.6%;
+    width: 52.2%;
+    height: 89.3%;
+  }
+
+  .product-duo__companion {
+    top: 28.9%;
+    left: 46.4%;
+    width: 50.9%;
+    height: 50.5%;
+  }
+
+  /* A picked scent's bottle drops in (moving `top`, not a transform, so
+     the photo stays sharp while it moves). */
+  .product-duo__bottle.is-dropping {
+    animation: product-duo-drop 0.3s ease-out;
+  }
+
+  @keyframes product-duo-drop {
+    from {
+      top: calc(9.8% - 16px);
+      opacity: 0;
+    }
+  }
+
+  /* --- Price, under the title --- */
+  .product-duo__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0;
+    font: 700 20px/1.3 var(--font-sweet-sans);
+    letter-spacing: 0.02em;
+  }
+
+  .product-duo__compare {
+    font-size: 16px;
+    opacity: 0.6;
+  }
+
+  /* Two even lines, as in the design ("Deodorant Enhancer - / Essentials Duo"). */
+  .product-duo .product-main__title {
+    text-wrap: balance;
+  }
+
+  /* --- The scents to pick from ---
+     Buttons in the product page's scent circles. The picked one gets the
+     ring, its full size and a bold name. */
+  .product-duo__scent {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .product-duo__scent[aria-pressed='true'] .product-main__scent-art {
+    box-shadow: inset 0 0 0 2px var(--color-foreground);
+  }
+
+  .product-duo__scent[aria-pressed='true'] .product-main__scent-bottle {
+    scale: 1;
+  }
+
+  .product-duo__scent[aria-pressed='true'] .product-main__scent-name {
     font-weight: 700;
   }
 
-  /* --- Divider --- */
-
-  .bundle-duo__divider {
-    border: none;
-    border-top: 1px solid var(--product-text, #3E2027);
-    opacity: 0.2;
-    margin: 0;
-  }
-
-  /* --- Purchase Row --- */
-
-  .bundle-duo__purchase-row {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .bundle-duo__price {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 26px;
-    line-height: normal;
-    letter-spacing: -0.26px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-    white-space: nowrap;
-  }
-
-  .bundle-duo__actions {
-    display: flex;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .bundle-duo__button {
-    flex: 1;
-    width: 100%;
-    height: 48px;
-    padding: 10px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 12px;
-    line-height: normal;
-    letter-spacing: -0.12px;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    white-space: nowrap;
-  }
-
-  .bundle-duo__button:hover:not(:disabled) {
-    opacity: 0.9;
-    transform: translateY(-1px);
-  }
-
-  .bundle-duo__button:active:not(:disabled) {
-    opacity: 0.8;
-    transform: translateY(0);
-  }
-
-  .bundle-duo__button--add {
-    background-color: var(--product-text, #3E2027);
-    color: #FFFFFF;
-  }
-
-  .bundle-duo__button--buy {
-    background-color: var(--product-text, #3E2027);
-    color: #FFFFFF;
-  }
-
-  .bundle-duo__button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  .bundle-duo__button:focus-visible {
-    outline: 2px solid var(--product-text, #3E2027);
-    outline-offset: 2px;
-  }
-
-  .bundle-duo__status {
-    width: 100%;
-    margin: 10px 0 0;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 1.3;
-    color: #B42318;
-  }
-
-  /* --- Watch It In Action --- */
-
-  .bundle-duo__video-grid {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .bundle-duo__video-grid::-webkit-scrollbar {
-    display: none;
-  }
-
-  .bundle-duo__video-placeholder {
-    width: 90px;
-    height: 125px;
-    background-color: #D9D9D9;
-    flex-shrink: 0;
-  }
-
-  .bundle-duo__video-embed {
-    width: 100%;
-  }
-
-  /* --- Accordions --- */
-
-  .bundle-duo__accordion-trigger {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 0;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: -0.14px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-  }
-
-  .bundle-duo__accordion-trigger:focus-visible {
-    outline: 2px solid var(--product-text, #3E2027);
-    outline-offset: 2px;
-  }
-
-  .bundle-duo__accordion-icon {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
-  }
-
-  .bundle-duo__accordion.is-open .bundle-duo__accordion-icon {
-    transform: rotate(45deg);
-  }
-
-  .bundle-duo__accordion-content {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.3s ease;
-  }
-
-  .bundle-duo__accordion.is-open .bundle-duo__accordion-content {
-    grid-template-rows: 1fr;
-  }
-
-  .bundle-duo__accordion-body {
-    overflow: hidden;
-    font-family: var(--font-jokker);
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--product-text, #3E2027);
-    padding-bottom: 0;
-    transition: padding-bottom 0.3s ease;
-  }
-
-  .bundle-duo__accordion-body a {
-    color: inherit;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-    font-weight: 500;
-    transition: opacity 0.2s ease;
-  }
-
-  .bundle-duo__accordion-body a:hover,
-  .bundle-duo__accordion-body a:focus-visible {
-    opacity: 0.7;
-  }
-
-  .bundle-duo__accordion-body a:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
-    border-radius: 1px;
-  }
-
-  .bundle-duo__accordion.is-open .bundle-duo__accordion-body {
-    padding-bottom: 15px;
-  }
-
-  .bundle-duo__ingredients-link {
-    display: inline;
-    background: none;
-    border: none;
-    padding: 0;
-    font-family: var(--font-jokker);
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--product-text, #3E2027);
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
-  .bundle-duo__ingredients-link:hover {
-    opacity: 0.7;
-  }
-
-  .bundle-duo__ingredients-link:focus-visible {
-    outline: 2px solid var(--product-text, #3E2027);
-    outline-offset: 2px;
-  }
-
-  /* --- Trust Badges --- */
-
-  .bundle-duo__badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding-top: 10px;
-    justify-content: center;
-  }
-
-  .bundle-duo__badge {
-    width: 130px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .bundle-duo__badge-icon {
-    width: 30px;
-    height: 30px;
-    flex-shrink: 0;
-    display: inline-block;
-    background-color: var(--product-text, #3E2027);
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    mask-position: center;
-  }
-
-  .bundle-duo__badge-label {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 12px;
-    letter-spacing: -0.12px;
-    text-transform: uppercase;
-    color: var(--product-text, #3E2027);
-    margin: 0;
-    line-height: normal;
-    white-space: pre-line;
-  }
-
-  /* --- Ingredients Dialog (mobile: bottom sheet) --- */
-
-  .bundle-duo__dialog {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    border: none;
-    padding: 0;
-    margin: 0;
-    background: transparent;
-    z-index: 999;
-  }
-
-  .bundle-duo__dialog::backdrop {
-    background-color: rgba(62, 32, 39, 0.5);
-  }
-
-  .bundle-duo__dialog-inner {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-height: 80vh;
-    background: #FCE9EC;
-    color: var(--popup-text, #3E2027);
-    padding: 30px 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .bundle-duo__dialog-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .bundle-duo__dialog-title {
-    font-family: var(--font-sweet-sans);
-    font-weight: 500;
-    font-size: 18px;
-    text-transform: uppercase;
-    letter-spacing: -0.18px;
-    color: var(--popup-text, #3E2027);
-    margin: 0;
-  }
-
-  .bundle-duo__dialog-close {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    color: var(--popup-text, #3E2027);
-  }
-
-  .bundle-duo__dialog-close:focus-visible {
-    outline: 2px solid var(--popup-text, #3E2027);
-    outline-offset: 2px;
-  }
-
-  .bundle-duo__dialog-body {
-    font-family: var(--font-jokker);
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--popup-text, #3E2027);
-  }
-
-  .bundle-duo__dialog-body a {
-    color: inherit;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-    font-weight: 500;
-    transition: opacity 0.2s ease;
-  }
-
-  .bundle-duo__dialog-body a:hover,
-  .bundle-duo__dialog-body a:focus-visible {
-    opacity: 0.7;
-  }
-
-  .bundle-duo__dialog-body a:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
-    border-radius: 1px;
-  }
-
-  /* ============================================
-     Desktop (1024px+) — matching product.liquid
-     ============================================ */
-
-  @media (min-width: 1024px) {
-    .bundle-duo {
-      flex-direction: row;
-      min-height: calc(100vh - var(--total-header-height, 110px));
+  @media (prefers-reduced-motion: reduce) {
+    .product-duo__bottle.is-dropping {
+      animation: none;
     }
+  }
 
-    .bundle-duo__mobile-header {
-      display: none;
-    }
-
-    .bundle-duo__desktop-header {
-      display: flex;
-      gap: 16px;
-    }
-
-    /* Desktop: rating pinned to top-right of the info column */
-    .bundle-duo__rating {
-      position: absolute;
-      top: 30px;
-      right: var(--page-gutter);
-      gap: 8px;
-      z-index: 2;
-    }
-
-    .bundle-duo__rating .star-rating__layer {
-      gap: 4px;
-    }
-
-    .bundle-duo__rating .star-rating__layer svg {
-      width: 13px;
-      height: 13px;
-    }
-
-    .bundle-duo__rating .star-rating__count {
-      font-size: 14px;
-    }
-
-    .bundle-duo__image-column {
-      width: 52%;
-      position: sticky;
-      top: var(--total-header-height, 110px);
-      height: calc(100vh - var(--total-header-height, 110px));
-      padding: 40px;
-      flex-shrink: 0;
-    }
-
-    /* Narrower than the bundle's 700px — two items spread across that width
-       leave a gap in the middle of the sticky column. */
-    .bundle-duo__bottles {
-      max-width: 560px;
-      min-height: 500px;
-    }
-
-    .bundle-duo__bottle-slot {
-      margin: 0 -24px;
-    }
-
-    .bundle-duo__bottle-img {
-      max-height: 600px;
-    }
-
-    .bundle-duo__companion-img {
-      max-height: 440px;
-    }
-
-    .bundle-duo__bottle-placeholder {
-      width: 55%;
-      aspect-ratio: 3 / 5;
-    }
-
-    .bundle-duo__bottle-number {
-      font-size: 48px;
-    }
-
-    .bundle-duo__info-column {
-      width: 48%;
-      padding: 120px var(--page-gutter) 60px 40px;
-    }
-
-    .bundle-duo__subtitle {
-      font-size: 20px;
-      letter-spacing: -0.2px;
-    }
-
-    .bundle-duo__title {
-      font-size: 74px;
-    }
-
-    .bundle-duo__size,
-    .bundle-duo__size-line {
+  @media (max-width: 1023px) {
+    .product-duo__price {
       font-size: 16px;
-      letter-spacing: -0.16px;
     }
 
-    .bundle-duo__selector {
-      width: 255px;
-    }
-
-    .bundle-duo__purchase-row {
-      flex-direction: row;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .bundle-duo__price {
-      font-size: 26px;
-      letter-spacing: -0.26px;
-    }
-
-    .bundle-duo__actions {
-      gap: 10px;
-      width: auto;
-    }
-
-    .bundle-duo__button {
-      flex: 0 0 auto;
-      width: auto;
-      min-width: 200px;
-      height: 40px;
-      padding: 10px 28px;
-      gap: 10px;
+    .product-duo__compare {
       font-size: 14px;
-      letter-spacing: -0.14px;
-    }
-
-    .bundle-duo__badges {
-      justify-content: flex-start;
-    }
-
-    .bundle-duo__dialog-inner {
-      top: 50%;
-      left: 50%;
-      right: auto;
-      bottom: auto;
-      transform: translate(-50%, -50%);
-      width: 90%;
-      max-width: 560px;
-      max-height: 70vh;
-      padding: 40px;
     }
   }
 {% endstylesheet %}
 
 {% javascript %}
-  (function () {
-    class BundleDuoSection {
+  /* Duo product page: picking the scent and adding the duo to the cart. The
+     dropdowns, quantity, ingredients pop-up and videos are set up by the
+     product page's script (snippets/product-main-script.liquid). */
+  (() => {
+    class DuoPicker {
       constructor(section) {
         this.section = section;
-        // Exactly one component is customer-picked; the companion is fixed.
-        this.bundleSize = 1;
+        this.text = section.dataset;
+        this.scents = {};
+        this.bundleVariantId = null;
         this.scentPropertyName = 'Scents';
         this.companionPropertyName = 'Wipes';
         this.companionPropertyValue = '';
-        this.selections = {};
-        this.productData = {};
-
-        this.parseProductData();
-        this.initSelectors();
-        this.initAccordions();
-        this.initIngredientsDialog();
-        this.initCartButtons();
-      }
-
-      parseProductData() {
-        const jsonEl = this.section.querySelector('[data-duo-products]');
-        if (jsonEl) {
-          try {
-            const data = JSON.parse(jsonEl.textContent);
-            this.productData = data.scents || {};
-            this.bundleVariantId = data.bundleVariantId;
-            if (data.scentPropertyName) this.scentPropertyName = data.scentPropertyName;
-            if (data.companionPropertyName) this.companionPropertyName = data.companionPropertyName;
-            if (data.companionPropertyValue) this.companionPropertyValue = data.companionPropertyValue;
-          } catch (e) {
-            console.error('Duo bundle: failed to parse product data', e);
-          }
-        }
-      }
-
-      initSelectors() {
-        this.selectors = this.section.querySelectorAll('[data-duo-scent-selector]');
-        this.selectors.forEach(selector => {
-          const trigger = selector.querySelector('.bundle-duo__selector-trigger');
-          const options = selector.querySelectorAll('.bundle-duo__selector-option');
-          const selectorIndex = selector.getAttribute('data-duo-scent-selector');
-
-          trigger.addEventListener('click', () => this.toggleDropdown(selector));
-
-          options.forEach(option => {
-            option.addEventListener('click', () => {
-              if (option.getAttribute('aria-disabled') === 'true') return;
-              this.selectScent(selector, selectorIndex, option);
-            });
-          });
-        });
-
-        document.addEventListener('click', (e) => {
-          if (!e.target.closest('[data-duo-scent-selector]')) {
-            this.closeAllDropdowns();
-          }
-        });
-
-        this.syncDisabledStates();
-      }
-
-      toggleDropdown(selector) {
-        const trigger = selector.querySelector('.bundle-duo__selector-trigger');
-        const isOpen = trigger.getAttribute('aria-expanded') === 'true';
-
-        this.closeAllDropdowns();
-
-        if (!isOpen) {
-          trigger.setAttribute('aria-expanded', 'true');
-        }
-      }
-
-      closeAllDropdowns() {
-        this.selectors.forEach(s => {
-          s.querySelector('.bundle-duo__selector-trigger').setAttribute('aria-expanded', 'false');
-        });
-      }
-
-      selectScent(selector, selectorIndex, option) {
-        const handle = option.getAttribute('data-product-handle');
-        let product = this.productData[handle];
-        if (!product) {
-          const variantId = option.getAttribute('data-variant-id');
-          if (!variantId) return;
-          product = {
-            title: option.getAttribute('data-product-title') || option.textContent.trim(),
-            variantId: variantId,
-            variantGid: option.getAttribute('data-variant-gid') || ('gid://shopify/ProductVariant/' + variantId),
-            cardImage: option.getAttribute('data-card-image') || '',
-          };
-          this.productData[handle] = product;
-        }
-        if (!product) return;
-
-        this.selections[selectorIndex] = handle;
-
-        // Only ever reached from a deliberate pick — the pre-rendered default
-        // bottle is artwork, not a selection, so it never lands here.
-        const label = selector.querySelector('[data-selector-label]');
-        label.textContent = product.title;
-        selector.classList.add('is-selected');
-
-        option.setAttribute('aria-selected', 'true');
-        selector.querySelectorAll('.bundle-duo__selector-option').forEach(opt => {
-          if (opt !== option) opt.setAttribute('aria-selected', 'false');
-        });
-
-        this.closeAllDropdowns();
-        this.syncDisabledStates();
-        this.updateBottleImage(selectorIndex, product);
-        this.updateButtons();
-      }
-
-      syncDisabledStates() {
-        this.selectors.forEach(selector => {
-          selector.querySelectorAll('.bundle-duo__selector-option').forEach(option => {
-            option.setAttribute('aria-disabled', 'false');
-          });
-        });
-      }
-
-      updateBottleImage(selectorIndex, product) {
-        const slot = this.section.querySelector('[data-duo-slot="' + selectorIndex + '"]');
-        if (!slot) return;
-
-        let img = slot.querySelector('.bundle-duo__bottle-img');
-        const placeholder = slot.querySelector('.bundle-duo__bottle-placeholder');
-
-        if (product.cardImage) {
-          if (!img) {
-            img = document.createElement('img');
-            img.className = 'bundle-duo__bottle-img';
-            img.loading = 'eager';
-            img.width = 800;
-            img.height = 800;
-            slot.prepend(img);
-          }
-          img.src = product.cardImage;
-          img.alt = product.title;
-          img.style.display = 'block';
-          if (placeholder) placeholder.style.display = 'none';
-        }
-      }
-
-      updateButtons() {
-        const allSelected = Object.keys(this.selections).length >= this.bundleSize;
-        const canAdd = allSelected;
-        const addBtn = this.section.querySelector('[data-duo-add]');
-        const buyBtn = this.section.querySelector('[data-duo-buy]');
-
-        if (addBtn) addBtn.disabled = !canAdd;
-        if (buyBtn) buyBtn.disabled = !canAdd;
-      }
-
-      getSelectedProducts() {
-        return Object.entries(this.selections).map(([index, handle]) => {
-          const product = this.productData[handle];
-          return product ? { index, handle, ...product } : null;
-        }).filter(Boolean);
-      }
-
-      initCartButtons() {
-        const addBtn = this.section.querySelector('[data-duo-add]');
-        const buyBtn = this.section.querySelector('[data-duo-buy]');
-
-        if (addBtn) {
-          addBtn.addEventListener('click', () => this.addToCart(false));
-        }
-        if (buyBtn) {
-          buyBtn.addEventListener('click', () => this.addToCart(true));
-        }
-      }
-
-      async addToCart(goToCart) {
-        const selected = this.getSelectedProducts().sort((a, b) => Number(a.index) - Number(b.index));
-        if (selected.length < this.bundleSize) return;
-        if (!this.bundleVariantId) {
-          console.error('Duo bundle: no bundle variant ID found');
-          return;
-        }
-
-        const addBtn = this.section.querySelector('[data-duo-add]');
-        const buyBtn = this.section.querySelector('[data-duo-buy]');
-        if (addBtn) addBtn.disabled = true;
-        if (buyBtn) buyBtn.disabled = true;
 
         try {
-          const formBody = new URLSearchParams();
-          formBody.append('id', this.bundleVariantId);
-          formBody.append('quantity', '1');
+          const data = JSON.parse(section.querySelector('[data-duo-products]')?.textContent || '{}');
+          this.scents = data.scents || {};
+          this.bundleVariantId = data.bundleVariantId;
+          if (data.scentPropertyName) this.scentPropertyName = data.scentPropertyName;
+          if (data.companionPropertyName) this.companionPropertyName = data.companionPropertyName;
+          if (data.companionPropertyValue) this.companionPropertyValue = data.companionPropertyValue;
+        } catch (error) {
+          console.error('Duo: could not read the scents', error);
+        }
+
+        // Nothing is picked until the customer taps a scent: the bottle
+        // shown on load is artwork only.
+        this.picked = null;
+        this.adding = false;
+        this.swap = 0;
+
+        this.stage = section.querySelector('[data-duo-stage]');
+        this.bottle = section.querySelector('[data-duo-bottle]');
+        this.scentButtons = [...section.querySelectorAll('[data-duo-scent]')];
+        this.addButton = section.querySelector('[data-duo-add]');
+        this.addLabel = section.querySelector('[data-duo-add-label]');
+        this.status = section.querySelector('[data-duo-status]');
+
+        this.scentButtons.forEach((button) => {
+          button.addEventListener('click', () => this.pick(button.dataset.duoScent));
+        });
+        this.addButton?.addEventListener('click', () => this.addToCart());
+
+        this.render();
+      }
+
+      // Fills "[name]" placeholders in the section's texts.
+      fill(template, values) {
+        return (template || '').replace(/\[(\w+)\]/g, (match, key) => (key in values ? values[key] : match));
+      }
+
+      announce(message) {
+        if (!this.status) return;
+        this.status.textContent = '';
+        requestAnimationFrame(() => {
+          this.status.textContent = message;
+        });
+      }
+
+      pick(handle) {
+        const scent = this.scents[handle];
+        if (!scent) return;
+        this.picked = handle;
+        this.render();
+        this.showBottle(scent);
+        this.announce(this.fill(this.text.textPicked, { scent: scent.name }));
+      }
+
+      // Drops the picked scent's bottle in once its photo has loaded, so
+      // the old one never blinks out first.
+      showBottle(scent) {
+        if (!scent.image || !this.stage) return;
+        if (!this.bottle) {
+          this.bottle = document.createElement('img');
+          this.bottle.className = 'product-duo__bottle';
+          this.bottle.width = 1544;
+          this.bottle.height = 2313;
+          this.stage.prepend(this.bottle);
+        }
+        const bottle = this.bottle;
+        const swap = ++this.swap;
+        const next = new Image();
+        next.src = scent.image;
+        const show = () => {
+          if (swap !== this.swap) return;
+          bottle.src = scent.image;
+          bottle.alt = scent.title;
+          bottle.classList.remove('is-dropping');
+          void bottle.offsetWidth;
+          bottle.classList.add('is-dropping');
+        };
+        (next.decode ? next.decode() : Promise.resolve()).then(show, show);
+      }
+
+      render() {
+        this.scentButtons.forEach((button) => {
+          button.setAttribute('aria-pressed', String(button.dataset.duoScent === this.picked));
+        });
+        if (this.addButton) this.addButton.disabled = !this.picked || this.adding;
+        if (this.addLabel) this.addLabel.textContent = this.picked ? this.text.textAdd : this.text.textPick;
+      }
+
+      async addToCart() {
+        const scent = this.scents[this.picked];
+        if (this.adding || !scent || !this.bundleVariantId) return;
+
+        const input = this.section.querySelector('[data-quantity] input');
+        const quantity = Math.max(1, parseInt(input?.value, 10) || 1);
+
+        this.adding = true;
+        this.render();
+        this.addButton?.setAttribute('aria-busy', 'true');
+
+        try {
+          const body = new URLSearchParams();
+          body.append('id', this.bundleVariantId);
+          body.append('quantity', String(quantity));
 
           // Simple Bundles & Kits expands this line into its components (and
-          // decrements each component's stock) server-side via its Cart
-          // Transform, so both the enhancer and the wipe land on the order as
-          // separate line items. It keys off one property per OPTION GROUP,
-          // plus a "_bundle_selection" summary, exactly as its own widget
-          // submits them.
+          // takes each from stock) through its Cart Transform, so the
+          // enhancer and the wipe land on the order as separate line items.
+          // It keys off one property per OPTION GROUP, plus a
+          // "_bundle_selection" summary, exactly as its own widget sends
+          // them.
           //
-          // BOTH groups must be sent. The bundle is built in the app's "Manually
-          // build" mode, so the wipe is an option group of its own rather than a
-          // fixed component — the customer never chooses it (one option), but
-          // omitting it leaves that group unresolved and the line will not
-          // expand. Group names and values are settings so they can be matched
-          // to the app without a code change.
-          const scent = selected[0];
+          // BOTH groups must be sent. The bundle is built in the app's
+          // "Manually build" mode, so the wipe is an option group of its own
+          // rather than a fixed component: the customer never chooses it
+          // (one option), but leaving it out leaves that group unresolved
+          // and the line will not expand. Group names and values are
+          // settings so they can be matched to the app without a code
+          // change.
           const parts = [];
           if (this.companionPropertyName && this.companionPropertyValue) {
-            formBody.append(`properties[${this.companionPropertyName}]`, this.companionPropertyValue);
+            body.append(`properties[${this.companionPropertyName}]`, this.companionPropertyValue);
             parts.push(this.companionPropertyValue);
           }
-          formBody.append(`properties[${this.scentPropertyName}]`, scent.title);
+          body.append(`properties[${this.scentPropertyName}]`, scent.title);
           parts.push(scent.title);
-          formBody.append('properties[_bundle_selection]', parts.join(' <> '));
+          body.append('properties[_bundle_selection]', parts.join(' <> '));
 
           const response = await fetch('/cart/add.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formBody
+            body,
           });
-
           if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            console.error('Duo bundle: cart response', response.status, errorData);
-            throw new Error('Failed to add to cart');
+            const error = await response.json().catch(() => null);
+            console.error('Duo: cart response', response.status, error);
+            throw new Error('Could not add the duo to the cart');
           }
 
-          if (goToCart) {
-            window.location.href = '/cart';
-          } else {
-            const cartResponse = await fetch('/cart.js');
-            const cartData = await cartResponse.json();
-            document.dispatchEvent(new CustomEvent('cart:updated', { detail: cartData }));
-            document.dispatchEvent(new CustomEvent('cart:open'));
-            if (addBtn) addBtn.disabled = false;
-            if (buyBtn) buyBtn.disabled = false;
-          }
+          const cart = await (await fetch('/cart.js')).json();
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+          document.dispatchEvent(new CustomEvent('cart:open'));
         } catch (error) {
-          console.error('Duo bundle: add to cart failed', error);
-          if (addBtn) addBtn.disabled = false;
-          if (buyBtn) buyBtn.disabled = false;
+          console.error('Duo: add to cart failed', error);
+        } finally {
+          this.adding = false;
+          this.addButton?.removeAttribute('aria-busy');
+          this.render();
         }
-      }
-
-      initAccordions() {
-        const accordions = this.section.querySelectorAll('[data-accordion]');
-        accordions.forEach(accordion => {
-          const trigger = accordion.querySelector('.bundle-duo__accordion-trigger');
-          if (!trigger) return;
-
-          trigger.addEventListener('click', () => {
-            const isOpen = accordion.classList.contains('is-open');
-            accordion.classList.toggle('is-open');
-            trigger.setAttribute('aria-expanded', !isOpen);
-
-            const content = accordion.querySelector('.bundle-duo__accordion-content');
-            if (content) {
-              content.setAttribute('aria-hidden', isOpen);
-            }
-          });
-        });
-      }
-
-      initIngredientsDialog() {
-        const sectionId = this.section.getAttribute('data-section-id');
-        const dialog = this.section.querySelector('#ingredients-dialog-' + sectionId);
-        if (!dialog) return;
-
-        const openBtn = this.section.querySelector('[data-open-ingredients]');
-        const closeBtn = this.section.querySelector('[data-close-ingredients]');
-
-        if (openBtn) {
-          openBtn.addEventListener('click', () => dialog.showModal());
-        }
-        if (closeBtn) {
-          closeBtn.addEventListener('click', () => dialog.close());
-        }
-        dialog.addEventListener('click', (e) => {
-          if (e.target === dialog) dialog.close();
-        });
       }
     }
 
-    function init() {
-      const section = document.querySelector('.bundle-duo');
-      if (section) new BundleDuoSection(section);
+    function init(root = document) {
+      root.querySelectorAll('.product-duo').forEach((section) => {
+        if (section.dataset.duoReady) return;
+        section.dataset.duoReady = 'on';
+        new DuoPicker(section);
+      });
     }
 
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
+      document.addEventListener('DOMContentLoaded', () => init());
     } else {
       init();
     }
-
-    document.addEventListener('shopify:section:load', (e) => {
-      if (e.target.querySelector('.bundle-duo')) {
-        init();
-      }
-    });
+    document.addEventListener('shopify:section:load', (event) => init(event.target));
   })();
 {% endjavascript %}
 
 {% schema %}
 {
   "name": "t:sections.product_bundle_duo.name",
-  "class": "bundle-duo-section",
+  "class": "bundle-duo-section product-main-section",
   "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.product_bundle.settings.title",
+      "info": "t:sections.product_bundle.settings.title_info"
+    },
+    {
+      "type": "text",
+      "id": "size_line",
+      "label": "t:sections.product_bundle_duo.settings.size_line",
+      "info": "t:sections.product_bundle_duo.settings.size_line_info"
+    },
     {
       "type": "header",
       "content": "t:sections.product.patent_stamp_header"
@@ -1778,6 +967,13 @@
       "label": "t:sections.product_bundle.settings.scent_collection"
     },
     {
+      "type": "product_list",
+      "id": "scent_products",
+      "label": "t:sections.product_bundle.settings.scent_products",
+      "info": "t:sections.product_bundle.settings.scent_products_info",
+      "limit": 12
+    },
+    {
       "type": "product",
       "id": "default_scent_product",
       "label": "t:sections.product_bundle_duo.settings.default_scent_product",
@@ -1833,13 +1029,19 @@
       "type": "color",
       "id": "gradient_color_1",
       "label": "t:sections.product_bundle.settings.gradient_color_1",
-      "default": "#F4D2A4"
+      "default": "#FFEFFF"
     },
     {
       "type": "color",
       "id": "gradient_color_2",
       "label": "t:sections.product_bundle.settings.gradient_color_2",
-      "default": "#FCF5DE"
+      "default": "#FFCEE7"
+    },
+    {
+      "type": "color",
+      "id": "gradient_color_3",
+      "label": "t:sections.product_bundle.settings.gradient_color_3",
+      "default": "#F2D593"
     },
     {
       "type": "color",
@@ -1850,9 +1052,64 @@
   ],
   "blocks": [
     {
+      "type": "benefit_pill",
+      "name": "t:sections.product.benefit_pill",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.product.benefit_pill_icon",
+          "options": [
+            {
+              "value": "plant_based",
+              "label": "t:sections.product.benefit_pill_icon_plant_based"
+            },
+            {
+              "value": "no_aluminum",
+              "label": "t:sections.product.benefit_pill_icon_no_aluminum"
+            },
+            {
+              "value": "ph_balancing",
+              "label": "t:sections.product.benefit_pill_icon_ph_balancing"
+            },
+            {
+              "value": "organic_cotton",
+              "label": "t:sections.product.benefit_pill_icon_organic_cotton"
+            },
+            {
+              "value": "fragrance_free",
+              "label": "t:sections.product.benefit_pill_icon_fragrance_free"
+            },
+            {
+              "value": "hypoallergenic",
+              "label": "t:sections.product.benefit_pill_icon_hypoallergenic"
+            }
+          ],
+          "default": "plant_based"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "t:sections.product.benefit_pill_custom_icon",
+          "info": "t:sections.product.benefit_pill_custom_icon_info"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.product.benefit_pill_label",
+          "default": "Plant-based"
+        }
+      ]
+    },
+    {
       "type": "trust_badge",
       "name": "t:sections.product.trust_badge",
       "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:sections.product.trust_badge_hidden"
+        },
         {
           "type": "image_picker",
           "id": "icon",
@@ -1871,14 +1128,9 @@
     {
       "name": "t:sections.product_bundle_duo.name",
       "blocks": [
-        { "type": "trust_badge", "settings": { "label": "Aluminum\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Paraben\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Sulfate\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Cruelty\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Plant-Based\nIngredients" } },
-        { "type": "trust_badge", "settings": { "label": "Phthalate\nFree" } },
-        { "type": "trust_badge", "settings": { "label": "Vegan" } },
-        { "type": "trust_badge", "settings": { "label": "U.S. Patent\n11,857,668" } }
+        { "type": "benefit_pill", "settings": { "icon": "plant_based", "label": "Plant-based" } },
+        { "type": "benefit_pill", "settings": { "icon": "no_aluminum", "label": "No aluminum" } },
+        { "type": "benefit_pill", "settings": { "icon": "ph_balancing", "label": "pH balancing" } }
       ]
     }
   ],

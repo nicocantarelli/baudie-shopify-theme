@@ -256,6 +256,11 @@
       "sale_price": "Sale price",
       "regular_price": "Regular price"
     },
+    "product_bundle_duo": {
+      "choose_scent": "Choose a scent:",
+      "pick_scent": "Pick a scent",
+      "scent_picked": "{{ scent }} picked"
+    },
     "list_collections": {
       "name": "Collections list",
       "settings": {
