@@ -494,10 +494,12 @@
     grid-area: 1 / 1;
   }
 
+  /* The category cards' gradient, panel pink into blush, run from corner to
+     corner (top left to bottom right). A color picked in the editor replaces it. */
   .product-details__panel {
     margin-right: -82px;
     border-radius: var(--radius-panel);
-    background-color: var(--section-bg, var(--color-panel));
+    background: var(--section-bg, linear-gradient(to bottom right, var(--color-panel), var(--color-blush)));
   }
 
   .product-details__photo {
