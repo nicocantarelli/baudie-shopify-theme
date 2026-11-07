@@ -57,12 +57,16 @@
   assign rating_scale = product.metafields.reviews.rating.value.scale_max | default: 5
   assign review_count = product.metafields.reviews.rating_count.value | default: 0
 
-  assign collection_products = product.collections.first.products
-
   comment
-    The scent picker lists the scents of the product's first collection
-    (products with a scent name), on a scent's own page only.
+    The scent picker lists the scents picked in the section, in that order,
+    or else the scents of the product's first collection (products with a
+    scent name), on a scent's own page only.
   endcomment
+  if section.settings.scent_products != blank
+    assign collection_products = section.settings.scent_products
+  else
+    assign collection_products = product.collections.first.products
+  endif
   assign scent_count = 0
   if scent_name != blank
     for item in collection_products
@@ -337,7 +341,7 @@
                 {%- assign item_scent = item.metafields.custom.scent_name.value -%}
                 {%- if item_scent != blank -%}
                   {%- liquid
-                    assign item_color = item.metafields.custom.card_background_color.value | default: item.metafields.custom.gradient_color_1.value | default: '#FFDCED'
+                    assign item_color = item.metafields.custom.swatch_color.value | default: item.metafields.custom.card_background_color.value | default: item.metafields.custom.gradient_color_1.value | default: '#FFDCED'
                     assign item_bottle = item.metafields.custom.card_image | default: item.featured_image
                   -%}
                   <li>
@@ -350,16 +354,15 @@
                       {% endif %}
                     >
                       <span class="product-main__scent-art" aria-hidden="true">
-                        <span class="product-main__scent-disc">
-                          {%- if item_bottle -%}
-                            {{ item_bottle | image_url: width: 240 | image_tag:
-                              loading: 'lazy',
-                              alt: '',
-                              sizes: '(min-width: 1024px) 112px, 72px',
-                              class: 'product-main__scent-bottle'
-                            }}
-                          {%- endif -%}
-                        </span>
+                        <span class="product-main__scent-disc"></span>
+                        {%- if item_bottle -%}
+                          {{ item_bottle | image_url: width: 240 | image_tag:
+                            loading: 'lazy',
+                            alt: '',
+                            sizes: '(min-width: 1024px) 72px, 48px',
+                            class: 'product-main__scent-bottle'
+                          }}
+                        {%- endif -%}
                       </span>
                       <span class="product-main__scent-name">{{ item_scent | escape }}</span>
                     </a>
@@ -606,6 +609,9 @@
     /* Extra room at the bottom for the band below to overlap (set by
        sections/in-press.liquid when the press band comes right after). */
     --product-main-tail: 0px;
+    /* Where the photo column stops as the page scrolls: under the header,
+       or near the top while the header is hidden. */
+    --media-sticky-top: calc(var(--total-header-height, 110px) + 24px);
 
     background: linear-gradient(
       to bottom,
@@ -618,23 +624,38 @@
     color: var(--color-foreground);
   }
 
+  /* The homepage's width: its 1600px container less the page gutters. The
+     card keeps the design's share (46%, as 592 of 1280) and stops at its
+     592px, so on wider screens the photo grows and the card stays compact;
+     a gutter apart. */
   .product-main__inner {
     display: grid;
-    grid-template-columns: minmax(0, 640fr) minmax(0, 592fr);
-    grid-template-rows: auto 1fr;
-    column-gap: clamp(32px, 100vw * 48 / 1440, 48px);
+    grid-template-columns: minmax(0, 1fr) min(592px, 46%);
+    grid-template-rows: auto auto 1fr;
+    column-gap: var(--page-gutter);
     align-items: start;
-    max-width: 1280px;
+    max-width: calc(1600px - 2 * var(--page-gutter));
     margin: 0 auto;
   }
 
+  html:has(.header--hidden) .product-main {
+    --media-sticky-top: 24px;
+  }
+
+  /* The photo and videos come along as the card scrolls. When they're
+     taller than the window, they scroll until their bottom is in view and
+     stop there, so the videos never sit out of reach. --media-height is set
+     by the script below. */
   .product-main__media {
+    position: sticky;
+    top: min(var(--media-sticky-top), calc(100vh - var(--media-height, 0px) - 24px));
     grid-column: 1;
-    grid-row: 1 / span 2;
+    grid-row: 1 / span 3;
     display: flex;
     flex-direction: column;
     gap: 32px;
     min-width: 0;
+    transition: top 0.3s ease;
   }
 
   .product-main__card {
@@ -905,8 +926,7 @@
   .product-main__pills {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 8px;
+    gap: 12px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -976,8 +996,8 @@
     text-decoration: none;
   }
 
-  /* The scent's color in a circle with its bottle tilted inside, and a
-     2px ring around the one being viewed. */
+  /* The scent's bottle standing upright in a circle of its color, its cap
+     rising above the circle, and a 2px ring around the one being viewed. */
   .product-main__scent-art {
     position: relative;
     display: block;
@@ -994,24 +1014,35 @@
   .product-main__scent-disc {
     position: absolute;
     inset: 5.8%;
-    overflow: hidden;
     border-radius: 50%;
     background: var(--scent-color);
   }
 
+  /* The bottle photos are 2:3 with the bottle filling 81% of their height:
+     at 122% of the circle's box the bottle runs its full height, cap to
+     base, centered on the circle. Tilted like the design. The scent being
+     viewed has the full size; the others are a little smaller. */
   .product-main__scent-bottle {
     position: absolute;
-    left: -23.7%;
-    top: -3.2%;
-    width: 147.4%;
-    height: 147.4%;
+    left: 50%;
+    top: -12.2%;
+    width: auto;
+    height: 122%;
     max-width: none;
-    object-fit: contain;
+    transform-origin: 50% 51%;
+    translate: -50% 0;
     rotate: -8deg;
-    transition: translate 0.25s ease;
+    scale: 0.86;
+    transition: translate 0.25s ease, scale 0.25s ease;
   }
 
+  .product-main__scent[aria-current='page'] .product-main__scent-bottle {
+    scale: 1;
+  }
+
+  /* One word to a line, as in the design ("St." over "Tropez"). */
   .product-main__scent-name {
+    width: min-content;
     font: 400 16px/0.95 var(--font-sweet-sans);
     letter-spacing: var(--tracking-label-lg);
     text-align: center;
@@ -1023,7 +1054,7 @@
 
   @media (hover: hover) {
     .product-main__scent:not([aria-current='page']):hover .product-main__scent-bottle {
-      translate: 0 -4%;
+      translate: -50% -4%;
     }
   }
 
@@ -1292,7 +1323,8 @@
   @media (prefers-reduced-motion: reduce) {
     .product-main__accordion-content,
     .product-main__plus-down,
-    .product-main__scent-bottle {
+    .product-main__scent-bottle,
+    .product-main__media {
       transition: none;
     }
 
@@ -1485,7 +1517,6 @@
     }
 
     .product-main__pills {
-      justify-content: flex-start;
       gap: 8px;
     }
 
@@ -1822,6 +1853,14 @@
       });
     }
 
+    function initStickyMedia(section) {
+      const media = section.querySelector('.product-main__media');
+      if (!media || !('ResizeObserver' in window)) return;
+      new ResizeObserver(() => {
+        media.style.setProperty('--media-height', `${Math.ceil(media.getBoundingClientRect().height)}px`);
+      }).observe(media);
+    }
+
     function initQuantity(section) {
       const quantity = section.querySelector('[data-quantity]');
       if (!quantity) return;
@@ -1964,6 +2003,7 @@
         initQuantity(section);
         initIngredientsDialog(section);
         initVideos(section);
+        initStickyMedia(section);
       });
     }
 
@@ -1998,6 +2038,17 @@
       "id": "popup_text_color",
       "label": "t:sections.product.popup_text_color",
       "default": "#3E2027"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product.scent_picker_header"
+    },
+    {
+      "type": "product_list",
+      "id": "scent_products",
+      "label": "t:sections.product.scent_products",
+      "info": "t:sections.product.scent_products_info",
+      "limit": 12
     },
     {
       "type": "header",

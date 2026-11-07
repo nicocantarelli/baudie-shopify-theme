@@ -118,7 +118,15 @@
         "subscription_perk_1": "Pause or cancel anytime",
         "subscription_perk_2": "VIP perks + gifts",
         "subscription_perk_3": "",
-        "subscription_terms": ""
+        "subscription_terms": "",
+        "scent_products": [
+          "st-tropez",
+          "sweet-muse",
+          "petal-kiss",
+          "deep-ritual",
+          "capri-seaside",
+          "barely-there"
+        ]
       }
     },
     "1772843462a5334ed3": {
