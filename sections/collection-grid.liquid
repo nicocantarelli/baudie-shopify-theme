@@ -667,10 +667,15 @@
       display: none;
     }
 
+    /* The label shrinks with the column (13px at most, 10px at least) so the
+       longest one, "Choose your scents", stays on one line down to a 360px
+       screen: a column is (100vw - 52px) / 2 wide, minus 24px of padding and
+       border, and that label is about 13 times its font size. Narrower than
+       that, a label wraps onto two lines instead. */
     .product-card__button {
       --button-height: 40px;
-      --button-padding: 12px;
-      --button-font-size: 13px;
+      --button-padding: 10px;
+      --button-font-size: clamp(10px, (100vw - 100px) / 26.4, 13px);
 
       padding-block: 8px;
     }
