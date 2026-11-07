@@ -707,6 +707,39 @@
         "button_background_color": "",
         "button_text_color": ""
       }
+    },
+    "subscribe_save_discovery": {
+      "type": "subscribe-save",
+      "name": "Discovery Set",
+      "blocks": {
+        "perk_try_scents": {
+          "type": "perk",
+          "settings": {
+            "icon": "drop",
+            "text": "Try each scent to see which works the best with your body chemistry"
+          }
+        },
+        "perk_travel_size": {
+          "type": "perk",
+          "settings": {
+            "icon": "plane",
+            "text": "Great travel size for your bag when you are on-the-go"
+          }
+        }
+      },
+      "block_order": [
+        "perk_try_scents",
+        "perk_travel_size"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/2040_x_869_7.png",
+        "photo_position": "left",
+        "title": "Don’t know where to start?",
+        "subtitle": "Try our Discovery Set",
+        "button_text": "Shop this set",
+        "button_link": "shopify://products/discovery-set",
+        "panel_style": "pink"
+      }
     }
   },
   "order": [
@@ -715,6 +748,7 @@
     "product_details_XyZ123",
     "subscribe_save_R7m2Qa",
     "product_features_aNgxYb",
+    "subscribe_save_discovery",
     "category_cards_Wd3pLs",
     "how_to_use_Kp3vTe",
     "customer_videos_Vq7nXa",

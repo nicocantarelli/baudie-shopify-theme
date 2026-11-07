@@ -5,6 +5,9 @@
   Figma: https://www.figma.com/design/Ynyo5zZAlxH0XmjA0awqJY/Baudie-Redesign?node-id=126-1066
   (mobile: node-id=109-11288)
 
+  The homepage also uses it for the Discovery Set band: the photo on the left
+  (the panel mirrored), a pink panel and a line under the title.
+
   Sizes follow the design, except the button: a little smaller on desktop
   and the theme's size on phones. Colors left empty in the editor fall back to the
   theme colors set in the stylesheet, so only the ones picked are written
@@ -12,7 +15,7 @@
 {% endcomment %}
 
 <div
-  class="subscribe-save full-width"
+  class="subscribe-save subscribe-save--photo-{{ section.settings.photo_position }} subscribe-save--{{ section.settings.panel_style }} full-width"
   style="
     --edge-mask: url('{{ 'shape-cream-edge.svg' | asset_url }}');
     --wave-mask: url('{{ 'shape-cream-wave.svg' | asset_url }}');
@@ -21,12 +24,19 @@
   ">
   <div class="subscribe-save__panel">
     <div class="subscribe-save__content">
-      {%- if section.settings.title != blank -%}
-        <h2 class="subscribe-save__title text-gradient">{{ section.settings.title | escape }}</h2>
+      {%- if section.settings.title != blank or section.settings.subtitle != blank -%}
+        <div class="subscribe-save__heading">
+          {%- if section.settings.title != blank -%}
+            <h2 class="subscribe-save__title text-gradient">{{ section.settings.title | escape }}</h2>
+          {%- endif -%}
+          {%- if section.settings.subtitle != blank -%}
+            <p class="subscribe-save__subtitle">{{ section.settings.subtitle | escape }}</p>
+          {%- endif -%}
+        </div>
       {%- endif -%}
 
       {%- if section.blocks.size > 0 -%}
-        <ul class="subscribe-save__perks" role="list">
+        <ul class="subscribe-save__perks{% if section.blocks.size < 3 %} subscribe-save__perks--few{% endif %}" role="list">
           {%- for block in section.blocks -%}
             {%- capture icon_style -%}
               --icon: url('
@@ -40,6 +50,10 @@
                     {{- 'icon-gift.svg' | asset_url -}}
                   {%- when 'calendar' -%}
                     {{- 'icon-calendar.svg' | asset_url -}}
+                  {%- when 'drop' -%}
+                    {{- 'icon-droplet.svg' | asset_url -}}
+                  {%- when 'plane' -%}
+                    {{- 'icon-plane.svg' | asset_url -}}
                   {%- else -%}
                     {{- 'icon-percent.svg' | asset_url -}}
                 {%- endcase -%}
@@ -86,10 +100,19 @@
   /* The main pink looks heavy on the cream, so the title keeps the lighter
      gradient (fine for its display size) and the button takes the yellow
      bands' lighter one (snippets/css-variables.liquid). */
-  .subscribe-save {
+  .subscribe-save--cream {
+    --panel-fill: var(--color-cream);
     --gradient-heading: linear-gradient(90deg, #C81466 0%, #D3176C 50%, var(--color-pink) 100%);
     --gradient-button: var(--gradient-button-light);
+  }
 
+  /* The pink panel keeps the theme's gradients, which read on it: blush on
+     the outer side, deepening to the panel pink at the curve. */
+  .subscribe-save--pink {
+    --panel-fill: linear-gradient(90deg, var(--color-blush), var(--color-panel));
+  }
+
+  .subscribe-save {
     position: relative;
     isolation: isolate;
     display: flex;
@@ -105,7 +128,7 @@
     align-items: center;
     width: 58.8%;
     padding: 64px 4.36% 64px 0;
-    background: var(--panel-bg, var(--color-cream));
+    background: var(--panel-bg, var(--panel-fill));
     -webkit-mask:
       linear-gradient(#000 0 0) left / 50% 100% no-repeat,
       var(--edge-mask) right / 53.15% 100% no-repeat;
@@ -124,6 +147,21 @@
     padding: 0 40px;
     color: var(--text-color, var(--color-foreground));
     text-align: center;
+  }
+
+  /* The title, with the line under it when there is one. */
+  .subscribe-save__heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 100%;
+  }
+
+  .subscribe-save__subtitle {
+    margin: 0;
+    font: 400 28px/1.3 var(--font-jokker);
+    text-wrap: balance;
   }
 
   /* Shrinks to the text so the gradient runs across the words themselves.
@@ -157,6 +195,15 @@
     width: min(156px, 25cqi);
   }
 
+  /* One or two perks get room for a longer line each. */
+  .subscribe-save__perks--few {
+    column-gap: 40px;
+  }
+
+  .subscribe-save__perks--few .subscribe-save__perk {
+    width: min(230px, 40cqi);
+  }
+
   /* Two by two when the four don't fit on one row. */
   @container (max-width: 559px) {
     .subscribe-save__perks {
@@ -167,6 +214,15 @@
     /* Narrower on the smallest phones, so they stay two by two. */
     .subscribe-save__perk {
       width: min(140px, (100cqi - 20px) / 2);
+    }
+
+    /* One or two perks keep their row, sharing the whole width. */
+    .subscribe-save__perks--few {
+      max-width: none;
+    }
+
+    .subscribe-save__perks--few .subscribe-save__perk {
+      width: min(230px, (100cqi - 20px) / 2);
     }
   }
 
@@ -192,6 +248,7 @@
   .subscribe-save__perk-text {
     font: 400 18px/1.5 var(--font-jokker);
     white-space: pre-line;
+    text-wrap: balance;
   }
 
   /* Between the theme's button and the design's 72px one, centered where
@@ -225,9 +282,29 @@
     fill: var(--color-panel);
   }
 
+  /* Photo on the left: the panel is mirrored, so its curved edge runs over
+     the photo on that side, and its content turned back the right way. */
+  .subscribe-save--photo-left {
+    justify-content: flex-end;
+  }
+
+  .subscribe-save--photo-left .subscribe-save__panel,
+  .subscribe-save--photo-left .subscribe-save__content {
+    transform: scaleX(-1);
+  }
+
+  .subscribe-save--photo-left .subscribe-save__photo {
+    right: auto;
+    left: 0;
+  }
+
   @media (max-width: 1024px) {
     .subscribe-save__title {
       font-size: 56px;
+    }
+
+    .subscribe-save__subtitle {
+      font-size: 24px;
     }
   }
 
@@ -256,6 +333,20 @@
       font-size: 40px;
     }
 
+    .subscribe-save__heading {
+      gap: 10px;
+    }
+
+    .subscribe-save__subtitle {
+      font-size: 18px;
+    }
+
+    /* Phones stack the panel over the photo whichever side it's on. */
+    .subscribe-save--photo-left .subscribe-save__panel,
+    .subscribe-save--photo-left .subscribe-save__content {
+      transform: none;
+    }
+
     /* Two by two (the container rule above), with the page's 14px phone
        body text under the rings. */
     .subscribe-save__perk {
@@ -274,12 +365,15 @@
       margin-block: calc((56px - var(--button-height)) / 2);
     }
 
-    /* Runs up under the panel's wavy edge, so the dips show the photo. */
+    /* Runs up under the panel's wavy edge, so the dips show the photo. The
+       design's proportions whatever the photo's own: without the zero
+       minimum, a tall photo stretches the box to its full height. */
     .subscribe-save__photo {
       position: relative;
       inset: auto;
       width: 100%;
       aspect-ratio: 393 / 374;
+      min-height: 0;
       margin-top: -35.4px;
     }
 
@@ -302,10 +396,25 @@
       "info": "t:sections.subscribe_save.image_info"
     },
     {
+      "type": "select",
+      "id": "photo_position",
+      "label": "t:sections.subscribe_save.photo_position",
+      "options": [
+        { "value": "right", "label": "t:sections.subscribe_save.photo_right" },
+        { "value": "left", "label": "t:sections.subscribe_save.photo_left" }
+      ],
+      "default": "right"
+    },
+    {
       "type": "text",
       "id": "title",
       "label": "t:labels.title",
       "default": "Save 15% for life and smell good"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "t:sections.subscribe_save.subtitle"
     },
     {
       "type": "text",
@@ -322,6 +431,16 @@
       "type": "header",
       "content": "t:labels.colors",
       "info": "t:labels.colors_info"
+    },
+    {
+      "type": "select",
+      "id": "panel_style",
+      "label": "t:sections.subscribe_save.panel_style",
+      "options": [
+        { "value": "cream", "label": "t:sections.subscribe_save.panel_cream" },
+        { "value": "pink", "label": "t:sections.subscribe_save.panel_pink" }
+      ],
+      "default": "cream"
     },
     {
       "type": "color",
@@ -347,7 +466,9 @@
             { "value": "percent", "label": "t:sections.subscribe_save.icon_percent" },
             { "value": "truck", "label": "t:sections.subscribe_save.icon_truck" },
             { "value": "gift", "label": "t:sections.subscribe_save.icon_gift" },
-            { "value": "calendar", "label": "t:sections.subscribe_save.icon_calendar" }
+            { "value": "calendar", "label": "t:sections.subscribe_save.icon_calendar" },
+            { "value": "drop", "label": "t:sections.subscribe_save.icon_drop" },
+            { "value": "plane", "label": "t:sections.subscribe_save.icon_plane" }
           ],
           "default": "percent"
         },
