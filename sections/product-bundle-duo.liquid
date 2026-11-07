@@ -646,7 +646,10 @@
   /* --- The scents to pick from ---
      Buttons in the product page's scent circles. The picked one gets the
      ring, its full size and a bold name. */
+  /* A button doesn't stretch to its column like the product page's links,
+     so it's told to (the circle is never wider than its column). */
   .product-duo__scent {
+    width: 100%;
     padding: 0;
     border: 0;
     background: none;

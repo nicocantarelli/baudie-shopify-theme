@@ -670,7 +670,17 @@
      Buttons in the product page's scent circles. A picked scent gets the
      ring, its full size and a bold name; one picked more than once shows
      how many. */
+  /* Picked circles sit side by side here, so the circles keep a gap and
+     their rings never touch (the product page's circles fill their
+     columns). */
+  .product-bundle .product-main__scent-list {
+    column-gap: 6px;
+  }
+
+  /* A button doesn't stretch to its column like the product page's links,
+     so it's told to (the circle is never wider than its column). */
   .product-bundle__scent {
+    width: 100%;
     padding: 0;
     border: 0;
     background: none;

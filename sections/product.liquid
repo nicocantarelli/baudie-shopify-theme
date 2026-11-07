@@ -957,8 +957,12 @@
     border-radius: var(--card-radius) var(--card-radius) 0 0;
   }
 
+  /* The two halves overlap by 1px: where they meet on a fraction of a
+     pixel, some browsers blend both edges and the gradient shows through
+     as a faint line across the card. */
   .product-main__buy {
     grid-row: 2;
+    margin-top: -1px;
     padding: 0 var(--card-padding-x) 32px;
     border-top: 0;
     border-radius: 0 0 var(--card-radius) var(--card-radius);
@@ -1931,6 +1935,7 @@
 
     .product-main__buy {
       order: 3;
+      margin-top: 0;
       padding: 22px var(--card-padding-x) 12px;
       border-top: var(--card-border);
       border-radius: var(--card-radius);
