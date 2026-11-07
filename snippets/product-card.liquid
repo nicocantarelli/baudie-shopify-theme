@@ -173,7 +173,7 @@
         tagged product showed the coming-soon badge above a working CTA.
       {%- endcomment -%}
       {%- if custom_button_text != blank and is_coming_soon == false -%}
-        <a href="{{ product.url }}" class="button product-card__button">
+        <a href="{{ product.url }}" class="button product-card__button product-card__button--custom">
           <span>{{ custom_button_text | escape }}<span class="visually-hidden">: {{ product.title | escape }}</span></span>
           <span class="product-card__button-price">&nbsp;-&nbsp;{{ card_price }}</span>
         </a>
