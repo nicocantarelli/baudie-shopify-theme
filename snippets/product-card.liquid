@@ -1,12 +1,14 @@
 {% doc %}
-  Renders a product card for the collection grid.
+  Renders a product card for the collection grid: the product on a rounded
+  blush panel, its name and short description, and a full-width button that
+  carries the price (add to cart, or the custom text linking to the product).
 
   @param {product} product - The product to display
   @param {string} [card_width] - Card width: "1" (single) or "2" (double), default "1"
   @param {boolean} [narrow_image_mobile] - Narrows this card's image on mobile only, default false
   @param {boolean} [show_badge] - Whether to show a badge
   @param {string} [badge_text] - Text for the badge
-  @param {string} [custom_button_text] - Replaces action buttons with a link to product page
+  @param {string} [custom_button_text] - Replaces add to cart with a link to the product page
   @param {image} [card_image_override] - Override the product's card_image metafield
   @param {boolean} [lazy_load] - Whether to lazy load images, default true
 {% enddoc %}
@@ -39,12 +41,13 @@
     assign card_image = product.metafields.custom.card_image | default: product.featured_image
   endif
   assign card_hover_image = product.metafields.custom.card_hover_image
-  assign card_bg = product.metafields.custom.product_card_background | default: '#FCF0D2'
 
   assign is_coming_soon = false
   if product.tags contains 'coming-soon' or product.tags contains 'Coming soon' or product.tags contains 'coming soon' or product.tags contains 'Coming Soon'
     assign is_coming_soon = true
   endif
+
+  assign selected_variant = product.selected_or_first_available_variant
 
   comment
     Video metafield - expects a video file reference
@@ -58,15 +61,26 @@
   endif
 -%}
 
-<article class="product-card{% if is_wide %} product-card--wide{% endif %}{% if has_video %} product-card--has-video{% endif %}{% if narrow_image_mobile %} product-card--narrow-mobile{% endif %}" data-product-card>
-  <div class="product-card__image-wrapper" style="background-color: {{ card_bg }};">
+{%- capture card_price -%}
+  {%- if has_compare_price -%}
+    <s class="product-card__compare-price">
+      <span class="visually-hidden">{{ 'products.regular_price' | t }}:</span>
+      {{ product.compare_at_price | money_without_trailing_zeros }}
+    </s>
+    <span class="visually-hidden">{{ 'products.sale_price' | t }}:</span>
+  {%- endif -%}
+  <span class="product-card__current-price">{{ product.price | money_without_trailing_zeros }}</span>
+{%- endcapture -%}
+
+<article class="product-card{% if is_coming_soon %} product-card--coming-soon{% endif %}{% if is_wide %} product-card--wide{% endif %}{% if has_video %} product-card--has-video{% endif %}{% if narrow_image_mobile %} product-card--narrow-mobile{% endif %}" data-product-card>
+  <div class="product-card__image-wrapper">
     {%- if is_coming_soon -%}
       <span class="product-card__badge product-card__badge--coming-soon" aria-hidden="true">{{ 'products.coming_soon' | t }}</span>
     {%- elsif show_badge and badge_text != blank -%}
       <span class="product-card__badge" aria-hidden="true">{{ badge_text | escape }}</span>
     {%- endif -%}
 
-    <a href="{{ product.url }}" class="product-card__image-link" aria-label="{{ product.title }}">
+    <a href="{{ product.url }}" class="product-card__image-link" aria-label="{{ product.title | escape }}">
       <div class="product-card__image-container">
         {%- if is_wide and product.images.size > 1 -%}
           <div class="product-card__images-stack">
@@ -85,20 +99,19 @@
           </div>
         {%- else -%}
           {%- if card_image -%}
-            {%- assign card_image_width = 500 -%}
-            {%- assign card_html_width = 247 -%}
-            {%- assign card_html_height = 370 -%}
-            {%- if is_wide -%}
-              {%- assign card_image_width = 1400 -%}
-              {%- assign card_html_width = 700 -%}
-              {%- assign card_html_height = 420 -%}
-            {%- endif -%}
+            {%- liquid
+              assign card_image_width = 600
+              assign card_sizes = '(min-width: 1201px) 300px, (min-width: 769px) 33vw, 50vw'
+              if is_wide
+                assign card_image_width = 1400
+                assign card_sizes = '(min-width: 1201px) 640px, (min-width: 769px) 66vw, 100vw'
+              endif
+            -%}
             {{ card_image | image_url: width: card_image_width | image_tag:
               loading: loading_attr,
+              sizes: card_sizes,
               class: 'product-card__img product-card__img--single',
-              alt: card_image.alt | default: product.title,
-              width: card_html_width,
-              height: card_html_height
+              alt: card_image.alt | default: product.title
             }}
           {%- else -%}
             <div class="product-card__placeholder">
@@ -133,6 +146,23 @@
         </div>
       {%- endif -%}
     </a>
+  </div>
+
+  <div class="product-card__content">
+    <div class="product-card__text">
+      <h3 class="product-card__title">
+        <a href="{{ product.url }}" class="product-card__title-link">{{ product.title }}</a>
+      </h3>
+      {%- comment -%}
+        Shown instead of the button's price where the card is too narrow to
+        fit it (CSS keeps exactly one of the two on screen), and always for a
+        coming-soon product, whose button has no price.
+      {%- endcomment -%}
+      <p class="product-card__price">{{ card_price }}</p>
+      {%- if short_description != blank -%}
+        <p class="product-card__description">{{ short_description }}</p>
+      {%- endif -%}
+    </div>
 
     <div class="product-card__actions">
       {%- comment -%}
@@ -143,57 +173,30 @@
         tagged product showed the coming-soon badge above a working CTA.
       {%- endcomment -%}
       {%- if custom_button_text != blank and is_coming_soon == false -%}
-        <a
-          href="{{ product.url }}"
-          class="product-card__action-btn product-card__action-btn--buy"
-          aria-label="{{ custom_button_text }}: {{ product.title }}">
-          {{ custom_button_text }}
+        <a href="{{ product.url }}" class="button product-card__button">
+          <span>{{ custom_button_text | escape }}<span class="visually-hidden">: {{ product.title | escape }}</span></span>
+          <span class="product-card__button-price">&nbsp;-&nbsp;{{ card_price }}</span>
         </a>
       {%- else -%}
         {%- form 'product', product, class: 'product-card__form' -%}
-          {%- assign selected_variant = product.selected_or_first_available_variant -%}
           <input type="hidden" name="id" value="{{ selected_variant.id }}">
           <button
             type="submit"
             name="add"
-            class="product-card__action-btn product-card__action-btn--add"
-            aria-label="{{ 'products.add_to_cart' | t }}: {{ product.title }}"
-            {% if is_coming_soon %}disabled aria-disabled="true" aria-label="{{ product.title }} - {{ 'products.coming_soon' | t }}"
-            {% elsif selected_variant.available == false %}disabled aria-disabled="true" aria-label="{{ product.title }} - {{ 'products.sold_out' | t }}"{% endif %}>
-            {%- unless is_coming_soon -%}
-              <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M0.75 7.75H14.75M7.75 0.75V14.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            {%- endunless -%}
-            <span>{% if is_coming_soon %}{{ 'products.coming_soon' | t }}{% else %}{{ 'products.add_to_cart' | t }}{% endif %}</span>
+            class="button product-card__button"
+            {% if is_coming_soon or selected_variant.available == false %}disabled aria-disabled="true"{% endif %}>
+            {%- if is_coming_soon -%}
+              <span>{{ 'products.coming_soon' | t }}<span class="visually-hidden">: {{ product.title | escape }}</span></span>
+            {%- elsif selected_variant.available == false -%}
+              <span>{{ 'products.sold_out' | t }}<span class="visually-hidden">: {{ product.title | escape }}</span></span>
+              <span class="product-card__button-price">&nbsp;-&nbsp;{{ card_price }}</span>
+            {%- else -%}
+              <span>{{ 'products.add_to_cart' | t }}<span class="visually-hidden">: {{ product.title | escape }}</span></span>
+              <span class="product-card__button-price">&nbsp;-&nbsp;{{ card_price }}</span>
+            {%- endif -%}
           </button>
         {%- endform -%}
       {%- endif -%}
     </div>
-  </div>
-
-  <div class="product-card__content">
-    <div class="product-card__header">
-      <h3 class="product-card__title">
-        <a href="{{ product.url }}" class="product-card__title-link">{{ product.title }}</a>
-      </h3>
-      <div class="product-card__price">
-        {%- if has_compare_price -%}
-          <s class="product-card__compare-price">
-            <span class="visually-hidden">{{ 'products.regular_price' | t }}:</span>
-            {{ product.compare_at_price | money }}
-          </s>
-        {%- endif -%}
-        <span class="product-card__current-price{% if has_compare_price %} product-card__current-price--sale{% endif %}">
-          {%- if has_compare_price -%}
-            <span class="visually-hidden">{{ 'products.sale_price' | t }}:</span>
-          {%- endif -%}
-          {{ product.price | money }}
-        </span>
-      </div>
-    </div>
-    {%- if short_description != blank -%}
-      <p class="product-card__description">{{ short_description }}</p>
-    {%- endif -%}
   </div>
 </article>

@@ -977,7 +977,9 @@
         "narrow_image_mobile": "Narrow image on mobile",
         "narrow_image_mobile_info": "Shrinks this card's image on mobile only, for artwork that runs too wide in the frame",
         "custom_button_text": "Custom button text",
-        "custom_button_text_info": "Replaces add to cart and buy now with a single link to the product page"
+        "custom_button_text_info": "Replaces add to cart and buy now with a single link to the product page",
+        "filter_groups": "Filter groups",
+        "filter_groups_info": "Comma separated, e.g. Deo enhancers, Bundles. Each group gets a filter button above the grid."
       }
     },
     "product": {

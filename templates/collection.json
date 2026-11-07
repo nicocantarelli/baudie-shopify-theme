@@ -20,7 +20,8 @@
             "narrow_image_mobile": false,
             "show_badge": false,
             "custom_button_text": "",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Deo enhancers, Bundles"
           }
         },
         "product_card_eE9z3y": {
@@ -31,7 +32,8 @@
             "narrow_image_mobile": false,
             "show_badge": false,
             "custom_button_text": "",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Deo enhancers"
           }
         },
         "product_card_yDHWTz": {
@@ -42,7 +44,8 @@
             "narrow_image_mobile": false,
             "show_badge": false,
             "custom_button_text": "",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Deo enhancers"
           }
         },
         "product_card_9eHGPj": {
@@ -53,7 +56,8 @@
             "narrow_image_mobile": false,
             "show_badge": false,
             "custom_button_text": "",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Deo enhancers"
           }
         },
         "product_card_GcwzJA": {
@@ -64,7 +68,8 @@
             "narrow_image_mobile": false,
             "show_badge": false,
             "custom_button_text": "",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Deo enhancers"
           }
         },
         "product_card_AdP3Ty": {
@@ -75,7 +80,8 @@
             "narrow_image_mobile": false,
             "show_badge": false,
             "custom_button_text": "",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Deo enhancers"
           }
         },
         "product_card_dJmhWz": {
@@ -86,7 +92,8 @@
             "narrow_image_mobile": false,
             "show_badge": false,
             "custom_button_text": "",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Deo enhancers"
           }
         },
         "product_card_8PEYH9": {
@@ -97,18 +104,20 @@
             "narrow_image_mobile": true,
             "show_badge": true,
             "custom_button_text": "Choose Your Scent",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Bundles, Wipes"
           }
         },
         "product_card_MDjGH8": {
           "type": "product_card",
           "settings": {
             "product": "bundle-of-3",
-            "card_width": "2",
+            "card_width": "1",
             "narrow_image_mobile": false,
             "show_badge": false,
             "custom_button_text": "Choose your scents",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Deo enhancers, Bundles"
           }
         },
         "product_card_TdxRJP": {
@@ -119,7 +128,8 @@
             "narrow_image_mobile": false,
             "show_badge": false,
             "custom_button_text": "",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Wipes"
           }
         },
         "product_card_iaPYFi": {
@@ -130,7 +140,8 @@
             "narrow_image_mobile": false,
             "show_badge": false,
             "custom_button_text": "",
-            "badge_text": ""
+            "badge_text": "",
+            "filter_groups": "Bundles, Wipes"
           }
         }
       },
@@ -138,22 +149,20 @@
         "product_card_tyRErt",
         "product_card_eE9z3y",
         "product_card_yDHWTz",
-        "product_card_9eHGPj",
-        "product_card_GcwzJA",
         "product_card_AdP3Ty",
+        "product_card_GcwzJA",
         "product_card_dJmhWz",
+        "product_card_9eHGPj",
         "product_card_8PEYH9",
         "product_card_MDjGH8",
         "product_card_TdxRJP",
         "product_card_iaPYFi"
       ],
       "settings": {
-        "heading": "Meet Your Scents",
+        "heading": "Meet your scents",
         "show_seo_content": false,
         "seo_heading": "Baudie Collection — Pre-Deodorant Enhancers for Smarter Odor Control",
-        "seo_text": "<p>Discover the full Baudie collection of pre-deodorant sprays designed to make your deodorant work better. Powered by odor-eliminating bacterial technology, each enhancer helps remove odor-causing bacteria, supports a healthy underarm microbiome, and preps your skin for longer-lasting freshness.</p><p><br/>From soft florals to bright citrus notes, our full-size bottles and mini discovery sets let you choose the scent that fits your mood and routine. Clean formulas, plant-based actives, cruelty-free, and free from aluminum, parabens, sulfates, and baking soda — gentle on skin, powerful against odor.Explore Baudie’s signature scents, 3-piece bundles, and mini sets to build a fresher, science-backed underarm routine.</p>",
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
+        "seo_text": "<p>Discover the full Baudie collection of pre-deodorant sprays designed to make your deodorant work better. Powered by odor-eliminating bacterial technology, each enhancer helps remove odor-causing bacteria, supports a healthy underarm microbiome, and preps your skin for longer-lasting freshness.</p><p><br/>From soft florals to bright citrus notes, our full-size bottles and mini discovery sets let you choose the scent that fits your mood and routine. Clean formulas, plant-based actives, cruelty-free, and free from aluminum, parabens, sulfates, and baking soda — gentle on skin, powerful against odor.Explore Baudie’s signature scents, 3-piece bundles, and mini sets to build a fresher, science-backed underarm routine.</p>"
       }
     }
   },

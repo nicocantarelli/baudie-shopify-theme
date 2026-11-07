@@ -217,7 +217,9 @@
     },
     "collection_grid": {
       "aria_label": "Product collection",
-      "product_count": "{{ count }} products"
+      "product_count": "{{ count }} products",
+      "filter_label": "Filter products",
+      "filter_all": "All"
     },
     "related_products": {
       "aria_label": "Related products",
