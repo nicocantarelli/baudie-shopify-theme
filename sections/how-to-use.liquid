@@ -519,13 +519,15 @@
 
   /* Text and media split like the Who card's, so the two line up. The
      panel runs behind the media too, so it shows in the media's rounded
-     corners like in the design. */
+     corners like in the design. Its pink is the pink panels' diagonal
+     gradient (snippets/css-variables.liquid); a color picked in the
+     editor replaces it. */
   .how-to-use__card {
     display: grid;
     grid-template-columns: minmax(0, 659fr) minmax(0, 621fr);
     overflow: hidden;
     border-radius: var(--radius-panel);
-    background-color: var(--section-bg, var(--color-panel));
+    background: var(--section-bg, var(--gradient-panel));
     color: var(--text-color, var(--color-foreground));
   }
 
@@ -723,13 +725,13 @@
       flex-direction: column-reverse;
       overflow: visible;
       border-radius: 0;
-      background-color: transparent;
+      background: none;
     }
 
     .how-to-use__card-content {
       padding-top: calc(var(--media-radius) + var(--card-padding-top, var(--card-padding)));
       border-radius: 0 0 var(--media-radius) var(--media-radius);
-      background-color: var(--section-bg, var(--color-panel));
+      background: var(--section-bg, var(--gradient-panel));
     }
 
     .how-to-use__card-media {

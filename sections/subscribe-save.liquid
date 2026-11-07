@@ -106,10 +106,10 @@
     --gradient-button: var(--gradient-button-light);
   }
 
-  /* The pink panel keeps the theme's gradients, which read on it: blush on
-     the outer side, deepening to the panel pink at the curve. */
+  /* The pink panel keeps the theme's gradients, which read on it, on the
+     pink panels' diagonal one (snippets/css-variables.liquid). */
   .subscribe-save--pink {
-    --panel-fill: linear-gradient(90deg, var(--color-blush), var(--color-panel));
+    --panel-fill: var(--gradient-panel);
   }
 
   .subscribe-save {
@@ -305,6 +305,12 @@
   @media (min-width: 769px) {
     .subscribe-save--photo-left .subscribe-save__panel {
       padding-right: calc(11.2% + 16px - 40px);
+    }
+
+    /* The turned panel turns its gradient too, so it's set the other way
+       round to still run from top left to bottom right. */
+    .subscribe-save--photo-left.subscribe-save--pink {
+      --panel-fill: linear-gradient(to top left, var(--color-panel), var(--color-blush));
     }
   }
 
