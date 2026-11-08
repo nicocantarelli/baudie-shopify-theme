@@ -967,10 +967,12 @@
       display: none;
     }
 
-    /* The links spread across the whole strip. Their size follows the
-       screen: the four labels together are about 20.7em wide, plus at least
-       0.8em between them, inside the header's 12px sides (18px at most).
-       Longer or more labels than fit scroll sideways instead. */
+    /* The links spread across the whole strip. A thin strip like Bloom's
+       category bar: 13px labels in a 40px strip (they were up to 18px in a
+       47px one). On narrower screens the size follows the screen: the four
+       labels together are about 20.7em wide, plus at least 0.8em between
+       them, inside the header's 12px sides. Longer or more labels than fit
+       scroll sideways instead. */
     .header__categories-list {
       display: flex;
       justify-content: space-between;
@@ -978,17 +980,17 @@
       min-width: max-content;
       margin: 0;
       padding: 0 12px;
-      font-size: min(18px, (100vw - 24px) / 23.4);
+      font-size: min(13px, (100vw - 24px) / 23.4);
       list-style: none;
     }
 
     .header__categories-link {
       display: block;
-      padding: 14px 0;
+      padding: 12px 0;
       font-family: var(--font-sweet-sans);
       font-weight: 700;
       font-size: 1em;
-      line-height: normal;
+      line-height: 16px;
       letter-spacing: var(--tracking-label-sm);
       text-transform: uppercase;
       white-space: nowrap;
