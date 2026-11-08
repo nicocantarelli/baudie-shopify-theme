@@ -11,46 +11,6 @@
   "sections": {
     "hero_product_tkHfVy": {
       "type": "hero-product",
-      "name": "Hero Section",
-      "settings": {
-        "heading": "this helps deo\nlast all day + helps\nsweat stay odorless",
-        "heading_color": "#ffffff",
-        "heading_position": "bottom",
-        "heading_alignment": "right",
-        "hero_products": [
-          "petal-kiss",
-          "capri-seaside",
-          "sweet-muse",
-          "st-tropez",
-          "deep-ritual",
-          "barely-there"
-        ],
-        "use_default_colors": false,
-        "default_card_background_color": "",
-        "default_card_text_color": "",
-        "default_card_button_color": "",
-        "use_static_image": true,
-        "static_hero_image": "shopify://shop_images/hero-petal-kiss-beach.jpg",
-        "static_hero_image_alt": "",
-        "desktop_overlay_enable": false,
-        "desktop_overlay_color": "#000000",
-        "desktop_overlay_opacity": 10,
-        "mobile_heading": "this helps deo\nlast all day + helps\nsweat stay odorless",
-        "mobile_hero_image": "shopify://shop_images/hero-petal-kiss-beach.jpg",
-        "mobile_hero_image_alt": "",
-        "mobile_image_position": 15,
-        "mobile_content_position": "bottom",
-        "mobile_content_alignment": "right",
-        "mobile_eyebrow": "",
-        "mobile_heading_gap": 6,
-        "mobile_overlay_enable": false,
-        "mobile_overlay_color": "#3e2027",
-        "mobile_overlay_opacity": 25,
-        "mobile_title": "",
-        "mobile_subtitle": "",
-        "mobile_button_text": "SHOP OUR SCENTS",
-        "mobile_button_url": "shopify://collections/shop"
-      },
       "blocks": {
         "card_colors_petal_kiss": {
           "type": "card_colors",
@@ -114,7 +74,47 @@
         "card_colors_st_tropez",
         "card_colors_deep_ritual",
         "card_colors_barely_there"
-      ]
+      ],
+      "name": "Hero Section",
+      "settings": {
+        "heading": "this helps deo\nlast all day + helps\nsweat stay odorless",
+        "heading_color": "#ffffff",
+        "heading_position": "bottom",
+        "heading_alignment": "right",
+        "hero_products": [
+          "petal-kiss",
+          "capri-seaside",
+          "sweet-muse",
+          "st-tropez",
+          "deep-ritual",
+          "barely-there"
+        ],
+        "use_default_colors": false,
+        "default_card_background_color": "",
+        "default_card_text_color": "",
+        "default_card_button_color": "",
+        "use_static_image": true,
+        "static_hero_image": "shopify://shop_images/hero-petal-kiss-beach.jpg",
+        "static_hero_image_alt": "",
+        "desktop_overlay_enable": false,
+        "desktop_overlay_color": "#000000",
+        "desktop_overlay_opacity": 10,
+        "mobile_heading": "this helps deo\nlast all day + helps\nsweat stay odorless",
+        "mobile_hero_image": "shopify://shop_images/hero-petal-kiss-beach.jpg",
+        "mobile_hero_image_alt": "",
+        "mobile_image_position": 15,
+        "mobile_content_position": "bottom",
+        "mobile_content_alignment": "right",
+        "mobile_eyebrow": "",
+        "mobile_heading_gap": 6,
+        "mobile_overlay_enable": false,
+        "mobile_overlay_color": "#3e2027",
+        "mobile_overlay_opacity": 25,
+        "mobile_title": "",
+        "mobile_subtitle": "",
+        "mobile_button_text": "SHOP OUR SCENTS",
+        "mobile_button_url": "shopify://collections/shop"
+      }
     },
     "in_press_9ChkGH": {
       "type": "in-press",
@@ -289,9 +289,12 @@
       "name": "t:sections.subscribe_save.name",
       "settings": {
         "image": "shopify://shop_images/subscribe-save-sweet-muse.jpg",
+        "photo_position": "right",
         "title": "Save 15% for life and smell good",
+        "subtitle": "",
         "button_text": "Subscribe + save",
         "button_link": "shopify://collections/shop",
+        "panel_style": "cream",
         "background_color": "",
         "text_color": ""
       }
@@ -369,57 +372,43 @@
       "settings": {
         "band_shape": "wavy",
         "padding_top": true,
+        "padding_bottom": true,
         "background_color": "",
         "text_color": "",
-        "icon_color": "",
-        "padding_bottom": true
+        "icon_color": ""
       }
     },
-    "category_cards_Wd3pLs": {
-      "type": "category-cards",
+    "subscribe_save_discovery": {
+      "type": "subscribe-save",
       "blocks": {
-        "card_all_scents": {
-          "type": "card",
+        "perk_try_scents": {
+          "type": "perk",
           "settings": {
-            "image": "shopify://shop_images/category-all-scents.jpg",
-            "label": "All scents",
-            "link": "shopify://collections/shop"
+            "icon": "drop",
+            "text": "Try each scent to see which works the best with your body chemistry"
           }
         },
-        "card_bundles": {
-          "type": "card",
+        "perk_travel_size": {
+          "type": "perk",
           "settings": {
-            "image": "shopify://shop_images/category-bundles.jpg",
-            "label": "Bundles",
-            "link": "shopify://collections/bundles"
-          }
-        },
-        "card_men": {
-          "type": "card",
-          "settings": {
-            "image": "shopify://shop_images/category-men.jpg",
-            "label": "Shop men",
-            "link": "shopify://pages/for-men"
-          }
-        },
-        "card_wipes": {
-          "type": "card",
-          "settings": {
-            "image": "shopify://shop_images/category-wipes.jpg",
-            "label": "Shop wipes",
-            "link": "shopify://collections/wipes-collection"
+            "icon": "plane",
+            "text": "Great travel size for your bag when you are on-the-go"
           }
         }
       },
       "block_order": [
-        "card_all_scents",
-        "card_bundles",
-        "card_men",
-        "card_wipes"
+        "perk_try_scents",
+        "perk_travel_size"
       ],
-      "name": "t:sections.category_cards.name",
+      "name": "Discovery Set",
       "settings": {
-        "title": "Smell good in your Baudie!",
+        "image": "shopify://shop_images/Screenshot_2026-11-08_at_11.10.31_AM.png",
+        "photo_position": "left",
+        "title": "Don’t know where to start?",
+        "subtitle": "Try our Discovery Set",
+        "button_text": "Shop this set",
+        "button_link": "shopify://products/discovery-set",
+        "panel_style": "pink",
         "background_color": "",
         "text_color": ""
       }
@@ -489,6 +478,55 @@
         "sprays_title": "",
         "media_image": "shopify://shop_images/how-to-use-petal-kiss.jpg",
         "media_video": "shopify://files/videos/4adf8d3d066c4601b34a896a1852e848.MOV",
+        "background_color": "",
+        "text_color": ""
+      }
+    },
+    "category_cards_Wd3pLs": {
+      "type": "category-cards",
+      "blocks": {
+        "card_all_scents": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-all-scents.jpg",
+            "label": "All scents",
+            "link": "shopify://collections/shop"
+          }
+        },
+        "card_bundles": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-bundles.jpg",
+            "label": "Bundles",
+            "link": "shopify://collections/bundles"
+          }
+        },
+        "card_men": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-men.jpg",
+            "label": "Shop men",
+            "link": "shopify://pages/for-men"
+          }
+        },
+        "card_wipes": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-wipes.jpg",
+            "label": "Shop wipes",
+            "link": "shopify://collections/wipes-collection"
+          }
+        }
+      },
+      "block_order": [
+        "card_all_scents",
+        "card_bundles",
+        "card_men",
+        "card_wipes"
+      ],
+      "name": "t:sections.category_cards.name",
+      "settings": {
+        "title": "Smell good in your Baudie!",
         "background_color": "",
         "text_color": ""
       }
@@ -772,39 +810,6 @@
         "button_background_color": "",
         "button_text_color": ""
       }
-    },
-    "subscribe_save_discovery": {
-      "type": "subscribe-save",
-      "name": "Discovery Set",
-      "blocks": {
-        "perk_try_scents": {
-          "type": "perk",
-          "settings": {
-            "icon": "drop",
-            "text": "Try each scent to see which works the best with your body chemistry"
-          }
-        },
-        "perk_travel_size": {
-          "type": "perk",
-          "settings": {
-            "icon": "plane",
-            "text": "Great travel size for your bag when you are on-the-go"
-          }
-        }
-      },
-      "block_order": [
-        "perk_try_scents",
-        "perk_travel_size"
-      ],
-      "settings": {
-        "image": "shopify://shop_images/2040_x_869_7.png",
-        "photo_position": "left",
-        "title": "Don’t know where to start?",
-        "subtitle": "Try our Discovery Set",
-        "button_text": "Shop this set",
-        "button_link": "shopify://products/discovery-set",
-        "panel_style": "pink"
-      }
     }
   },
   "order": [
@@ -814,8 +819,8 @@
     "subscribe_save_R7m2Qa",
     "product_features_aNgxYb",
     "subscribe_save_discovery",
-    "category_cards_Wd3pLs",
     "how_to_use_Kp3vTe",
+    "category_cards_Wd3pLs",
     "customer_videos_Vq7nXa",
     "what_makes_different_tVrMDA",
     "meet_scents_AbC456",

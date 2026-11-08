@@ -16,7 +16,6 @@
           "type": "benefit_pill",
           "settings": {
             "icon": "plant_based",
-            "custom_icon": "",
             "label": "Plant-based"
           }
         },
@@ -24,7 +23,6 @@
           "type": "benefit_pill",
           "settings": {
             "icon": "no_aluminum",
-            "custom_icon": "",
             "label": "No aluminum"
           }
         },
@@ -32,7 +30,6 @@
           "type": "benefit_pill",
           "settings": {
             "icon": "ph_balancing",
-            "custom_icon": "",
             "label": "pH balancing"
           }
         },
@@ -99,10 +96,12 @@
         "trust_badge_eyweTh"
       ],
       "settings": {
-        "show_patent_stamp": true,
+        "title": "Deodorant Enhancer - Bundle of 3",
+        "show_patent_stamp": false,
         "patent_stamp_position": "image_bottom_right",
         "patent_stamp_heading": "PATENTED FORMULA",
         "patent_stamp_number": "U.S. PATENT 11,857,668",
+        "show_patent_number": true,
         "patent_stamp_size": 100,
         "patent_stamp_rotation": 0,
         "patent_stamp_background": "#3e2027",
@@ -110,12 +109,6 @@
         "show_watch_in_action": true,
         "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
         "scent_collection": "shop",
-        "bundle_size": 3,
-        "gradient_color_1": "#ffefff",
-        "gradient_color_2": "#ffcee7",
-        "popup_text_color": "#3e2027",
-        "title": "Deodorant Enhancer - Bundle of 3",
-        "gradient_color_3": "#f2d593",
         "scent_products": [
           "st-tropez",
           "sweet-muse",
@@ -123,7 +116,12 @@
           "deep-ritual",
           "capri-seaside",
           "barely-there"
-        ]
+        ],
+        "bundle_size": 3,
+        "gradient_color_1": "#ffefff",
+        "gradient_color_2": "#ffcee7",
+        "gradient_color_3": "#f2d593",
+        "popup_text_color": "#3e2027"
       }
     },
     "in_press_TBfPET": {
@@ -353,10 +351,10 @@
       "settings": {
         "title": "got questions?",
         "intro": "",
+        "image": "shopify://shop_images/faq-got-questions.jpg",
         "top_padding": 96,
         "background_color": "",
-        "text_color": "",
-        "image": "shopify://shop_images/faq-got-questions.jpg"
+        "text_color": ""
       }
     },
     "product_details_who": {
@@ -527,16 +525,19 @@
         "dosage_i6kpRW",
         "dosage_DaEyLn"
       ],
+      "disabled": true,
       "name": "How to use",
       "settings": {
+        "layout": "icons",
         "title": "How to use",
         "mobile_description": "",
         "description": "<p>Baudie is NOT A DEODORANT. It is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it works with your microbiome to create an optimized environment where bacteria cannot thrive. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
+        "pro_tip_label": "Pro tip:",
+        "pro_tip": "",
         "sprays_title": "How many sprays do i need?",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
-      },
-      "disabled": true
+      }
     },
     "in_press_VFHyTx": {
       "type": "in-press",
@@ -545,42 +546,48 @@
           "type": "press_logo",
           "settings": {
             "logo": "shopify://shop_images/2.png",
-            "alt_text": "Press logo"
+            "alt_text": "Press logo",
+            "logo_width": 140
           }
         },
         "press_logo_fLeqCg": {
           "type": "press_logo",
           "settings": {
             "logo": "shopify://shop_images/6.png",
-            "alt_text": "Press logo"
+            "alt_text": "Press logo",
+            "logo_width": 140
           }
         },
         "press_logo_fMzjrq": {
           "type": "press_logo",
           "settings": {
             "logo": "shopify://shop_images/3.png",
-            "alt_text": "Press logo"
+            "alt_text": "Press logo",
+            "logo_width": 140
           }
         },
         "press_logo_iUwiMD": {
           "type": "press_logo",
           "settings": {
             "logo": "shopify://shop_images/4.png",
-            "alt_text": "Press logo"
+            "alt_text": "Press logo",
+            "logo_width": 140
           }
         },
         "press_logo_TgBxkT": {
           "type": "press_logo",
           "settings": {
             "logo": "shopify://shop_images/5.png",
-            "alt_text": "Press logo"
+            "alt_text": "Press logo",
+            "logo_width": 140
           }
         },
         "press_logo_L69iTx": {
           "type": "press_logo",
           "settings": {
             "logo": "shopify://shop_images/1.png",
-            "alt_text": "Press logo"
+            "alt_text": "Press logo",
+            "logo_width": 140
           }
         }
       },
@@ -592,17 +599,21 @@
         "press_logo_TgBxkT",
         "press_logo_L69iTx"
       ],
+      "disabled": true,
       "name": "t:general.in_press",
       "settings": {
         "title": "IN PRESS",
+        "title_style": "label",
+        "tint_logos": false,
         "background_color": "#fce9ec",
         "text_color": "#3e2027",
+        "logo_color": "",
         "divider_color": "#3e2027"
-      },
-      "disabled": true
+      }
     },
     "what_makes_different_LWNLJB": {
       "type": "what-makes-different",
+      "disabled": true,
       "name": "t:sections.what_makes_different.name",
       "settings": {
         "heading": "What Makes Baudie Different",
@@ -613,8 +624,7 @@
         "mobile_overlay": "shopify://shop_images/molecule-mobile-text.png",
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
-      },
-      "disabled": true
+      }
     },
     "product_faq_dDjEXh": {
       "type": "product-faq",
@@ -694,6 +704,7 @@
         "faq_item_LQTrHm",
         "faq_item_tehRF6"
       ],
+      "disabled": true,
       "name": "Product FAQ",
       "settings": {
         "title": "Frequently Asked Questions",
@@ -701,11 +712,11 @@
         "top_padding": 112,
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
-      },
-      "disabled": true
+      }
     },
     "related_products_adCLpM": {
       "type": "related-products",
+      "disabled": true,
       "name": "t:sections.related_products.name",
       "settings": {
         "heading": "You may also like",
@@ -713,8 +724,7 @@
         "max_products": 6,
         "background_color": "#fce9ec",
         "text_color": "#3e2027"
-      },
-      "disabled": true
+      }
     },
     "17804401000fc54605": {
       "type": "apps",

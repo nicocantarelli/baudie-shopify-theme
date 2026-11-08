@@ -41,7 +41,14 @@
       "settings": {
         "sticky_behavior": "hide_on_scroll",
         "logo": "shopify://shop_images/baudie-logo-header.svg",
-        "menu": "main-menu"
+        "menu": "main-menu",
+        "show_mobile_categories": true,
+        "mobile_category_menu": "",
+        "header_bg_color": "",
+        "header_text_color": "",
+        "header_icon_color": "",
+        "announcement_bg_color": "#C11562",
+        "announcement_text_color": ""
       }
     }
   },
