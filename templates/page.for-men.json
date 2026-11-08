@@ -39,7 +39,41 @@
         "mobile_subtitle": "Not deodorant. A boost that turns your deodorant into superman.",
         "mobile_button_text": "SHOP",
         "mobile_button_url": "shopify://products/deep-ritual"
-      }
+      },
+      "blocks": {
+        "card_colors_deep_ritual": {
+          "type": "card_colors",
+          "settings": {
+            "product": "deep-ritual",
+            "background_color": "#e4f3ff",
+            "title_color": "#0360c7",
+            "text_color": "#0360c7"
+          }
+        },
+        "card_colors_capri_seaside": {
+          "type": "card_colors",
+          "settings": {
+            "product": "capri-seaside",
+            "background_color": "#ffe7ce",
+            "title_color": "#df5d38",
+            "text_color": "#c23804"
+          }
+        },
+        "card_colors_barely_there": {
+          "type": "card_colors",
+          "settings": {
+            "product": "barely-there",
+            "background_color": "#f0ffc5",
+            "title_color": "#54693a",
+            "text_color": "#54693a"
+          }
+        }
+      },
+      "block_order": [
+        "card_colors_deep_ritual",
+        "card_colors_capri_seaside",
+        "card_colors_barely_there"
+      ]
     },
     "in_press_9ChkGH": {
       "type": "in-press",
