@@ -134,8 +134,29 @@
   endif
 -%}
 
+{%- liquid
+  comment
+    A bottle (a portrait photo) pops out of its tile; a bundle's bottles and
+    anything else sit in it. The scents' photos come from a file metafield,
+    whose size is on its media image.
+  endcomment
+  assign image_pops = false
+  unless bundle_has_bottles
+    if item_image
+      assign image_width = item_image.width | default: item_image.value.width | default: item_image.value.preview_image.width
+      assign image_height = item_image.height | default: item_image.value.height | default: item_image.value.preview_image.height
+      if image_width
+        assign image_tall = image_width | times: 1.2
+        if image_height > image_tall
+          assign image_pops = true
+        endif
+      endif
+    endif
+  endunless
+-%}
+
 <li class="sidecart-item{% if is_gift %} sidecart-item--gift{% endif %}" data-sidecart-item{% if is_gift %} data-gift="{{ gift_value | escape }}" data-free-text="{{ 'sidecart.gift_free' | t }}"{% endif %} data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ compare_at_unit }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
-  <a href="{{ item_url }}" class="sidecart-item__image-link" style="background-color: {{ card_bg }};">
+  <a href="{{ item_url }}" class="sidecart-item__image-link{% if image_pops %} sidecart-item__image-link--pop{% endif %}" style="background-color: {{ card_bg }};">
     {%- if bundle_has_bottles -%}
       <div class="sidecart-item__bundle-bottles{% if companion_image != blank %} sidecart-item__bundle-bottles--with-companion{% endif %}">
         {%- for scent_title in bundle_scents -%}
@@ -169,12 +190,15 @@
         {%- endif -%}
       </div>
     {%- elsif item_image -%}
-      {{ item_image | image_url: width: 400 | image_tag:
+      {%- comment -%} A bottle shows up to 190px wide (popping out of a 150px tile). {%- endcomment -%}
+      {{ item_image | image_url: width: 600 | image_tag:
         loading: 'lazy',
         class: 'sidecart-item__image',
         alt: item_title,
         width: 150,
-        height: 194
+        height: 194,
+        widths: '200, 300, 400, 600',
+        sizes: '190px'
       }}
     {%- else -%}
       <div class="sidecart-item__placeholder">
@@ -320,6 +344,7 @@
           {%- liquid
             assign text_subscribed = 'sidecart.subscription_prefix' | t
             if plan_percent > 0
+              assign text_subscribed = 'sidecart.subscription_saving' | t: percent: plan_percent
               assign text_one_time = 'sidecart.subscribe_nudge_percent' | t: percent: plan_percent
             else
               assign text_one_time = 'sidecart.subscribe_nudge' | t

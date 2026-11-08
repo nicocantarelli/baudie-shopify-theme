@@ -25,6 +25,21 @@
     assign render_card = false
   endif
   assign card_image = product.metafields.custom.card_image_portrait | default: product.metafields.custom.card_image | default: product.featured_image
+  comment
+    A bottle (a portrait photo) pops out of its tile once it's in the bag; the
+    side cart's script reads this when it shows the added card straight away.
+  endcomment
+  assign image_pops = false
+  if card_image
+    assign image_width = card_image.width | default: card_image.value.width | default: card_image.value.preview_image.width
+    assign image_height = card_image.height | default: card_image.value.height | default: card_image.value.preview_image.height
+    if image_width
+      assign image_tall = image_width | times: 1.2
+      if image_height > image_tall
+        assign image_pops = true
+      endif
+    endif
+  endif
 
   assign upsell_price = variant.price
   assign has_deal = false
@@ -38,7 +53,7 @@
 -%}
 
 {%- if render_card -%}
-  <li class="sidecart-upsell__item" data-sidecart-upsell-offer data-product-id="{{ product.id }}" data-contained-in="{{ contained_in_ids }}" data-card-bg="{{ product.metafields.custom.product_card_background | default: '#FCF0D2' }}">
+  <li class="sidecart-upsell__item" data-sidecart-upsell-offer data-product-id="{{ product.id }}" data-contained-in="{{ contained_in_ids }}" data-card-bg="{{ product.metafields.custom.product_card_background | default: '#FCF0D2' }}"{% if image_pops %} data-pop{% endif %}>
     <div class="sidecart-upsell__image-wrap">
       {%- if card_image -%}
         {{ card_image | image_url: width: 160 | image_tag:
@@ -79,9 +94,12 @@
       <button
         type="submit"
         name="add"
-        class="sidecart-upsell__add"
+        class="button sidecart-upsell__add"
         aria-label="{{ 'products.add_to_cart' | t }}: {{ product.title }}">
-        {{ 'products.add_to_cart' | t }}
+        <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 10 10" fill="none">
+          <path d="M5 1V9M1 5H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <span class="sidecart-upsell__add-text">{{ 'products.add_to_cart' | t }}</span>
       </button>
     {%- endform -%}
   </li>

@@ -1078,6 +1078,10 @@
       "continue_button_text": {
         "label": "Continue shopping button text"
       },
+      "empty_products": {
+        "label": "Empty cart bottles",
+        "info": "Their bottles fan out on the empty cart's picture. Use the scents' portrait photos."
+      },
       "card_size": {
         "label": "Product cards",
         "info": "Compact shows smaller photos and tighter spacing, so more of the cart fits on screen.",

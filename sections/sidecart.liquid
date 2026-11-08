@@ -76,13 +76,24 @@
       aria-modal="true"
       aria-label="{{ 'sidecart.title' | t }}">
 
+      {%- comment -%}
+        "Your cart" with the item count in a badge (a screen reader hears
+        "Your cart, 2 items"), then a squiggle under it.
+      {%- endcomment -%}
       <div class="sidecart__header">
         <h2 class="sidecart__title">
+          <span class="sidecart__title-text">{{ 'sidecart.heading' | t }}</span>
           <span
             class="sidecart__count"
             data-sidecart-count
-            aria-live="polite">{{ item_count }}</span>
-          <span data-sidecart-items-label>
+            aria-live="polite"
+            {% if item_count == 0 %}
+              hidden
+            {% endif %}
+          >
+            {{- item_count -}}
+          </span>
+          <span class="visually-hidden" data-sidecart-items-label>
             {% if item_count == 1 %}
               {{ 'sidecart.item' | t }}
             {% else %}
@@ -97,18 +108,19 @@
           <svg
             aria-hidden="true"
             focusable="false"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
             fill="none">
             <path
-              d="M18 6L6 18M6 6L18 18"
+              d="M14 6L6 14M6 6L14 14"
               stroke="currentColor"
-              stroke-width="1.5"
+              stroke-width="1.2"
               stroke-linecap="round" />
           </svg>
         </button>
       </div>
+      <span class="sidecart__squiggle" aria-hidden="true"></span>
 
       {%- comment -%}
         Gift with purchase progress, under the free shipping bar and above the
@@ -141,16 +153,23 @@
           %}
         {%- endif -%}
       {%- endcapture -%}
+      {%- comment -%}
+        Free shipping, however it's earned (the spend or a code), fills the
+        bar in the scents' colors (the --free styles); the amount still to
+        spend stands out in the message until then.
+      {%- endcomment -%}
+      {%- capture shipping_amount_display -%}
+        <strong class="sidecart__shipping-amount">{{ shipping_remaining_cents | money }}</strong>
+      {%- endcapture -%}
       {% if shipping_bar_enabled and shipping_bar_position == 'top' %}
         <div
-          class="sidecart__shipping-bar{% unless has_items or shipping_bar_preview %} sidecart__shipping-bar--hidden{% endunless %}"
+          class="sidecart__shipping-bar{% if has_free_shipping %} sidecart__shipping-bar--free{% endif %}{% unless has_items or shipping_bar_preview %} sidecart__shipping-bar--hidden{% endunless %}"
           data-shipping-bar
           style="--shipping-bar-fill: {{ section.settings.shipping_bar_fill_color }}; --shipping-bar-track: {{ section.settings.shipping_bar_track_color }}; --shipping-bar-text: {{ section.settings.shipping_bar_text_color | default: section.settings.text_color }};">
           <p class="sidecart__shipping-bar-text" data-shipping-bar-text>
             {%- if has_free_shipping -%}
               {{ section.settings.shipping_success_message }}
             {%- else -%}
-              {%- assign shipping_amount_display = shipping_remaining_cents | money -%}
               {{ section.settings.shipping_progress_message | replace: '[amount]', shipping_amount_display }}
             {%- endif -%}
           </p>
@@ -253,9 +272,39 @@
   {%- endfor -%}
 </ul>
 <div class="sidecart__empty{% if has_items %} sidecart__empty--hidden{% endif %}" data-sidecart-empty>
+  {%- comment -%}
+    The bottles of the Empty cart bottles setting fanned out like a hand of
+    cards on a pink-to-peach tile, 12° apart (less past six, so the fan never
+    opens wider than 60°).
+  {%- endcomment -%}
+  {%- liquid
+    assign empty_bottles = section.settings.empty_products
+    assign empty_fan_last = empty_bottles.count | minus: 1
+    assign empty_fan_middle = empty_fan_last | divided_by: 2.0
+    assign empty_fan_step = 12
+    if empty_fan_last > 5
+      assign empty_fan_step = 60.0 | divided_by: empty_fan_last
+    endif
+  -%}
+  {%- if empty_bottles.count > 0 -%}
+    <span class="sidecart__empty-art" aria-hidden="true">
+      <span class="sidecart__empty-fan">
+        {%- for bottle in empty_bottles -%}
+          {%- assign bottle_image = bottle.metafields.custom.card_image_portrait | default: bottle.metafields.custom.card_image | default: bottle.featured_image -%}
+          {%- if bottle_image -%}
+            {%- liquid
+              assign bottle_turn = forloop.index0 | minus: empty_fan_middle | times: empty_fan_step
+              assign bottle_style = '--fan-turn: ' | append: bottle_turn | append: 'deg;'
+            -%}
+            {{ bottle_image | image_url: width: 240 | image_tag: alt: '', loading: 'lazy', width: 80, height: 120, style: bottle_style }}
+          {%- endif -%}
+        {%- endfor -%}
+      </span>
+    </span>
+  {%- endif -%}
   <h3 class="sidecart__empty-title">{{ section.settings.empty_title }}</h3>
   <p class="sidecart__empty-message">{{ section.settings.empty_message }}</p>
-  <a href="{{ routes.all_products_collection_url }}" class="sidecart__continue-btn">
+  <a href="{{ routes.all_products_collection_url }}" class="button sidecart__continue-btn">
     {{ section.settings.continue_button_text }}
   </a>
   {%- if section.settings.show_discount_code -%}
@@ -272,14 +321,13 @@
 </div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
 {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
   <div
-    class="sidecart__shipping-bar"
+    class="sidecart__shipping-bar{% if has_free_shipping %} sidecart__shipping-bar--free{% endif %}"
     data-shipping-bar
     style="--shipping-bar-fill: {{ section.settings.shipping_bar_fill_color }}; --shipping-bar-track: {{ section.settings.shipping_bar_track_color }}; --shipping-bar-text: {{ section.settings.shipping_bar_text_color | default: section.settings.text_color }};">
     <p class="sidecart__shipping-bar-text" data-shipping-bar-text>
       {%- if has_free_shipping -%}
         {{ section.settings.shipping_success_message }}
       {%- else -%}
-        {%- assign shipping_amount_display = shipping_remaining_cents | money -%}
         {{ section.settings.shipping_progress_message | replace: '[amount]', shipping_amount_display }}
       {%- endif -%}
     </p>
@@ -342,7 +390,7 @@
         autocapitalize="characters"
         spellcheck="false"
         data-discount-input>
-      <button type="submit" class="sidecart__discount-apply" data-discount-apply>
+      <button type="submit" class="button sidecart__discount-apply" data-discount-apply>
         {{- 'sidecart.discount.apply' | t -}}
       </button>
     </form>
@@ -364,7 +412,7 @@
 </div>
 
 <div class="sidecart__actions sidecart__actions--single">
-  <a href="/checkout" class="sidecart__btn sidecart__btn--primary" data-sidecart-checkout>
+  <a href="/checkout" class="button sidecart__btn sidecart__btn--primary" data-sidecart-checkout>
     {{ 'sidecart.checkout' | t }}
   </a>
 </div>
@@ -377,7 +425,9 @@
 .sidecart {
   --sidecart-width: 615px;
   /* --sidecart-bg and --sidecart-text set via inline style from section settings */
-  --sidecart-border: rgba(62, 32, 39, 0.1);
+  --sidecart-border: color-mix(in srgb, var(--sidecart-text) 20%, transparent);
+  /* The drawer's wavy left edge, past its width (see .sidecart__drawer::before). */
+  --sidecart-wave: 96px;
 
   position: fixed;
   inset: 0;
@@ -396,7 +446,7 @@
 .sidecart__overlay {
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--color-scrim, rgba(62, 32, 39, 0.48));
   opacity: 0;
   transition: opacity 0.3s ease;
   cursor: pointer;
@@ -406,18 +456,34 @@
   opacity: 1;
 }
 
+/* The drawer slides in with a wavy left edge: two bulges per 450px of
+   height, repeating down a taller screen. The edge hangs off the drawer's
+   left side, so the drawer slides that much further to hide. */
 .sidecart__drawer {
   position: absolute;
   top: 0;
   right: 0;
   width: var(--sidecart-width);
-  max-width: 100%;
+  max-width: calc(100% - var(--sidecart-wave));
   height: 100%;
   background-color: var(--sidecart-bg);
-  transform: translateX(100%);
+  transform: translateX(calc(100% + var(--sidecart-wave)));
   transition: transform 0.3s ease;
   display: flex;
   flex-direction: column;
+}
+
+.sidecart__drawer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 100%;
+  bottom: 0;
+  width: var(--sidecart-wave);
+  background-color: var(--sidecart-bg);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 450' preserveAspectRatio='none'%3E%3Cpath d='M96 0H48C23.41 36.69 0 71.79 0 112.5C0 153.21 23.41 188.31 48 225C72.59 261.69 96 296.79 96 337.5C96 378.21 72.59 413.31 48 450H96Z'/%3E%3C/svg%3E") 0 0 / 100% 450px repeat-y;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 450' preserveAspectRatio='none'%3E%3Cpath d='M96 0H48C23.41 36.69 0 71.79 0 112.5C0 153.21 23.41 188.31 48 225C72.59 261.69 96 296.79 96 337.5C96 378.21 72.59 413.31 48 450H96Z'/%3E%3C/svg%3E") 0 0 / 100% 450px repeat-y;
+  pointer-events: none;
 }
 
 .sidecart.is-open .sidecart__drawer {
@@ -428,50 +494,92 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
-  border-bottom: 1px solid var(--sidecart-border);
+  gap: 16px;
+  padding: 22px 20px 12px;
   flex-shrink: 0;
 }
 
+/* "Your cart" in the script face, the count in a round badge at its top
+   right. */
 .sidecart__title {
-  font-family: var(--font-sweet-sans);
-  font-weight: 500;
-  font-size: 16px;
-  letter-spacing: -0.16px;
-  text-transform: uppercase;
-  color: var(--sidecart-text);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
   margin: 0;
+  color: var(--sidecart-text);
+}
+
+.sidecart__title-text {
+  font-family: var(--font-alyona);
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
 }
 
 .sidecart__count {
-  margin-right: 4px;
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: var(--radius-pill, 999px);
+  background-color: var(--sidecart-text);
+  color: #FFFFFF;
+  font-family: var(--font-sweet-sans);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* No badge on an empty cart. */
+.sidecart__count[hidden] {
+  display: none;
 }
 
 .sidecart__close {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
   color: var(--sidecart-text);
-  background: none;
+  background-color: #FFFFFF;
   border: none;
+  border-radius: 50%;
   cursor: pointer;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s ease;
+  transition: scale 0.2s ease;
 }
 
-.sidecart__close:hover {
-  opacity: 0.7;
+@media (hover: hover) {
+  .sidecart__close:hover {
+    scale: 1.08;
+  }
 }
 
 .sidecart__close:focus-visible {
   outline: 2px solid var(--sidecart-text);
-  outline-offset: 4px;
+  outline-offset: 3px;
+}
+
+/* The wavy line under "Your cart". */
+.sidecart__squiggle {
+  display: block;
+  flex-shrink: 0;
+  height: 10px;
+  margin: 0 20px 6px;
+  background-color: var(--sidecart-text);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -1.5 28 10'%3E%3Cpath d='M0 3.35C4.67-.12 9.33-.12 14 3.35S23.33 6.82 28 3.35' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / 28px 10px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -1.5 28 10'%3E%3Cpath d='M0 3.35C4.67-.12 9.33-.12 14 3.35S23.33 6.82 28 3.35' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / 28px 10px repeat-x;
 }
 
 .sidecart__content {
   flex: 1;
   overflow-y: auto;
-  padding: 15px 20px;
+  padding: 14px 20px;
 }
 
 .sidecart__items {
@@ -481,7 +589,7 @@
      an optimistically-hidden (display:none) item still counts as :first-child,
      which would otherwise leave the first visible card with extra top padding
      until the reconcile removes the hidden node (a visible layout snap). */
-  margin: -15px 0 0;
+  margin: -14px 0 0;
   padding: 0;
 }
 
@@ -492,35 +600,51 @@
 .sidecart-item {
   position: relative;
   display: flex;
-  gap: 20px;
-  padding: 15px 0;
+  gap: 18px;
+  padding: 14px 0;
   border-bottom: 1px solid var(--sidecart-border);
 }
 
 .sidecart-item__remove {
   position: absolute;
-  top: 15px;
+  top: 13px;
   right: 0;
+  padding: 0;
   background: transparent;
   border: none;
   cursor: pointer;
   font-family: var(--font-jokker);
-  font-size: 10px;
+  font-size: 11px;
+  line-height: 1.5;
   color: var(--sidecart-text);
-  text-decoration: none;
-  transition: text-decoration 0.15s ease;
-}
-
-.sidecart-item__remove:hover {
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
+@media (hover: hover) {
+  .sidecart-item__remove:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+.sidecart-item__remove:focus-visible {
+  outline: 2px solid var(--sidecart-text);
+  outline-offset: 2px;
+}
+
+/* The photo sits on a rounded tile in the product's card color, which starts
+   --tile-top below the box. A bottle (a portrait photo, --pop) is bigger than
+   the tile and leans a little, so its cap pops out over the top; anything
+   else fits inside the tile. */
 .sidecart-item__image-link {
+  --tile-top: 22px;
+  position: relative;
   flex-shrink: 0;
   display: block;
   width: 150px;
-  height: 194px;
-  overflow: hidden;
+  height: 172px;
+  margin-top: var(--tile-top);
+  border-radius: 12px;
   background-color: var(--sidecart-bg);
 }
 
@@ -530,13 +654,25 @@
   object-fit: contain;
 }
 
+.sidecart-item__image-link--pop .sidecart-item__image,
+.sidecart-item__image-link--pop .sidecart-item__leaving--bottle {
+  position: absolute;
+  inset: auto;
+  top: -32.7%;
+  left: -18.3%;
+  width: 125%;
+  height: 141%;
+  margin: 0;
+  max-width: none;
+  rotate: 4deg;
+}
+
 .sidecart-item__placeholder {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--sidecart-bg);
 }
 
 .sidecart-item__placeholder-svg {
@@ -551,24 +687,27 @@
   flex-direction: column;
   justify-content: space-between;
   min-width: 0;
-  padding: 10px 0;
+  padding: 6px 0 0;
 }
 
 .sidecart-item__info {
   display: flex;
   flex-direction: column;
-  gap: var(--sidecart-info-gap, 8px);
+  align-items: flex-start;
+  gap: var(--sidecart-info-gap, 6px);
 }
 
 .sidecart-item__title {
+  align-self: stretch;
   font-family: var(--font-sweet-sans);
-  font-weight: 500;
+  font-weight: 700;
   font-size: 14px;
-  letter-spacing: -0.14px;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label-lg, 0.02em);
   text-transform: uppercase;
   color: var(--sidecart-text);
   margin: 0;
-  padding-right: 44px; /* clear of Remove, over the card's top-right corner */
+  padding-right: 48px; /* clear of Remove, over the card's top-right corner */
 }
 
 .sidecart-item__title a {
@@ -581,10 +720,10 @@
 }
 
 .sidecart-item__variant {
-  font-family: var(--font-manrope);
+  font-family: var(--font-jokker);
   font-size: 12px;
+  line-height: 1.5;
   color: var(--sidecart-text);
-  opacity: 0.7;
   margin: 0;
 }
 
@@ -597,11 +736,10 @@
   gap: 5px;
   margin: 0;
   font-family: var(--font-jokker);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 1.5;
   color: var(--sidecart-text);
-  opacity: 0.75;
 }
 
 .sidecart-item__gift-label svg {
@@ -618,9 +756,8 @@
   flex-basis: 100%;
   margin: 0;
   font-family: var(--font-jokker);
-  font-size: 13px;
+  font-size: 12px;
   color: var(--sidecart-text);
-  opacity: 0.75;
 }
 
 .sidecart-item--gift .sidecart-item__controls {
@@ -647,7 +784,8 @@
 }
 
 .sidecart-item__gift-choice .sidecart-item__frequency {
-  padding: 10.25px 32px 7.75px 13px; /* the font's caps sit 1.25px high in their line, so 1.25px moves from the bottom to the top */
+  padding: 10.25px 36px 7.75px 15px; /* the font's caps sit 1.25px high in their line, so 1.25px moves from the bottom to the top */
+  border-radius: var(--radius-pill, 999px);
   background-color: var(--scent-box, var(--gift-free-color, #B4506D));
   background-repeat: no-repeat;
   background-size: 300% 100%;
@@ -691,7 +829,7 @@
 /* The chevron inside the box, on the right. */
 .sidecart-item__gift-choice .sidecart-item__frequency-chevron {
   position: absolute;
-  right: 13px;
+  right: 15px;
   width: 10px;
   height: 5px;
   color: #ffffff;
@@ -939,11 +1077,10 @@
   margin: 0;
   /* Same type and spacing as the bundle scent list. */
   font-family: var(--font-jokker);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 1.5;
   color: var(--sidecart-text);
-  opacity: 0.75;
 }
 
 .sidecart-item__subscription svg {
@@ -954,6 +1091,22 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+/* The purchase option's line (the nudge or "Subscription · saving 15%") as a
+   pink pill, in white capitals. */
+.sidecart-item__subscription--switchable .sidecart-item__subscription-label {
+  gap: 5px;
+  padding: 5px 11px 5px 9px;
+  border-radius: var(--radius-pill, 999px);
+  background: var(--gradient-button, var(--sidecart-text));
+  color: #FFFFFF;
+  font-family: var(--font-sweet-sans);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: var(--tracking-label, 0.04em);
+  text-transform: uppercase;
 }
 
 /* Spin around its own centre when the purchase option changes. */
@@ -979,12 +1132,11 @@
 .sidecart-item__subscription--switchable {
   flex-direction: column;
   align-items: flex-start;
-  gap: 0; /* lines spaced by line-height only, like the bundle scent list */
-  opacity: 1;
+  gap: 6px;
 }
 
-.sidecart-item__subscription--switchable .sidecart-item__subscription-label {
-  opacity: 0.75;
+.sidecart-item__subscription--switchable .sidecart-item__frequency-wrap {
+  padding-left: 2px;
 }
 
 .sidecart-item__frequency-wrap {
@@ -1003,14 +1155,14 @@
   color: inherit;
   font: inherit;
   line-height: inherit;
-  opacity: 0.75;
   cursor: pointer;
-  transition: opacity 0.2s ease;
 }
 
-.sidecart-item__frequency:hover,
-.sidecart-item__frequency:focus-visible {
-  opacity: 1;
+@media (hover: hover) {
+  .sidecart-item__subscription .sidecart-item__frequency:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 }
 
 .sidecart-item__frequency:focus-visible {
@@ -1027,7 +1179,6 @@
 .sidecart-item__subscription .sidecart-item__frequency-chevron {
   position: absolute;
   left: 2px; /* centred in the same 12px slot as the label's icon */
-  opacity: 0.75;
   pointer-events: none;
   transition: transform 0.2s ease;
 }
@@ -1040,7 +1191,7 @@
 .sidecart-item .select-menu__list {
   color: var(--sidecart-text);
   font-family: var(--font-jokker);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.4;
 }
 
@@ -1051,10 +1202,9 @@
 }
 
 .sidecart-item__property {
-  font-family: var(--font-manrope);
+  font-family: var(--font-jokker);
   font-size: 11px;
   color: var(--sidecart-text);
-  opacity: 0.7;
   line-height: 1.4;
 }
 
@@ -1098,12 +1248,11 @@
 
 .sidecart-item__bundle-scent {
   font-family: var(--font-jokker);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   letter-spacing: 0;
   text-transform: none;
   color: var(--sidecart-text);
-  opacity: 0.75;
   line-height: 1.5;
 }
 
@@ -1124,7 +1273,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 14px;
   margin-top: 16px;
   padding-top: 4px;
 }
@@ -1134,47 +1283,65 @@
   font-family: var(--font-jokker);
   font-size: 12px;
   font-weight: 500;
-  color: #c44;
+  color: var(--color-error, #B42318);
   margin: 0;
 }
 
+/* Round minus (white, ringed) and plus (pink) on either side of the count. */
 .sidecart-item__quantity {
   display: flex;
   align-items: center;
-  border: 1px solid var(--sidecart-border);
 }
 
 .sidecart-item__qty-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: transparent;
-  border: none;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--sidecart-text) 35%, transparent);
+  border-radius: 50%;
+  background-color: #FFFFFF;
   cursor: pointer;
   color: var(--sidecart-text);
-  transition: background-color 0.15s ease;
+  transition: scale 0.15s ease, background-color 0.15s ease;
 }
 
-.sidecart-item__qty-btn:hover {
-  background-color: color-mix(in srgb, var(--sidecart-text) 10%, var(--sidecart-bg));
+.sidecart-item__qty-btn[data-action="increase"] {
+  border-color: transparent;
+  background: var(--gradient-button, var(--sidecart-text));
+  color: #FFFFFF;
+}
+
+.sidecart-item__qty-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (hover: hover) {
+  .sidecart-item__qty-btn:hover {
+    scale: 1.1;
+  }
 }
 
 .sidecart-item__qty-btn:active {
-  opacity: 0.8;
+  scale: 0.94;
 }
 
 .sidecart-item__qty-btn:focus-visible {
   outline: 2px solid var(--sidecart-text);
-  outline-offset: -2px;
+  outline-offset: 2px;
 }
 
 .sidecart-item__qty-input {
-  font-family: var(--font-manrope);
-  font-size: 14px;
+  font-family: var(--font-sweet-sans);
+  font-size: 12px;
+  font-weight: 700;
   color: var(--sidecart-text);
-  width: 40px;
+  width: 30px;
+  height: 28px;
   text-align: center;
   border: none;
   background: transparent;
@@ -1201,9 +1368,9 @@
 
 .sidecart-item__compare-price {
   font-family: var(--font-sweet-sans);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
-  letter-spacing: -0.14px;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
   text-decoration: line-through;
   color: var(--sidecart-text);
@@ -1212,14 +1379,10 @@
 .sidecart-item__current-price {
   font-family: var(--font-sweet-sans);
   font-weight: 400;
-  font-size: 18px;
-  letter-spacing: -0.18px;
+  font-size: 16px;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
   color: var(--sidecart-text);
-}
-
-.sidecart-item__current-price--sale {
-  color: #E26046;
 }
 
 .sidecart__empty {
@@ -1228,8 +1391,9 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 60px 20px;
-  height: 100%;
+  padding: 40px 20px 60px;
+  min-height: 100%;
+  box-sizing: border-box;
 }
 
 .sidecart__empty--hidden {
@@ -1269,38 +1433,59 @@
   }
 }
 
+/* The empty cart: the scents' bottles fanned out on a pink-to-peach tile. */
+.sidecart__empty-art {
+  position: relative;
+  display: block;
+  width: 132px;
+  height: 132px;
+  margin-bottom: 22px;
+  border-radius: 20px;
+  background-image: linear-gradient(160deg, #FFD9E4, #FFE3C4);
+  overflow: hidden;
+}
+
+.sidecart__empty-fan {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 52%;
+  aspect-ratio: 2 / 3;
+  translate: -50% -50%;
+}
+
+.sidecart__empty-fan img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 50% 92%;
+  transform: rotate(var(--fan-turn, 0deg));
+}
+
 .sidecart__empty-title {
-  font-family: var(--font-jokker);
-  font-size: 24px;
+  font-family: var(--font-alyona);
+  font-size: 34px;
   font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
   color: var(--sidecart-text);
-  margin: 0 0 8px;
+  margin: 0 0 12px;
 }
 
 .sidecart__empty-message {
-  font-family: var(--font-manrope);
+  font-family: var(--font-jokker);
   font-size: 14px;
+  line-height: 1.5;
   color: var(--sidecart-text);
-  opacity: 0.7;
   margin: 0 0 24px;
 }
 
 .sidecart__continue-btn {
-  font-family: var(--font-sweet-sans);
-  font-weight: 500;
-  font-size: 12px;
-  letter-spacing: -0.12px;
-  text-transform: uppercase;
-  color: var(--sidecart-bg);
-  background-color: var(--sidecart-text);
-  border: none;
-  padding: 14px 28px;
-  text-decoration: none;
-  transition: opacity 0.2s ease;
-}
-
-.sidecart__continue-btn:hover {
-  opacity: 0.85;
+  --button-height: 60px;
+  --button-padding: 32px;
+  --button-font-size: 18px;
 }
 
 /* "Have a code?", and the code box once it moves in (see placeDiscountBox). */
@@ -1312,8 +1497,8 @@
 
 .sidecart__empty-code-open {
   padding: 4px;
-  font-family: var(--font-manrope);
-  font-size: 13px;
+  font-family: var(--font-jokker);
+  font-size: 12px;
   color: var(--sidecart-text);
   background: none;
   border: none;
@@ -1344,7 +1529,8 @@
 }
 
 .sidecart__shipping-bar {
-  padding: 14px 20px;
+  margin: 0 20px;
+  padding: 16px 0 26px;
   border-bottom: 1px solid var(--sidecart-border);
   flex-shrink: 0;
   color: var(--shipping-bar-text, var(--sidecart-text));
@@ -1364,25 +1550,36 @@
   font-family: var(--font-sweet-sans);
   font-size: 13px;
   font-weight: 500;
-  letter-spacing: -0.13px;
-  margin: 0 0 14px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin: 0 0 24px;
   text-align: center;
   color: var(--shipping-bar-text, var(--sidecart-text));
 }
 
+/* What's left to spend, in bold on a wavy underline. */
+.sidecart__shipping-amount {
+  font-weight: 700;
+  text-decoration: underline wavy;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
 .sidecart__shipping-bar-track {
   width: 100%;
-  height: 6px;
-  border-radius: 3px;
+  height: 8px;
+  border-radius: var(--radius-pill, 999px);
   background-color: var(--shipping-bar-track, rgba(62, 32, 39, 0.15));
   overflow: visible;
   position: relative;
 }
 
+/* The bar fill color, brightening a little towards the truck. */
 .sidecart__shipping-bar-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: var(--radius-pill, 999px);
   background-color: var(--shipping-bar-fill, #3E2027);
+  background-image: linear-gradient(90deg, var(--shipping-bar-fill, #3E2027), color-mix(in srgb, var(--shipping-bar-fill, #3E2027), #FFFFFF 22%));
   transition: width 0.3s ease;
   min-width: 0;
   max-width: calc(100% - 22px);
@@ -1423,29 +1620,29 @@
   mask-position: center;
 }
 
-/* A free shipping code in the cart: the bar is full, in the warm scents' bottle
-   colors (St. Tropez, Petal Kiss, Capri Seaside, Sweet Muse; Alex wanted no
-   green or blue), with a soft glow that breathes and a shine that runs across
-   now and then. The track is a container so the gradient spans the full bar:
-   a growing fill uncovers it instead of stretching it.
+/* Free shipping, from the spend or a code: the bar is full, in the warm
+   scents' bottle colors (St. Tropez, Petal Kiss, Capri Seaside, Sweet Muse;
+   Alex wanted no green or blue), with a soft glow that breathes and a shine
+   that runs across now and then. The track is a container so the gradient
+   spans the full bar: a growing fill uncovers it instead of stretching it.
 
-   --race plays when a code first shows (see raceShippingBar): the truck pops a
-   wheelie, races from the real progress to the end with speed lines and brakes
-   in a burst of scent-colored sparkles. Behind it, a rainbow wave sweeps the
-   chocolate bar from the start and catches it at the finish, and the message
-   pops. */
-.sidecart__shipping-bar--code .sidecart__shipping-bar-track {
+   --race plays when free shipping is first unlocked (see raceShippingBar): the
+   truck pops a wheelie, races from where the bar was to the end with speed
+   lines and brakes in a burst of scent-colored sparkles. Behind it, a rainbow
+   wave sweeps the pink bar from the start and catches it at the finish, and
+   the message pops. */
+.sidecart__shipping-bar--free .sidecart__shipping-bar-track {
   container-type: inline-size;
 }
 
-.sidecart__shipping-bar--code .sidecart__shipping-bar-fill {
+.sidecart__shipping-bar--free .sidecart__shipping-bar-fill {
   background-image: linear-gradient(90deg, #EA4A7F, #F49AA6, #F47A54, #E9CB7F);
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-size: calc(100cqw - 22px) 100%;
 }
 
-.sidecart__shipping-bar--code .sidecart__shipping-bar-track::before {
+.sidecart__shipping-bar--free .sidecart__shipping-bar-track::before {
   content: '';
   position: absolute;
   top: -2px;
@@ -1462,7 +1659,7 @@
     sidecart-shipping-glow 3s 1.5s ease-in-out infinite alternate;
 }
 
-.sidecart__shipping-bar--code .sidecart__shipping-bar-fill::after {
+.sidecart__shipping-bar--free .sidecart__shipping-bar-fill::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -1472,7 +1669,7 @@
   animation: sidecart-shipping-shine 5s 1s ease-in-out infinite backwards;
 }
 
-.sidecart__shipping-bar--code .sidecart__shipping-bar-icon {
+.sidecart__shipping-bar--free .sidecart__shipping-bar-icon {
   z-index: 1;
 }
 
@@ -1486,8 +1683,8 @@
   transition: width 0.85s 0.15s cubic-bezier(0.65, 0, 0.25, 1);
 }
 
-/* The chocolate left ahead of the wave; the wave keeps the fill's timing, so
-   it stays behind the truck and runs off the end as the truck arrives. */
+/* The pink left ahead of the wave; the wave keeps the fill's timing, so it
+   stays behind the truck and runs off the end as the truck arrives. */
 .sidecart__shipping-bar--race .sidecart__shipping-bar-fill::before {
   content: '';
   position: absolute;
@@ -1544,8 +1741,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sidecart__shipping-bar--code .sidecart__shipping-bar-track::before,
-  .sidecart__shipping-bar--code .sidecart__shipping-bar-fill::after {
+  .sidecart__shipping-bar--free .sidecart__shipping-bar-track::before,
+  .sidecart__shipping-bar--free .sidecart__shipping-bar-fill::after {
     animation: none;
   }
 }
@@ -1622,7 +1819,7 @@
    It opens the scrolling items area, edge to edge, with the items after its
    divider. */
 .sidecart__gift-bar--list {
-  margin: -15px -20px 0;
+  margin: -14px -20px 0;
   padding: 14px 20px 10px;
 }
 
@@ -1640,21 +1837,17 @@
 
 .sidecart__gift-list-heading {
   margin: 0;
-  font-family: var(--font-sweet-sans);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: -0.13px;
-  text-transform: uppercase;
+  font-family: var(--font-alyona);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.05;
 }
 
 .sidecart__gift-list-count {
   margin: 0;
-  font-family: var(--font-sweet-sans);
-  font-size: 11px;
-  letter-spacing: -0.11px;
-  text-transform: uppercase;
+  font-family: var(--font-jokker);
+  font-size: 12px;
   white-space: nowrap;
-  opacity: 0.6;
 }
 
 /* The rows run 10px past the text on both sides, so the tint has room while
@@ -1789,12 +1982,15 @@
    --gift-card-bar, --gift-added-bg).
    It opens the scrolling items area edge to edge, like the list. */
 .sidecart__gift-bar--cards {
-  margin: -15px -20px 0;
-  padding: 14px 0 16px;
+  margin: -14px -20px 0;
+  padding: 18px 0;
+  /* The divider stops at the items' edges, though the row runs edge to edge. */
+  border-bottom: none;
+  background: linear-gradient(var(--sidecart-border), var(--sidecart-border)) 20px 100% / calc(100% - 40px) 1px no-repeat;
 }
 
 .sidecart__gift-bar--cards .sidecart__gift-list-head {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   padding: 0 20px;
 }
 
@@ -1841,6 +2037,7 @@
   gap: 10px;
   box-sizing: border-box;
   padding: 12px;
+  border-radius: var(--radius-card, 20px);
   background-color: var(--gift-card-bg, #F8D9E0);
   scroll-snap-align: start;
 }
@@ -1880,9 +2077,10 @@
 
 .sidecart__gift-card-name {
   font-family: var(--font-sweet-sans);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: -0.12px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label-lg, 0.02em);
   text-transform: uppercase;
   overflow-wrap: anywhere;
 }
@@ -1890,21 +2088,22 @@
 .sidecart__gift-card-detail {
   font-family: var(--font-jokker);
   font-size: 12px;
-  opacity: 0.7;
+  line-height: 1.5;
 }
 
 .sidecart__gift-card-track {
-  height: 4px;
-  border-radius: 2px;
-  background-color: rgba(255, 255, 255, 0.7);
+  height: 6px;
+  border-radius: var(--radius-pill, 999px);
+  background-color: color-mix(in srgb, var(--gift-card-bar, #B4506D) 15%, transparent);
   overflow: hidden;
 }
 
 .sidecart__gift-card-fill {
   width: 0;
   height: 100%;
-  border-radius: 2px;
+  border-radius: var(--radius-pill, 999px);
   background-color: var(--gift-card-bar, #B4506D);
+  background-image: linear-gradient(90deg, var(--gift-card-bar, #B4506D), color-mix(in srgb, var(--gift-card-bar, #B4506D), #FFFFFF 22%));
   transition: width 0.3s ease;
 }
 
@@ -1917,28 +2116,33 @@
 }
 
 .sidecart__gift-card-chip {
-  padding: 5px 10px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill, 999px);
   font-family: var(--font-jokker);
   font-size: 12px;
   line-height: 1.2;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: var(--color-blush, #FFF4F8);
 }
 
+/* The labels' rose, brightening a little to the right like the buttons. */
 .sidecart__gift-card-chip--added {
   color: #FFFFFF;
   background-color: var(--gift-added-bg, #B4506D);
+  background-image: linear-gradient(90deg, var(--gift-added-bg, #B4506D), color-mix(in srgb, var(--gift-added-bg, #B4506D), #FFFFFF 12%));
 }
 
 .sidecart__gift-card-chip[hidden] {
   display: none;
 }
 
-/* With the cards, gift lines in the bag get their own tint, edge to edge. */
+/* With the cards, gift lines in the bag get their own tint, edge to edge:
+   blush into peach. */
 .sidecart__items--gift-cards .sidecart-item--gift {
   margin: 0 -20px;
   padding-right: 20px;
   padding-left: 20px;
-  background-color: color-mix(in srgb, var(--sidecart-text) 5%, transparent);
+  background-color: var(--color-blush, #FFF4F8);
+  background-image: linear-gradient(90deg, var(--color-blush, #FFF4F8), #FFF1E4);
 }
 
 /* Remove in line with the other cards', inside the tint's padding. */
@@ -1954,7 +2158,7 @@
 
 @media (max-width: 768px) {
   .sidecart__gift-bar--cards {
-    padding: 12px 0 14px;
+    padding: 14px 0;
   }
 
   .sidecart__gift-card {
@@ -2078,7 +2282,7 @@
 
 /* Discount code field */
 .sidecart__discount {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 /* The fold-out row: label on the left, chevron on the right. */
@@ -2091,7 +2295,7 @@
   font-family: var(--font-sweet-sans);
   font-size: 13px;
   font-weight: 500;
-  letter-spacing: -0.13px;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
   color: var(--sidecart-text);
   background: none;
@@ -2121,6 +2325,7 @@
   display: none;
 }
 
+/* A white pill to type in, the pink Apply pill beside it. */
 .sidecart__discount-form {
   display: flex;
   gap: 8px;
@@ -2129,41 +2334,31 @@
 .sidecart__discount-input {
   flex: 1;
   min-width: 0;
-  padding: 10px 12px;
-  font-family: var(--font-manrope);
+  height: 44px;
+  padding: 0 18px;
+  font-family: var(--font-jokker);
   font-size: 14px;
   color: var(--sidecart-text);
-  background-color: transparent;
-  border: 1px solid color-mix(in srgb, var(--sidecart-text) 35%, transparent);
-  border-radius: 0;
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--sidecart-text);
+  border-radius: var(--radius-pill, 999px);
 }
 
 .sidecart__discount-input::placeholder {
-  color: color-mix(in srgb, var(--sidecart-text) 55%, transparent);
+  color: color-mix(in srgb, var(--sidecart-text) 85%, #FFFFFF);
+  opacity: 1;
 }
 
 .sidecart__discount-input:focus-visible {
   outline: 2px solid var(--sidecart-text);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
 .sidecart__discount-apply {
-  padding: 10px 16px;
-  font-family: var(--font-sweet-sans);
-  font-weight: 500;
-  font-size: 13px;
-  letter-spacing: -0.13px;
-  text-transform: uppercase;
-  color: var(--sidecart-text);
-  background-color: transparent;
-  border: 1px solid var(--sidecart-text);
-  border-radius: 0;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.sidecart__discount-apply:hover {
-  background-color: color-mix(in srgb, var(--sidecart-text) 10%, var(--sidecart-bg));
+  --button-height: 44px;
+  --button-padding: 22px;
+  --button-font-size: 13px;
+  flex-shrink: 0;
 }
 
 .sidecart__discount-apply:disabled {
@@ -2187,7 +2382,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 8px 0 0;
+  margin: 10px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -2196,22 +2391,24 @@
   display: none;
 }
 
+/* An applied code: a white pill ringed in pink, with its remove cross. */
 .sidecart__discount-code {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 4px 4px 10px;
+  padding: 4px 6px 4px 12px;
   font-family: var(--font-sweet-sans);
   font-size: 12px;
-  letter-spacing: -0.12px;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
   color: var(--sidecart-text);
-  background-color: color-mix(in srgb, var(--sidecart-text) 10%, transparent);
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--sidecart-text);
+  border-radius: var(--radius-pill, 999px);
 }
 
 .sidecart__discount-code--inactive > span {
   text-decoration: line-through;
-  opacity: 0.6;
 }
 
 .sidecart__discount-remove {
@@ -2224,13 +2421,27 @@
   color: inherit;
   background: none;
   border: none;
+  border-radius: 50%;
   cursor: pointer;
 }
 
+.sidecart__discount-remove:focus-visible {
+  outline: 2px solid var(--sidecart-text);
+  outline-offset: 1px;
+}
+
 .sidecart__footer {
-  padding: 20px;
-  border-top: 1px solid var(--sidecart-border);
+  padding: 18px 20px 22px;
   flex-shrink: 0;
+}
+
+/* The divider stops at the items' edges. */
+.sidecart__footer::before {
+  content: '';
+  display: block;
+  height: 1px;
+  margin: -18px 0 17px;
+  background-color: var(--sidecart-border);
 }
 
 .sidecart__footer--hidden {
@@ -2241,6 +2452,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  gap: 16px;
   margin-bottom: 14px;
 }
 
@@ -2248,7 +2460,7 @@
   font-family: var(--font-sweet-sans);
   font-weight: 500;
   font-size: 16px;
-  letter-spacing: -0.16px;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
   color: var(--sidecart-text);
 }
@@ -2261,7 +2473,7 @@
   font-family: var(--font-sweet-sans);
   font-weight: 400;
   font-size: 18px;
-  letter-spacing: -0.18px;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
   color: var(--sidecart-text);
   display: block;
@@ -2269,8 +2481,9 @@
 
 .sidecart__shipping-note {
   font-family: var(--font-jokker);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
+  line-height: 1.5;
   color: var(--sidecart-text);
   display: block;
   margin-top: 4px;
@@ -2281,29 +2494,12 @@
   gap: 10px;
 }
 
+/* Checkout: the theme's pink pill button (.button) at the big CTA size. */
 .sidecart__btn {
   flex: 1;
-  font-family: var(--font-sweet-sans);
-  font-weight: 500;
-  font-size: 14px;
-  letter-spacing: -0.14px;
-  text-transform: uppercase;
-  text-align: center;
-  text-decoration: none;
-  padding: 14px 20px;
-  transition: opacity 0.2s ease
-  , background-color 0.15s ease;
-  cursor: pointer;
-}
-
-.sidecart__btn:hover {
-  opacity: 0.85;
-}
-
-.sidecart__btn--primary {
-  background-color: var(--sidecart-text);
-  color: #FFFFFF;
-  border: none;
+  --button-height: 60px;
+  --button-padding: 32px;
+  --button-font-size: 18px;
 }
 
 /* Checkout waiting for the cart to settle (see goToCheckout). On the drawer,
@@ -2320,14 +2516,9 @@
 }
 
 .sidecart__btn--secondary {
-  background-color: transparent;
-  color: var(--sidecart-text);
-  border: 1px solid var(--sidecart-text);
-}
-
-.sidecart__btn--secondary:hover {
-  background-color: color-mix(in srgb, var(--sidecart-text) 10%, var(--sidecart-bg));
-  opacity: 1;
+  --button-background: transparent;
+  --button-color: var(--sidecart-text);
+  --button-border: currentColor;
 }
 
 .sidecart__dynamic-checkout {
@@ -2338,9 +2529,12 @@
   margin: 0;
 }
 
+/* "Complete your order", above the footer. Its divider stops at the items'
+   edges. */
 .sidecart-upsell {
   flex-shrink: 0;
-  padding: 16px 20px;
+  margin: 0 20px;
+  padding: 18px 0;
   border-top: 1px solid var(--sidecart-border);
 }
 
@@ -2353,11 +2547,10 @@
 }
 
 .sidecart-upsell__heading {
-  font-family: var(--font-sweet-sans);
-  font-weight: 500;
-  font-size: 14px;
-  letter-spacing: -0.14px;
-  text-transform: uppercase;
+  font-family: var(--font-alyona);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.05;
   color: var(--sidecart-text);
   margin: 0 0 12px;
 }
@@ -2368,7 +2561,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .sidecart-upsell__item {
@@ -2379,9 +2572,10 @@
 
 .sidecart-upsell__image-wrap {
   flex-shrink: 0;
-  width: 56px;
-  height: 56px;
-  background-color: color-mix(in srgb, var(--sidecart-text) 6%, var(--sidecart-bg));
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background-color: var(--color-blush, #FFF4F8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2389,7 +2583,7 @@
 }
 
 .sidecart-upsell__image {
-  width: 100%;
+  width: 90%;
   height: 100%;
   object-fit: contain;
 }
@@ -2405,14 +2599,15 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .sidecart-upsell__title {
   font-family: var(--font-sweet-sans);
-  font-weight: 500;
-  font-size: 13px;
-  letter-spacing: -0.13px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-label-lg, 0.02em);
   text-transform: uppercase;
   color: var(--sidecart-text);
   margin: 0;
@@ -2428,14 +2623,15 @@
 .sidecart-upsell__compare {
   font-family: var(--font-sweet-sans);
   font-size: 12px;
+  letter-spacing: -0.01em;
   text-decoration: line-through;
-  opacity: 0.6;
   color: var(--sidecart-text);
 }
 
 .sidecart-upsell__current {
   font-family: var(--font-sweet-sans);
   font-size: 14px;
+  letter-spacing: -0.01em;
   color: var(--sidecart-text);
 }
 
@@ -2444,28 +2640,22 @@
   flex-shrink: 0;
 }
 
-.sidecart-upsell__add {
-  font-family: var(--font-sweet-sans);
+/* A small pink pill: a plus, then "Add to cart". (Two classes so it wins over
+   .button's own padding and weight.) */
+.button.sidecart-upsell__add {
+  --button-height: 34px;
+  --button-padding: 16px;
+  --button-font-size: 11px;
+  gap: 6px;
+  padding: 0 var(--button-padding) 0 12px;
   font-weight: 500;
-  font-size: 11px;
-  letter-spacing: -0.11px;
-  text-transform: uppercase;
-  color: var(--sidecart-bg);
-  background-color: var(--sidecart-text);
-  border: none;
-  padding: 10px 16px;
-  cursor: pointer;
   white-space: nowrap;
-  transition: opacity 0.2s ease;
 }
 
-.sidecart-upsell__add:hover {
-  opacity: 0.85;
-}
-
-.sidecart-upsell__add:focus-visible {
-  outline: 2px solid var(--sidecart-text);
-  outline-offset: 2px;
+.sidecart-upsell__add svg {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
 }
 
 .sidecart-upsell__add.is-loading {
@@ -2483,13 +2673,12 @@
    added the other) takes the full width. */
 @media (max-width: 768px) {
   .sidecart-upsell {
-    padding: 12px 20px 14px;
+    padding: 14px 0;
   }
 
   .sidecart-upsell__heading {
-    font-size: 12px;
-    letter-spacing: 0;
-    margin-bottom: 8px;
+    font-size: 22px;
+    margin-bottom: 10px;
   }
 
   .sidecart-upsell__list {
@@ -2513,6 +2702,7 @@
   .sidecart-upsell__image-wrap {
     width: 50px;
     height: 50px;
+    border-radius: 10px;
   }
 
   .sidecart-upsell__info {
@@ -2543,19 +2733,20 @@
     transform: translate(16px, 16px);
   }
 
-  .sidecart-upsell__add {
+  /* Just the plus, in a pink circle ringed in the drawer color. */
+  .button.sidecart-upsell__add {
+    --button-height: 26px;
+    --button-font-size: 0;
     position: relative;
     width: 26px;
     height: 26px;
     padding: 0;
-    border-radius: 50%;
-    font-size: 0;
-    color: transparent;
-    background-image: linear-gradient(var(--sidecart-bg), var(--sidecart-bg)), linear-gradient(var(--sidecart-bg), var(--sidecart-bg));
-    background-size: 10px 1.5px, 1.5px 10px;
-    background-position: center;
-    background-repeat: no-repeat;
     box-shadow: 0 0 0 2px var(--sidecart-bg);
+  }
+
+  .sidecart-upsell__add svg {
+    width: 10px;
+    height: 10px;
   }
 
   /* A bigger tap area than the circle. */
@@ -2566,7 +2757,13 @@
   }
 }
 
+/* Phones: a sheet rising from the bottom, its top edge wavy like the
+   drawer's side (a smaller wave). */
 @media (max-width: 768px) {
+  .sidecart {
+    --sidecart-wave: 24px;
+  }
+
   .sidecart-item__bundle-bottle {
     max-width: 42%;
     margin: 0 -8px;
@@ -2586,13 +2783,34 @@
     left: 0;
     right: 0;
     width: 100%;
+    max-width: none;
     height: 85vh;
     max-height: 85vh;
-    transform: translateY(100%);
+    transform: translateY(calc(100% + var(--sidecart-wave)));
+  }
+
+  .sidecart__drawer::before {
+    top: auto;
+    right: 0;
+    bottom: calc(100% - 1px);
+    left: 0;
+    width: auto;
+    height: var(--sidecart-wave);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112.5 24' preserveAspectRatio='none'%3E%3Cpath d='M0 24V12C9.17 5.85 17.95 0 28.13 0C38.3 0 47.08 5.85 56.25 12C65.42 18.15 74.2 24 84.38 24C94.55 24 103.33 18.15 112.5 12V24Z'/%3E%3C/svg%3E") 0 100% / 112.5px 100% repeat-x;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112.5 24' preserveAspectRatio='none'%3E%3Cpath d='M0 24V12C9.17 5.85 17.95 0 28.13 0C38.3 0 47.08 5.85 56.25 12C65.42 18.15 74.2 24 84.38 24C94.55 24 103.33 18.15 112.5 12V24Z'/%3E%3C/svg%3E") 0 100% / 112.5px 100% repeat-x;
   }
 
   .sidecart.is-open .sidecart__drawer {
     transform: translateY(0);
+  }
+
+  .sidecart__header {
+    padding-top: 12px;
+  }
+
+  .sidecart__title-text,
+  .sidecart__empty-title {
+    font-size: 34px;
   }
 
   .sidecart-item {
@@ -2600,8 +2818,9 @@
   }
 
   .sidecart-item__image-link {
+    --tile-top: 15px;
     width: 100px;
-    height: 130px;
+    height: 115px;
   }
 
   .sidecart-item__title {
@@ -2613,65 +2832,35 @@
     -webkit-line-clamp: 2;
   }
 
-  .sidecart-item__qty-btn {
-    width: 32px;
-    height: 32px;
-  }
-
   .sidecart__actions {
     flex-direction: column;
+  }
+
+  .sidecart__btn,
+  .sidecart__continue-btn {
+    --button-height: 48px;
+    --button-font-size: 14px;
+  }
+
+  .sidecart__empty-art {
+    width: 112px;
+    height: 112px;
+    margin-bottom: 18px;
   }
 }
 
 /* Compact cards (Product cards setting): a smaller photo in the same
-   proportions, tighter spacing, and the controls right under the text instead
-   of at the foot of a tall photo, so more of the cart fits on screen. */
-.sidecart--compact {
-  --sidecart-info-gap: 5px;
-}
-
-/* Top and bottom only: gift cards keep the side padding inside their tint. */
-.sidecart--compact .sidecart-item {
-  gap: 16px;
-  padding-top: 12px;
-  padding-bottom: 12px;
-}
-
-.sidecart--compact .sidecart-item__remove {
-  top: 12px;
-}
-
+   proportions, and the controls right under the text instead of at the foot
+   of a tall photo, so more of the cart fits on screen. */
 .sidecart--compact .sidecart-item__image-link {
+  --tile-top: 14px;
   width: 96px;
-  height: 124px;
-}
-
-.sidecart--compact .sidecart-item__details {
-  padding: 2px 0;
+  height: 110px;
 }
 
 .sidecart--compact .sidecart-item__controls {
-  gap: 12px;
   margin-top: 8px;
   padding-top: 0;
-}
-
-.sidecart--compact .sidecart-item__qty-btn {
-  width: 30px;
-  height: 30px;
-}
-
-.sidecart--compact .sidecart-item__qty-input {
-  width: 32px;
-  font-size: 13px;
-}
-
-.sidecart--compact .sidecart-item__compare-price {
-  font-size: 13px;
-}
-
-.sidecart--compact .sidecart-item__current-price {
-  font-size: 16px;
 }
 
 .sidecart--compact .sidecart-item__description {
@@ -2684,23 +2873,19 @@
 
 @media (max-width: 768px) {
   .sidecart--compact .sidecart-item {
-    gap: 12px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    gap: 14px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   .sidecart--compact .sidecart-item__remove {
-    top: 10px;
+    top: 11px;
   }
 
   .sidecart--compact .sidecart-item__image-link {
+    --tile-top: 12px;
     width: 78px;
-    height: 101px;
-  }
-
-  .sidecart--compact .sidecart-item__qty-btn {
-    width: 28px;
-    height: 28px;
+    height: 89px;
   }
 
   .sidecart--compact .sidecart-item__bundle-bottle {
@@ -2761,8 +2946,10 @@ class Sidecart {
     this.shippingSuccessMsg = this.sidecart.dataset.shippingSuccessMsg || '';
     this.shippingCodeMsg = this.sidecart.dataset.shippingCodeMsg || ''; // empty = no code state
     this.shippingCode = null; // the free shipping code in the cart, if any
-    this.shippingRacePending = false; // a new code waits for the open drawer to race
-    this.shippingProgress = 0; // the bar's real progress (%), where the race starts
+    this.shippingFreeKey = ''; // what gives free shipping: the code, SPEND, or '' (see trackShippingCode)
+    this.shippingRacePending = false; // new free shipping waits for the open drawer to race
+    this.shippingProgress = 0; // the bar's real progress (%)
+    this.shippingRaceFrom = 0; // where the bar was before free shipping, where the race starts
     this.drawerReady = false; // the drawer has finished sliding in (see drawerOpened)
 
     this.triggerElement = null;
@@ -2820,6 +3007,10 @@ class Sidecart {
     this.savedCodes = this.loadSavedCodes(); // codes typed into an empty cart, checked once it holds something (see reportSavedCodes)
 
     this.cacheRefs();
+    // The page's bar, for a race that starts before the script has drawn it.
+    if (this.shippingBar && this.shippingBarFill && !this.shippingBar.classList.contains('sidecart__shipping-bar--free')) {
+      this.shippingRaceFrom = parseFloat(this.shippingBarFill.style.width) || 0;
+    }
     this.bindEvents();
     this.initCartListeners();
   }
@@ -3640,12 +3831,12 @@ class Sidecart {
     if (newContent && this.content) this.content.innerHTML = newContent.innerHTML;
     if (newFooter && this.footer) this.footer.innerHTML = newFooter.innerHTML;
 
-    // The top bar stays put while it shows a free shipping code, so its race
-    // and glow run on through re-renders (applyCartTotals sets its text and
+    // The top bar stays put while it shows free shipping, so its race and
+    // glow run on through re-renders (applyCartTotals sets its text and
     // width).
     const topBar = this.sidecart.querySelector('.sidecart__drawer > [data-shipping-bar]');
     const newTopBar = doc.querySelector('.sidecart__drawer > [data-shipping-bar]');
-    if (topBar && newTopBar && !topBar.classList.contains('sidecart__shipping-bar--code')) {
+    if (topBar && newTopBar && !topBar.classList.contains('sidecart__shipping-bar--free')) {
       topBar.innerHTML = newTopBar.innerHTML;
       topBar.className = newTopBar.className;
     }
@@ -3846,7 +4037,10 @@ class Sidecart {
     const count =
       (cart.item_count || 0) +
       this.pendingGiftChoices(cart).reduce((sum, gift) => sum + (gift.row.quantity || 1), 0);
-    if (this.countElement) this.countElement.textContent = count;
+    if (this.countElement) {
+      this.countElement.textContent = count;
+      this.countElement.hidden = !Number(count);
+    }
     this.updateItemsLabel(count);
     document.querySelectorAll('[data-cart-count]').forEach((el) => {
       el.textContent = count;
@@ -3877,7 +4071,10 @@ class Sidecart {
     if (!diff) return;
     const current = parseInt(this.countElement?.textContent || '0', 10);
     const next = Math.max(0, current + diff);
-    if (this.countElement) this.countElement.textContent = next;
+    if (this.countElement) {
+      this.countElement.textContent = next;
+      this.countElement.hidden = !next;
+    }
     this.updateItemsLabel(next);
     document.querySelectorAll('[data-cart-count]').forEach((el) => {
       el.textContent = next;
@@ -3898,23 +4095,35 @@ class Sidecart {
     const progress = threshold > 0 ? Math.min(100, (cartTotalCents / threshold) * 100) : 0;
     this.shippingProgress = progress;
 
-    // A free shipping code fills the bar whatever the total, in the scents'
-    // rainbow (see the --code styles).
+    // Free shipping, from the spend or a code, fills the bar in the scents'
+    // rainbow (see the --free styles). A code fills it whatever the total.
+    // The race starts where the bar was before free shipping.
     const code = this.shippingCode;
-    if (this.shippingBar) this.shippingBar.classList.toggle('sidecart__shipping-bar--code', !!code);
-    if (code) {
+    const free = !!code || remaining <= 0;
+    if (!free || code) this.shippingRaceFrom = progress;
+    if (this.shippingBar) this.shippingBar.classList.toggle('sidecart__shipping-bar--free', free);
+    if (free) {
       this.shippingBarFill.style.width = '100%';
-      this.shippingBarText.textContent = this.shippingCodeMsg;
+      this.setShippingMessage(code ? this.shippingCodeMsg : this.shippingSuccessMsg);
       return;
     }
 
     this.shippingBarFill.style.width = progress + '%';
+    this.setShippingMessage(this.shippingProgressMsg, this.formatMoney(remaining));
+  }
 
-    if (remaining <= 0) {
-      this.shippingBarText.textContent = this.shippingSuccessMsg;
-    } else {
-      this.shippingBarText.textContent = this.shippingProgressMsg.replace('[amount]', this.formatMoney(remaining));
+  // The bar's message, with what's left to spend in bold (the
+  // .sidecart__shipping-amount style) where it says [amount].
+  setShippingMessage(message, amount) {
+    const parts = String(message || '').split('[amount]');
+    if (amount === undefined || parts.length < 2) {
+      this.shippingBarText.textContent = parts.join(amount || '');
+      return;
     }
+    const strong = document.createElement('strong');
+    strong.className = 'sidecart__shipping-amount';
+    strong.textContent = amount;
+    this.shippingBarText.replaceChildren(parts[0], strong, parts.slice(1).join(amount));
   }
 
   // The free shipping code in the cart, or null. Shipping is only priced at
@@ -3932,46 +4141,57 @@ class Sidecart {
     return entry ? entry.code : null;
   }
 
-  // A free shipping code that's new to the cart races the bar once the drawer
-  // shows it: typed in the drawer, or from an email link (which opens the
-  // drawer, see syncGifts). The raced code is remembered in this browser so a
-  // page load doesn't race it again (or reopen the drawer for it); taking the
-  // code off forgets it, so adding it back races again.
+  // Free shipping that's new to the cart races the bar once the drawer shows
+  // it: the spend reaching the threshold, or a free shipping code typed in the
+  // drawer or brought by an email link (which opens the drawer, see
+  // syncGifts). What raced is remembered in this browser (the code, or SPEND)
+  // so a page load doesn't race it again (or reopen the drawer for it); losing
+  // free shipping forgets it, so earning it back races again. A code taken off
+  // a cart that still has the spend leaves the bar full, so that doesn't race.
   trackShippingCode(cart) {
     const code = this.shippingCodeMsg ? this.freeShippingCode(cart) : null;
-    const key = String(code || '').toUpperCase();
+    const total = typeof cart.total_price === 'number' ? cart.total_price : this.subtotalCents;
+    const bySpend = this.shippingThreshold > 0 && total >= this.shippingThreshold;
+    const key = code ? String(code).toUpperCase() : bySpend ? 'SPEND' : '';
     let raced = null;
     try {
       raced = localStorage.getItem('baudie:shipping-race');
-      if (!code && raced) localStorage.removeItem('baudie:shipping-race');
+      if (!key && raced) localStorage.removeItem('baudie:shipping-race');
     } catch (e) {}
-    if (!code) {
+    if (!key) {
       this.shippingRacePending = false;
-    } else if (key !== String(this.shippingCode || '').toUpperCase() && key !== raced) {
-      this.shippingRacePending = true;
+    } else if (key !== this.shippingFreeKey && key !== raced) {
+      if (key === 'SPEND' && this.shippingFreeKey) {
+        try {
+          localStorage.setItem('baudie:shipping-race', key);
+        } catch (e) {}
+      } else {
+        this.shippingRacePending = true;
+      }
     }
+    this.shippingFreeKey = key;
     this.shippingCode = code;
   }
 
-  // The truck races from the real progress to the end while the rainbow forms
+  // The truck races from where the bar was to the end while the rainbow forms
   // behind it (the --race styles). Waits until the drawer has slid all the way
-  // in and the bar shows the code (drawn by applyCartTotals: until then the
-  // re-render would still replace the bar and cut the race): drawerOpened and
-  // the next applyCartTotals call it again.
+  // in and the bar shows free shipping (drawn by applyCartTotals: until then
+  // the re-render would still replace the bar and cut the race): drawerOpened
+  // and the next applyCartTotals call it again.
   raceShippingBar() {
     const bar = this.shippingBar;
     const fill = this.shippingBarFill;
-    if (!bar || !fill || !this.shippingCode) return;
+    if (!bar || !fill || !this.shippingFreeKey) return;
     if (!this.drawerReady || bar.classList.contains('sidecart__shipping-bar--hidden')) return;
-    if (!bar.classList.contains('sidecart__shipping-bar--code')) return;
+    if (!bar.classList.contains('sidecart__shipping-bar--free')) return;
     this.shippingRacePending = false;
     try {
-      localStorage.setItem('baudie:shipping-race', String(this.shippingCode).toUpperCase());
+      localStorage.setItem('baudie:shipping-race', this.shippingFreeKey);
     } catch (e) {}
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     fill.style.transition = 'none';
-    fill.style.width = this.shippingProgress + '%';
+    fill.style.width = this.shippingRaceFrom + '%';
     void fill.offsetWidth; // the race starts there, not at 100%
     fill.style.transition = '';
     bar.classList.add('sidecart__shipping-bar--race');
@@ -4502,7 +4722,7 @@ class Sidecart {
           addedVip &&
           (cart.items || []).some((line) => this.isGiftLine(line) && this.isVipGiftValue(line.properties._gift));
         this.trackShippingCode(cart);
-        if (vipGift || this.newGiftChoice(cart) || (this.shippingRacePending && (cart.item_count || 0) > 0)) {
+        if (vipGift || this.newGiftChoice(cart) || (this.shippingRacePending && this.shippingCode && (cart.item_count || 0) > 0)) {
           this.open();
         }
       }
@@ -5296,6 +5516,9 @@ class Sidecart {
       imgLink.removeAttribute('href');
       // Match the real card's image background (product_card_background metafield).
       imgLink.style.backgroundColor = offer.dataset.cardBg || '#FCF0D2';
+      // A bottle pops out of its tile, anything else sits in it (as in
+      // snippets/sidecart-item.liquid).
+      imgLink.classList.toggle('sidecart-item__image-link--pop', offer.hasAttribute('data-pop'));
       let img = imgLink.querySelector('img');
       if (!img) {
         imgLink.innerHTML = '';
@@ -5311,7 +5534,7 @@ class Sidecart {
       const offerSrc = offerImg.getAttribute('src') || '';
       img.removeAttribute('srcset');
       img.removeAttribute('sizes');
-      img.src = offerSrc.replace(/([?&]width=)\d+/, (_m, p) => p + '400');
+      img.src = offerSrc.replace(/([?&]width=)\d+/, (_m, p) => p + '600');
       img.alt = title;
     }
 
@@ -5552,6 +5775,13 @@ if (Shopify.designMode) {
       "id": "continue_button_text",
       "label": "t:sidecart.settings.continue_button_text.label",
       "default": "Continue shopping"
+    },
+    {
+      "type": "product_list",
+      "id": "empty_products",
+      "label": "t:sidecart.settings.empty_products.label",
+      "info": "t:sidecart.settings.empty_products.info",
+      "limit": 8
     },
     {
       "type": "select",

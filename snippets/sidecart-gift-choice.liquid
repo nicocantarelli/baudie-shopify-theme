@@ -62,7 +62,8 @@
 -%}
 
 <li class="sidecart-item sidecart-item--gift sidecart-item--gift-pending" data-gift-pending data-gift="{{ gift_value | escape }}" data-variant-id="">
-  <span class="sidecart-item__image-link">
+  {%- comment -%} The picked bottle pops out of the tile like the other bottles in the bag. {%- endcomment -%}
+  <span class="sidecart-item__image-link sidecart-item__image-link--pop">
     <span class="sidecart-item__fan" aria-hidden="true">
       {%- for fan_bottle in fan_bottles -%}
         {%- assign fan_turn = forloop.index0 | minus: fan_middle | times: fan_step -%}

@@ -477,6 +477,7 @@
   },
   "sidecart": {
     "title": "Shopping cart",
+    "heading": "Your cart",
     "items": "items",
     "item": "item",
     "close": "Close cart",
@@ -495,6 +496,7 @@
     "includes": "Includes",
     "subscription": "Subscription · {{ plan }}",
     "subscription_prefix": "Subscription",
+    "subscription_saving": "Subscription · saving {{ percent }}%",
     "frequency_label": "Purchase option for {{ product }}",
     "frequency_error": "Couldn't change the purchase option. Please try again.",
     "one_time_group": "One-time purchase",
