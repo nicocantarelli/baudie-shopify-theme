@@ -512,11 +512,17 @@
     background-color: var(--color-blush);
   }
 
-  /* Like in the design, the frame is a little larger than the card and
-     its right edge crosses onto the photo. */
+  /* The frame's wavy band runs over the pink panel's edges, with the
+     panel's edge through the middle of the waves on every side (on the
+     right, the photo's edge). The band's middle is 5.6% in from the SVG's
+     left side, 4.9% from its right, 3.5% from its top and 3.6% from its
+     bottom, so the frame reaches 6.2% of the card's width past its left
+     side and 5.5% past its right (side margins in % follow the card's
+     width), and 31px past its top and bottom (the card is about 800px
+     tall at every width). */
   .product-details__frame {
     z-index: 2;
-    margin: -27px -17px -25px -11px;
+    margin: -31px -5.5% -31px -6.2%;
     background-color: var(--color-yellow);
     -webkit-mask: var(--frame-mask) center / 100% 100% no-repeat;
     mask: var(--frame-mask) center / 100% 100% no-repeat;
