@@ -1378,28 +1378,20 @@
     padding-left: 32px;
   }
 
-  /* Hover (and keyboard focus): the arrow's circle fills in and grows a
-     little, and the arrow slides toward the 3 pack. The picture stays put. */
+  /* Hover (and keyboard focus): the arrow's circle fills in and grows,
+     arrow and all, like the videos row's arrows. The picture stays put. */
   @media (hover: hover) {
     .product-main__bundle-upsell:hover .product-main__bundle-upsell-arrow {
       background-color: var(--bundle-upsell-text, var(--color-on-accent));
       color: var(--color-accent);
-      scale: 1.08;
-    }
-
-    .product-main__bundle-upsell:hover .product-main__bundle-upsell-arrow svg {
-      translate: 3px 0;
+      scale: 1.15;
     }
   }
 
   .product-main__bundle-upsell:focus-visible .product-main__bundle-upsell-arrow {
     background-color: var(--bundle-upsell-text, var(--color-on-accent));
     color: var(--color-accent);
-    scale: 1.08;
-  }
-
-  .product-main__bundle-upsell:focus-visible .product-main__bundle-upsell-arrow svg {
-    translate: 3px 0;
+    scale: 1.15;
   }
 
   .product-main__bundle-upsell:focus-visible {
@@ -1445,7 +1437,6 @@
   .product-main__bundle-upsell-arrow svg {
     width: 20px;
     height: 20px;
-    transition: translate 0.2s ease;
   }
 
   .product-main__bundle-upsell-arrow path {
@@ -1700,8 +1691,7 @@
     .product-main__scent-bottle,
     .product-main__media,
     .product-main__videos-arrow,
-    .product-main__bundle-upsell-arrow,
-    .product-main__bundle-upsell-arrow svg {
+    .product-main__bundle-upsell-arrow {
       transition: none;
     }
 
