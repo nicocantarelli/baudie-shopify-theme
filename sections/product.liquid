@@ -493,12 +493,18 @@
             "
           >
             {%- if upsell_image != blank -%}
-              {{ upsell_image | image_url: width: 300 | image_tag:
+              {%- comment -%}
+                Up to three times its 124px, so it stays sharp on Retina
+                screens (the width attribute alone limits the sizes to 124px).
+              {%- endcomment -%}
+              {{ upsell_image | image_url: width: 372 | image_tag:
                 class: 'product-main__bundle-upsell-image',
                 loading: 'lazy',
                 alt: '',
                 width: 124,
-                height: 108
+                height: 108,
+                widths: '124, 186, 248, 372',
+                sizes: '(max-width: 374px) 60px, (max-width: 1023px) 80px, 124px'
               }}
             {%- endif -%}
             <span class="product-main__bundle-upsell-text">
@@ -1355,6 +1361,10 @@
     position: relative;
     display: grid;
     grid-template-columns: 124px minmax(0, 1fr) 52px;
+    /* One row exactly the banner's height, so the taller picture rises out
+       of its top instead of stretching the row and pushing the text and
+       arrow below the middle. */
+    grid-template-rows: minmax(0, 1fr);
     align-items: center;
     column-gap: 20px;
     height: 96px;
