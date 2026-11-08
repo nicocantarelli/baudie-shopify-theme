@@ -283,7 +283,13 @@
 
         <div class="product-main__heading">
           {%- if product.vendor != blank -%}
-            <p class="product-main__eyebrow">{{ product.vendor | escape }}</p>
+            <p class="product-main__eyebrow">
+              {{ product.vendor | escape }}
+              {%- if section.settings.show_patent_number and section.settings.patent_stamp_number != blank %}
+                <span class="product-main__eyebrow-dot" aria-hidden="true"></span>
+                <span class="product-main__patent">{{ section.settings.patent_stamp_number | escape }}</span>
+              {%- endif %}
+            </p>
           {%- endif -%}
           {%- comment -%} A dash stays with the word before it, so "Essentials Duo" starts the second line. {%- endcomment -%}
           <h1 class="product-main__title">{{ title_text | escape | replace: ' - ', '&nbsp;- ' }}</h1>
@@ -919,6 +925,12 @@
       "id": "patent_stamp_number",
       "label": "t:sections.product.patent_stamp_number",
       "default": "U.S. PATENT 11,857,668"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_patent_number",
+      "label": "t:sections.product.show_patent_number",
+      "default": true
     },
     {
       "type": "range",
