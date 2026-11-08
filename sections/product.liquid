@@ -513,9 +513,7 @@
               {%- endfor -%}
             </span>
             <span class="product-main__bundle-upsell-arrow" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none" focusable="false">
-                <path d="M8.4627 6.9373C8.27655 6.75116 8.27655 6.44885 8.4627 6.2627C8.64885 6.07655 8.95115 6.07655 9.1373 6.2627L13.5373 10.6627C13.7235 10.8488 13.7235 11.1512 13.5373 11.3373L9.1373 15.7373C8.95115 15.9235 8.64885 15.9235 8.4627 15.7373C8.27655 15.5512 8.27655 15.2488 8.4627 15.0627L12.5254 11L8.4627 6.9373Z" fill="currentColor"/>
-              </svg>
+              {{ arrow_icon }}
             </span>
           </a>
         {%- endif -%}
@@ -1380,17 +1378,13 @@
     padding-left: 32px;
   }
 
-  /* Hover (and keyboard focus): the packs rise and grow a little and the
-     arrow's circle fills in, with the arrow nudging toward the 3 pack. */
+  /* Hover (and keyboard focus): the arrow's circle fills in and grows a
+     little, and the arrow slides toward the 3 pack. The picture stays put. */
   @media (hover: hover) {
-    .product-main__bundle-upsell:hover .product-main__bundle-upsell-image {
-      translate: 0 -6px;
-      scale: 1.06;
-    }
-
     .product-main__bundle-upsell:hover .product-main__bundle-upsell-arrow {
       background-color: var(--bundle-upsell-text, var(--color-on-accent));
       color: var(--color-accent);
+      scale: 1.08;
     }
 
     .product-main__bundle-upsell:hover .product-main__bundle-upsell-arrow svg {
@@ -1398,14 +1392,14 @@
     }
   }
 
-  .product-main__bundle-upsell:focus-visible .product-main__bundle-upsell-image {
-    translate: 0 -6px;
-    scale: 1.06;
-  }
-
   .product-main__bundle-upsell:focus-visible .product-main__bundle-upsell-arrow {
     background-color: var(--bundle-upsell-text, var(--color-on-accent));
     color: var(--color-accent);
+    scale: 1.08;
+  }
+
+  .product-main__bundle-upsell:focus-visible .product-main__bundle-upsell-arrow svg {
+    translate: 3px 0;
   }
 
   .product-main__bundle-upsell:focus-visible {
@@ -1420,8 +1414,6 @@
     height: 108px;
     object-fit: contain;
     object-position: bottom center;
-    transform-origin: bottom center;
-    transition: translate 0.25s ease, scale 0.25s ease;
   }
 
   .product-main__bundle-upsell-text {
@@ -1445,13 +1437,20 @@
     height: 52px;
     border: 1.5px solid currentColor;
     border-radius: 50%;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, scale 0.2s ease;
   }
 
+  /* The page's arrow (as on the videos row), drawn bigger for this circle
+     with the same thin line. */
   .product-main__bundle-upsell-arrow svg {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     transition: translate 0.2s ease;
+  }
+
+  .product-main__bundle-upsell-arrow path {
+    stroke-width: 1.75px;
+    vector-effect: non-scaling-stroke;
   }
 
   /* --- Pair it with (Figma "pair-it-with") ---
@@ -1701,7 +1700,7 @@
     .product-main__scent-bottle,
     .product-main__media,
     .product-main__videos-arrow,
-    .product-main__bundle-upsell-image,
+    .product-main__bundle-upsell-arrow,
     .product-main__bundle-upsell-arrow svg {
       transition: none;
     }
@@ -2123,8 +2122,8 @@
     }
 
     .product-main__bundle-upsell-arrow svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
     }
 
     .product-main__scents {
@@ -2226,8 +2225,8 @@
     }
 
     .product-main__bundle-upsell-arrow svg {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
     }
   }
 
