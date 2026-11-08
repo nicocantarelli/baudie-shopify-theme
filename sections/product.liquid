@@ -963,8 +963,12 @@
 
   /* The two halves overlap by 1px: where they meet on a fraction of a
      pixel, some browsers blend both edges and the gradient shows through
-     as a faint line across the card. */
+     as a faint line across the card. The lower half is drawn over the
+     upper one (positioned, like it), so the overlap doesn't hide the top
+     pixel of what starts it: on a product with no subscription, the
+     quantity stepper's top line. */
   .product-main__buy {
+    position: relative;
     grid-row: 2;
     margin-top: -1px;
     padding: 0 var(--card-padding-x) 32px;
