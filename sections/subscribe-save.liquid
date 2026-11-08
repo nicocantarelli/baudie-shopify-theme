@@ -120,16 +120,18 @@
     min-height: min(58vw, 835px);
   }
 
-  /* The cream panel, over the left of the photo. Its right edge is the
-     design's cream tile, turned upright and stretched to the panel's height;
-     the content is centered in the part left of the curve. */
+  /* The cream panel, over the left of the photo. Its right edge is a gentle
+     S (assets/shape-cream-edge.svg, stretched to the panel): out to 51.4% of
+     the width a quarter of the way down, in to 48.6% lower down, about the
+     middle of the screen on average. The content is centered in the half
+     left of it. */
   .subscribe-save__panel {
     position: relative;
     isolation: isolate;
     display: flex;
     align-items: center;
     width: 58.8%;
-    padding: 64px 4.36% 64px 0;
+    padding: 64px 8.8% 64px 0;
   }
 
   /* The panel's color and curved edge, on a layer behind the content: the
@@ -142,12 +144,8 @@
     inset: 0;
     z-index: -1;
     background: var(--panel-bg, var(--panel-fill));
-    -webkit-mask:
-      linear-gradient(#000 0 0) left / 50% 100% no-repeat,
-      var(--edge-mask) right / 53.15% 100% no-repeat;
-    mask:
-      linear-gradient(#000 0 0) left / 50% 100% no-repeat,
-      var(--edge-mask) right / 53.15% 100% no-repeat;
+    -webkit-mask: var(--edge-mask) 0 0 / 100% 100% no-repeat;
+    mask: var(--edge-mask) 0 0 / 100% 100% no-repeat;
   }
 
   .subscribe-save__content {
@@ -178,10 +176,12 @@
   }
 
   /* Shrinks to the text so the gradient runs across the words themselves.
-     The bottom padding keeps the descenders inside the painted gradient. */
+     The bottom padding keeps the descenders inside the painted gradient.
+     At most 11em wide, so a title like "Don't know where to start?" keeps
+     its two lines on wide screens instead of running edge to edge. */
   .subscribe-save__title {
     width: fit-content;
-    max-width: 100%;
+    max-width: min(100%, 11em);
     margin: 0 0 -0.15em;
     padding-bottom: 0.15em;
     font: 400 72px/0.88 var(--font-jokker);
@@ -295,9 +295,9 @@
     fill: var(--color-panel);
   }
 
-  /* Photo on the left: the panel's color layer is turned half around, so
-     its curved edge runs over the photo on that side, bulging deepest near
-     the top. */
+  /* Photo on the left: the panel's color layer is mirrored, so its curved
+     edge runs over the photo on that side, reaching furthest into it near
+     the top and giving the photo room lower down. */
   .subscribe-save--photo-left {
     justify-content: flex-end;
   }
@@ -309,21 +309,19 @@
 
   @media (min-width: 769px) {
     .subscribe-save--photo-left .subscribe-save__panel::before {
-      transform: scale(-1);
+      transform: scaleX(-1);
     }
 
-    /* Turned around, the curve's deepest point (11.2% of the screen's width
-       into the panel) comes low, beside the perks and the button, so the
-       content keeps 16px clear of it with its own 40px padding. */
+    /* Mirrored, the content is centered in the half right of the curve. */
     .subscribe-save--photo-left .subscribe-save__panel {
       padding-right: 0;
-      padding-left: calc(11.2% + 16px - 40px);
+      padding-left: 8.8%;
     }
 
-    /* The turned layer turns its gradient too, so it's set the other way
+    /* The mirrored layer mirrors its gradient too, so it's set the other way
        round to still run from top left to bottom right. */
     .subscribe-save--photo-left.subscribe-save--pink {
-      --panel-fill: linear-gradient(to top left, var(--color-panel), var(--color-blush));
+      --panel-fill: linear-gradient(to bottom left, var(--color-panel), var(--color-blush));
     }
   }
 
