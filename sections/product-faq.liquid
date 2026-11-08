@@ -7,23 +7,36 @@
 
   Colors left empty in the editor give the design's band; a picked
   background color fills the band instead, and a picked text color replaces
-  the white.
+  the white. On a scent's page (a product with a scent name and its three
+  gradient colors), the band takes the scent's own gradient, the one behind
+  the top of the page, with dark text, unless a background color is picked.
 {%- endcomment -%}
 
 {%- liquid
   assign faq_blocks = section.blocks | where: 'type', 'faq_item'
   assign top_padding = section.settings.top_padding | default: 96
   assign faq_image = section.settings.image
+
+  assign scent_band = false
+  if product.metafields.custom.scent_name != blank and section.settings.background_color == blank
+    assign scent_band_1 = product.metafields.custom.gradient_color_1
+    assign scent_band_2 = product.metafields.custom.gradient_color_2
+    assign scent_band_3 = product.metafields.custom.gradient_color_3
+    if scent_band_1 != blank and scent_band_2 != blank and scent_band_3 != blank
+      assign scent_band = true
+    endif
+  endif
 -%}
 
 <section
-  class="product-faq full-width{% if faq_image == blank %} product-faq--no-photo{% endif %}"
+  class="product-faq full-width{% if faq_image == blank %} product-faq--no-photo{% endif %}{% if scent_band %} product-faq--scent{% endif %}"
   data-section-id="{{ section.id }}"
   data-product-faq
   aria-label="{{ section.settings.title | default: 'FAQ' | escape }}"
   style="--pf-top: {{ top_padding }}px; --faq-wave-top: url('{{ 'shape-faq-wave-top.svg' | asset_url }}'); --faq-wave-bottom: url('{{ 'shape-faq-wave-bottom.svg' | asset_url }}');
     {%- if section.settings.background_color != blank %} --section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %} --text-color: {{ section.settings.text_color }};{% endif -%}
+    {%- if scent_band %} --faq-scent-1: {{ scent_band_1 }}; --faq-scent-2: {{ scent_band_2 }}; --faq-scent-3: {{ scent_band_3 }};{% endif -%}
   ">
   <div class="product-faq__inner">
     {%- if faq_image != blank -%}
@@ -133,6 +146,16 @@
      takes the buttons' gradient. */
   .product-faq--no-photo {
     --faq-band: var(--section-bg, var(--gradient-button));
+  }
+
+  /* A scent's page: the scent's gradient, light on the left to deep on the
+     right like the pink band, with the page's dark brown text, which keeps
+     4.5:1 where the questions sit on every scent's colors (white wouldn't
+     show on the pale ones). The plus takes the band's light end. */
+  .product-faq.product-faq--scent {
+    --faq-band: linear-gradient(90deg, var(--faq-scent-1) 0%, var(--faq-scent-2) 50%, var(--faq-scent-3) 100%);
+    --faq-text: var(--text-color, #3E2027);
+    --faq-toggle-color: var(--faq-scent-1);
   }
 
   .product-faq::before {
@@ -262,7 +285,7 @@
     background: var(--faq-text);
     /* The band's own color when one is picked, so the plus still shows
        against a picked text color. */
-    color: var(--section-bg, var(--color-foreground));
+    color: var(--faq-toggle-color, var(--section-bg, var(--color-foreground)));
     transition: rotate 0.3s ease;
   }
 
@@ -333,6 +356,10 @@
 
     .product-faq--no-photo {
       --faq-band: var(--section-bg, var(--gradient-button));
+    }
+
+    .product-faq.product-faq--scent {
+      --faq-band: linear-gradient(180deg, var(--faq-scent-1) 0%, var(--faq-scent-2) 50%, var(--faq-scent-3) 100%);
     }
 
     .product-faq__inner {
