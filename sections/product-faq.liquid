@@ -10,7 +10,9 @@
   the white. On a scent's page (a product with a scent name and its three
   gradient colors), the band takes the scent's own gradient, the one behind
   the top of the page, unless a background color is picked, and the text
-  takes the scent's own hue, darkened enough to read on it.
+  takes the scent's own hue, darkened enough to read on it. The product's
+  FAQ text color and FAQ heading color metafields can pick other colors
+  (St. Tropez's are redder); they're darkened too if they'd read too light.
 {%- endcomment -%}
 
 {%- liquid
@@ -60,7 +62,12 @@
       assign scent_band_light = scent_band_3
     endif
 
-    assign scent_band_text = scent_band_deep
+    # A color picked on the product (custom.faq_text_color) replaces the
+    # scent's deepest color as the start.
+    assign scent_band_text = product.metafields.custom.faq_text_color | append: ''
+    if scent_band_text == blank
+      assign scent_band_text = scent_band_deep
+    endif
     for step in (1..50)
       assign scent_contrast_1 = scent_band_text | color_contrast: scent_band_1
       assign scent_contrast_2 = scent_band_text | color_contrast: scent_band_2
@@ -71,6 +78,24 @@
       endif
       assign scent_band_text = scent_band_text | color_darken: 2
     endfor
+
+    # The heading is large text (60px and up), so 3:1 is enough (3.1 here
+    # for the rounding): a color picked on the product
+    # (custom.faq_heading_color) can be brighter than the questions'.
+    # Without one it takes the text color.
+    assign scent_band_title = product.metafields.custom.faq_heading_color | append: ''
+    if scent_band_title != blank
+      for step in (1..50)
+        assign scent_contrast_1 = scent_band_title | color_contrast: scent_band_1
+        assign scent_contrast_2 = scent_band_title | color_contrast: scent_band_2
+        assign scent_contrast_3 = scent_band_title | color_contrast: scent_band_3
+        assign scent_contrast_low = scent_contrast_1 | at_most: scent_contrast_2 | at_most: scent_contrast_3
+        if scent_contrast_low >= 3.1
+          break
+        endif
+        assign scent_band_title = scent_band_title | color_darken: 2
+      endfor
+    endif
   endif
 -%}
 
@@ -82,7 +107,7 @@
   style="--pf-top: {{ top_padding }}px; --faq-wave-top: url('{{ 'shape-faq-wave-top.svg' | asset_url }}'); --faq-wave-bottom: url('{{ 'shape-faq-wave-bottom.svg' | asset_url }}');
     {%- if section.settings.background_color != blank %} --section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %} --text-color: {{ section.settings.text_color }};{% endif -%}
-    {%- if scent_band %} --faq-scent-1: {{ scent_band_1 }}; --faq-scent-2: {{ scent_band_2 }}; --faq-scent-3: {{ scent_band_3 }}; --faq-scent-text: {{ scent_band_text }}; --faq-scent-light: {{ scent_band_light }};{% endif -%}
+    {%- if scent_band %} --faq-scent-1: {{ scent_band_1 }}; --faq-scent-2: {{ scent_band_2 }}; --faq-scent-3: {{ scent_band_3 }}; --faq-scent-text: {{ scent_band_text }}; --faq-scent-light: {{ scent_band_light }};{% if scent_band_title != blank %} --faq-scent-title: {{ scent_band_title }};{% endif %}{% endif -%}
   ">
   <div class="product-faq__inner">
     {%- if faq_image != blank -%}
@@ -199,11 +224,16 @@
   /* A scent's page: the scent's gradient with the stops of the one behind
      the top of its page, left to right here, and text in the scent's own
      hue (worked out above to keep 4.5:1 anywhere on the band). The plus
-     takes the band's lightest color. */
+     takes the band's lightest color. A heading color picked on the
+     product applies to the title only. */
   .product-faq.product-faq--scent {
     --faq-band: linear-gradient(90deg, var(--faq-scent-1) 0%, var(--faq-scent-2) 35%, var(--faq-scent-3) 75%);
     --faq-text: var(--text-color, var(--faq-scent-text));
     --faq-toggle-color: var(--faq-scent-light);
+  }
+
+  .product-faq.product-faq--scent .product-faq__title {
+    color: var(--text-color, var(--faq-scent-title, var(--faq-text)));
   }
 
   .product-faq::before {
