@@ -967,20 +967,22 @@
       display: none;
     }
 
-    /* The links spread across the whole strip. A thin strip like Bloom's
-       category bar: 13px labels in a 40px strip (they were up to 18px in a
-       47px one). On narrower screens the size follows the screen: the four
-       labels together are about 20.7em wide, plus at least 0.8em between
-       them, inside the header's 12px sides. Longer or more labels than fit
-       scroll sideways instead. */
+    /* A thin strip like Bloom's category bar: 13px labels in a 40px strip
+       (they were up to 18px in a 47px one). The labels sit centered, closer
+       to each other than to the screen's edges: the four together are about
+       20.7em wide, and each gap takes a fifth of the room left inside the
+       12px sides, so the edges always keep 12px more than the gaps (20px
+       gaps and 32px edges on a 393px phone). The gaps stay between 1.4em
+       and 32px, and on narrow phones the labels shrink to keep 1.4em.
+       Longer or more labels than fit scroll sideways instead. */
     .header__categories-list {
       display: flex;
-      justify-content: space-between;
-      gap: 0.8em;
+      justify-content: center;
+      gap: clamp(1.4em, (100vw - 24px - 20.7em) / 5, 32px);
       min-width: max-content;
       margin: 0;
       padding: 0 12px;
-      font-size: min(13px, (100vw - 24px) / 23.4);
+      font-size: min(13px, (100vw - 24px) / 27.7);
       list-style: none;
     }
 
