@@ -407,9 +407,19 @@
     transform: none;
   }
 
+  /* While its frequency dropdown is open, the option is lifted above the
+     product card's Add to cart row (z-index 2 on desktop, where it sticks
+     to the window's bottom), so the list isn't hidden behind it. */
   .purchase-options__option {
     position: relative;
     z-index: 1;
+  }
+
+  .purchase-options__option:has(.select-menu.is-open) {
+    z-index: 3;
+  }
+
+  .purchase-options__option {
     display: flex;
     flex-direction: column;
     min-width: 0;
