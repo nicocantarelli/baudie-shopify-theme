@@ -179,6 +179,7 @@
               data-shipping-bar-fill
               style="width: {{ shipping_progress }}%">
               {% if section.settings.shipping_bar_icon != blank %}
+                <span class="sidecart__shipping-bar-road" aria-hidden="true"></span>
                 <span class="sidecart__shipping-bar-icon" aria-hidden="true"
                   style="--shipping-bar-icon-url: url('{{ section.settings.shipping_bar_icon | image_url: width: 56 }}'); --shipping-bar-icon-color: {{ section.settings.shipping_bar_icon_color | default: section.settings.shipping_bar_fill_color }};">
                   <span class="sidecart__shipping-bar-icon-img"></span>
@@ -337,6 +338,7 @@
         data-shipping-bar-fill
         style="width: {{ shipping_progress }}%">
         {% if section.settings.shipping_bar_icon != blank %}
+          <span class="sidecart__shipping-bar-road" aria-hidden="true"></span>
           <span class="sidecart__shipping-bar-icon" aria-hidden="true">
             <img src="{{ section.settings.shipping_bar_icon | image_url: width: 40 }}" alt="" width="20" height="20" loading="lazy">
           </span>
@@ -1601,6 +1603,29 @@
   background: linear-gradient(var(--shipping-bar-track, rgba(62, 32, 39, 0.15)) 0 0) no-repeat 0 0 / 100% 100%;
   overflow: visible;
   position: relative;
+  container-type: inline-size;
+}
+
+/* With the truck, the track ahead of it is its own piece hung off the end
+   of the fill (the track's own background is off), so its end can follow
+   the truck as it drives: it runs to the end of the bar until the truck is
+   22px from parking, then slides back under it, twice as fast as the truck
+   drives, to end under its cargo box as it parks. Past that, the track
+   would show through the gap above the hood. The same back when the truck
+   leaves. */
+.sidecart__shipping-bar-track:has(.sidecart__shipping-bar-road) {
+  background: none;
+}
+
+.sidecart__shipping-bar-road {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: clamp(0px, 2 * (100cqw - 22px - 100%), 100cqw - 100%);
+  height: 100%;
+  border-radius: var(--radius-pill, 999px);
+  background: var(--shipping-bar-track, rgba(62, 32, 39, 0.15));
+  pointer-events: none;
 }
 
 /* The bar fill color, brightening a little towards the truck. */
@@ -1662,16 +1687,10 @@
    finish, and the message pops. Reaching the spend plays --fill-in instead
    (below): no race, the colors pour in up to the truck.
 
-   The truck parks over the end of the bar, so the track stops under its
-   cargo box: past that it would show through the gap above the hood. While
-   the truck is still on its way there, the track runs to the end. */
+   Without the truck, the track stops where the full bar does (with it, the
+   track ahead of the truck follows it in, see .sidecart__shipping-bar-road). */
 .sidecart__shipping-bar--free .sidecart__shipping-bar-track {
-  container-type: inline-size;
   background-size: calc(100% - 22px) 100%;
-}
-
-.sidecart__shipping-bar--race .sidecart__shipping-bar-track {
-  animation: sidecart-shipping-track-end 1s step-end;
 }
 
 .sidecart__shipping-bar--free .sidecart__shipping-bar-fill {
@@ -1791,9 +1810,7 @@
    message pops. Everything follows --shipping-fill-in, the edge's place
    along the bar, which the track animates and its parts inherit. */
 .sidecart__shipping-bar--fill-in .sidecart__shipping-bar-track {
-  animation:
-    sidecart-shipping-fill-in 1.1s 0.5s cubic-bezier(0.4, 0, 0.6, 1) both,
-    sidecart-shipping-track-end 0.5s step-end;
+  animation: sidecart-shipping-fill-in 1.1s 0.5s cubic-bezier(0.4, 0, 0.6, 1) both;
 }
 
 .sidecart__shipping-bar--fill-in .sidecart__shipping-bar-fill {
@@ -1925,11 +1942,6 @@
 @keyframes sidecart-shipping-fill-in {
   from { --shipping-fill-in: -5%; }
   to { --shipping-fill-in: 112%; }
-}
-
-/* The track runs to the end until the truck gets there (see --free). */
-@keyframes sidecart-shipping-track-end {
-  from { background-size: 100% 100%; }
 }
 
 @keyframes sidecart-truck-hop {
