@@ -467,6 +467,30 @@
         "mobile_overlay_opacity": "Mobile overlay opacity",
         "mobile_button_text": "Mobile button text",
         "mobile_button_url": "Mobile button URL"
+      },
+      "blocks": {
+        "card_colors": {
+          "name": "Card colors",
+          "settings": {
+            "intro": {
+              "content": "Colors for one product's card, used here only. They take the place of the product's own colors and of the default colors. Leave a color empty to keep the one it would have."
+            },
+            "product": {
+              "label": "Product"
+            },
+            "background_color": {
+              "label": "Background"
+            },
+            "title_color": {
+              "label": "Title, price and stars",
+              "info": "The title and price use it only when it has 4.5:1 contrast with the background, otherwise they take the text color. The stars need 3:1."
+            },
+            "text_color": {
+              "label": "Description, reviews and buttons",
+              "info": "Also fills the View product button, whose text stays white."
+            }
+          }
+        }
       }
     },
     "product_bundle": {

@@ -50,7 +50,71 @@
         "mobile_subtitle": "",
         "mobile_button_text": "SHOP OUR SCENTS",
         "mobile_button_url": "shopify://collections/shop"
-      }
+      },
+      "blocks": {
+        "card_colors_petal_kiss": {
+          "type": "card_colors",
+          "settings": {
+            "product": "petal-kiss",
+            "background_color": "#ffeef6",
+            "title_color": "#d66597",
+            "text_color": "#ba417b"
+          }
+        },
+        "card_colors_sweet_muse": {
+          "type": "card_colors",
+          "settings": {
+            "product": "sweet-muse",
+            "background_color": "#ffffdc",
+            "title_color": "#562433",
+            "text_color": "#562433"
+          }
+        },
+        "card_colors_capri_seaside": {
+          "type": "card_colors",
+          "settings": {
+            "product": "capri-seaside",
+            "background_color": "#ffe7ce",
+            "title_color": "#df5d38",
+            "text_color": "#c23804"
+          }
+        },
+        "card_colors_st_tropez": {
+          "type": "card_colors",
+          "settings": {
+            "product": "st-tropez",
+            "background_color": "#ffeef6",
+            "title_color": "#ff2f8c",
+            "text_color": "#d70170"
+          }
+        },
+        "card_colors_deep_ritual": {
+          "type": "card_colors",
+          "settings": {
+            "product": "deep-ritual",
+            "background_color": "#e4f3ff",
+            "title_color": "#0360c7",
+            "text_color": "#0360c7"
+          }
+        },
+        "card_colors_barely_there": {
+          "type": "card_colors",
+          "settings": {
+            "product": "barely-there",
+            "background_color": "#f0ffc5",
+            "title_color": "#54693a",
+            "text_color": "#54693a"
+          }
+        }
+      },
+      "block_order": [
+        "card_colors_petal_kiss",
+        "card_colors_sweet_muse",
+        "card_colors_capri_seaside",
+        "card_colors_st_tropez",
+        "card_colors_deep_ritual",
+        "card_colors_barely_there"
+      ]
     },
     "in_press_9ChkGH": {
       "type": "in-press",

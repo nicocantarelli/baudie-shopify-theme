@@ -5,9 +5,11 @@
   (mobile: node-id=109-11280)
 
   Card colors come from "Use default colors" (the same colors on every card)
-  or from each product's metafields. Colors left empty fall back to the theme
-  colors set on .hero-product__card in the stylesheet, so only the ones that
-  are set are written here.
+  or from each product's metafields. A "Card colors" block for a product
+  overrides those for its card, here only, without touching the product's
+  metafields (the live site reads them too). Colors left empty fall back to
+  the theme colors set on .hero-product__card in the stylesheet, so only the
+  ones that are set are written here.
 {% endcomment %}
 
 <section class="hero-product full-width" aria-label="{{ 'sections.hero_product.aria_label' | t }}">
@@ -111,6 +113,14 @@
         else
           assign first_card_bg = hero_product.metafields.custom.hero_card_background_color | default: hero_product.metafields.custom.card_background_color | default: hero_product.metafields.custom.product_card_background
         endif
+        for color_block in section.blocks
+          if color_block.settings.product.id == hero_product.id
+            if color_block.settings.background_color != blank
+              assign first_card_bg = color_block.settings.background_color
+            endif
+            break
+          endif
+        endfor
       endfor
     -%}
     <div
@@ -224,10 +234,28 @@
             assign card_button_color = product.metafields.custom.product_text_color
           endif
 
+          # This product's "Card colors" block, if there is one: its text color
+          # also fills the View product button (its text stays white).
+          assign card_title = ''
+          for color_block in section.blocks
+            if color_block.settings.product.id == product.id
+              if color_block.settings.background_color != blank
+                assign card_bg = color_block.settings.background_color
+              endif
+              if color_block.settings.text_color != blank
+                assign card_text = color_block.settings.text_color
+                assign card_button_color = color_block.settings.text_color
+              endif
+              assign card_title = color_block.settings.title_color
+              break
+            endif
+          endfor
+
           # A text color that reads below 4.5:1 on its card is darkened just
           # enough to reach it; the product's own color setting is unchanged.
           assign card_bg = card_bg | append: ''
           assign card_text = card_text | append: ''
+          assign card_button_color = card_button_color | append: ''
           if card_bg != blank and card_text != blank
             for step in (1..30)
               assign text_contrast = card_text | color_contrast: card_bg
@@ -237,17 +265,36 @@
               assign card_text = card_text | color_darken: 2
             endfor
           endif
+
+          # The title color is for the name and price only where it reads at
+          # 4.5:1 (they're 18px bold, under the large-text size), else they
+          # take the text color. The stars, as icons, need 3:1.
+          assign card_title = card_title | append: ''
+          assign card_stars = card_title
+          if card_title != blank and card_bg != blank
+            assign title_contrast = card_title | color_contrast: card_bg
+            if title_contrast < 4.5
+              assign card_title = ''
+            endif
+            if title_contrast < 3
+              assign card_stars = ''
+            endif
+          endif
         -%}
         <div
           class="hero-product__card {% if forloop.first %}is-active{% endif %}"
           style="
             {%- if card_bg != blank %}--card-bg: {{ card_bg }};{% endif -%}
             {%- if card_text != blank %}--card-text: {{ card_text }};{% endif -%}
+            {%- if card_title != blank %}--card-title: {{ card_title }};{% endif -%}
+            {%- if card_stars != blank %}--card-stars: {{ card_stars }};{% endif -%}
             {%- if card_button_color != blank %}--card-button: {{ card_button_color }};{% endif -%}
           "
           data-product-index="{{ forloop.index0 }}"
           data-card-color="{{ card_bg }}"
           data-card-text="{{ card_text }}"
+          data-card-title="{{ card_title }}"
+          data-card-stars="{{ card_stars }}"
           data-card-button="{{ card_button_color }}"
           role="group"
           aria-roledescription="slide"
@@ -649,6 +696,10 @@
     color: var(--card-text, var(--color-foreground));
   }
 
+  .hero-product__rating .star-rating__stars {
+    color: var(--card-stars, var(--card-text, var(--color-foreground)));
+  }
+
   /* Product Info */
   .hero-product__info {
     display: flex;
@@ -665,7 +716,7 @@
     line-height: normal;
     letter-spacing: var(--tracking-label-lg);
     text-transform: uppercase;
-    color: var(--card-text, var(--color-foreground));
+    color: var(--card-title, var(--card-text, var(--color-foreground)));
     margin: 0;
   }
 
@@ -1071,6 +1122,8 @@
       const colors = {
         '--card-bg': newCard?.getAttribute('data-card-color'),
         '--card-text': newCard?.getAttribute('data-card-text'),
+        '--card-title': newCard?.getAttribute('data-card-title'),
+        '--card-stars': newCard?.getAttribute('data-card-stars'),
         '--card-button': newCard?.getAttribute('data-card-button')
       };
 
@@ -1370,6 +1423,40 @@
         "type": "url",
         "id": "mobile_button_url",
         "label": "t:sections.hero_product.settings.mobile_button_url"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "card_colors",
+        "name": "t:sections.hero_product.blocks.card_colors.name",
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "t:sections.hero_product.blocks.card_colors.settings.intro.content"
+          },
+          {
+            "type": "product",
+            "id": "product",
+            "label": "t:sections.hero_product.blocks.card_colors.settings.product.label"
+          },
+          {
+            "type": "color",
+            "id": "background_color",
+            "label": "t:sections.hero_product.blocks.card_colors.settings.background_color.label"
+          },
+          {
+            "type": "color",
+            "id": "title_color",
+            "label": "t:sections.hero_product.blocks.card_colors.settings.title_color.label",
+            "info": "t:sections.hero_product.blocks.card_colors.settings.title_color.info"
+          },
+          {
+            "type": "color",
+            "id": "text_color",
+            "label": "t:sections.hero_product.blocks.card_colors.settings.text_color.label",
+            "info": "t:sections.hero_product.blocks.card_colors.settings.text_color.info"
+          }
+        ]
       }
     ],
     "presets": [
