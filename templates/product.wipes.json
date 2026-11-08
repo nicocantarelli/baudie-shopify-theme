@@ -120,6 +120,7 @@
         "patent_stamp_position": "image_bottom_right",
         "patent_stamp_heading": "PATENTED FORMULA",
         "patent_stamp_number": "U.S. PATENT 11,857,668",
+        "show_patent_number": false,
         "patent_stamp_size": 100,
         "patent_stamp_rotation": 0,
         "patent_stamp_background": "#3e2027",
