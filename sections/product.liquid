@@ -269,6 +269,14 @@
               <span class="visually-hidden">: {{ scent_name | escape }}</span>
             {%- endif -%}
           </h1>
+          {%- comment -%}
+            Phones: the scent under the title, since the scent picker is
+            further down, past the photo. Hidden from screen readers, which
+            already hear it as part of the title.
+          {%- endcomment -%}
+          {%- if scent_name != blank -%}
+            <p class="product-main__title-scent" aria-hidden="true">{{ scent_name | escape }}</p>
+          {%- endif -%}
           {%- if product_title_note != blank -%}
             <p
               class="product-main__title-note"
@@ -1063,6 +1071,10 @@
     letter-spacing: 0;
     text-transform: none;
     color: inherit;
+  }
+
+  .product-main__title-scent {
+    display: none;
   }
 
   .product-main__title-note {
@@ -2082,6 +2094,13 @@
 
     .product-main__title {
       font-size: 34px;
+    }
+
+    .product-main__title-scent {
+      display: block;
+      margin: 0;
+      font: 700 16px/1.25 var(--font-sweet-sans);
+      letter-spacing: var(--tracking-label);
     }
 
     .product-main__title-note,
