@@ -8,11 +8,9 @@
   Colors left empty in the editor give the design's band; a picked
   background color fills the band instead, and a picked text color replaces
   the white. On a scent's page (a product with a scent name and its three
-  gradient colors), the band takes the scent's own colors, the ones behind
-  the top of the page, unless a background color is picked: like the pink
-  band, they run from light to deep behind the photo and reach a deeper
-  shade of the scent's deep color where the questions start, dark enough
-  for the white text.
+  gradient colors), the band takes the scent's own gradient, the one behind
+  the top of the page, unless a background color is picked, and the text
+  takes the scent's own hue, darkened enough to read on it.
 {%- endcomment -%}
 
 {%- liquid
@@ -30,30 +28,48 @@
     endif
   endif
 
-  # The band runs from the scent's lightest end to its deepest (most scents
-  # have their deep color last, Sweet Muse first). Under the text, the deep
-  # color is darkened just enough for white to read at 4.5:1; 4.6 here as
-  # color_contrast rounds to one decimal.
+  # The text takes the hue of the scent's deepest color (the last one for
+  # most scents, the first for Sweet Muse), darkened just enough to read at
+  # 4.5:1 anywhere on the band; 4.6 here as color_contrast rounds to one
+  # decimal. The plus signs take the band's lightest color.
   if scent_band
     assign scent_band_1 = scent_band_1 | append: ''
     assign scent_band_2 = scent_band_2 | append: ''
     assign scent_band_3 = scent_band_3 | append: ''
     assign scent_brightness_1 = scent_band_1 | color_brightness
+    assign scent_brightness_2 = scent_band_2 | color_brightness
     assign scent_brightness_3 = scent_band_3 | color_brightness
-    if scent_brightness_1 < scent_brightness_3
-      assign scent_band_light = scent_band_3
-      assign scent_band_deep = scent_band_1
-    else
-      assign scent_band_light = scent_band_1
-      assign scent_band_deep = scent_band_3
+
+    assign scent_band_deep = scent_band_3
+    assign scent_deep_brightness = scent_brightness_3
+    if scent_brightness_2 < scent_deep_brightness
+      assign scent_band_deep = scent_band_2
+      assign scent_deep_brightness = scent_brightness_2
     endif
-    assign scent_band_dark = scent_band_deep
-    for step in (1..40)
-      assign scent_white_contrast = scent_band_dark | color_contrast: '#FFFFFF'
-      if scent_white_contrast >= 4.6
+    if scent_brightness_1 < scent_deep_brightness
+      assign scent_band_deep = scent_band_1
+    endif
+
+    assign scent_band_light = scent_band_1
+    assign scent_light_brightness = scent_brightness_1
+    if scent_brightness_2 > scent_light_brightness
+      assign scent_band_light = scent_band_2
+      assign scent_light_brightness = scent_brightness_2
+    endif
+    if scent_brightness_3 > scent_light_brightness
+      assign scent_band_light = scent_band_3
+    endif
+
+    assign scent_band_text = scent_band_deep
+    for step in (1..50)
+      assign scent_contrast_1 = scent_band_text | color_contrast: scent_band_1
+      assign scent_contrast_2 = scent_band_text | color_contrast: scent_band_2
+      assign scent_contrast_3 = scent_band_text | color_contrast: scent_band_3
+      assign scent_contrast_low = scent_contrast_1 | at_most: scent_contrast_2 | at_most: scent_contrast_3
+      if scent_contrast_low >= 4.6
         break
       endif
-      assign scent_band_dark = scent_band_dark | color_darken: 2
+      assign scent_band_text = scent_band_text | color_darken: 2
     endfor
   endif
 -%}
@@ -66,7 +82,7 @@
   style="--pf-top: {{ top_padding }}px; --faq-wave-top: url('{{ 'shape-faq-wave-top.svg' | asset_url }}'); --faq-wave-bottom: url('{{ 'shape-faq-wave-bottom.svg' | asset_url }}');
     {%- if section.settings.background_color != blank %} --section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %} --text-color: {{ section.settings.text_color }};{% endif -%}
-    {%- if scent_band %} --faq-scent-light: {{ scent_band_light }}; --faq-scent-mid: {{ scent_band_2 }}; --faq-scent-deep: {{ scent_band_deep }}; --faq-scent-dark: {{ scent_band_dark }};{% endif -%}
+    {%- if scent_band %} --faq-scent-1: {{ scent_band_1 }}; --faq-scent-2: {{ scent_band_2 }}; --faq-scent-3: {{ scent_band_3 }}; --faq-scent-text: {{ scent_band_text }}; --faq-scent-light: {{ scent_band_light }};{% endif -%}
   ">
   <div class="product-faq__inner">
     {%- if faq_image != blank -%}
@@ -180,18 +196,14 @@
     --faq-band: var(--section-bg, var(--gradient-button));
   }
 
-  /* A scent's page, like the pink band: the scent's colors run light to
-     deep behind the photo and reach the darker shade of its deep color
-     (worked out above for 4.5:1 with white) where the questions start.
-     The plus takes that shade. Without a photo the text starts at the
-     left, so the band is that shade all across. */
+  /* A scent's page: the scent's gradient with the stops of the one behind
+     the top of its page, left to right here, and text in the scent's own
+     hue (worked out above to keep 4.5:1 anywhere on the band). The plus
+     takes the band's lightest color. */
   .product-faq.product-faq--scent {
-    --faq-band: linear-gradient(90deg, var(--faq-scent-light) 0%, var(--faq-scent-mid) 18%, var(--faq-scent-deep) 36%, var(--faq-scent-dark) 50%, var(--faq-scent-dark) 100%);
-    --faq-toggle-color: var(--faq-scent-dark);
-  }
-
-  .product-faq.product-faq--scent.product-faq--no-photo {
-    --faq-band: var(--faq-scent-dark);
+    --faq-band: linear-gradient(90deg, var(--faq-scent-1) 0%, var(--faq-scent-2) 35%, var(--faq-scent-3) 75%);
+    --faq-text: var(--text-color, var(--faq-scent-text));
+    --faq-toggle-color: var(--faq-scent-light);
   }
 
   .product-faq::before {
@@ -395,7 +407,7 @@
     }
 
     .product-faq.product-faq--scent {
-      --faq-band: linear-gradient(180deg, var(--faq-scent-mid) 0%, var(--faq-scent-deep) 21%, var(--faq-scent-dark) 42%, var(--faq-scent-dark) 100%);
+      --faq-band: linear-gradient(180deg, var(--faq-scent-1) 0%, var(--faq-scent-2) 35%, var(--faq-scent-3) 75%);
     }
 
     .product-faq__inner {
