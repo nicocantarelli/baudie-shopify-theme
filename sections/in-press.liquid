@@ -17,12 +17,15 @@
 
     # The top edge of the band's wave (assets/shape-wave.svg), which the title follows.
     assign wave_edge = 'M0 30.55C62.45 52.15 246.75 82.55 482.85 30.55C577.8 9.94 659.68 2.74 727.03 2.74C937.4 2.74 937.4 58.87 1147.77 58.87C1222.85 58.87 1311.85 51.37 1409.55 30.55C1647.55 -24.05 1804.35 6.45 1853.45 30.55'
+    # The same for the phones' softer wave (assets/shape-wave-soft.svg).
+    assign wave_edge_mobile = 'M0 35.1C63.33 43.38 128.34 50 200 50C391.51 50 535.49 2.74 727 2.74C891.62 2.74 1015.38 50 1180 50C1376.24 50 1523.76 2.74 1720 2.74C1766.98 2.74 1810.94 5.9 1853.45 10.58'
   endif
 -%}
 
 <div
   class="in-press wave-top full-width in-press--title-{{ section.settings.title_style | default: 'label' }}{% if section.settings.tint_logos %} in-press--tinted{% endif %}"
   style="
+    --soft-wave: url('{{ 'shape-wave-soft.svg' | asset_url }}');
     {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
     {%- if section.settings.divider_color != blank %}--divider-color: {{ section.settings.divider_color }};{% endif -%}
@@ -56,7 +59,7 @@
           class: 'in-press__curve in-press__curve--mobile',
           wave: '.in-press__wave',
           wave_size: '1853.45 60',
-          wave_edge: wave_edge,
+          wave_edge: wave_edge_mobile,
           view_box: '0 0 112 25.2',
           path: 'M0 18H112'
         -%}
@@ -321,6 +324,19 @@
       --wave-height: 20px;
 
       padding-bottom: 24px;
+    }
+
+    /* A softer wave than the desktop one, in the same box (.wave-top in
+       critical.css): rounded troughs, 16px deep instead of 19, that stop 3px
+       above the band's solid color. The desktop wave's troughs reach that
+       color on a 20px wave, and its 1px overlap cut their bottoms flat. */
+    .in-press.wave-top::before {
+      -webkit-mask:
+        var(--soft-wave) left top / 128.7% var(--wave-height) no-repeat,
+        linear-gradient(#000 0 0) 0 calc(var(--wave-height) - 1px) / 100% 100% no-repeat;
+      mask:
+        var(--soft-wave) left top / 128.7% var(--wave-height) no-repeat,
+        linear-gradient(#000 0 0) 0 calc(var(--wave-height) - 1px) / 100% 100% no-repeat;
     }
 
     .hero-product-section:has(~ .in-press-section):not(:has(~ .shopify-section ~ .in-press-section)) .hero-product {
