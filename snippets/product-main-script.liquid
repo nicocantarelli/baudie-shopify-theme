@@ -1,5 +1,6 @@
 {% doc %}
   The product page's script: the dropdowns, the quantity stepper, the
+  Add to cart row riding along the window's bottom on desktop, the
   ingredients pop-up, the videos row and its arrows, the photo column that
   follows the scroll, Pair it with, and the benefit pills' fit on one line.
   It sets up every .product-main on the
@@ -83,6 +84,36 @@
         const value = parseInt(input.value, 10);
         input.value = String(Number.isNaN(value) ? min : Math.min(max, Math.max(min, value)));
       });
+    }
+
+    // Desktop: while the quantity and Add to cart row's own place is below
+    // the window, the row rides along the window's bottom (position: sticky
+    // in sections/product.liquid) and gets .is-docked, which runs the button
+    // across the card and tucks the quantity away. A marker where the row's
+    // bottom sits in the card tells when the page has reached it; the 16px
+    // matches the row's distance from the window's bottom. Checked on
+    // scroll rather than with an IntersectionObserver, which stays silent
+    // when a jump takes the marker from above the window to below it.
+    function initDock(section) {
+      const form = section.querySelector('.product-main__buy > .product-main__form');
+      if (!form) return;
+      const marker = document.createElement('span');
+      marker.className = 'product-main__dock-marker';
+      marker.setAttribute('aria-hidden', 'true');
+      form.after(marker);
+
+      let frame = 0;
+      const update = () => {
+        frame = 0;
+        if (!marker.isConnected) return;
+        form.classList.toggle('is-docked', marker.getBoundingClientRect().top > window.innerHeight - 16);
+      };
+      const schedule = () => {
+        if (!frame) frame = requestAnimationFrame(update);
+      };
+      window.addEventListener('scroll', schedule, { passive: true });
+      window.addEventListener('resize', schedule);
+      update();
     }
 
     function initIngredientsDialog(section) {
@@ -247,6 +278,7 @@
         section.dataset.productReady = 'on';
         initAccordions(section);
         initQuantity(section);
+        initDock(section);
         initIngredientsDialog(section);
         initVideos(section);
         initStickyMedia(section);
