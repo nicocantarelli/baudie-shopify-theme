@@ -158,11 +158,13 @@
      so it keeps 4.5:1 (#D2367C and darker), with the design's wave along
      the top and bottom (assets/shape-faq-wave-*.svg, 1543 wide on a 1440
      frame, so the edges overhang a little; their URLs come in from the
-     section's style attribute). */
+     section's style attribute). The waves are half the design's height
+     (90 on a 1440 frame, it was 180), since the deep curves left a lot of
+     empty space; the SVGs stretch, so the curve just gets flatter. */
   .product-faq {
     --faq-text: var(--text-color, var(--color-on-accent));
     --faq-band: var(--section-bg, linear-gradient(90deg, #FFC8E4 0%, #F88EBE 22%, #D2367C 50%, #C11562 100%));
-    --faq-edge: calc(100vw * 180 / 1440);
+    --faq-edge: calc(100vw * 90 / 1440);
     --faq-edge-width: calc(100vw * 1543 / 1440);
     --faq-edge-left: calc(100vw * -51.5 / 1440);
 
@@ -385,7 +387,7 @@
   @media (max-width: 1023px) {
     .product-faq {
       --faq-band: var(--section-bg, linear-gradient(180deg, #F88EBE 0%, #D2367C 42%, #C11562 100%));
-      --faq-edge: calc(100vw * 64 / 393);
+      --faq-edge: min(64px, 100vw * 64 / 393);
     }
 
     .product-faq--no-photo {
