@@ -1,7 +1,8 @@
 {% doc %}
   The product page's script: the dropdowns, the quantity stepper, the
   ingredients pop-up, the videos row and its arrows, the photo column that
-  follows the scroll, and Pair it with. It sets up every .product-main on the
+  follows the scroll, Pair it with, and the benefit pills' fit on one line.
+  It sets up every .product-main on the
   page, so the sections built on the product page's look share it: the
   product section (sections/product.liquid) and the bundle
   (sections/product-bundle.liquid). It lives in a snippet because Shopify
@@ -195,6 +196,51 @@
       look();
     }
 
+    /* The benefit pills: shrunk just enough (to no less than 0.74 of their
+       size) to stay on one line. Where that isn't enough, they wrap into as
+       few rows as they can, shrunk only if a pill would otherwise sit on a
+       row of its own that a smaller size avoids. Everything in a pill scales
+       with --pill-scale, so its width does too. */
+    const MIN_PILL_SCALE = 0.74;
+
+    // The narrowest the widest row can be, splitting the pills in order into
+    // `rows` rows.
+    function widestRow(widths, gap, rows) {
+      const rowWidth = (list) => list.reduce((sum, w) => sum + w, 0) + gap * (list.length - 1);
+      if (rows === 1 || widths.length === 1) return rowWidth(widths);
+      let best = Infinity;
+      for (let i = 1; i < widths.length; i++) {
+        best = Math.min(best, Math.max(rowWidth(widths.slice(0, i)), widestRow(widths.slice(i), gap, rows - 1)));
+      }
+      return best;
+    }
+
+    function fitPills(list) {
+      list.style.setProperty('--pill-scale', '1');
+      const available = list.clientWidth - 2;
+      const gap = parseFloat(getComputedStyle(list).columnGap) || 0;
+      const widths = [...list.children].map((pill) => pill.getBoundingClientRect().width);
+      if (!widths.length || available <= 0) return;
+      let scale = 1;
+      for (let rows = 1; rows <= widths.length; rows++) {
+        scale = Math.min(1, available / widestRow(widths, gap, rows));
+        if (scale >= MIN_PILL_SCALE) break;
+      }
+      list.style.setProperty('--pill-scale', scale.toFixed(4));
+    }
+
+    function initPills(section) {
+      const list = section.querySelector('.product-main__pills');
+      if (!list) return;
+      let width = 0;
+      new ResizeObserver(() => {
+        if (list.clientWidth === width) return;
+        width = list.clientWidth;
+        fitPills(list);
+      }).observe(list);
+      document.fonts?.ready.then(() => fitPills(list));
+    }
+
     function init(root = document) {
       root.querySelectorAll('.product-main').forEach((section) => {
         if (section.dataset.productReady) return;
@@ -205,6 +251,7 @@
         initVideos(section);
         initStickyMedia(section);
         initPair(section);
+        initPills(section);
       });
     }
 
