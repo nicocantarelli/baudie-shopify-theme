@@ -1241,6 +1241,34 @@
   margin: 0;
 }
 
+/* A bundle's picked bottles, stacked like the bundle's photo: all the same
+   size (83% of the tile's height), the first at the back on the left, a top
+   edge just under the tile's, and each next one a step lower and to the
+   right, in front of it, the last one standing on the tile's bottom edge.
+   The row is centered (10% in from each side). The photos have room around
+   their bottle (it fills 22.6%–75.2% of the width and 10.6%–91.6% of the
+   height), which is why each sits further up and left than its bottle.
+   (img in the selector: it outranks the row's margins for compact cards and
+   phones, further down.) */
+.sidecart-item__bundle-bottles--stack {
+  position: relative;
+  display: block;
+  padding: 0;
+}
+
+.sidecart-item__bundle-bottles--stack > img.sidecart-item__bundle-bottle {
+  --step: calc(var(--bottle, 0) / max(var(--bottles, 3) - 1, 1));
+  position: absolute;
+  top: calc(-9.7% + var(--step) * 14.4%);
+  left: calc(-7.8% + var(--step) * 38.7%);
+  width: 78.6%;
+  height: 102.5%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  object-fit: contain;
+}
+
 .sidecart-item__bundle-list {
   list-style: none;
   margin: 0;

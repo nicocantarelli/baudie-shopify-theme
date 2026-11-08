@@ -158,7 +158,16 @@
 <li class="sidecart-item{% if is_gift %} sidecart-item--gift{% endif %}" data-sidecart-item{% if is_gift %} data-gift="{{ gift_value | escape }}" data-free-text="{{ 'sidecart.gift_free' | t }}"{% endif %} data-product-id="{{ item.product.id }}" data-variant-id="{{ item.variant_id }}" data-properties-signature="{{ group_signature | escape }}" data-line-count="{{ group_line_count | default: 1 }}" data-inventory="{{ item.variant.inventory_quantity | default: 99999 }}" data-inventory-policy="{{ item.variant.inventory_policy }}" data-compare-at-unit="{{ compare_at_unit }}" data-unit-price="{{ item_unit_price }}" data-original-unit="{{ item_original_unit }}">
   <a href="{{ item_url }}" class="sidecart-item__image-link{% if image_pops %} sidecart-item__image-link--pop{% endif %}" style="background-color: {{ card_bg }};">
     {%- if bundle_has_bottles -%}
-      <div class="sidecart-item__bundle-bottles{% if companion_image != blank %} sidecart-item__bundle-bottles--with-companion{% endif %}">
+      {%- comment -%}
+        Picked bottles alone stand in a diagonal row, each a step lower and
+        to the right of the one before and in front of it (--bottle: its place,
+        --bottles: how many). With a companion (the duo's wipes pouch) they sit
+        side by side.
+      {%- endcomment -%}
+      <div
+        class="sidecart-item__bundle-bottles{% if companion_image != blank %} sidecart-item__bundle-bottles--with-companion{% else %} sidecart-item__bundle-bottles--stack{% endif %}"
+        style="--bottles: {{ bundle_scents.size }};"
+      >
         {%- for scent_title in bundle_scents -%}
           {%- assign scent_handle = scent_title | handleize -%}
           {%- assign scent_product = all_products[scent_handle] -%}
@@ -166,6 +175,7 @@
             {%- assign bottle_image = scent_product.metafields.custom.card_image | default: scent_product.featured_image -%}
             {%- if bottle_image -%}
               <img
+                style="--bottle: {{ forloop.index0 }};"
                 src="{{ bottle_image | image_url: width: 1200 }}"
                 srcset="{{ bottle_image | image_url: width: 400 }} 400w, {{ bottle_image | image_url: width: 800 }} 800w, {{ bottle_image | image_url: width: 1200 }} 1200w"
                 sizes="120px"
