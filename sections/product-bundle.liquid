@@ -405,6 +405,7 @@
               <span data-bundle-add-label>{{ 'sections.product_bundle.pick_scents' | t: count: bundle_size }}</span>
             </button>
           </div>
+          {% render 'product-dock-marker' %}
         {%- endif -%}
 
         {%- if show_patent_stamp and patent_stamp_position == 'below_purchase' -%}

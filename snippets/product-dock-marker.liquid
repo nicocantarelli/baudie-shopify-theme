@@ -1,0 +1,23 @@
+{% doc %}
+  Goes right after the product card's quantity and Add to cart row (the
+  element with the class product-main__form). Marks where the row's bottom
+  sits in the card. On desktop the row starts with the button across the
+  card and the quantity tucked away. The quantity slides in at the first
+  scroll, once the row is in its place: until the page reaches that place,
+  the row rides along the window's bottom (initDock in
+  snippets/product-main-script.liquid). The inline script sets the starting
+  look before the page first shows, so the row doesn't change as it loads.
+
+  @example
+  {% render 'product-dock-marker' %}
+{% enddoc %}
+<span class="product-main__dock-marker" aria-hidden="true"></span>
+<script>
+  (() => {
+    const marker = document.currentScript.previousElementSibling;
+    const form = marker && marker.previousElementSibling;
+    if (!form || !form.classList.contains('product-main__form')) return;
+    const below = marker.getBoundingClientRect().top > window.innerHeight - 16;
+    form.classList.toggle('is-docked', window.scrollY < 1 || below);
+  })();
+</script>

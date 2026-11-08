@@ -441,6 +441,7 @@
               <span data-duo-add-label>{{ 'sections.product_bundle_duo.pick_scent' | t }}</span>
             </button>
           </div>
+          {% render 'product-dock-marker' %}
         {%- endif -%}
 
         {%- if show_patent_stamp and patent_stamp_position == 'below_purchase' -%}

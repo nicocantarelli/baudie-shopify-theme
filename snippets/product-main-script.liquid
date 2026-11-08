@@ -1,7 +1,8 @@
 {% doc %}
   The product page's script: the dropdowns, the quantity stepper, the
-  Add to cart row riding along the window's bottom on desktop, the
-  ingredients pop-up, the videos row and its arrows, the photo column that
+  Add to cart row on desktop (full width until the first scroll, riding
+  along the window's bottom until the page reaches it), the ingredients
+  pop-up, the videos row and its arrows, the photo column that
   follows the scroll, Pair it with, and the benefit pills' fit on one line.
   It sets up every .product-main on the
   page, so the sections built on the product page's look share it: the
@@ -86,33 +87,50 @@
       });
     }
 
-    // Desktop: while the quantity and Add to cart row's own place is below
-    // the window, the row rides along the window's bottom (position: sticky
-    // in sections/product.liquid) and gets .is-docked, which runs the button
-    // across the card and tucks the quantity away. A marker where the row's
-    // bottom sits in the card tells when the page has reached it; the 16px
-    // matches the row's distance from the window's bottom. Checked on
-    // scroll rather than with an IntersectionObserver, which stays silent
-    // when a jump takes the marker from above the window to below it.
+    // Desktop, like Bloom's: the quantity and Add to cart row opens with
+    // .is-docked (the button across the card, the quantity tucked away),
+    // set before the page shows by snippets/product-dock-marker.liquid. The
+    // quantity slides in at the first scroll, once the row is in its place:
+    // until the page reaches the marker after the row, the row rides along
+    // the window's bottom (position: sticky in sections/product.liquid; the
+    // 16px is its distance from the window's bottom). Changes animate only
+    // when scrolling makes them, not while the page settles as it loads.
     function initDock(section) {
       const form = section.querySelector('.product-main__buy > .product-main__form');
       if (!form) return;
-      const marker = document.createElement('span');
-      marker.className = 'product-main__dock-marker';
-      marker.setAttribute('aria-hidden', 'true');
-      form.after(marker);
+      let marker = form.nextElementSibling;
+      if (!marker || !marker.classList.contains('product-main__dock-marker')) {
+        marker = document.createElement('span');
+        marker.className = 'product-main__dock-marker';
+        marker.setAttribute('aria-hidden', 'true');
+        form.after(marker);
+      }
 
       let frame = 0;
+      let animate = false;
       const update = () => {
+        const animated = animate;
         frame = 0;
+        animate = false;
         if (!marker.isConnected) return;
-        form.classList.toggle('is-docked', marker.getBoundingClientRect().top > window.innerHeight - 16);
+        const below = marker.getBoundingClientRect().top > window.innerHeight - 16;
+        const docked = window.scrollY < 1 || below;
+        if (docked === form.classList.contains('is-docked')) return;
+        form.classList.toggle('is-dock-animated', animated);
+        form.classList.toggle('is-docked', docked);
       };
-      const schedule = () => {
+      // A scroll in the same frame as a layout change still animates.
+      const schedule = (animated) => {
+        animate = animate || animated;
         if (!frame) frame = requestAnimationFrame(update);
       };
-      window.addEventListener('scroll', schedule, { passive: true });
-      window.addEventListener('resize', schedule);
+      window.addEventListener('scroll', () => schedule(true), { passive: true });
+      window.addEventListener('resize', () => schedule(false));
+      if ('ResizeObserver' in window) {
+        const cards = section.querySelectorAll('.product-main__info, .product-main__buy');
+        const observer = new ResizeObserver(() => schedule(false));
+        cards.forEach((card) => observer.observe(card));
+      }
       update();
     }
 

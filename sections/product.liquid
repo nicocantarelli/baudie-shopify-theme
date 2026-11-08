@@ -484,6 +484,7 @@
               {%- endunless -%}
             </button>
           {% endform %}
+          {% render 'product-dock-marker' %}
         {%- endif -%}
         {%- if is_final_sale and final_sale_placement == 'button' -%}{{ final_sale_mark }}{%- endif -%}
 
@@ -1394,21 +1395,22 @@
     width: 100%;
   }
 
-  /* Where the quantity and Add to cart row's bottom sits in the card, put
-     there by the script (initDock) to tell when the page has reached it.
-     No height, and its margin cancels the card's gap above it. */
+  /* Where the quantity and Add to cart row's bottom sits in the card
+     (snippets/product-dock-marker.liquid), to tell when the page has
+     reached it. No height, and its margin cancels the card's gap above it. */
   .product-main__dock-marker {
     display: block;
     height: 0;
     margin-top: calc(-1 * var(--card-gap));
   }
 
-  /* Desktop: while the row's own place is still below the window, it rides
-     along the window's bottom with the button across the card's whole
-     width and the quantity tucked away (.is-docked, set by the script).
-     When the page reaches its place, it settles there and the quantity
-     slides back in. While something in the row has keyboard focus, the
-     quantity stays out so it can be reached. */
+  /* Desktop, like Bloom's: the page opens with the button across the
+     card's whole width and the quantity tucked away (.is-docked). At the
+     first scroll the quantity slides in, once the row is in its place:
+     until the page reaches that place, the row rides along the window's
+     bottom, still full width. It only animates when scrolling changes it
+     (.is-dock-animated), not as the page loads. While something in the row
+     has keyboard focus, the quantity stays out so it can be reached. */
   @media (min-width: 1024px) {
     .product-main__buy > .product-main__form {
       position: sticky;
@@ -1421,6 +1423,9 @@
     .product-main__buy > .product-main__form .product-main__quantity {
       min-width: 0;
       background-color: var(--color-background);
+    }
+
+    .product-main__buy > .product-main__form.is-dock-animated .product-main__quantity {
       transition:
         flex-basis 0.3s ease,
         margin-right 0.3s ease,
@@ -1434,6 +1439,9 @@
       border-width: 0;
       opacity: 0;
       visibility: hidden;
+    }
+
+    .product-main__buy > .product-main__form.is-dock-animated.is-docked:not(:has(:focus-visible)) .product-main__quantity {
       transition:
         flex-basis 0.3s ease 0.1s,
         margin-right 0.3s ease 0.1s,
@@ -1444,8 +1452,8 @@
   }
 
   @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
-    .product-main__buy > .product-main__form .product-main__quantity,
-    .product-main__buy > .product-main__form.is-docked:not(:has(:focus-visible)) .product-main__quantity {
+    .product-main__buy > .product-main__form.is-dock-animated .product-main__quantity,
+    .product-main__buy > .product-main__form.is-dock-animated.is-docked:not(:has(:focus-visible)) .product-main__quantity {
       transition: none;
     }
   }
