@@ -115,17 +115,23 @@
      sits over the bottom of the hero's photo and product panel instead of the
      page. The hero runs on under it by the same height (the --wave-height
      above, set again for phones below). The product page's top section does
-     the same, its color running on under the wave. */
-  .hero-product-section:has(+ .in-press-section) .hero-product {
+     the same, its color running on under the wave.
+     "Right after" means the next section, whatever else sits between them:
+     apps (Videowise, Nudgify, Klaviyo, Simple Bundles, AudioEye) and
+     browser extensions can drop their own elements straight into <body>,
+     and one landing between the two sections used to undo the overlap, so
+     the band dropped below the hero. So the band only needs to come after
+     the hero with no other section (.shopify-section) in between. */
+  .hero-product-section:has(~ .in-press-section):not(:has(~ .shopify-section ~ .in-press-section)) .hero-product {
     --hero-product-tail: 60px;
   }
 
-  .product-main-section:has(+ .in-press-section) .product-main {
+  .product-main-section:has(~ .in-press-section):not(:has(~ .shopify-section ~ .in-press-section)) .product-main {
     --product-main-tail: 60px;
   }
 
-  .hero-product-section + .in-press-section .in-press,
-  .product-main-section + .in-press-section .in-press {
+  .hero-product-section ~ .in-press-section:not(.hero-product-section ~ .shopify-section ~ .in-press-section) .in-press,
+  .product-main-section ~ .in-press-section:not(.product-main-section ~ .shopify-section ~ .in-press-section) .in-press {
     margin-top: calc(-1 * var(--wave-height));
   }
 
@@ -317,11 +323,11 @@
       padding-bottom: 24px;
     }
 
-    .hero-product-section:has(+ .in-press-section) .hero-product {
+    .hero-product-section:has(~ .in-press-section):not(:has(~ .shopify-section ~ .in-press-section)) .hero-product {
       --hero-product-tail: 20px;
     }
 
-    .product-main-section:has(+ .in-press-section) .product-main {
+    .product-main-section:has(~ .in-press-section):not(:has(~ .shopify-section ~ .in-press-section)) .product-main {
       --product-main-tail: 20px;
     }
 
