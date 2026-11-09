@@ -678,18 +678,24 @@
 /* The scents' bottle photos are 2:3 with the bottle in the middle 53% of
    the width and from 10% to 92% of the height. Sized so the bottle is 86% of
    the tile's height, centered in it (the photo's empty edges run past the
-   tile, unseen). */
+   tile, unseen). It leans 4deg on its base, the point the drop and the fall
+   out turn on too (see .is-dropping), so a dropped bottle lands where the
+   cart's next render puts it. Leaning on the base instead of the middle
+   moves it right by half its height times sin 4deg (4.21% of the tile's
+   width; every tile is 150:172) and down by a hair (0.13% of its height),
+   which left and top take back. */
 .sidecart-item__image-link--pop .sidecart-item__image,
 .sidecart-item__image-link--pop .sidecart-item__leaving--bottle {
   position: absolute;
   inset: auto;
-  top: -3.9%;
-  left: 10.6%;
+  top: -4.03%;
+  left: 6.39%;
   width: 80.5%;
   height: 105.3%;
   margin: 0;
   max-width: none;
   rotate: 4deg;
+  transform-origin: 50% 100%;
 }
 
 .sidecart-item__placeholder {
