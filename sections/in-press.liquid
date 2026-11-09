@@ -6,16 +6,26 @@
   stylesheet: a yellow band, so only the ones Alex picked are written here.
   The divider line only shows when it has a color.
 
-  On product pages that aren't one of the six scents (wipes, bundles, the
-  duo, Discovery Set) the band is pink instead: those pages' gradient ends in
-  gold, which the yellow clashed with. The scents have a scent name
-  (custom.scent_name); the others don't. Colors picked in the editor still win.
+  On every product page the band is pink instead. It went pink first on the
+  wipes, bundles, duo and Discovery Set, whose gradient ends in gold, which
+  the yellow clashed with; Alex's product pages (Canva, 2026-11-09) have it
+  pink on the six scents too. The homepage keeps the yellow. Colors picked in
+  the editor still win.
 {% endcomment %}
 
 {%- liquid
   assign pink_band = false
-  if template.name == 'product' and product.metafields.custom.scent_name == blank
+  assign page_tint = ''
+  if template.name == 'product'
     assign pink_band = true
+
+    # The strip under the band takes the page's tint where it has one
+    # (snippets/product-page-tint), so the tint runs on from the band as in
+    # Alex's design instead of after a white line.
+    capture page_tint
+      render 'product-page-tint', product: product
+    endcapture
+    assign page_tint = page_tint | strip
   endif
 
   assign curved_title = false
@@ -33,9 +43,10 @@
 -%}
 
 <div
-  class="in-press wave-top full-width in-press--title-{{ section.settings.title_style | default: 'label' }}{% if section.settings.tint_logos %} in-press--tinted{% endif %}{% if pink_band %} in-press--pink{% endif %}"
+  class="in-press wave-top full-width in-press--title-{{ section.settings.title_style | default: 'label' }}{% if section.settings.tint_logos %} in-press--tinted{% endif %}{% if pink_band %} in-press--pink{% endif %}{% if page_tint != blank %} in-press--on-tint{% endif %}"
   style="
     --soft-wave: url('{{ 'shape-wave-soft.svg' | asset_url }}');
+    {%- if page_tint != blank %}--page-tint: {{ page_tint }};{% endif -%}
     {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
     {%- if section.settings.divider_color != blank %}--divider-color: {{ section.settings.divider_color }};{% endif -%}
@@ -166,6 +177,14 @@
 
     padding-bottom: 42.5px;
     margin-bottom: 24.45px;
+  }
+
+  /* On a tinted product page the strip is the tint: a border the same
+     height as the margin (the band's color is on its ::before, inside the
+     border), so nothing moves. */
+  .in-press--title-script.in-press--on-tint {
+    margin-bottom: 0;
+    border-bottom: 24.45px solid var(--page-tint);
   }
 
   .in-press__container {
@@ -419,6 +438,11 @@
       padding-top: 22px;
       padding-bottom: 22px;
       margin-bottom: 9.6px;
+    }
+
+    .in-press--title-script.in-press--on-tint {
+      margin-bottom: 0;
+      border-bottom-width: 9.6px;
     }
 
     .in-press--title-script .in-press__logo-wrapper {

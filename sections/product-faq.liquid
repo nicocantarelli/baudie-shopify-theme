@@ -7,107 +7,46 @@
 
   Colors left empty in the editor give the design's band; a picked
   background color fills the band instead, and a picked text color replaces
-  the white. On a scent's page (a product with a scent name and its three
-  gradient colors), the band takes the scent's own gradient, the one behind
-  the top of the page, unless a background color is picked, and the text
-  takes the scent's own hue, darkened enough to read on it. The product's
-  FAQ text color and FAQ heading color metafields can pick other colors
-  (St. Tropez's are redder); they're darkened too if they'd read too light.
+  the white.
+
+  On a product page with a tint (snippets/product-page-tint: the six scents
+  and the Discovery Set), the band is Alex's flat light pink #FFDDEC on the
+  page's tint, with the theme's pink for the text; the product's FAQ band
+  color metafield (custom.faq_band_color) picks another (Sweet Muse and
+  Barely There take a paler #FFF2F7). Colors picked in the editor still win.
+
+  The product's FAQ image metafield (custom.faq_image) replaces the
+  section's photo, so each product can show its own.
 {%- endcomment -%}
 
 {%- liquid
   assign faq_blocks = section.blocks | where: 'type', 'faq_item'
   assign top_padding = section.settings.top_padding | default: 96
-  assign faq_image = section.settings.image
+  assign faq_image = product.metafields.custom.faq_image.value | default: section.settings.image
 
-  assign scent_band = false
-  if product.metafields.custom.scent_name != blank and section.settings.background_color == blank
-    assign scent_band_1 = product.metafields.custom.gradient_color_1
-    assign scent_band_2 = product.metafields.custom.gradient_color_2
-    assign scent_band_3 = product.metafields.custom.gradient_color_3
-    if scent_band_1 != blank and scent_band_2 != blank and scent_band_3 != blank
-      assign scent_band = true
-    endif
-  endif
+  capture page_tint
+    render 'product-page-tint', product: product
+  endcapture
+  assign page_tint = page_tint | strip
 
-  # The text takes the hue of the scent's deepest color (the last one for
-  # most scents, the first for Sweet Muse), darkened just enough to read at
-  # 4.5:1 anywhere on the band; 4.6 here as color_contrast rounds to one
-  # decimal. The plus signs take the band's lightest color.
-  if scent_band
-    assign scent_band_1 = scent_band_1 | append: ''
-    assign scent_band_2 = scent_band_2 | append: ''
-    assign scent_band_3 = scent_band_3 | append: ''
-    assign scent_brightness_1 = scent_band_1 | color_brightness
-    assign scent_brightness_2 = scent_band_2 | color_brightness
-    assign scent_brightness_3 = scent_band_3 | color_brightness
-
-    assign scent_band_deep = scent_band_3
-    assign scent_deep_brightness = scent_brightness_3
-    if scent_brightness_2 < scent_deep_brightness
-      assign scent_band_deep = scent_band_2
-      assign scent_deep_brightness = scent_brightness_2
-    endif
-    if scent_brightness_1 < scent_deep_brightness
-      assign scent_band_deep = scent_band_1
-    endif
-
-    assign scent_band_light = scent_band_1
-    assign scent_light_brightness = scent_brightness_1
-    if scent_brightness_2 > scent_light_brightness
-      assign scent_band_light = scent_band_2
-      assign scent_light_brightness = scent_brightness_2
-    endif
-    if scent_brightness_3 > scent_light_brightness
-      assign scent_band_light = scent_band_3
-    endif
-
-    # A color picked on the product (custom.faq_text_color) replaces the
-    # scent's deepest color as the start.
-    assign scent_band_text = product.metafields.custom.faq_text_color | append: ''
-    if scent_band_text == blank
-      assign scent_band_text = scent_band_deep
-    endif
-    for step in (1..50)
-      assign scent_contrast_1 = scent_band_text | color_contrast: scent_band_1
-      assign scent_contrast_2 = scent_band_text | color_contrast: scent_band_2
-      assign scent_contrast_3 = scent_band_text | color_contrast: scent_band_3
-      assign scent_contrast_low = scent_contrast_1 | at_most: scent_contrast_2 | at_most: scent_contrast_3
-      if scent_contrast_low >= 4.6
-        break
-      endif
-      assign scent_band_text = scent_band_text | color_darken: 2
-    endfor
-
-    # The heading is large text (60px and up), so 3:1 is enough (3.1 here
-    # for the rounding): a color picked on the product
-    # (custom.faq_heading_color) can be brighter than the questions'.
-    # Without one it takes the text color.
-    assign scent_band_title = product.metafields.custom.faq_heading_color | append: ''
-    if scent_band_title != blank
-      for step in (1..50)
-        assign scent_contrast_1 = scent_band_title | color_contrast: scent_band_1
-        assign scent_contrast_2 = scent_band_title | color_contrast: scent_band_2
-        assign scent_contrast_3 = scent_band_title | color_contrast: scent_band_3
-        assign scent_contrast_low = scent_contrast_1 | at_most: scent_contrast_2 | at_most: scent_contrast_3
-        if scent_contrast_low >= 3.1
-          break
-        endif
-        assign scent_band_title = scent_band_title | color_darken: 2
-      endfor
+  assign light_band = ''
+  if page_tint != blank
+    assign light_band = product.metafields.custom.faq_band_color | append: ''
+    if light_band == blank
+      assign light_band = '#FFDDEC'
     endif
   endif
 -%}
 
 <section
-  class="product-faq full-width{% if faq_image == blank %} product-faq--no-photo{% endif %}{% if scent_band %} product-faq--scent{% endif %}"
+  class="product-faq full-width{% if faq_image == blank %} product-faq--no-photo{% endif %}{% if light_band != blank %} product-faq--light{% endif %}"
   data-section-id="{{ section.id }}"
   data-product-faq
   aria-label="{{ section.settings.title | default: 'FAQ' | escape }}"
   style="--pf-top: {{ top_padding }}px; --faq-wave-top: url('{{ 'shape-faq-wave-top.svg' | asset_url }}'); --faq-wave-bottom: url('{{ 'shape-faq-wave-bottom.svg' | asset_url }}');
     {%- if section.settings.background_color != blank %} --section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %} --text-color: {{ section.settings.text_color }};{% endif -%}
-    {%- if scent_band %} --faq-scent-1: {{ scent_band_1 }}; --faq-scent-2: {{ scent_band_2 }}; --faq-scent-3: {{ scent_band_3 }}; --faq-scent-text: {{ scent_band_text }}; --faq-scent-light: {{ scent_band_light }};{% if scent_band_title != blank %} --faq-scent-title: {{ scent_band_title }};{% endif %}{% endif -%}
+    {%- if light_band != blank %} --page-tint: {{ page_tint }}; --faq-light: {{ light_band }};{% endif -%}
   ">
   <div class="product-faq__inner">
     {%- if faq_image != blank -%}
@@ -221,19 +160,15 @@
     --faq-band: var(--section-bg, var(--gradient-button));
   }
 
-  /* A scent's page: the scent's gradient with the stops of the one behind
-     the top of its page, left to right here, and text in the scent's own
-     hue (worked out above to keep 4.5:1 anywhere on the band). The plus
-     takes the band's lightest color. A heading color picked on the
-     product applies to the title only. */
-  .product-faq.product-faq--scent {
-    --faq-band: linear-gradient(90deg, var(--faq-scent-1) 0%, var(--faq-scent-2) 35%, var(--faq-scent-3) 75%);
-    --faq-text: var(--text-color, var(--faq-scent-text));
-    --faq-toggle-color: var(--faq-scent-light);
-  }
-
-  .product-faq.product-faq--scent .product-faq__title {
-    color: var(--text-color, var(--faq-scent-title, var(--faq-text)));
+  /* A product page with a tint: Alex's flat light pink band on the page's
+     tint, the theme's pink (#C11562, 4.7:1 on #FFDDEC) for the title, the
+     questions and the lines, and pink circles with a white plus. The band
+     keeps its waves, now cut into the tint. Phones too. */
+  .product-faq.product-faq--light {
+    --faq-band: var(--section-bg, var(--faq-light));
+    --faq-text: var(--text-color, var(--color-foreground));
+    --faq-toggle-color: #FFFFFF;
+    background-color: var(--page-tint);
   }
 
   .product-faq::before {
@@ -434,10 +369,6 @@
 
     .product-faq--no-photo {
       --faq-band: var(--section-bg, var(--gradient-button));
-    }
-
-    .product-faq.product-faq--scent {
-      --faq-band: linear-gradient(180deg, var(--faq-scent-1) 0%, var(--faq-scent-2) 35%, var(--faq-scent-3) 75%);
     }
 
     .product-faq__inner {

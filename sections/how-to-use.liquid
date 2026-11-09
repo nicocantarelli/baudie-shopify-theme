@@ -73,6 +73,10 @@
 {%- endcapture -%}
 {%- assign media = media | strip -%}
 
+{%- comment -%} On a product page with a tint (snippets/product-page-tint), the card sits on it instead of white. {%- endcomment -%}
+{%- capture page_tint -%}{%- render 'product-page-tint', product: product -%}{%- endcapture -%}
+{%- assign page_tint = page_tint | strip -%}
+
 <section
   class="how-to-use{% if layout == 'card' %} how-to-use--card{% endif %} full-width"
   data-section-id="{{ section.id }}"
@@ -81,6 +85,7 @@
     {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
     {%- if layout == 'card' %}--drop-mask: url('{{ 'icon-drop.svg' | asset_url }}');{% endif -%}
+    {%- if page_tint != blank %}--page-tint: {{ page_tint }};{% endif -%}
   ">
 
   {%- if layout == 'card' -%}
@@ -508,7 +513,7 @@
     --card-padding-bottom: 60px;
 
     padding: 64px 0;
-    background-color: var(--color-background);
+    background-color: var(--page-tint, var(--color-background));
   }
 
   .how-to-use__container {

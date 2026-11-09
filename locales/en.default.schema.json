@@ -705,9 +705,9 @@
       "question": "Question",
       "answer": "Answer",
       "image": "Photo",
-      "image_info": "Shown beside the questions (above them on phones). Without a photo the questions are centered.",
-      "background_color_info": "Leave empty for the design's pink band.",
-      "text_color_info": "Leave empty for white."
+      "image_info": "Shown beside the questions (above them on phones). Without a photo the questions are centered. A product's FAQ image (product metafield custom.faq_image) replaces it on that product's page.",
+      "background_color_info": "Leave empty for the design's pink band. On the scent and Discovery Set pages it's a light pink (or the product's FAQ band color, custom.faq_band_color).",
+      "text_color_info": "Leave empty for white (the theme's pink on the light pink band)."
     },
     "related_products": {
       "name": "Related products",

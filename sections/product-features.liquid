@@ -6,7 +6,13 @@
 
   Colors left empty in the editor fall back to the theme colors set in the
   stylesheet, so only the ones picked are written here.
+
+  On a product page with a tint (snippets/product-page-tint), the band runs
+  over the tint instead of white.
 {% endcomment %}
+
+{%- capture page_tint -%}{%- render 'product-page-tint', product: product -%}{%- endcapture -%}
+{%- assign page_tint = page_tint | strip -%}
 
 <div
   class="product-features product-features--{{ section.settings.band_shape | default: 'straight' }}{% if section.settings.padding_top %} product-features--pad-top{% endif %}{% if section.settings.padding_bottom %} product-features--pad-bottom{% endif %} full-width"
@@ -15,6 +21,7 @@
     {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
     {%- if section.settings.icon_color != blank %}--icon-color: {{ section.settings.icon_color }};{% endif -%}
+    {%- if page_tint != blank %}--page-tint: {{ page_tint }};{% endif -%}
   ">
   <div class="product-features__container">
     {% if section.blocks.size > 0 %}
@@ -46,6 +53,10 @@
 </div>
 
 {% stylesheet %}
+  .product-features {
+    background-color: var(--page-tint, transparent);
+  }
+
   /* Same space for both band shapes, so switching the shape doesn't move the band. */
   .product-features--pad-top {
     padding-top: 48px;

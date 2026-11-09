@@ -1,0 +1,45 @@
+{%- doc -%}
+  Prints the pale color behind the middle of a product page, from How to use
+  down to the "We are not a deodorant" card, or nothing when the page has
+  none. The product's Page tint color metafield (custom.page_tint_color) sets
+  it; Alex picked one per scent (St. Tropez, Petal Kiss and the Discovery Set
+  #FFF0F7, Sweet Muse #FFFADD, Barely There #F8FFE6, Capri Seaside #FFE3C5,
+  Deep Ritual #EBF3FF). A scent without one (a product with a scent name and
+  its three gradient colors) gets its lightest gradient color mixed half and
+  half with white. Other products (the bundles, the wipes) have none, so
+  their pages stay white.
+
+  @param {product} [product] - The product whose page it is
+
+  @example
+  {%- capture page_tint -%}{%- render 'product-page-tint', product: product -%}{%- endcapture -%}
+{%- enddoc -%}
+
+{%- liquid
+  assign tint = ''
+  if product != blank
+    assign tint = product.metafields.custom.page_tint_color | append: ''
+
+    if tint == blank and product.metafields.custom.scent_name != blank
+      assign tint_1 = product.metafields.custom.gradient_color_1 | append: ''
+      assign tint_2 = product.metafields.custom.gradient_color_2 | append: ''
+      assign tint_3 = product.metafields.custom.gradient_color_3 | append: ''
+      if tint_1 != blank and tint_2 != blank and tint_3 != blank
+        assign tint_light = tint_1
+        assign tint_brightness = tint_1 | color_brightness
+        assign tint_brightness_2 = tint_2 | color_brightness
+        assign tint_brightness_3 = tint_3 | color_brightness
+        if tint_brightness_2 > tint_brightness
+          assign tint_light = tint_2
+          assign tint_brightness = tint_brightness_2
+        endif
+        if tint_brightness_3 > tint_brightness
+          assign tint_light = tint_3
+        endif
+        assign tint = tint_light | color_mix: '#ffffff', 50
+      endif
+    endif
+  endif
+
+  echo tint
+-%}

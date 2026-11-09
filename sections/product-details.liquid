@@ -12,9 +12,14 @@
   stylesheet, so only the ones picked are written here.
 {% endcomment %}
 
+{%- comment -%} On a product page with a tint (snippets/product-page-tint), the Benefits card sits on it instead of white. {%- endcomment -%}
+{%- capture page_tint -%}{%- render 'product-page-tint', product: product -%}{%- endcapture -%}
+{%- assign page_tint = page_tint | strip -%}
+
 {%- capture color_vars -%}
   {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
   {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
+  {%- if page_tint != blank %}--page-tint: {{ page_tint }};{% endif -%}
 {%- endcapture -%}
 
 {% if section.settings.layout == 'benefits' %}
@@ -477,7 +482,7 @@
   /* Benefits layout. The panel, the yellow frame and the card share the
      grid's first cell so they can overlap each other and the photo. */
   .product-details.product-details--benefits {
-    background-color: transparent;
+    background-color: var(--page-tint, transparent);
     padding: 64px 0;
   }
 
