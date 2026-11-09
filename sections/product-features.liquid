@@ -9,16 +9,32 @@
 
   On a product page with a tint (snippets/product-page-tint), the band runs
   over the tint instead of white.
+
+  A product can make the band one solid color instead of the gradient: its
+  Badges band solid toggle (custom.features_band_solid) on, in the color of
+  its Badges band color (custom.features_band_color), or, left empty, the
+  gradient's right-hand color (the theme's panel color). It wins over the
+  section's background color.
 {% endcomment %}
 
 {%- capture page_tint -%}{%- render 'product-page-tint', product: product -%}{%- endcapture -%}
 {%- assign page_tint = page_tint | strip -%}
 
+{%- liquid
+  assign band_bg = section.settings.background_color | append: ''
+  if product != blank and product.metafields.custom.features_band_solid.value == true
+    assign band_bg = product.metafields.custom.features_band_color | append: ''
+    if band_bg == blank
+      assign band_bg = settings.panel_color
+    endif
+  endif
+-%}
+
 <div
   class="product-features product-features--{{ section.settings.band_shape | default: 'straight' }}{% if section.settings.padding_top %} product-features--pad-top{% endif %}{% if section.settings.padding_bottom %} product-features--pad-bottom{% endif %} full-width"
   style="
     --band-mask: url('{{ 'shape-ribbon.svg' | asset_url }}');
-    {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if band_bg != blank %}--section-bg: {{ band_bg }};{% endif -%}
     {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
     {%- if section.settings.icon_color != blank %}--icon-color: {{ section.settings.icon_color }};{% endif -%}
     {%- if page_tint != blank %}--page-tint: {{ page_tint }};{% endif -%}
