@@ -525,7 +525,8 @@
 
   /* When any card's label is too long to share its button with the price
      (the script below checks), every card in the grid shows its price under
-     its name instead, so the rows stay alike. */
+     its name instead, so the rows stay alike. Phones shrink the labels
+     instead (see below). */
   .collection-grid__products--price-below .product-card__price {
     display: flex;
   }
@@ -660,30 +661,44 @@
       line-height: 1.4;
     }
 
-    .product-card__price {
-      display: flex;
-    }
-
-    .product-card__button-price {
-      display: none;
-    }
-
+    /* The price shares the label's line, as on computers ("Add to cart -
+       $22"), so the label shrinks with the column where it has to. A column
+       is (100vw - 52px) / 2 wide; less 24px of padding and border, the room
+       left is (100vw - 100px) / 2, and "Add to cart - $22" is about 10.5
+       times its font size: 13px down to a 375px screen, 12.4px at 360. */
     .product-card__button {
       --button-height: 40px;
-      --button-padding: 12px;
-      --button-font-size: 13px;
+      --button-padding: 10px;
+      --button-font-size: min(13px, (100vw - 100px) / 21);
 
       padding-block: 8px;
     }
 
-    /* Custom labels ("Choose your scent(s)") are longer than Add to cart, so
-       only they shrink with the column (13px at most, 10px at least) to stay
-       on one line down to a 360px screen: a column is (100vw - 52px) / 2
-       wide, minus 24px of padding and border, and "Choose your scents" is
-       about 13 times its font size. Narrower than that, it wraps. */
+    /* Custom labels ("Choose your scent(s)") are longer: "Choose your scents
+       - $57" is about 16 times its font size, so with 8px sides it is 9.4px
+       on a 393px screen, 10.6px at 430 and 8.4px at 360. */
     .product-card__button--custom {
-      --button-padding: 10px;
-      --button-font-size: clamp(10px, (100vw - 100px) / 26.4, 13px);
+      --button-padding: 8px;
+      --button-font-size: clamp(8px, (100vw - 92px) / 32, 13px);
+    }
+
+    /* Wide cards have two columns' room. */
+    .collection-grid__item--wide .product-card__button {
+      --button-font-size: 13px;
+    }
+
+    /* Phones never move the price under the name; the sizes above keep it
+       on the button's line. */
+    .collection-grid__products--price-below .product-card__price {
+      display: none;
+    }
+
+    .collection-grid__products--price-below .product-card--coming-soon .product-card__price {
+      display: flex;
+    }
+
+    .collection-grid__products--price-below .product-card__button-price {
+      display: inline;
     }
 
     /* Wide cards show just their first image on phones. */
@@ -762,8 +777,9 @@
   }
 
   /* Where a button's label and price don't fit on one line, the grid shows
-     the prices under the product names instead. Checked again whenever the
-     grid changes width or a filter brings other cards back. */
+     the prices under the product names instead (computers and tablets
+     only). Checked again whenever the grid changes width or a filter brings
+     other cards back. */
   function fitCardPrices(grid) {
     grid.classList.remove('collection-grid__products--price-below');
     const tooLong = [...grid.querySelectorAll('.product-card__button-price')].some((price) => {
