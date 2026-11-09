@@ -5,9 +5,19 @@
   Colors left empty in the editor fall back to the theme colors set in the
   stylesheet: a yellow band, so only the ones Alex picked are written here.
   The divider line only shows when it has a color.
+
+  On product pages that aren't one of the six scents (wipes, bundles, the
+  duo, Discovery Set) the band is pink instead: those pages' gradient ends in
+  gold, which the yellow clashed with. The scents have a scent name
+  (custom.scent_name); the others don't. Colors picked in the editor still win.
 {% endcomment %}
 
 {%- liquid
+  assign pink_band = false
+  if template.name == 'product' and product.metafields.custom.scent_name == blank
+    assign pink_band = true
+  endif
+
   assign curved_title = false
   if section.settings.title_style == 'script' and section.settings.title != blank
     assign curved_title = true
@@ -23,7 +33,7 @@
 -%}
 
 <div
-  class="in-press wave-top full-width in-press--title-{{ section.settings.title_style | default: 'label' }}{% if section.settings.tint_logos %} in-press--tinted{% endif %}"
+  class="in-press wave-top full-width in-press--title-{{ section.settings.title_style | default: 'label' }}{% if section.settings.tint_logos %} in-press--tinted{% endif %}{% if pink_band %} in-press--pink{% endif %}"
   style="
     --soft-wave: url('{{ 'shape-wave-soft.svg' | asset_url }}');
     {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
@@ -112,6 +122,15 @@
 
     padding: calc(var(--wave-height) + 6px) 0 35px;
     overflow: hidden;
+  }
+
+  /* Pink band (see the top of the file): the page's own top pinks, from the
+     Bundle of 3's gradient, with the title and logos in Alex's main pink.
+     The editor's colors, written on the element itself, still win. */
+  .in-press--pink {
+    --section-bg: linear-gradient(90deg, #FFCEE7, #FFEFFF 64%, #FFDDEF);
+    --text-color: #C11562;
+    --logo-color: #C11562;
   }
 
   /* Right after the hero, the band moves up by its wave's height so the wave
