@@ -98,18 +98,18 @@
         "static_hero_image_alt": "",
         "desktop_overlay_enable": false,
         "desktop_overlay_color": "#000000",
-        "desktop_overlay_opacity": 10,
+        "desktop_overlay_opacity": 0,
         "mobile_heading": "this helps deo\nlast all day + helps\nsweat stay odorless",
-        "mobile_hero_image": "shopify://shop_images/hero-petal-kiss-beach.jpg",
+        "mobile_hero_image": "shopify://shop_images/new_petal_kiss_mobile.png",
         "mobile_hero_image_alt": "",
-        "mobile_image_position": 15,
+        "mobile_image_position": 0,
         "mobile_content_position": "bottom",
         "mobile_content_alignment": "right",
         "mobile_eyebrow": "",
         "mobile_heading_gap": 6,
         "mobile_overlay_enable": false,
         "mobile_overlay_color": "#3e2027",
-        "mobile_overlay_opacity": 25,
+        "mobile_overlay_opacity": 0,
         "mobile_title": "",
         "mobile_subtitle": "",
         "mobile_button_text": "SHOP OUR SCENTS",
@@ -248,57 +248,6 @@
         "text_color": ""
       }
     },
-    "subscribe_save_R7m2Qa": {
-      "type": "subscribe-save",
-      "blocks": {
-        "perk_discount": {
-          "type": "perk",
-          "settings": {
-            "icon": "percent",
-            "text": "15% off every\norder"
-          }
-        },
-        "perk_autoship": {
-          "type": "perk",
-          "settings": {
-            "icon": "truck",
-            "text": "autoship so you\ndon’t run out"
-          }
-        },
-        "perk_vip": {
-          "type": "perk",
-          "settings": {
-            "icon": "gift",
-            "text": "VIP perks\n+ free gifts"
-          }
-        },
-        "perk_pause": {
-          "type": "perk",
-          "settings": {
-            "icon": "calendar",
-            "text": "pause or\ncancel anytime"
-          }
-        }
-      },
-      "block_order": [
-        "perk_discount",
-        "perk_autoship",
-        "perk_vip",
-        "perk_pause"
-      ],
-      "name": "t:sections.subscribe_save.name",
-      "settings": {
-        "image": "shopify://shop_images/subscribe-save-sweet-muse.jpg",
-        "photo_position": "right",
-        "title": "Save 15% for life and smell good",
-        "subtitle": "",
-        "button_text": "Subscribe + save",
-        "button_link": "shopify://collections/shop",
-        "panel_style": "cream",
-        "background_color": "",
-        "text_color": ""
-      }
-    },
     "product_features_aNgxYb": {
       "type": "product-features",
       "blocks": {
@@ -371,7 +320,7 @@
       "name": "t:sections.product_features.name",
       "settings": {
         "band_shape": "wavy",
-        "padding_top": true,
+        "padding_top": false,
         "padding_bottom": true,
         "background_color": "",
         "text_color": "",
@@ -409,6 +358,149 @@
         "button_text": "Shop this set",
         "button_link": "shopify://products/discovery-set",
         "panel_style": "pink",
+        "background_color": "",
+        "text_color": ""
+      }
+    },
+    "category_cards_Wd3pLs": {
+      "type": "category-cards",
+      "blocks": {
+        "card_all_scents": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-all-scents.jpg",
+            "label": "All scents",
+            "link": "shopify://collections/shop"
+          }
+        },
+        "card_bundles": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-bundles.jpg",
+            "label": "Bundles",
+            "link": "shopify://collections/bundles"
+          }
+        },
+        "card_men": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/category-men.jpg",
+            "label": "Shop men",
+            "link": "shopify://pages/for-men"
+          }
+        },
+        "card_wipes": {
+          "type": "card",
+          "settings": {
+            "image": "shopify://shop_images/Wipes_Lifestyle_1_copy.jpg",
+            "label": "Shop wipes",
+            "link": "shopify://collections/wipes-collection"
+          }
+        }
+      },
+      "block_order": [
+        "card_all_scents",
+        "card_bundles",
+        "card_men",
+        "card_wipes"
+      ],
+      "name": "Smell good (phones)",
+      "settings": {
+        "title": "Smell good in your Baudie!",
+        "background_color": "",
+        "text_color": "",
+        "show_on": "mobile"
+      }
+    },
+    "179417188242182948": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_4229edc_eYL7hz": {
+          "type": "ai_gen_block_4229edc",
+          "name": "Spacer",
+          "settings": {
+            "desktop_width_percent": 100,
+            "spacer_height": 20
+          },
+          "blocks": {}
+        },
+        "ai_gen_block_15e7c4d_jWzrQq": {
+          "type": "ai_gen_block_15e7c4d",
+          "settings": {
+            "desktop_width_percent": 100,
+            "line_color": "#ffdfef",
+            "line_thickness": 4,
+            "divider_height": 24,
+            "curve_height": 6,
+            "curve_depth": 0
+          },
+          "blocks": {}
+        },
+        "ai_gen_block_4229edc_VCWntY": {
+          "type": "ai_gen_block_4229edc",
+          "name": "Spacer",
+          "settings": {
+            "desktop_width_percent": 100,
+            "spacer_height": 20
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_4229edc_eYL7hz",
+        "ai_gen_block_15e7c4d_jWzrQq",
+        "ai_gen_block_4229edc_VCWntY"
+      ],
+      "disabled": true,
+      "settings": {}
+    },
+    "subscribe_save_R7m2Qa": {
+      "type": "subscribe-save",
+      "blocks": {
+        "perk_discount": {
+          "type": "perk",
+          "settings": {
+            "icon": "percent",
+            "text": "15% off every\norder"
+          }
+        },
+        "perk_autoship": {
+          "type": "perk",
+          "settings": {
+            "icon": "truck",
+            "text": "autoship so you\ndon’t run out"
+          }
+        },
+        "perk_vip": {
+          "type": "perk",
+          "settings": {
+            "icon": "gift",
+            "text": "VIP perks\n+ free gifts"
+          }
+        },
+        "perk_pause": {
+          "type": "perk",
+          "settings": {
+            "icon": "calendar",
+            "text": "pause or\ncancel anytime"
+          }
+        }
+      },
+      "block_order": [
+        "perk_discount",
+        "perk_autoship",
+        "perk_vip",
+        "perk_pause"
+      ],
+      "name": "t:sections.subscribe_save.name",
+      "settings": {
+        "image": "shopify://shop_images/subscribe-save-sweet-muse.jpg",
+        "photo_position": "right",
+        "title": "Save 15% for life and smell good",
+        "subtitle": "",
+        "button_text": "Subscribe + save",
+        "button_link": "shopify://collections/shop",
+        "panel_style": "cream",
         "background_color": "",
         "text_color": ""
       }
@@ -482,7 +574,7 @@
         "text_color": ""
       }
     },
-    "category_cards_Wd3pLs": {
+    "category_cards_desktop": {
       "type": "category-cards",
       "blocks": {
         "card_all_scents": {
@@ -512,7 +604,7 @@
         "card_wipes": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-wipes.jpg",
+            "image": "shopify://shop_images/Wipes_Lifestyle_1_copy.jpg",
             "label": "Shop wipes",
             "link": "shopify://collections/wipes-collection"
           }
@@ -524,11 +616,12 @@
         "card_men",
         "card_wipes"
       ],
-      "name": "t:sections.category_cards.name",
+      "name": "Smell good (computers)",
       "settings": {
         "title": "Smell good in your Baudie!",
         "background_color": "",
-        "text_color": ""
+        "text_color": "",
+        "show_on": "desktop"
       }
     },
     "customer_videos_Vq7nXa": {
@@ -816,11 +909,13 @@
     "hero_product_tkHfVy",
     "in_press_9ChkGH",
     "product_details_XyZ123",
-    "subscribe_save_R7m2Qa",
     "product_features_aNgxYb",
     "subscribe_save_discovery",
-    "how_to_use_Kp3vTe",
     "category_cards_Wd3pLs",
+    "179417188242182948",
+    "subscribe_save_R7m2Qa",
+    "how_to_use_Kp3vTe",
+    "category_cards_desktop",
     "customer_videos_Vq7nXa",
     "what_makes_different_tVrMDA",
     "meet_scents_AbC456",

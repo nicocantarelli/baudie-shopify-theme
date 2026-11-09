@@ -344,7 +344,12 @@
       "card": "Card",
       "image_info": "Shown as a square; the sides or top and bottom are cropped to fit.",
       "label": "Label",
-      "link": "Link"
+      "link": "Link",
+      "show_on": "Show on",
+      "show_on_info": "To put this section in a different place on phones, add a second copy there and set one to each.",
+      "show_on_all": "Computers and phones",
+      "show_on_desktop": "Computers and tablets only",
+      "show_on_mobile": "Phones only"
     },
     "customer_videos": {
       "name": "Customer videos",

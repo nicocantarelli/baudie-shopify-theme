@@ -1,0 +1,58 @@
+{% doc %}
+  @prompt
+    Can you make a horizontal divider that matches the squigly lines that we have in other parts of the site? It should go from end to end of the screen horizontally., The curves are too aggressive and it doesn't go all the way from end to end on mobile, Can you write a setting so that I can adjust the curve height and depth
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-squiggle-divider-{{ ai_gen_id }} {
+    display: block;
+    position: relative;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: none;
+    height: {{ block.settings.divider_height }}px;
+    margin-left: calc(50% - 50vw);
+    line-height: 0;
+    overflow: hidden;
+  }
+
+  .ai-squiggle-divider-{{ ai_gen_id }}__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ai-squiggle-divider-{{ ai_gen_id }}__path {
+    transform: translateY({{ block.settings.curve_depth }}px);
+    transform-origin: center;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-squiggle-divider-{{ ai_gen_id }} {
+      width: 100vw;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-squiggle-divider-{{ ai_gen_id }}" role="separator" aria-orientation="horizontal" {{ block.shopify_attributes }}>
+  <svg class="ai-squiggle-divider-{{ ai_gen_id }}__svg" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path class="ai-squiggle-divider-{{ ai_gen_id }}__path" d="M0 20 C20 {{ 20 | minus: block.settings.curve_height }} 40 {{ 20 | minus: block.settings.curve_height }} 60 20 S100 {{ 20 | plus: block.settings.curve_height }} 120 20 S160 {{ 20 | minus: block.settings.curve_height }} 180 20 S220 {{ 20 | plus: block.settings.curve_height }} 240 20 S280 {{ 20 | minus: block.settings.curve_height }} 300 20 S340 {{ 20 | plus: block.settings.curve_height }} 360 20 S400 {{ 20 | minus: block.settings.curve_height }} 420 20 S460 {{ 20 | plus: block.settings.curve_height }} 480 20 S520 {{ 20 | minus: block.settings.curve_height }} 540 20 S580 {{ 20 | plus: block.settings.curve_height }} 600 20 S640 {{ 20 | minus: block.settings.curve_height }} 660 20 S700 {{ 20 | plus: block.settings.curve_height }} 720 20 S760 {{ 20 | minus: block.settings.curve_height }} 780 20 S820 {{ 20 | plus: block.settings.curve_height }} 840 20 S880 {{ 20 | minus: block.settings.curve_height }} 900 20 S940 {{ 20 | plus: block.settings.curve_height }} 960 20 S1000 {{ 20 | minus: block.settings.curve_height }} 1020 20 S1060 {{ 20 | plus: block.settings.curve_height }} 1080 20 S1120 {{ 20 | minus: block.settings.curve_height }} 1140 20 S1180 {{ 20 | plus: block.settings.curve_height }} 1200 20" fill="none" stroke="{{ block.settings.line_color }}" stroke-width="{{ block.settings.line_thickness }}" vector-effect="non-scaling-stroke" />
+  </svg>
+</div>
+
+{% schema %}
+{
+  "name": "Squiggle divider",
+  "settings": [
+    { "type": "range", "id": "desktop_width_percent", "label": "Desktop width", "min": 50, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "color", "id": "line_color", "label": "Line color", "default": "#C11562" },
+    { "type": "range", "id": "line_thickness", "label": "Line thickness", "min": 1, "max": 5, "step": 1, "unit": "px", "default": 2 },
+    { "type": "range", "id": "divider_height", "label": "Divider height", "min": 8, "max": 40, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "curve_height", "label": "Curve height", "min": 1, "max": 12, "step": 1, "unit": "px", "default": 2 },
+    { "type": "range", "id": "curve_depth", "label": "Curve depth", "min": -8, "max": 8, "step": 1, "unit": "px", "default": 0 }
+  ],
+  "presets": [{ "name": "Squiggle divider" }],
+  "tag": null,
+  "class": "squiggle-divider-block"
+}
+{% endschema %}

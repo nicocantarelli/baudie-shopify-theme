@@ -8,10 +8,14 @@
   Colors left empty in the editor fall back to the theme colors set in the
   stylesheet, so only the ones picked are written here. A picked text color
   also replaces the title's gradient.
+
+  "Show on" lets a page hold two copies that sit in different places on
+  computers and phones (the homepage does): one for computers and tablets,
+  one for phones. Phones are up to 768px wide, where the cards go two by two.
 {% endcomment %}
 
 <div
-  class="category-cards full-width"
+  class="category-cards full-width{% if section.settings.show_on != 'all' %} category-cards--{{ section.settings.show_on }}-only{% endif %}"
   style="
     {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }}; --text-fill: {{ section.settings.text_color }};{% endif -%}
@@ -201,6 +205,22 @@
       letter-spacing: var(--tracking-label);
     }
   }
+
+  /* "Show on": the whole section (Shopify's wrapper too) leaves the page on
+     the other kind of screen. */
+  @media (min-width: 769px) {
+    .category-cards-section:has(> .category-cards--mobile-only),
+    .category-cards--mobile-only {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .category-cards-section:has(> .category-cards--desktop-only),
+    .category-cards--desktop-only {
+      display: none;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -214,6 +234,18 @@
       "id": "title",
       "label": "t:labels.title",
       "default": "Smell good in your Baudie!"
+    },
+    {
+      "type": "select",
+      "id": "show_on",
+      "label": "t:sections.category_cards.show_on",
+      "info": "t:sections.category_cards.show_on_info",
+      "options": [
+        { "value": "all", "label": "t:sections.category_cards.show_on_all" },
+        { "value": "desktop", "label": "t:sections.category_cards.show_on_desktop" },
+        { "value": "mobile", "label": "t:sections.category_cards.show_on_mobile" }
+      ],
+      "default": "all"
     },
     {
       "type": "header",
