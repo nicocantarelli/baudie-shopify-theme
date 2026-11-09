@@ -13,6 +13,17 @@
 {% endcomment %}
 
 <section class="hero-product full-width" aria-label="{{ 'sections.hero_product.aria_label' | t }}">
+  {%- comment -%}
+    The screen's height, for the phone hero to reach its bottom edge (see the
+    end of the stylesheet). Set here, before the hero is drawn, so it doesn't jump.
+  {%- endcomment -%}
+  <script>
+    (() => {
+      const setScreen = () => document.documentElement.style.setProperty('--hero-product-screen', `${screen.height}px`);
+      setScreen();
+      window.addEventListener('resize', setScreen);
+    })();
+  </script>
   <div class="hero-product__inner">
     {%- comment -%} Hero Images Container {%- endcomment -%}
     <div class="hero-product__images" data-hero-images>
@@ -1074,6 +1085,44 @@
 
     .hero-product__mobile-content .hero-product__mobile-button {
       margin-top: 10px;
+    }
+  }
+
+  /* Phones and tablets, on the first screen. Browsers place their bars
+     differently: with the address bar at the bottom, iOS 26 Safari shows the
+     page down to the screen's edge behind its floating bar, about 120px past
+     100vh, so In the press showed there. So the hero runs at least to the
+     screen's bottom edge (--hero-product-screen, set by the script at the
+     top of the section), and the text and button sit 32px above the bottom
+     of what's visible with the browser's bars showing (100svh), whatever the
+     hero's height. Short screens, like a phone on its side, keep them at
+     the hero's bottom, where they don't run up under the header. */
+  @supports (height: 100svh) {
+    @media (max-width: 900px) {
+      .hero-product {
+        --hero-product-visible: calc(100svh - var(--total-header-height, 95px));
+        --hero-product-bottom-gap: 32px;
+      }
+
+      .hero-product__inner {
+        height: max(682px, var(--hero-product-screen, 100lvh) - var(--total-header-height, 95px));
+      }
+    }
+
+    @media (max-width: 900px) and (min-height: 480px) {
+      .hero-product__mobile-content--bottom {
+        bottom: calc(100% - var(--hero-product-visible) + var(--hero-product-bottom-gap));
+      }
+
+      .hero-product__mobile-content--center {
+        top: calc(var(--hero-product-visible) / 2);
+      }
+    }
+
+    @media (max-width: 320px) {
+      .hero-product {
+        --hero-product-bottom-gap: 24px;
+      }
     }
   }
 {% endstylesheet %}
