@@ -24,7 +24,7 @@
 
 {% if section.settings.layout == 'benefits' %}
   <div
-    class="product-details product-details--benefits full-width"
+    class="product-details product-details--benefits{% if page_tint != blank %} product-details--on-tint{% endif %} full-width"
     style="
       --frame-mask: url('{{ 'shape-wavy-frame.svg' | asset_url }}');
       --plus-mask: url('{{ 'icon-plus-circle.svg' | asset_url }}');
@@ -501,11 +501,17 @@
   }
 
   /* The pink panels' diagonal gradient (snippets/css-variables.liquid); a
-     color picked in the editor replaces it. */
+     color picked in the editor replaces it. On a tinted product page the
+     panel takes Alex's deeper pink, left to right (her Canva); the
+     homepage keeps the panels' gradient. */
+  .product-details--on-tint {
+    --panel-gradient: linear-gradient(90deg, #FFD2E4, #F9D3E2 50%, #FFF3F9);
+  }
+
   .product-details__panel {
     margin-right: -82px;
     border-radius: var(--radius-panel);
-    background: var(--section-bg, var(--gradient-panel));
+    background: var(--section-bg, var(--panel-gradient, var(--gradient-panel)));
   }
 
   .product-details__photo {

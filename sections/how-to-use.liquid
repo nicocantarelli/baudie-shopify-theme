@@ -78,7 +78,7 @@
 {%- assign page_tint = page_tint | strip -%}
 
 <section
-  class="how-to-use{% if layout == 'card' %} how-to-use--card{% endif %} full-width"
+  class="how-to-use{% if layout == 'card' %} how-to-use--card{% endif %}{% if page_tint != blank %} how-to-use--on-tint{% endif %} full-width"
   data-section-id="{{ section.id }}"
   aria-label="{{ section.settings.title | default: 'How to use' }}"
   style="
@@ -516,6 +516,13 @@
     background-color: var(--page-tint, var(--color-background));
   }
 
+  /* On a tinted product page the card takes Alex's deeper pink, left to
+     right across the whole card (her Canva); the homepage keeps the
+     panels' gradient. */
+  .how-to-use--on-tint {
+    --card-gradient: linear-gradient(90deg, #FFD2E4, #FFE3EE 50%, #FFF3F9);
+  }
+
   .how-to-use__container {
     max-width: 1600px;
     margin: 0 auto;
@@ -532,7 +539,7 @@
     grid-template-columns: minmax(0, 659fr) minmax(0, 621fr);
     overflow: hidden;
     border-radius: var(--radius-panel);
-    background: var(--section-bg, var(--gradient-panel));
+    background: var(--section-bg, var(--card-gradient, var(--gradient-panel)));
     color: var(--text-color, var(--color-foreground));
   }
 
@@ -736,7 +743,7 @@
     .how-to-use__card-content {
       padding-top: calc(var(--media-radius) + var(--card-padding-top, var(--card-padding)));
       border-radius: 0 0 var(--media-radius) var(--media-radius);
-      background: var(--section-bg, var(--gradient-panel));
+      background: var(--section-bg, var(--card-gradient, var(--gradient-panel)));
     }
 
     .how-to-use__card-media {
