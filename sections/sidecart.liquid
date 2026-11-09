@@ -187,7 +187,7 @@
               {% endif %}
     </div>
   </div>
-</div>{{ gift_bar }}{% render 'promo-banner', location: 'sidecart-top' %}{% else %}{{ gift_bar }}{% endif %}<div class="sidecart__content" data-sidecart-content>
+</div>{{ gift_bar }}{% render 'promo-banner', location: 'sidecart-top' %}{% else %}{{ gift_bar }}{% endif %}<div class="sidecart__scroll"><div class="sidecart__content" data-sidecart-content>
 {%- unless gift_layout == 'bar' -%}
   {% render 'sidecart-gift-bar',
     layout: gift_layout,
@@ -319,7 +319,7 @@
       </button>
     </div>
   {%- endif -%}
-</div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading %}<div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
+</div></div>{% render 'sidecart-upsell', enabled: section.settings.enable_upsell, heading: section.settings.upsell_heading %}</div><div class="sidecart__footer{% unless has_items or shipping_bar_preview %} sidecart__footer--hidden{% endunless %}" data-sidecart-footer>
 {% if shipping_bar_enabled and shipping_bar_position == 'bottom' %}
   <div
     class="sidecart__shipping-bar{% if has_free_shipping %} sidecart__shipping-bar--free{% endif %}"
@@ -579,9 +579,21 @@
 }
 
 .sidecart__content {
-  flex: 1;
-  overflow-y: auto;
   padding: 14px 20px;
+}
+
+/* The items and "Complete your order" scroll together, so the deals come
+   after the last item instead of sitting over the list. In a short cart the
+   items' row fills the space, which keeps the deals just above the footer.
+   (A grid, so the items' row has a set height for the empty cart's
+   min-height: 100% to fill.) */
+.sidecart__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
 }
 
 .sidecart__items {
@@ -605,6 +617,13 @@
   gap: 18px;
   padding: 14px 0;
   border-bottom: 1px solid var(--sidecart-border);
+}
+
+/* The last item's line would double "Complete your order"'s (or the
+   footer's) a few pixels below it once they scroll together, so it's
+   see-through; still there, so nothing shifts when items come and go. */
+.sidecart-item:last-child {
+  border-bottom-color: transparent;
 }
 
 .sidecart-item__remove {
@@ -635,9 +654,9 @@
 }
 
 /* The photo sits on a rounded tile in the product's card color, which starts
-   --tile-top below the box. A bottle (a portrait photo, --pop) is bigger than
-   the tile and leans a little, so its cap pops out over the top; anything
-   else fits inside the tile. */
+   --tile-top below the box, level with the title. A bottle (a portrait photo,
+   --pop) stands inside the tile, leaning a little; anything else fits the
+   tile too. */
 .sidecart-item__image-link {
   --tile-top: 22px;
   position: relative;
@@ -656,14 +675,18 @@
   object-fit: contain;
 }
 
+/* The scents' bottle photos are 2:3 with the bottle in the middle 53% of
+   the width and from 10% to 92% of the height. Sized so the bottle is 86% of
+   the tile's height, centered in it (the photo's empty edges run past the
+   tile, unseen). */
 .sidecart-item__image-link--pop .sidecart-item__image,
 .sidecart-item__image-link--pop .sidecart-item__leaving--bottle {
   position: absolute;
   inset: auto;
-  top: -32.7%;
-  left: -18.3%;
-  width: 125%;
-  height: 141%;
+  top: -3.9%;
+  left: 10.6%;
+  width: 80.5%;
+  height: 105.3%;
   margin: 0;
   max-width: none;
   rotate: 4deg;
@@ -2713,9 +2736,15 @@
   margin: 0;
 }
 
-/* "Complete your order", above the footer. Its divider stops at the items'
-   edges. */
+/* "Complete your order", after the items (in the scroll area). Its divider
+   stops at the items' edges. The deals sit side by side, each a photo with a
+   round + on its corner in place of a worded button (it keeps its "Add to
+   cart: <title>" label); a deal left on its own (the customer added the
+   other) takes the full width. */
 .sidecart-upsell {
+  --upsell-photo: 60px;
+  --upsell-add: 28px;
+
   flex-shrink: 0;
   margin: 0 20px;
   padding: 18px 0;
@@ -2743,21 +2772,26 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
 }
 
 .sidecart-upsell__item {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--upsell-photo) minmax(0, 1fr);
+  column-gap: 12px;
   align-items: center;
-  gap: 12px;
+}
+
+.sidecart-upsell__image-wrap,
+.sidecart-upsell__form {
+  grid-area: 1 / 1;
 }
 
 .sidecart-upsell__image-wrap {
-  flex-shrink: 0;
-  width: 60px;
-  height: 60px;
+  width: var(--upsell-photo);
+  height: var(--upsell-photo);
   border-radius: 12px;
   background-color: var(--color-blush, #FFF4F8);
   display: flex;
@@ -2779,7 +2813,7 @@
 }
 
 .sidecart-upsell__info {
-  flex: 1;
+  grid-area: 1 / 2;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -2789,12 +2823,16 @@
 .sidecart-upsell__title {
   font-family: var(--font-sweet-sans);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.2;
   letter-spacing: var(--tracking-label-lg, 0.02em);
   text-transform: uppercase;
   color: var(--sidecart-text);
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .sidecart-upsell__price {
@@ -2819,27 +2857,46 @@
   color: var(--sidecart-text);
 }
 
+/* Centered on the photo, then moved to hang 4px past its bottom-right
+   corner. */
 .sidecart-upsell__form {
   margin: 0;
-  flex-shrink: 0;
+  justify-self: center;
+  transform: translate(
+    calc(var(--upsell-photo) / 2 + 4px - var(--upsell-add) / 2),
+    calc(var(--upsell-photo) / 2 + 4px - var(--upsell-add) / 2)
+  );
 }
 
-/* A small pink pill: a plus, then "Add to cart". (Two classes so it wins over
-   .button's own padding and weight.) */
+/* Just the plus, in a pink circle ringed in the drawer color. The words stay
+   in its label, not on it, so nothing beside the plus pushes it off center.
+   (Two classes so it wins over .button's own padding and gap.) */
 .button.sidecart-upsell__add {
-  --button-height: 34px;
-  --button-padding: 16px;
-  --button-font-size: 11px;
-  gap: 6px;
-  padding: 0 var(--button-padding) 0 12px;
-  font-weight: 500;
-  white-space: nowrap;
+  --button-height: var(--upsell-add);
+  --button-font-size: 0;
+  position: relative;
+  width: var(--upsell-add);
+  height: var(--upsell-add);
+  padding: 0;
+  gap: 0;
+  box-shadow: 0 0 0 2px var(--sidecart-bg);
+}
+
+.sidecart-upsell__add-text {
+  display: none;
 }
 
 .sidecart-upsell__add svg {
   flex-shrink: 0;
-  width: 9px;
-  height: 9px;
+  width: 11px;
+  height: 11px;
+}
+
+/* A bigger tap area than the circle. */
+.sidecart-upsell__add::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
 }
 
 .sidecart-upsell__add.is-loading {
@@ -2851,12 +2908,12 @@
   white-space: nowrap;
 }
 
-/* Phones: the deals side by side, each a photo with a round + on its corner in
-   place of the worded button (which keeps its "Add to cart: <title>" label), so
-   the block takes about 40% less height. A deal left on its own (the customer
-   added the other) takes the full width. */
+/* Phones: the same, smaller. */
 @media (max-width: 768px) {
   .sidecart-upsell {
+    --upsell-photo: 50px;
+    --upsell-add: 26px;
+
     padding: 14px 0;
   }
 
@@ -2866,41 +2923,16 @@
   }
 
   .sidecart-upsell__list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 10px;
   }
 
-  .sidecart-upsell__item {
-    display: grid;
-    grid-template-columns: 50px minmax(0, 1fr);
-    column-gap: 12px;
-    align-items: center;
-  }
-
-  .sidecart-upsell__image-wrap,
-  .sidecart-upsell__form {
-    grid-area: 1 / 1;
-  }
-
   .sidecart-upsell__image-wrap {
-    width: 50px;
-    height: 50px;
     border-radius: 10px;
-  }
-
-  .sidecart-upsell__info {
-    grid-area: 1 / 2;
   }
 
   .sidecart-upsell__title {
     font-size: 10.5px;
-    line-height: 1.2;
     letter-spacing: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 
   .sidecart-upsell__compare {
@@ -2911,33 +2943,9 @@
     font-size: 12.5px;
   }
 
-  /* Centered on the photo, then moved to hang 4px past its bottom-right corner. */
-  .sidecart-upsell__form {
-    justify-self: center;
-    transform: translate(16px, 16px);
-  }
-
-  /* Just the plus, in a pink circle ringed in the drawer color. */
-  .button.sidecart-upsell__add {
-    --button-height: 26px;
-    --button-font-size: 0;
-    position: relative;
-    width: 26px;
-    height: 26px;
-    padding: 0;
-    box-shadow: 0 0 0 2px var(--sidecart-bg);
-  }
-
   .sidecart-upsell__add svg {
     width: 10px;
     height: 10px;
-  }
-
-  /* A bigger tap area than the circle. */
-  .sidecart-upsell__add::after {
-    content: '';
-    position: absolute;
-    inset: -8px;
   }
 }
 
