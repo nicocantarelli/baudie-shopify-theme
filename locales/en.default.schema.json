@@ -907,7 +907,11 @@
       "name": "Contact",
       "settings": {
         "content_header": "Content",
-        "colors_header": "Colors"
+        "colors_header": "Colors",
+        "form_type": "Contact form",
+        "form_type_info": "The theme form uses the theme's fonts and colors and sends messages to the store's contact email (Settings > Store details). The Gorgias form takes file attachments but can't be restyled from the theme.",
+        "form_type_theme": "Theme form",
+        "form_type_gorgias": "Gorgias form"
       }
     },
     "legal_page": {

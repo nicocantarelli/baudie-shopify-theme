@@ -375,8 +375,9 @@ button.star-rating {
 
 /* EU Widerruf withdrawal form (cancellation page).
    The app block prints its own heading/description above the iframe; the page
-   already has a branded "Cancel your contract" heading, so hide the app's and
-   match the frame to Baudie's square, dark-bordered inputs. */
+   already has its own heading, so hide the app's, and drop the frame's border.
+   The form inside the iframe takes its colors and corners from the block's
+   settings, through the Custom CSS in the EU Widerruf app's settings. */
 .wf-iframe-heading,
 .wf-iframe-description {
   display: none !important;
@@ -395,6 +396,172 @@ button.star-rating {
   border-radius: 0 !important;
   outline: none !important;
   box-shadow: none !important;
+}
+
+/* Klaviyo Reviews widget (product pages).
+   Klaviyo draws it straight into the page and colors it from the
+   --kl-reviews-* variables it sets on :root; these override them for the
+   widget. The rules below cover what the variables don't reach. Each starts
+   with the wrapper's id so it outranks Klaviyo's CSS, which loads after this
+   file. */
+#klaviyo-product-reviews-wrapper {
+  --kl-reviews-reviews-primary-font-color: var(--color-foreground);
+  --kl-reviews-reviews-secondary-font-color: var(--color-foreground);
+  --kl-reviews-reviews-primary-font-font-family: var(--font-jokker);
+  --kl-reviews-reviews-secondary-font-font-family: var(--font-jokker);
+  --kl-reviews-reviews-star-color: var(--color-foreground);
+  --kl-reviews-reviews-empty-star-color: color-mix(in srgb, var(--color-foreground) 30%, transparent);
+  --kl-reviews-reviews-accent-color: var(--color-foreground);
+  --kl-reviews-reviews-button-color: var(--color-accent);
+  --kl-reviews-reviews-button-font-color: var(--color-on-accent);
+  --kl-reviews-reviews-button-corner-radius: var(--radius-pill);
+  --kl-reviews-reviews-filter-corner-radius: var(--radius-pill);
+  --kl-reviews-reviews-filter-button-corner-radius-fallback: var(--radius-pill);
+  --kl-reviews-reviews-corner-radius: var(--radius-card);
+  --kl-reviews-reviews-secondary-background-color: var(--color-blush);
+  --kl-reviews-reviews-summary-images-corner-radius: 12px;
+  --kl-reviews-reviews-review-images-corner-radius: 12px;
+  --kl-reviews-color-light-gray: color-mix(in srgb, var(--color-foreground) 15%, transparent);
+
+  padding: 60px var(--page-gutter) 80px !important;
+  color: var(--color-foreground);
+  font-family: var(--font-jokker);
+}
+
+/* The app section keeps blocks inside the page's 20px margins; the widget
+   spans the page and sets the page gutter itself instead, like the other
+   product page sections. */
+.shopify-section > :has(> #fulfilled-reviews-all, > #klaviyo-product-reviews-wrapper) {
+  grid-column: 1 / -1;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__summary__header {
+  margin: 0 0 32px !important;
+  font: 400 72px/1 var(--font-alyona) !important;
+  color: var(--color-foreground) !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__summary__average_value {
+  font-family: var(--font-alyona) !important;
+  font-weight: 400 !important;
+  font-size: 64px !important;
+  line-height: 1 !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__summary__average_denominator,
+#klaviyo-product-reviews-wrapper .kl_reviews__summary__stars__count,
+#klaviyo-product-reviews-wrapper .kl_reviews__histogram__rating,
+#klaviyo-product-reviews-wrapper .kl_reviews__histogram__value {
+  font-family: var(--font-jokker) !important;
+  color: var(--color-foreground) !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__summary__stars__count {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__histogram__rating,
+#klaviyo-product-reviews-wrapper .kl_reviews__histogram__value {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__histogram svg path {
+  fill: var(--color-foreground) !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__histogram__bar--background {
+  height: 8px !important;
+  border-radius: var(--radius-pill) !important;
+  background: var(--color-panel) !important;
+  overflow: hidden;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__histogram__bar--foreground {
+  height: 100% !important;
+  border-radius: var(--radius-pill) !important;
+  background: var(--color-foreground) !important;
+}
+
+/* Write a review and Show more: the theme's pill button. */
+#klaviyo-product-reviews-wrapper .kl_reviews__button {
+  height: 50px !important;
+  padding: 0 32px !important;
+  border: 0 !important;
+  border-radius: var(--radius-pill) !important;
+  background: var(--gradient-button) !important;
+  color: var(--color-on-accent) !important;
+  font: 700 16px/1.2 var(--font-sweet-sans) !important;
+  letter-spacing: var(--tracking-label-lg) !important;
+  text-transform: uppercase !important;
+  transition: filter 0.2s ease !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__button:hover {
+  filter: brightness(0.92);
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__button:focus-visible {
+  outline: 2px solid var(--color-foreground) !important;
+  outline-offset: 3px !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__list__tab {
+  font-family: var(--font-jokker) !important;
+  color: var(--color-foreground) !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__review__title {
+  font-family: var(--font-jokker) !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  line-height: 1.3 !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__review__author,
+#klaviyo-product-reviews-wrapper .kl_reviews__time_badge {
+  font-family: var(--font-jokker) !important;
+  font-size: 13px !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__review__edited svg path {
+  fill: currentColor !important;
+}
+
+#klaviyo-product-reviews-wrapper .kl_reviews__review__content {
+  font-family: var(--font-jokker) !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}
+
+@media (max-width: 768px) {
+  #klaviyo-product-reviews-wrapper {
+    padding: 40px var(--page-gutter) 50px !important;
+  }
+
+  #klaviyo-product-reviews-wrapper .kl_reviews__summary__header {
+    margin-bottom: 20px !important;
+    font-size: 34px !important;
+  }
+
+  #klaviyo-product-reviews-wrapper .kl_reviews__summary__average_value {
+    font-size: 48px !important;
+  }
+
+  #klaviyo-product-reviews-wrapper .kl_reviews__button {
+    height: 48px !important;
+    padding: 0 24px !important;
+    font-size: 14px !important;
+  }
+
+  #klaviyo-product-reviews-wrapper .kl_reviews__review__title {
+    font-size: 16px !important;
+  }
+
+  #klaviyo-product-reviews-wrapper .kl_reviews__review__content {
+    font-size: 14px !important;
+  }
 }
 
 /* Appstle customer portal (/apps/subscriptions).
