@@ -1165,18 +1165,21 @@
      the hero's bottom, where they don't run up under the header. */
   @supports (height: 100svh) {
     @media (max-width: 900px) {
-      .hero-product {
-        --hero-product-visible: calc(var(--hero-product-svh, 100svh) - var(--total-header-height, 95px));
-        --hero-product-bottom-gap: 32px;
-      }
-
       /* Never shorter than the text and button need (what's visible), and
          at least 560px: enough to keep In the press off an iPhone SE's
          first screen. The 682px minimum ran most iPhones' heroes past the
-         screen's edge. */
+         screen's edge. --hero-product-below is how much of the hero is
+         below what's visible on load. */
+      .hero-product {
+        --hero-product-visible: calc(var(--hero-product-svh, 100svh) - var(--total-header-height, 95px));
+        --hero-product-bottom-gap: 32px;
+        --hero-product-height: max(560px, var(--hero-product-screen, 100lvh) - var(--total-header-height, 95px), var(--hero-product-visible));
+        --hero-product-below: calc(var(--hero-product-height) - var(--hero-product-visible));
+      }
+
       .hero-product__inner {
         min-height: 560px;
-        height: max(560px, var(--hero-product-screen, 100lvh) - var(--total-header-height, 95px), var(--hero-product-visible));
+        height: var(--hero-product-height);
       }
     }
 
@@ -1187,6 +1190,29 @@
 
       .hero-product__mobile-content--center {
         top: calc(var(--hero-product-visible) / 2);
+      }
+
+      /* As the page scrolls, the text and button glide down over the photo,
+         half of the hero that was below the first screen (about 57px on
+         Alex's iPhone), so less empty photo is left above In the press.
+         Driven by the scrolling itself, so they move smoothly with the
+         finger; done by the time In the press starts to show. Browsers
+         without scroll-driven animations, and people who ask for less
+         motion, keep them still. */
+      @supports (animation-timeline: scroll()) {
+        @media (prefers-reduced-motion: no-preference) {
+          .hero-product__mobile-content--bottom {
+            animation: hero-product-glide linear both;
+            animation-timeline: scroll(root block);
+            animation-range: 0px var(--hero-product-below);
+          }
+        }
+      }
+    }
+
+    @keyframes hero-product-glide {
+      to {
+        translate: 0 calc(var(--hero-product-below) / 2);
       }
     }
 
