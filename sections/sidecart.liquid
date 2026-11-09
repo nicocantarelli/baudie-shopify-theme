@@ -533,16 +533,19 @@
     scroll-timeline: --sidecart-scroll y;
   }
 
+  /* Moves up 1px for every 1px scrolled: over the first 20000px of the
+     scroll (far more than any cart), not its whole length, so it doesn't
+     rely on the length, which the browser rounds. */
   .sidecart__edge-track {
     animation: sidecart-edge-scroll linear both;
     animation-timeline: --sidecart-scroll;
+    animation-range: 0px 20000px;
   }
 }
 
-/* --edge-scroll: how far the scroll area scrolls (set by updateEdgeTint). */
 @keyframes sidecart-edge-scroll {
   from { transform: translateY(0); }
-  to { transform: translateY(calc(-1 * var(--edge-scroll, 0px))); }
+  to { transform: translateY(-20000px); }
 }
 
 .sidecart.is-open .sidecart__drawer {
@@ -644,10 +647,15 @@
    items' row fills the space, which keeps the deals just above the footer.
    (A grid, so the items' row has a set height for the empty cart's
    min-height: 100% to fill.) */
+/* No bounce past either end (macOS, iOS): while bouncing, the list moves past
+   its scroll position, which the wavy edge's gift tint follows (see
+   .sidecart__edge), so the two would come apart. It also keeps the scroll
+   from carrying on to the page behind the drawer. */
 .sidecart__scroll {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  overscroll-behavior-y: none;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: 1fr auto;
@@ -3353,13 +3361,14 @@ class Sidecart {
     const top = view.top + scroll.clientTop - drawerTop;
     // Where the top of the scroll area's contents is now.
     const origin = view.top + scroll.clientTop - scroll.scrollTop;
+    // The scroll area's own height, unrounded (clientHeight is rounded).
+    const height = view.height - scroll.clientTop - parseFloat(getComputedStyle(scroll).borderBottomWidth || 0);
     this.edge.style.top = `${top}px`;
-    this.edge.style.height = `${scroll.clientHeight}px`;
+    this.edge.style.height = `${height}px`;
     this.edge.style.webkitMaskPosition = `0 ${-top}px`;
     this.edge.style.maskPosition = `0 ${-top}px`;
     const track = this.edgeTrack;
-    track.style.height = `${scroll.scrollHeight}px`;
-    track.style.setProperty('--edge-scroll', `${scroll.scrollHeight - scroll.clientHeight}px`);
+    track.style.height = `${scroll.scrollHeight + 1}px`;
     if (!this.edgeTimeline) track.style.transform = `translateY(${-scroll.scrollTop}px)`;
     const lines = this.edgePhone.matches
       ? []
