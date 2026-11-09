@@ -492,27 +492,57 @@
 
 /* A gift line's tint, and a scent pick's wash over it, carried on into the
    wavy edge instead of stopping in a straight line at the drawer's side
-   (with the gift cards; see updateEdgeTint and followEdgeWash). Two layers
-   over the edge, cut to its wave like it. The wash's layer covers just the
-   line's rows in view, its wave lined up with the edge's. */
-.sidecart__edge-tint,
-.sidecart__edge-wash {
+   (with the gift cards; see updateEdgeTint and followEdgeWash). The edge
+   layer covers the edge beside the scroll area, cut to its wave like the
+   edge (the mask stays put); in it, a track as tall as the scroll area's
+   contents holds the tint at the gift lines' rows and the wash. The track
+   moves with the scroll area through a scroll-driven animation, which the
+   browser runs with the scrolling itself, so the two never part. Where
+   those aren't supported, the script moves it on each scroll. */
+.sidecart__edge {
   position: absolute;
   top: 0;
   right: 100%;
   width: var(--sidecart-wave);
-  background-repeat: no-repeat;
+  height: 0;
+  overflow: hidden;
   -webkit-mask: var(--sidecart-wave-mask) 0 0 / 100% 450px repeat-y;
   mask: var(--sidecart-wave-mask) 0 0 / 100% 450px repeat-y;
   pointer-events: none;
 }
 
-.sidecart__edge-tint {
-  bottom: 0;
+.sidecart__edge-track,
+.sidecart__edge-wash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-repeat: no-repeat;
 }
 
 .sidecart__edge-wash {
   height: 0;
+}
+
+@supports (animation-timeline: --a) and (timeline-scope: --a) {
+  .sidecart__drawer {
+    timeline-scope: --sidecart-scroll;
+  }
+
+  .sidecart__scroll {
+    scroll-timeline: --sidecart-scroll y;
+  }
+
+  .sidecart__edge-track {
+    animation: sidecart-edge-scroll linear both;
+    animation-timeline: --sidecart-scroll;
+  }
+}
+
+/* --edge-scroll: how far the scroll area scrolls (set by updateEdgeTint). */
+@keyframes sidecart-edge-scroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-1 * var(--edge-scroll, 0px))); }
 }
 
 .sidecart.is-open .sidecart__drawer {
@@ -3058,8 +3088,7 @@
   }
 
   /* The sheet's sides are straight, so the gift tint reaches them as is. */
-  .sidecart__edge-tint,
-  .sidecart__edge-wash {
+  .sidecart__edge {
     display: none;
   }
 
@@ -3270,24 +3299,29 @@ class Sidecart {
   }
 
   // The gift lines' tint (with the gift cards) runs on into the drawer's wavy
-  // edge instead of stopping in a straight line at the drawer's side: a layer
-  // over the edge (.sidecart__edge-tint) paints the tint's left color over the
-  // rows those lines take up, cut to the part of the scroll area in view. Kept
-  // in step as the cart scrolls, re-renders or changes size. A scent pick's
-  // wash runs on into the edge too (see followEdgeWash). On phones the edge is
-  // the sheet's top, whose sides are straight, so nothing's painted.
+  // edge instead of stopping in a straight line at the drawer's side: the
+  // edge layer (.sidecart__edge) paints the tint's left color over the rows
+  // those lines take up. Its track moves with the scroll area by itself (see
+  // the .sidecart__edge styles); this keeps the layer, the track and the
+  // tint's rows in step as the cart re-renders or changes size. A scent
+  // pick's wash runs on into the edge too (see followEdgeWash). On phones the
+  // edge is the sheet's top, whose sides are straight, so nothing's painted.
   watchEdgeTint() {
     const scroll = this.sidecart.querySelector('.sidecart__scroll');
     if (!scroll || !this.drawer) return;
     this.edgeScroll = scroll;
     this.edgePhone = window.matchMedia('(max-width: 768px)');
-    this.edgeTint = document.createElement('div');
-    this.edgeTint.className = 'sidecart__edge-tint';
+    this.edgeTimeline = !!(window.CSS && CSS.supports('animation-timeline: --a') && CSS.supports('timeline-scope: --a'));
+    this.edge = document.createElement('div');
+    this.edge.className = 'sidecart__edge';
+    this.edge.setAttribute('aria-hidden', 'true');
+    this.edgeTrack = document.createElement('div');
+    this.edgeTrack.className = 'sidecart__edge-track';
     this.edgeWash = document.createElement('div');
     this.edgeWash.className = 'sidecart__edge-wash';
-    this.edgeTint.setAttribute('aria-hidden', 'true');
-    this.edgeWash.setAttribute('aria-hidden', 'true');
-    this.drawer.prepend(this.edgeTint, this.edgeWash);
+    this.edgeTrack.append(this.edgeWash);
+    this.edge.append(this.edgeTrack);
+    this.drawer.prepend(this.edge);
     this.edgeWashFrame = 0;
     let frame = 0;
     this.scheduleEdgeTint = () => {
@@ -3297,7 +3331,11 @@ class Sidecart {
         this.updateEdgeTint();
       });
     };
-    scroll.addEventListener('scroll', this.scheduleEdgeTint, { passive: true });
+    if (!this.edgeTimeline) {
+      scroll.addEventListener('scroll', () => {
+        this.edgeTrack.style.transform = `translateY(${-scroll.scrollTop}px)`;
+      }, { passive: true });
+    }
     if ('ResizeObserver' in window) {
       const observer = new ResizeObserver(this.scheduleEdgeTint);
       observer.observe(scroll);
@@ -3310,21 +3348,31 @@ class Sidecart {
   updateEdgeTint() {
     const scroll = this.edgeScroll;
     if (!scroll) return;
+    const drawerTop = this.drawer.getBoundingClientRect().top;
+    const view = scroll.getBoundingClientRect();
+    const top = view.top + scroll.clientTop - drawerTop;
+    // Where the top of the scroll area's contents is now.
+    const origin = view.top + scroll.clientTop - scroll.scrollTop;
+    this.edge.style.top = `${top}px`;
+    this.edge.style.height = `${scroll.clientHeight}px`;
+    this.edge.style.webkitMaskPosition = `0 ${-top}px`;
+    this.edge.style.maskPosition = `0 ${-top}px`;
+    const track = this.edgeTrack;
+    track.style.height = `${scroll.scrollHeight}px`;
+    track.style.setProperty('--edge-scroll', `${scroll.scrollHeight - scroll.clientHeight}px`);
+    if (!this.edgeTimeline) track.style.transform = `translateY(${-scroll.scrollTop}px)`;
     const lines = this.edgePhone.matches
       ? []
       : scroll.querySelectorAll('.sidecart__items--gift-cards .sidecart-item--gift');
-    const top = this.drawer.getBoundingClientRect().top;
-    const view = scroll.getBoundingClientRect();
     const tint = 'var(--color-blush, #FFF4F8)';
     const stops = [];
     lines.forEach((line) => {
       const box = line.getBoundingClientRect();
-      const from = Math.max(box.top, view.top) - top;
-      const to = Math.min(box.bottom, view.bottom) - top;
-      if (to <= from) return;
+      const from = box.top - origin;
+      const to = box.bottom - origin;
       stops.push(`transparent ${from}px`, `${tint} ${from}px`, `${tint} ${to}px`, `transparent ${to}px`);
     });
-    this.edgeTint.style.backgroundImage = stops.length ? `linear-gradient(to bottom, ${stops.join(', ')})` : '';
+    track.style.backgroundImage = stops.length ? `linear-gradient(to bottom, ${stops.join(', ')})` : '';
   }
 
   // A scent pick's wash (see washGift) runs on into the edge with its line:
@@ -3342,6 +3390,8 @@ class Sidecart {
   }
 
   // Paints this frame of the edge's wash; false once no gift line washes.
+  // The wash sits in the edge's track at its line's rows, so it scrolls with
+  // the line like the tint.
   paintEdgeWash() {
     const layer = this.edgeWash;
     const card =
@@ -3354,15 +3404,9 @@ class Sidecart {
       layer.removeAttribute('style');
       return false;
     }
-    const drawerTop = this.drawer.getBoundingClientRect().top;
-    const view = this.edgeScroll.getBoundingClientRect();
+    const scroll = this.edgeScroll;
+    const view = scroll.getBoundingClientRect();
     const box = card.getBoundingClientRect();
-    const from = Math.max(box.top, view.top) - drawerTop;
-    const to = Math.min(box.bottom, view.bottom) - drawerTop;
-    if (to <= from) {
-      layer.style.height = '0px';
-      return true;
-    }
     const style = getComputedStyle(card);
     const at = (name) => {
       const value = parseFloat(style.getPropertyValue(name));
@@ -3372,19 +3416,17 @@ class Sidecart {
     // .sidecart-item.is-choosing): the shine 300% wide, the band 340%.
     const width = card.clientWidth;
     const height = card.clientHeight;
-    const x = box.left + card.clientLeft - layer.getBoundingClientRect().left;
-    const y = box.top + card.clientTop - drawerTop - from;
+    const x = box.left + card.clientLeft - this.edge.getBoundingClientRect().left;
+    const y = box.top + card.clientTop - (view.top + scroll.clientTop - scroll.scrollTop);
     const shine = 'linear-gradient(100deg, transparent 44%, rgba(255, 255, 255, 0.5) 50%, transparent 56%)';
-    layer.style.top = `${from}px`;
-    layer.style.height = `${to - from}px`;
-    layer.style.webkitMaskPosition = `0 ${-from}px`;
-    layer.style.maskPosition = `0 ${-from}px`;
+    layer.style.top = `${y}px`;
+    layer.style.height = `${height}px`;
     layer.style.backgroundColor = style.backgroundColor;
     layer.style.backgroundImage = `${shine}, ${card.style.getPropertyValue('--scent-wash') || 'none'}`;
     layer.style.backgroundSize = `${width * 3}px ${height}px, ${width * 3.4}px ${height}px`;
     layer.style.backgroundPosition =
-      `${x - width * 2 * at('--scent-shine-x')}px ${y}px, ` +
-      `${x - width * 2.4 * at('--scent-wash-x')}px ${y}px`;
+      `${x - width * 2 * at('--scent-shine-x')}px 0px, ` +
+      `${x - width * 2.4 * at('--scent-wash-x')}px 0px`;
     return true;
   }
 
