@@ -483,6 +483,8 @@
   bottom: 0;
   width: var(--sidecart-wave);
   background-color: var(--sidecart-bg);
+  /* A gift line's tint, carried on into the edge (see updateEdgeTint). */
+  background-image: var(--sidecart-edge-tint, none);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 450' preserveAspectRatio='none'%3E%3Cpath d='M96 0H48C23.41 36.69 0 71.79 0 112.5C0 153.21 23.41 188.31 48 225C72.59 261.69 96 296.79 96 337.5C96 378.21 72.59 413.31 48 450H96Z'/%3E%3C/svg%3E") 0 0 / 100% 450px repeat-y;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 450' preserveAspectRatio='none'%3E%3Cpath d='M96 0H48C23.41 36.69 0 71.79 0 112.5C0 153.21 23.41 188.31 48 225C72.59 261.69 96 296.79 96 337.5C96 378.21 72.59 413.31 48 450H96Z'/%3E%3C/svg%3E") 0 0 / 100% 450px repeat-y;
   pointer-events: none;
@@ -3022,6 +3024,7 @@
     left: 0;
     width: auto;
     height: var(--sidecart-wave);
+    background-image: none;
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112.5 30' preserveAspectRatio='none'%3E%3Cpath d='M0 30V12C9.17 5.85 17.95 0 28.13 0C38.3 0 47.08 5.85 56.25 12C65.42 18.15 74.2 24 84.38 24C94.55 24 103.33 18.15 112.5 12V30Z'/%3E%3C/svg%3E") 0 100% / 50% 100% repeat-x;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112.5 30' preserveAspectRatio='none'%3E%3Cpath d='M0 30V12C9.17 5.85 17.95 0 28.13 0C38.3 0 47.08 5.85 56.25 12C65.42 18.15 74.2 24 84.38 24C94.55 24 103.33 18.15 112.5 12V30Z'/%3E%3C/svg%3E") 0 100% / 50% 100% repeat-x;
   }
@@ -3233,6 +3236,60 @@ class Sidecart {
     }
     this.bindEvents();
     this.initCartListeners();
+    this.watchEdgeTint();
+  }
+
+  // The gift lines' tint (with the gift cards) runs on into the drawer's wavy
+  // edge instead of stopping in a straight line at the drawer's side: the
+  // edge (.sidecart__drawer::before) paints the tint's left color over the
+  // rows those lines take up, cut to the part of the scroll area in view, as
+  // --sidecart-edge-tint. Kept in step as the cart scrolls, re-renders or
+  // changes size. On phones the edge is the sheet's top, so nothing's painted.
+  watchEdgeTint() {
+    const scroll = this.sidecart.querySelector('.sidecart__scroll');
+    if (!scroll || !this.drawer) return;
+    this.edgeScroll = scroll;
+    this.edgePhone = window.matchMedia('(max-width: 768px)');
+    let frame = 0;
+    this.scheduleEdgeTint = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        this.updateEdgeTint();
+      });
+    };
+    scroll.addEventListener('scroll', this.scheduleEdgeTint, { passive: true });
+    if ('ResizeObserver' in window) {
+      const observer = new ResizeObserver(this.scheduleEdgeTint);
+      observer.observe(scroll);
+      if (this.content) observer.observe(this.content);
+    }
+    if (this.edgePhone.addEventListener) this.edgePhone.addEventListener('change', this.scheduleEdgeTint);
+    this.scheduleEdgeTint();
+  }
+
+  updateEdgeTint() {
+    const scroll = this.edgeScroll;
+    if (!scroll) return;
+    const lines = this.edgePhone.matches
+      ? []
+      : scroll.querySelectorAll('.sidecart__items--gift-cards .sidecart-item--gift');
+    const top = this.drawer.getBoundingClientRect().top;
+    const view = scroll.getBoundingClientRect();
+    const tint = 'var(--color-blush, #FFF4F8)';
+    const stops = [];
+    lines.forEach((line) => {
+      const box = line.getBoundingClientRect();
+      const from = Math.max(box.top, view.top) - top;
+      const to = Math.min(box.bottom, view.bottom) - top;
+      if (to <= from) return;
+      stops.push(`transparent ${from}px`, `${tint} ${from}px`, `${tint} ${to}px`, `transparent ${to}px`);
+    });
+    if (stops.length) {
+      this.drawer.style.setProperty('--sidecart-edge-tint', `linear-gradient(to bottom, ${stops.join(', ')})`);
+    } else {
+      this.drawer.style.removeProperty('--sidecart-edge-tint');
+    }
   }
 
   cacheRefs() {
@@ -4078,6 +4135,7 @@ class Sidecart {
     this.reportSavedCodes(cart);
     this.restoreGiftFocus();
     this.settleGiftWash();
+    if (this.scheduleEdgeTint) this.scheduleEdgeTint();
     this.reopenMenu(openMenu);
     this.needsStructureRender = false;
     this.renderRetries = 0;
