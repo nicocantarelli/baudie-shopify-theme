@@ -12,7 +12,27 @@
   ones that are set are written here.
 {% endcomment %}
 
-<section class="hero-product full-width" aria-label="{{ 'sections.hero_product.aria_label' | t }}">
+{%- comment -%}
+  The fade over the photo, from the "Image overlay" settings: clear at the
+  top, darkening behind the text. On phones its lower layer is 45/56 of the
+  set opacity, the design's two shades. The flat tint sits on top of it.
+{%- endcomment -%}
+{%- liquid
+  assign desktop_fade_color = section.settings.desktop_fade_color | default: settings.cocoa_color
+  assign desktop_fade_alpha = section.settings.desktop_fade_opacity | divided_by: 100.0
+  assign mobile_fade_color = section.settings.mobile_fade_color | default: settings.cocoa_color
+  assign mobile_fade_alpha = section.settings.mobile_fade_opacity | divided_by: 100.0
+  assign mobile_fade_low_alpha = section.settings.mobile_fade_opacity | times: 45 | divided_by: 5600.0
+-%}
+<section
+  class="hero-product full-width"
+  style="
+    --hero-product-fade: {{ desktop_fade_color | color_modify: 'alpha', desktop_fade_alpha }};
+    --hero-product-mobile-fade: {{ mobile_fade_color | color_modify: 'alpha', mobile_fade_alpha }};
+    --hero-product-mobile-fade-low: {{ mobile_fade_color | color_modify: 'alpha', mobile_fade_low_alpha }};
+  "
+  aria-label="{{ 'sections.hero_product.aria_label' | t }}"
+>
   {%- comment -%}
     The screen's height, for the phone hero to reach its bottom edge (see the
     end of the stylesheet). Set here, before the hero is drawn, so it doesn't jump.
@@ -510,13 +530,14 @@
     object-position: center 30%;
   }
 
-  /* The design's shade over the photo, tail included: clear at the top, then
-     cocoa darkening to 48% by about halfway down, behind the heading. */
+  /* The shade over the photo, tail included: clear at the top, then
+     darkening to the "Fade" color by about halfway down, behind the heading.
+     The design's is cocoa at 48%. */
   .hero-product__image-gradient {
     position: absolute;
     inset: 0 auto 0 0;
     width: var(--hero-product-split);
-    background: linear-gradient(transparent 25%, var(--color-scrim) 47%);
+    background: linear-gradient(transparent 25%, var(--hero-product-fade, var(--color-scrim)) 47%);
     pointer-events: none;
     z-index: 1;
   }
@@ -913,14 +934,21 @@
       object-position: var(--hero-product-mobile-image-x, 50%) center;
     }
 
-    /* The design's two cocoa shades: one darkening to 56% between about a
-       third and halfway down, one deepening to 45% at the bottom. */
+    /* Two shades of the "Fade" color: one darkening to its opacity between
+       about a third and halfway down, one deepening at the bottom to 45/56
+       of it. The design's are cocoa at 56% and 45%. */
     .hero-product__mobile-gradient {
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(transparent 35%, color-mix(in srgb, var(--color-cocoa) 45%, transparent)),
-        linear-gradient(transparent 29%, color-mix(in srgb, var(--color-cocoa) 56%, transparent) 51%);
+        linear-gradient(
+          transparent 35%,
+          var(--hero-product-mobile-fade-low, color-mix(in srgb, var(--color-cocoa) 45%, transparent))
+        ),
+        linear-gradient(
+          transparent 29%,
+          var(--hero-product-mobile-fade, color-mix(in srgb, var(--color-cocoa) 56%, transparent)) 51%
+        );
       pointer-events: none;
     }
 
@@ -1326,21 +1354,43 @@
         "info": "t:sections.hero_product.settings.static_hero_image_alt_info"
       },
       {
+        "type": "header",
+        "content": "t:sections.hero_product.settings.desktop_overlay_header"
+      },
+      {
+        "type": "color",
+        "id": "desktop_fade_color",
+        "label": "t:sections.hero_product.settings.fade_color",
+        "default": "#3E2027"
+      },
+      {
+        "type": "range",
+        "id": "desktop_fade_opacity",
+        "label": "t:sections.hero_product.settings.fade_opacity",
+        "info": "t:sections.hero_product.settings.desktop_fade_opacity_info",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "default": 48
+      },
+      {
         "type": "checkbox",
         "id": "desktop_overlay_enable",
-        "label": "Enable desktop image overlay",
+        "label": "t:sections.hero_product.settings.overlay_enable",
+        "info": "t:sections.hero_product.settings.overlay_enable_info",
         "default": false
       },
       {
         "type": "color",
         "id": "desktop_overlay_color",
-        "label": "Desktop overlay color",
+        "label": "t:sections.hero_product.settings.overlay_color",
         "default": "#000000"
       },
       {
         "type": "range",
         "id": "desktop_overlay_opacity",
-        "label": "Desktop overlay opacity",
+        "label": "t:sections.hero_product.settings.overlay_opacity",
         "min": 0,
         "max": 100,
         "step": 5,
@@ -1429,28 +1479,6 @@
         "default": 6
       },
       {
-        "type": "checkbox",
-        "id": "mobile_overlay_enable",
-        "label": "t:sections.hero_product.settings.mobile_overlay_enable",
-        "default": false
-      },
-      {
-        "type": "color",
-        "id": "mobile_overlay_color",
-        "label": "t:sections.hero_product.settings.mobile_overlay_color",
-        "default": "#000000"
-      },
-      {
-        "type": "range",
-        "id": "mobile_overlay_opacity",
-        "label": "t:sections.hero_product.settings.mobile_overlay_opacity",
-        "min": 0,
-        "max": 100,
-        "step": 5,
-        "unit": "%",
-        "default": 30
-      },
-      {
         "type": "text",
         "id": "mobile_title",
         "label": "t:sections.hero_product.settings.mobile_title",
@@ -1472,6 +1500,50 @@
         "type": "url",
         "id": "mobile_button_url",
         "label": "t:sections.hero_product.settings.mobile_button_url"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.hero_product.settings.mobile_overlay_header"
+      },
+      {
+        "type": "color",
+        "id": "mobile_fade_color",
+        "label": "t:sections.hero_product.settings.fade_color",
+        "default": "#3E2027"
+      },
+      {
+        "type": "range",
+        "id": "mobile_fade_opacity",
+        "label": "t:sections.hero_product.settings.fade_opacity",
+        "info": "t:sections.hero_product.settings.mobile_fade_opacity_info",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "default": 56
+      },
+      {
+        "type": "checkbox",
+        "id": "mobile_overlay_enable",
+        "label": "t:sections.hero_product.settings.overlay_enable",
+        "info": "t:sections.hero_product.settings.overlay_enable_info",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "mobile_overlay_color",
+        "label": "t:sections.hero_product.settings.overlay_color",
+        "default": "#000000"
+      },
+      {
+        "type": "range",
+        "id": "mobile_overlay_opacity",
+        "label": "t:sections.hero_product.settings.overlay_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "default": 30
       }
     ],
     "blocks": [
