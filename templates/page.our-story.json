@@ -91,7 +91,8 @@
         "image_position": "left",
         "image_aspect_ratio": "portrait",
         "container_width": "full",
-        "text_vertical_align": "center"
+        "text_vertical_align": "center",
+        "background_color": "#ffdced"
       }
     },
     "science": {
@@ -104,7 +105,8 @@
         "image_position": "right",
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
-        "text_vertical_align": "center"
+        "text_vertical_align": "center",
+        "background_color": "#ffffdc"
       }
     },
     "image_text_block_4PNkyG": {
@@ -118,7 +120,8 @@
         "image_position": "left",
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
-        "text_vertical_align": "top"
+        "text_vertical_align": "top",
+        "background_color": "#fdfc8d"
       }
     }
   },

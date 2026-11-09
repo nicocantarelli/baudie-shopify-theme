@@ -186,8 +186,12 @@
     top: var(--sticky-top, calc(var(--total-header-height, 110px) + 40px));
   }
 
+  /* The featured image and the post's own images: rounded like the
+     theme's cards. */
   .article__image-wrapper {
     width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-card);
   }
 
   .article__image {
@@ -331,6 +335,7 @@
     max-width: 100%;
     height: auto;
     margin: 30px 0;
+    border-radius: var(--radius-card);
   }
 
   .article__content hr {

@@ -280,11 +280,15 @@
     outline-offset: 4px;
   }
 
+  /* Rounded like the theme's cards; isolated so the hover zoom stays inside
+     the corners in Safari. */
   .blog-card__image-wrapper {
     position: relative;
     width: 100%;
     aspect-ratio: 440 / 569;
     overflow: hidden;
+    border-radius: var(--radius-card);
+    isolation: isolate;
   }
 
   .blog-card__image {
