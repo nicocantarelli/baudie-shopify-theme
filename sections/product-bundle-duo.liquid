@@ -579,6 +579,32 @@
       }
     }
   </script>
+
+  {%- comment -%}
+    The sticky Add to cart, while the card's own row is out of view. Until a
+    scent is picked its button reads "Pick your scent" and takes the
+    customer back up to the scents; then it shows the scent and adds the
+    duo (set by the script below).
+  {%- endcomment -%}
+  {%- if is_coming_soon == false and section.settings.show_sticky_add_to_cart -%}
+    {%- liquid
+      assign sticky_image = product.metafields.custom.card_image | default: product.featured_image
+      assign sticky_price = current_variant.price | money_without_trailing_zeros
+      assign sticky_compare_price = ''
+      if current_variant.compare_at_price > current_variant.price
+        assign sticky_compare_price = current_variant.compare_at_price | money_without_trailing_zeros
+      endif
+      assign sticky_label = 'sections.product_bundle_duo.sticky_pick' | t
+    -%}
+    {% render 'sticky-add-to-cart',
+      title: product.title,
+      image: sticky_image,
+      price: sticky_price,
+      compare_price: sticky_compare_price,
+      picker: true,
+      label: sticky_label
+    %}
+  {%- endif -%}
 </section>
 
 {% render 'product-main-script' %}
@@ -732,6 +758,12 @@
         this.addLabel = section.querySelector('[data-duo-add-label]');
         this.status = section.querySelector('[data-duo-status]');
 
+        // The sticky Add to cart (snippets/sticky-add-to-cart.liquid).
+        this.sticky = section.querySelector('[data-sticky-atc]');
+        this.stickyLabel = this.sticky?.querySelector('[data-sticky-atc-label]');
+        this.stickyPick = this.stickyLabel?.textContent || '';
+        this.stickyPicked = this.sticky?.querySelector('[data-sticky-atc-subtitle]');
+
         this.scentButtons.forEach((button) => {
           button.addEventListener('click', () => this.pick(button.dataset.duoScent));
         });
@@ -794,6 +826,18 @@
         });
         if (this.addButton) this.addButton.disabled = !this.picked || this.adding;
         if (this.addLabel) this.addLabel.textContent = this.picked ? this.text.textAdd : this.text.textPick;
+
+        // The sticky bar: ready once a scent is picked, which shows under
+        // the name.
+        if (this.sticky) {
+          const scent = this.scents[this.picked];
+          this.sticky.dataset.ready = String(Boolean(scent));
+          if (this.stickyLabel) this.stickyLabel.textContent = scent ? this.text.textAdd : this.stickyPick;
+          if (this.stickyPicked) {
+            this.stickyPicked.textContent = scent ? scent.name : '';
+            this.stickyPicked.hidden = !scent;
+          }
+        }
       }
 
       async addToCart() {
@@ -969,6 +1013,13 @@
       "type": "checkbox",
       "id": "show_watch_in_action",
       "label": "t:sections.product_bundle.settings.show_watch_in_action",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sticky_add_to_cart",
+      "label": "t:sections.product.show_sticky_add_to_cart",
+      "info": "t:sections.product.show_sticky_add_to_cart_info",
       "default": true
     },
     {

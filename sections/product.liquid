@@ -744,6 +744,39 @@
       </div>
     </dialog>
   {% endif %}
+
+  {%- comment -%}
+    The sticky Add to cart, while the card's own row is out of view: the
+    bottle on the scent's color, the product line, the scent and the price
+    of the purchase option picked (it follows the options).
+  {%- endcomment -%}
+  {%- if can_purchase and section.settings.show_sticky_add_to_cart -%}
+    {%- liquid
+      assign sticky_image = product.metafields.custom.card_image | default: product.featured_image
+      assign sticky_color = product.metafields.custom.swatch_color.value | default: product.metafields.custom.card_background_color.value
+      assign sticky_compare_price = ''
+      if selected_allocation
+        assign sticky_price = selected_allocation.price | money_without_trailing_zeros
+        if selected_allocation.compare_at_price > selected_allocation.price
+          assign sticky_compare_price = selected_allocation.compare_at_price | money_without_trailing_zeros
+        endif
+      else
+        assign sticky_price = current_variant.price | money_without_trailing_zeros
+        if current_variant.compare_at_price > current_variant.price
+          assign sticky_compare_price = current_variant.compare_at_price | money_without_trailing_zeros
+        endif
+      endif
+    -%}
+    {% render 'sticky-add-to-cart',
+      title: title_text,
+      subtitle: scent_name,
+      image: sticky_image,
+      image_color: sticky_color,
+      price: sticky_price,
+      compare_price: sticky_compare_price,
+      form_id: form_id
+    %}
+  {%- endif -%}
 </section>
 
 {% render 'product-main-script' %}
@@ -2358,6 +2391,13 @@
       "type": "checkbox",
       "id": "show_watch_in_action",
       "label": "t:sections.product.show_watch_in_action",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sticky_add_to_cart",
+      "label": "t:sections.product.show_sticky_add_to_cart",
+      "info": "t:sections.product.show_sticky_add_to_cart_info",
       "default": true
     },
     {

@@ -244,6 +244,14 @@
       "choose_scents": "Choose {{ count }} scents:",
       "pick_scents": "Pick {{ count }} scents",
       "pick_more": "Pick {{ count }} more",
+      "sticky_pick": {
+        "one": "Pick your scent",
+        "other": "Pick your {{ count }} scents"
+      },
+      "sticky_pick_more": {
+        "one": "Pick {{ count }} more scent",
+        "other": "Pick {{ count }} more scents"
+      },
       "your_bundle": "Your bundle",
       "bottle": "Bottle {{ number }}",
       "empty": "empty",
@@ -259,7 +267,8 @@
     "product_bundle_duo": {
       "choose_scent": "Choose a scent:",
       "pick_scent": "Pick a scent",
-      "scent_picked": "{{ scent }} picked"
+      "scent_picked": "{{ scent }} picked",
+      "sticky_pick": "Pick your scent"
     },
     "list_collections": {
       "name": "Collections list",

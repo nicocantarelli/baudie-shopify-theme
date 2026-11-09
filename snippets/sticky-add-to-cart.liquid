@@ -1,0 +1,412 @@
+{% doc %}
+  The sticky Add to cart: a bar with the product's picture, name, scent,
+  price and an Add to cart button, shown while the page's own quantity and
+  Add to cart row (.product-main__form in the same .product-main section)
+  is out of view. White with a line around it, like the product page's
+  cards: on phones and tablets across the bottom of the screen, on
+  computers a small card floating at the bottom center. Rendered at the end
+  of the product, bundle and duo sections.
+
+  On a product page the button submits the product form (form_id), so the
+  cart drawer adds it with the quantity and purchase option picked on the
+  page, and the price follows the purchase options.
+
+  On the bundle and the duo (picker: true), the section's own script sets
+  the button's label (data-sticky-atc-label), data-ready on the bar and,
+  on the duo, the line under the name (data-sticky-atc-subtitle: the scent
+  picked) as scents are picked. Until the picks are complete, the button scrolls
+  back up to the scents; then it adds like the page's own button.
+
+  @param {string} title - The product's name
+  @param {string} [subtitle] - The line under the name: the scent
+  @param {image} [image] - The picture on the left
+  @param {string} [image_color] - The color behind the picture. Default: the section's gradient
+  @param {string} price - The price, formatted
+  @param {string} [compare_price] - The price before the sale, struck through after the price
+  @param {string} [form_id] - The product form the button submits (product page)
+  @param {boolean} [picker] - The button waits for the section's scents to be picked (bundle, duo)
+  @param {string} [label] - The button's starting label. Default: Add to cart
+
+  @example
+  {% render 'sticky-add-to-cart',
+    title: title_text,
+    subtitle: scent_name,
+    image: sticky_image,
+    image_color: sticky_color,
+    price: sticky_price,
+    compare_price: sticky_compare_price,
+    form_id: form_id
+  %}
+{% enddoc %}
+
+{%- liquid
+  assign add_label = 'sections.product.add_to_cart' | t
+  assign button_label = label | default: add_label
+-%}
+
+<div
+  class="sticky-atc"
+  data-sticky-atc
+  {% if picker %}
+    data-picker data-ready="false"
+  {% endif %}
+>
+  <div class="sticky-atc__inner">
+    <span
+      class="sticky-atc__media"
+      {% if image_color != blank %}
+        style="--sticky-atc-image-color: {{ image_color }};"
+      {% endif %}
+    >
+      {%- if image -%}
+        {{ image | image_url: width: 240 | image_tag:
+          loading: 'lazy',
+          alt: '',
+          sizes: '64px',
+          class: 'sticky-atc__image'
+        }}
+      {%- endif -%}
+    </span>
+
+    <div class="sticky-atc__text">
+      <p class="sticky-atc__title">{{ title | escape }}</p>
+      <p class="sticky-atc__subtitle" data-sticky-atc-subtitle{% if subtitle == blank %} hidden{% endif %}>
+        {{- subtitle | escape -}}
+      </p>
+      <p
+        class="sticky-atc__price"
+        {% if form_id != blank %}
+          data-purchase-price-for="{{ form_id }}"
+        {% endif %}
+      >
+        <span class="visually-hidden" data-sale-label{% if compare_price == blank %} hidden{% endif %}>
+          {{- 'products.sale_price' | t }}:
+        </span>
+        <span data-price-amount>{{ price }}</span>
+        <s class="sticky-atc__compare" data-compare-price{% if compare_price == blank %} hidden{% endif %}>
+          <span class="visually-hidden">{{ 'products.regular_price' | t }}:</span>
+          <span data-compare-amount>{{ compare_price }}</span>
+        </s>
+      </p>
+    </div>
+
+    {%- if form_id != blank and picker != true -%}
+      <button type="submit" form="{{ form_id }}" class="button sticky-atc__button" data-sticky-atc-button>
+        <span data-sticky-atc-label>{{ button_label }}</span>
+      </button>
+    {%- else -%}
+      <button type="button" class="button sticky-atc__button" data-sticky-atc-button>
+        <span data-sticky-atc-label>{{ button_label }}</span>
+      </button>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  /* The sticky Add to cart (snippets/sticky-add-to-cart.liquid), white with
+     a line around it like the product page's cards. Above the page (whose
+     layers stop at 30) but under the cookie banner (90), the header (100,
+     which holds the mobile menu) and the cart drawer (300). Phones: across
+     the bottom, its top corners rounded like the phone cards. */
+  .sticky-atc {
+    --sticky-atc-image: 48px;
+    --sticky-atc-gap: 12px;
+
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 80;
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+    border: 1px solid var(--color-foreground);
+    border-bottom: 0;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    visibility: hidden;
+    translate: 0 calc(100% + 16px);
+    transition:
+      translate 0.3s ease,
+      visibility 0s linear 0.3s;
+  }
+
+  .sticky-atc.is-visible {
+    visibility: visible;
+    translate: 0 0;
+    transition:
+      translate 0.3s ease,
+      visibility 0s linear 0s;
+  }
+
+  .sticky-atc__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--sticky-atc-gap);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* The picture fitted on a rounded tile of the scent's color (the
+     section's gradient where there's none). */
+  .sticky-atc__media {
+    flex: none;
+    position: relative;
+    width: var(--sticky-atc-image);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--sticky-atc-image-color, linear-gradient(135deg, var(--gradient-1, var(--color-blush)), var(--gradient-2, var(--color-panel))));
+  }
+
+  .sticky-atc__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .sticky-atc__text {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  /* One line each; on a phone the name can take two beside a long button
+     ("Organic Cotton Dry Wipes"). */
+  .sticky-atc__text > p {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .sticky-atc__text > .sticky-atc__title {
+    -webkit-line-clamp: 2;
+  }
+
+  .sticky-atc__title {
+    font: 400 17px/1.1 var(--font-alyona);
+  }
+
+  .sticky-atc__subtitle {
+    font: 700 12px/1.3 var(--font-sweet-sans);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .sticky-atc__subtitle[hidden] {
+    display: none;
+  }
+
+  .sticky-atc__price {
+    font: 700 14px/1.3 var(--font-sweet-sans);
+    letter-spacing: 0.02em;
+  }
+
+  .sticky-atc__compare {
+    margin-left: 4px;
+    font-weight: 400;
+  }
+
+  .sticky-atc__compare[hidden] {
+    display: none;
+  }
+
+  .sticky-atc__button {
+    --button-height: 48px;
+    --button-padding: 16px;
+    --button-font-size: 14px;
+
+    flex: none;
+    white-space: nowrap;
+  }
+
+  /* Computers: a small card floating at the bottom center. */
+  @media (min-width: 1024px) {
+    .sticky-atc {
+      --sticky-atc-image: 64px;
+      --sticky-atc-gap: 16px;
+
+      right: auto;
+      bottom: 24px;
+      left: 50%;
+      width: min(500px, calc(100vw - 48px));
+      padding: 10px 12px 10px 10px;
+      border-bottom: 1px solid var(--color-foreground);
+      border-radius: var(--radius-card);
+      translate: -50% calc(100% + 40px);
+    }
+
+    .sticky-atc.is-visible {
+      translate: -50% 0;
+    }
+
+    .sticky-atc__text > .sticky-atc__title {
+      -webkit-line-clamp: 1;
+    }
+
+    .sticky-atc__title {
+      font-size: 20px;
+    }
+
+    .sticky-atc__price {
+      font-size: 16px;
+    }
+
+    .sticky-atc__button {
+      --button-padding: 28px;
+    }
+  }
+
+  /* Narrow phones: "Deodorant Enhancer" keeps to one line, and the long
+     "Pick..." labels shrink a little to leave the name room. Add to cart
+     keeps the phone buttons' 14px. */
+  @media (max-width: 389px) {
+    .sticky-atc[data-ready='false'] .sticky-atc__button {
+      --button-padding: 14px;
+      --button-font-size: 13px;
+    }
+  }
+
+  @media (max-width: 374px) {
+    .sticky-atc__title {
+      font-size: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-atc,
+    .sticky-atc.is-visible {
+      transition: none;
+    }
+  }
+
+  /* While the bar shows: room under the footer so the bar never covers the
+     page's end, and AudioEye's launcher (24px from the bottom-right corner)
+     moves above the bar on phones, off its button. */
+  html.has-sticky-atc body {
+    padding-bottom: var(--sticky-atc-space, 0px);
+  }
+
+  @media (max-width: 1023px) {
+    html.has-sticky-atc body:not(:has(#sidecart.is-open)) #ae_launcher {
+      bottom: calc(var(--sticky-atc-space, 0px) + 12px) !important;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  /* The sticky Add to cart (snippets/sticky-add-to-cart.liquid): shows while
+     the page's own Add to cart row is out of view. On phones the bar covers
+     the bottom of the screen, so the row counts as in view once it's above
+     the bar. On computers the row rides along the window's bottom until the
+     page reaches it (initDock in snippets/product-main-script.liquid), so
+     the bar only shows once the row has gone off the top. */
+  (() => {
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const bars = new Set();
+
+    // Room under the footer for the visible bar: its height and its gap to
+    // the window's bottom (and as much again above it on computers). From
+    // its layout, not its position, which is still sliding.
+    function updateSpace() {
+      let space = 0;
+      bars.forEach((bar) => {
+        if (!bar.isConnected || !bar.classList.contains('is-visible')) return;
+        const bottom = parseFloat(getComputedStyle(bar).bottom) || 0;
+        space = Math.max(space, Math.ceil(bar.offsetHeight + bottom * 2));
+      });
+      document.documentElement.classList.toggle('has-sticky-atc', space > 0);
+      document.documentElement.style.setProperty('--sticky-atc-space', `${space}px`);
+    }
+
+    function setUp(bar) {
+      const section = bar.closest('.product-main');
+      const row = section?.querySelector('.product-main__buy > .product-main__form');
+      if (!row) return;
+      const mainButton = row.querySelector('.product-main__button');
+      const button = bar.querySelector('[data-sticky-atc-button]');
+      bars.add(bar);
+
+      let frame = 0;
+      // A resize can change the bar's height, so it measures the room again.
+      let measure = true;
+      const update = () => {
+        frame = 0;
+        if (!bar.isConnected) {
+          // The theme editor re-rendered the section.
+          window.removeEventListener('scroll', schedule);
+          window.removeEventListener('resize', schedule);
+          desktop.removeEventListener('change', schedule);
+          bars.delete(bar);
+          updateSpace();
+          return;
+        }
+        // The fixed header covers the top of the window while it shows.
+        const header = document.querySelector('.header-wrapper');
+        const top = header && !header.classList.contains('header--hidden') ? header.offsetHeight : 0;
+        const covered = desktop.matches ? 0 : bar.offsetHeight;
+        const rect = row.getBoundingClientRect();
+        const inView = rect.bottom > top && rect.top < window.innerHeight - covered;
+        const show = !inView && rect.height > 0;
+        if (show !== bar.classList.contains('is-visible') || measure) {
+          bar.classList.toggle('is-visible', show);
+          updateSpace();
+        }
+        measure = false;
+      };
+      function schedule(event) {
+        if (event?.type !== 'scroll') measure = true;
+        if (!frame) frame = requestAnimationFrame(update);
+      }
+      window.addEventListener('scroll', schedule, { passive: true });
+      window.addEventListener('resize', schedule);
+      desktop.addEventListener('change', schedule);
+      update();
+
+      // Bundle and duo: once the picks are complete, add like the page's own
+      // button; until then, back up to the scents to pick from.
+      if (bar.hasAttribute('data-picker')) {
+        button?.addEventListener('click', () => {
+          if (bar.dataset.ready === 'true') {
+            mainButton?.click();
+            return;
+          }
+          const scents = section.querySelector('.product-main__scents');
+          if (!scents) return;
+          scents.scrollIntoView({ block: 'center', behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+          scents.querySelector('button')?.focus({ preventScroll: true });
+        });
+        return;
+      }
+
+      // Product page: the button submits the page's form. While that form is
+      // already adding (its button is off), don't add a second time.
+      button?.addEventListener('click', (event) => {
+        if (mainButton?.disabled) event.preventDefault();
+      });
+    }
+
+    function init(root = document) {
+      root.querySelectorAll('[data-sticky-atc]').forEach((bar) => {
+        if (bar.dataset.stickyReady) return;
+        bar.dataset.stickyReady = 'on';
+        setUp(bar);
+      });
+      updateSpace();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => init());
+    } else {
+      init();
+    }
+    document.addEventListener('shopify:section:load', (event) => init(event.target));
+    document.addEventListener('shopify:section:unload', () => requestAnimationFrame(updateSpace));
+  })();
+{% endjavascript %}

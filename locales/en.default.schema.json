@@ -600,6 +600,8 @@
     "product": {
       "name": "Product",
       "show_watch_in_action": "Show the videos under the photo",
+      "show_sticky_add_to_cart": "Show sticky add to cart",
+      "show_sticky_add_to_cart_info": "A bar with the product and Add to cart at the bottom of the screen while the page's own Add to cart is out of view. On bundles it asks for the scents still to pick and takes the customer back up to them.",
       "videowise_embed": "Videowise embed code",
       "videowise_embed_info": "Paste the widget embed code from Videowise (Copy embed code) to show the videos here. Leave blank to hide the videos.",
       "popup_text_color": "Popup text color",

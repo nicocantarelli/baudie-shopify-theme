@@ -542,6 +542,42 @@
       }
     }
   </script>
+
+  {%- comment -%}
+    The sticky Add to cart, while the card's own row is out of view. Its
+    button reads "Pick your 3 scents", then "Pick 2 more scents"... (the
+    template's labels, by the number of scents left) and takes the customer
+    back up to the scents; once the bundle is full it reads Add to cart and
+    adds it. The script below sets those.
+  {%- endcomment -%}
+  {%- if is_coming_soon == false and section.settings.show_sticky_add_to_cart -%}
+    {%- liquid
+      assign sticky_image = product.metafields.custom.card_image | default: product.featured_image
+      assign sticky_price = current_variant.price | money_without_trailing_zeros
+      assign sticky_compare_price = ''
+      if current_variant.compare_at_price > current_variant.price
+        assign sticky_compare_price = current_variant.compare_at_price | money_without_trailing_zeros
+      endif
+      assign sticky_label = 'sections.product_bundle.sticky_pick' | t: count: bundle_size
+    -%}
+    {% render 'sticky-add-to-cart',
+      title: product.title,
+      image: sticky_image,
+      price: sticky_price,
+      compare_price: sticky_compare_price,
+      picker: true,
+      label: sticky_label
+    %}
+    <template data-sticky-labels>
+      {%- for i in (1..bundle_size) -%}
+        {%- if i == bundle_size -%}
+          <span data-left="{{ i }}">{{ 'sections.product_bundle.sticky_pick' | t: count: i }}</span>
+        {%- else -%}
+          <span data-left="{{ i }}">{{ 'sections.product_bundle.sticky_pick_more' | t: count: i }}</span>
+        {%- endif -%}
+      {%- endfor -%}
+    </template>
+  {%- endif -%}
 </section>
 
 {% render 'product-main-script' %}
@@ -938,6 +974,15 @@
         this.status = section.querySelector('[data-bundle-status]');
         this.adding = false;
 
+        // The sticky Add to cart (snippets/sticky-add-to-cart.liquid): its
+        // label for each number of scents left, from the section's template.
+        this.sticky = section.querySelector('[data-sticky-atc]');
+        this.stickyLabel = this.sticky?.querySelector('[data-sticky-atc-label]');
+        this.stickyLabels = {};
+        section.querySelector('[data-sticky-labels]')?.content.querySelectorAll('[data-left]').forEach((label) => {
+          this.stickyLabels[label.dataset.left] = label.textContent.trim();
+        });
+
         this.scentButtons.forEach((button) => {
           button.addEventListener('click', () => this.pick(button.dataset.bundleScent));
         });
@@ -1070,6 +1115,14 @@
             this.addLabel.textContent = this.fill(this.text.textPickMore, { count: remaining });
           } else {
             this.addLabel.textContent = this.text.textAdd;
+          }
+        }
+
+        // The sticky bar: ready once the bundle is full.
+        if (this.sticky) {
+          this.sticky.dataset.ready = String(remaining === 0);
+          if (this.stickyLabel) {
+            this.stickyLabel.textContent = remaining > 0 ? this.stickyLabels[remaining] || this.addLabel?.textContent || '' : this.text.textAdd;
           }
         }
       }
@@ -1228,6 +1281,13 @@
       "type": "checkbox",
       "id": "show_watch_in_action",
       "label": "t:sections.product_bundle.settings.show_watch_in_action",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sticky_add_to_cart",
+      "label": "t:sections.product.show_sticky_add_to_cart",
+      "info": "t:sections.product.show_sticky_add_to_cart_info",
       "default": true
     },
     {
