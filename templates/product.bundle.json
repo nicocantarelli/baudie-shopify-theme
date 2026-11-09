@@ -107,6 +107,7 @@
         "patent_stamp_background": "#3e2027",
         "patent_stamp_text_color": "#fcf5de",
         "show_watch_in_action": true,
+        "show_sticky_add_to_cart": true,
         "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
         "scent_collection": "shop",
         "scent_products": [
@@ -418,7 +419,7 @@
         "card_all_scents": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-all-scents.jpg",
+            "image": "shopify://shop_images/Group_Shot_17.png",
             "label": "All scents",
             "link": "shopify://collections/shop"
           }
@@ -426,7 +427,7 @@
         "card_bundles": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-bundles.jpg",
+            "image": "shopify://shop_images/the_6_bottles_I_uploaded_sits_on_the_bottom_ledge_of_an_arched_cut-out_window_in_a_smooth_pastel_lilac_wall._Through_the_arch_a_soft_dreamy_gradient_sky_fades_from_turquoise_at_the_to.png",
             "label": "Bundles",
             "link": "shopify://collections/bundles"
           }
@@ -434,7 +435,7 @@
         "card_men": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-men.jpg",
+            "image": "shopify://shop_images/Deep_Ritual_11_copy.png",
             "label": "Shop men",
             "link": "shopify://products/deep-ritual"
           }
@@ -442,7 +443,7 @@
         "card_wipes": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-wipes.jpg",
+            "image": "shopify://shop_images/Wipes_Lifestyle_1_copy.jpg",
             "label": "Shop wipes",
             "link": "shopify://collections/wipes-collection"
           }
@@ -456,6 +457,7 @@
       ],
       "settings": {
         "title": "You might also like",
+        "show_on": "all",
         "background_color": "",
         "text_color": ""
       }

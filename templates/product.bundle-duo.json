@@ -16,7 +16,6 @@
           "type": "benefit_pill",
           "settings": {
             "icon": "plant_based",
-            "custom_icon": "",
             "label": "Plant-based"
           }
         },
@@ -24,7 +23,6 @@
           "type": "benefit_pill",
           "settings": {
             "icon": "no_aluminum",
-            "custom_icon": "",
             "label": "No aluminum"
           }
         },
@@ -32,7 +30,6 @@
           "type": "benefit_pill",
           "settings": {
             "icon": "ph_balancing",
-            "custom_icon": "",
             "label": "pH balancing"
           }
         },
@@ -105,22 +102,15 @@
         "patent_stamp_position": "image_bottom_right",
         "patent_stamp_heading": "PATENTED FORMULA",
         "patent_stamp_number": "U.S. PATENT 11,857,668",
+        "show_patent_number": true,
         "patent_stamp_size": 100,
         "patent_stamp_rotation": 0,
         "patent_stamp_background": "#3e2027",
         "patent_stamp_text_color": "#fcf5de",
         "show_watch_in_action": true,
+        "show_sticky_add_to_cart": true,
         "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5160660d7d4ce4c3e346d4\"></div>",
         "scent_collection": "shop",
-        "default_scent_product": "st-tropez",
-        "scent_property_name": "Scents",
-        "companion_property_name": "Wipes",
-        "companion_property_value": "Organic Cotton Dry Wipes",
-        "companion_product": "cotton-dry-wipes",
-        "companion_label": "",
-        "gradient_color_1": "#ffefff",
-        "gradient_color_2": "#ffcee7",
-        "popup_text_color": "#3e2027",
         "scent_products": [
           "st-tropez",
           "sweet-muse",
@@ -129,296 +119,17 @@
           "capri-seaside",
           "barely-there"
         ],
-        "gradient_color_3": "#f2d593"
+        "default_scent_product": "st-tropez",
+        "scent_property_name": "Scents",
+        "companion_property_name": "Wipes",
+        "companion_property_value": "Organic Cotton Dry Wipes",
+        "companion_product": "cotton-dry-wipes",
+        "companion_label": "",
+        "gradient_color_1": "#ffefff",
+        "gradient_color_2": "#ffcee7",
+        "gradient_color_3": "#f2d593",
+        "popup_text_color": "#3e2027"
       }
-    },
-    "how_to_use_7CAtDd": {
-      "type": "how-to-use",
-      "blocks": {
-        "step_JwEGnG": {
-          "type": "step",
-          "settings": {
-            "icon": "shopify://shop_images/spray-icon.svg",
-            "label": "Spray"
-          }
-        },
-        "step_rF3Rmp": {
-          "type": "step",
-          "settings": {
-            "icon": "shopify://shop_images/wipe-icon_4729b54e-d58f-41ed-8430-ede67b448e49.svg",
-            "label": "Wipe"
-          }
-        },
-        "step_dhLY9E": {
-          "type": "step",
-          "settings": {
-            "icon": "shopify://shop_images/apply-icon.svg",
-            "label": "Apply Deo"
-          }
-        },
-        "step_3PFwcw": {
-          "type": "step",
-          "settings": {
-            "icon": "shopify://shop_images/fresh-icon.svg",
-            "label": "Stay fresh"
-          }
-        },
-        "dosage_UTC4gX": {
-          "type": "dosage",
-          "settings": {
-            "label": "I smell a little",
-            "drops": 4,
-            "amount": "4-5 Sprays"
-          }
-        },
-        "dosage_i6kpRW": {
-          "type": "dosage",
-          "settings": {
-            "label": "It's... Noticeable",
-            "drops": 6,
-            "amount": "5-8 Sprays"
-          }
-        },
-        "dosage_DaEyLn": {
-          "type": "dosage",
-          "settings": {
-            "label": "I'm really stinky",
-            "drops": 8,
-            "amount": "8–12 Sprays"
-          }
-        }
-      },
-      "block_order": [
-        "step_JwEGnG",
-        "step_rF3Rmp",
-        "step_dhLY9E",
-        "step_3PFwcw",
-        "dosage_UTC4gX",
-        "dosage_i6kpRW",
-        "dosage_DaEyLn"
-      ],
-      "name": "How to use",
-      "settings": {
-        "title": "How to use",
-        "mobile_description": "",
-        "description": "<p>Baudie is NOT A DEODORANT. It is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it works with your microbiome to create an optimized environment where bacteria cannot thrive. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
-        "sprays_title": "How many sprays do i need?",
-        "media_video": "shopify://files/videos/Video_20260327-141053.mov",
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
-      },
-      "disabled": true
-    },
-    "in_press_eFx7et": {
-      "type": "in-press",
-      "blocks": {
-        "press_logo_hLBQRT": {
-          "type": "press_logo",
-          "settings": {
-            "logo": "shopify://shop_images/2.png",
-            "alt_text": "Press logo"
-          }
-        },
-        "press_logo_fLeqCg": {
-          "type": "press_logo",
-          "settings": {
-            "logo": "shopify://shop_images/6.png",
-            "alt_text": "Press logo"
-          }
-        },
-        "press_logo_fMzjrq": {
-          "type": "press_logo",
-          "settings": {
-            "logo": "shopify://shop_images/3.png",
-            "alt_text": "Press logo"
-          }
-        },
-        "press_logo_iUwiMD": {
-          "type": "press_logo",
-          "settings": {
-            "logo": "shopify://shop_images/4.png",
-            "alt_text": "Press logo"
-          }
-        },
-        "press_logo_TgBxkT": {
-          "type": "press_logo",
-          "settings": {
-            "logo": "shopify://shop_images/5.png",
-            "alt_text": "Press logo"
-          }
-        },
-        "press_logo_L69iTx": {
-          "type": "press_logo",
-          "settings": {
-            "logo": "shopify://shop_images/1.png",
-            "alt_text": "Press logo"
-          }
-        }
-      },
-      "block_order": [
-        "press_logo_hLBQRT",
-        "press_logo_fLeqCg",
-        "press_logo_fMzjrq",
-        "press_logo_iUwiMD",
-        "press_logo_TgBxkT",
-        "press_logo_L69iTx"
-      ],
-      "name": "t:general.in_press",
-      "settings": {
-        "title": "IN PRESS",
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027",
-        "divider_color": "#3e2027"
-      },
-      "disabled": true
-    },
-    "what_makes_different_kamc8a": {
-      "type": "what-makes-different",
-      "name": "t:sections.what_makes_different.name",
-      "settings": {
-        "heading": "What Makes Baudie Different",
-        "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
-        "desktop_base": "shopify://shop_images/test.png",
-        "desktop_overlay": "shopify://shop_images/molecule-desktop-text.png",
-        "mobile_base": "shopify://shop_images/molecule-m.png",
-        "mobile_overlay": "shopify://shop_images/molecule-mobile-text.png",
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
-      },
-      "disabled": true
-    },
-    "product_faq_ciNhG7": {
-      "type": "product-faq",
-      "blocks": {
-        "faq_item_8G4ye8": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Is Baudie a deodorant?",
-            "answer": "<p>No. Baudie is not a deodorant and does not replace one. It is a Deodorant Enhancer® that works before deodorant to stop odor at the source and create the perfect base for your deo to last longer.</p>"
-          }
-        },
-        "faq_item_UpwmVD": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Do I need to wipe after I spray it on?",
-            "answer": "<p>Yes! This is of utmost importance. Think of this product as a cleanse for your armpits. When you cleanse your face you always wash off the cleanser. Same goes here...You want to spray and then use a tissue/towel to wipe away all the odor-causing bacteria under your arms. If you do not wipe off, the product will not work effectively.</p>"
-          }
-        },
-        "faq_item_y4DAHY": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Where exactly do I spray it + how many sprays do I need?",
-            "answer": "<p>Our armpit extends greater than just the middle area. Make sure to spray the product all around the sides, top, and middle of the armpit or the product may not be as effective. Please refer to the spray chart in the \"how to use\" section above for a reference as to how many sprays you should be using per armpit.</p>"
-          }
-        },
-        "faq_item_zBPWmx": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Will every scent work the same?",
-            "answer": "<p>This product works off of body chemistry. Therefore you may experience different results with different scents. If you notice one scent doesn’t work as well for you, do not get discouraged as we have plenty of scents for you to try and experience great results. We recommend trying our <a href=\"/products/discovery-set\" target=\"_blank\" title=\"Discovery Set\">Discovery Set</a> to start.</p>"
-          }
-        },
-        "faq_item_UxgLEU": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Will the Deodorant Enhancer®️ scent mix with my deodorant or perfume?",
-            "answer": "<p>We formulated this product to dissipate after you wipe it off. Therefore, it will not affect or change the smell of your deodorant or perfume. You can mix and match any of our scents with your deodorant.</p>"
-          }
-        },
-        "faq_item_4CXF84": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Does this work with any deodorant?",
-            "answer": "<p>This product will work with almost any deodorant and/or antiperspirant. </p>"
-          }
-        },
-        "faq_item_bNifqF": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Why do I smell worse the first week of using it?",
-            "answer": "<p>It is unlikely, but it is possible. It could mean that you are going through a detox period and you need to give your body a few days to adjust. It could also mean that the scent that you purchased does not mesh well with your body chemistry and it is likely one of the other scents will work better for you. We recommend trying our <a href=\"/products/discovery-set\" target=\"_blank\" title=\"Discovery Set\">Discovery Set</a> to start.</p>"
-          }
-        },
-        "faq_item_LQTrHm": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Will this irritate my skin?",
-            "answer": "<p>It is important to remember that every body is unique and different. Our product was tested for safety, stability and efficacy, however due to the fact that every body and skin type is unique, we advise to patch test the product first as you should do with any skin/body product. If you notice irritation or an allergy occur, please stop usage. Please note: If you are NOT wiping the product off as instructed, it can cause irritation on the skin. Applying the product on freshly shaven/waxed/lasered underarms can cause a slight sting but is nothing to be concerned about.</p>"
-          }
-        },
-        "faq_item_tehRF6": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Who can use this product?",
-            "answer": "<p>The Deodorant Enhancer® is unisex and can be used for pre-teens and up. Please make sure to patch-test before use.</p>"
-          }
-        }
-      },
-      "block_order": [
-        "faq_item_8G4ye8",
-        "faq_item_UpwmVD",
-        "faq_item_y4DAHY",
-        "faq_item_zBPWmx",
-        "faq_item_UxgLEU",
-        "faq_item_4CXF84",
-        "faq_item_bNifqF",
-        "faq_item_LQTrHm",
-        "faq_item_tehRF6"
-      ],
-      "name": "Product FAQ",
-      "settings": {
-        "title": "Frequently Asked Questions",
-        "intro": "<p>Got questions? We’ve got answers. This is your go-to spot for everything you might be wondering about Baudie - from how to use it, to what makes it different, to all the little details in between. Think of this as the cheat sheet to staying fresh, informed, and fully in the know.</p>",
-        "top_padding": 112,
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
-      },
-      "disabled": true
-    },
-    "related-products": {
-      "type": "related-products",
-      "settings": {
-        "heading": "You may also like",
-        "collection": "shop",
-        "max_products": 8,
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
-      },
-      "disabled": true
-    },
-    "1785729814f94b4975": {
-      "type": "apps",
-      "blocks": {
-        "simple_bundles_kits_infinite_options_selector_yEegBR": {
-          "type": "shopify://apps/simple-bundles-kits/blocks/infinite-options-selector/e553276b-36b2-446d-b80a-aa47fe5f96ac",
-          "disabled": true,
-          "settings": {
-            "select_placeholder": "Please select an option",
-            "disable_oos_options": true,
-            "show_price_variance": true,
-            "rank_options_by_price_diff": true,
-            "custom_css": "",
-            "custom_js": ""
-          }
-        }
-      },
-      "block_order": [
-        "simple_bundles_kits_infinite_options_selector_yEegBR"
-      ],
-      "settings": {}
-    },
-    "product-reviews": {
-      "type": "apps",
-      "blocks": {
-        "klaviyo_reviews_product_reviews_nThAbd": {
-          "type": "shopify://apps/klaviyo-reviews/blocks/product-reviews/db20e365-d984-4ac4-9655-e1588d951ca9",
-          "settings": {}
-        }
-      },
-      "block_order": [
-        "klaviyo_reviews_product_reviews_nThAbd"
-      ],
-      "settings": {}
     },
     "in_press_TBfPET": {
       "type": "in-press",
@@ -647,10 +358,10 @@
       "settings": {
         "title": "got questions?",
         "intro": "",
+        "image": "shopify://shop_images/faq-got-questions.jpg",
         "top_padding": 96,
         "background_color": "",
-        "text_color": "",
-        "image": "shopify://shop_images/faq-got-questions.jpg"
+        "text_color": ""
       }
     },
     "product_details_who": {
@@ -714,7 +425,7 @@
         "card_all_scents": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-all-scents.jpg",
+            "image": "shopify://shop_images/Group_Shot_17.png",
             "label": "All scents",
             "link": "shopify://collections/shop"
           }
@@ -722,7 +433,7 @@
         "card_bundles": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-bundles.jpg",
+            "image": "shopify://shop_images/the_6_bottles_I_uploaded_sits_on_the_bottom_ledge_of_an_arched_cut-out_window_in_a_smooth_pastel_lilac_wall._Through_the_arch_a_soft_dreamy_gradient_sky_fades_from_turquoise_at_the_to.png",
             "label": "Bundles",
             "link": "shopify://collections/bundles"
           }
@@ -730,7 +441,7 @@
         "card_men": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-men.jpg",
+            "image": "shopify://shop_images/Deep_Ritual_11_copy.png",
             "label": "Shop men",
             "link": "shopify://products/deep-ritual"
           }
@@ -738,7 +449,7 @@
         "card_wipes": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-wipes.jpg",
+            "image": "shopify://shop_images/Wipes_Lifestyle_1_copy.jpg",
             "label": "Shop wipes",
             "link": "shopify://collections/wipes-collection"
           }
@@ -752,9 +463,310 @@
       ],
       "settings": {
         "title": "You might also like",
+        "show_on": "all",
         "background_color": "",
         "text_color": ""
       }
+    },
+    "how_to_use_7CAtDd": {
+      "type": "how-to-use",
+      "blocks": {
+        "step_JwEGnG": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/spray-icon.svg",
+            "label": "Spray"
+          }
+        },
+        "step_rF3Rmp": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/wipe-icon_4729b54e-d58f-41ed-8430-ede67b448e49.svg",
+            "label": "Wipe"
+          }
+        },
+        "step_dhLY9E": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/apply-icon.svg",
+            "label": "Apply Deo"
+          }
+        },
+        "step_3PFwcw": {
+          "type": "step",
+          "settings": {
+            "icon": "shopify://shop_images/fresh-icon.svg",
+            "label": "Stay fresh"
+          }
+        },
+        "dosage_UTC4gX": {
+          "type": "dosage",
+          "settings": {
+            "label": "I smell a little",
+            "drops": 4,
+            "amount": "4-5 Sprays"
+          }
+        },
+        "dosage_i6kpRW": {
+          "type": "dosage",
+          "settings": {
+            "label": "It's... Noticeable",
+            "drops": 6,
+            "amount": "5-8 Sprays"
+          }
+        },
+        "dosage_DaEyLn": {
+          "type": "dosage",
+          "settings": {
+            "label": "I'm really stinky",
+            "drops": 8,
+            "amount": "8–12 Sprays"
+          }
+        }
+      },
+      "block_order": [
+        "step_JwEGnG",
+        "step_rF3Rmp",
+        "step_dhLY9E",
+        "step_3PFwcw",
+        "dosage_UTC4gX",
+        "dosage_i6kpRW",
+        "dosage_DaEyLn"
+      ],
+      "disabled": true,
+      "name": "How to use",
+      "settings": {
+        "layout": "icons",
+        "title": "How to use",
+        "mobile_description": "",
+        "description": "<p>Baudie is NOT A DEODORANT. It is the world's first and only patented Deodorant Enhancer® powered by odor-eliminating bacterial technology that works with any deodorant you already use. It targets the real cause of body odor: the bacteria that makes sweat smell. With a refined blend of gentle AHAs and a synergistic botanical complex, it works with your microbiome to create an optimized environment where bacteria cannot thrive. The result is science-backed freshness that helps your deodorant last longer and helps to keep your sweat odorless.</p>",
+        "pro_tip_label": "Pro tip:",
+        "pro_tip": "",
+        "sprays_title": "How many sprays do i need?",
+        "media_video": "shopify://files/videos/Video_20260327-141053.mov",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "in_press_eFx7et": {
+      "type": "in-press",
+      "blocks": {
+        "press_logo_hLBQRT": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/2.png",
+            "alt_text": "Press logo",
+            "logo_width": 140
+          }
+        },
+        "press_logo_fLeqCg": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/6.png",
+            "alt_text": "Press logo",
+            "logo_width": 140
+          }
+        },
+        "press_logo_fMzjrq": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/3.png",
+            "alt_text": "Press logo",
+            "logo_width": 140
+          }
+        },
+        "press_logo_iUwiMD": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/4.png",
+            "alt_text": "Press logo",
+            "logo_width": 140
+          }
+        },
+        "press_logo_TgBxkT": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/5.png",
+            "alt_text": "Press logo",
+            "logo_width": 140
+          }
+        },
+        "press_logo_L69iTx": {
+          "type": "press_logo",
+          "settings": {
+            "logo": "shopify://shop_images/1.png",
+            "alt_text": "Press logo",
+            "logo_width": 140
+          }
+        }
+      },
+      "block_order": [
+        "press_logo_hLBQRT",
+        "press_logo_fLeqCg",
+        "press_logo_fMzjrq",
+        "press_logo_iUwiMD",
+        "press_logo_TgBxkT",
+        "press_logo_L69iTx"
+      ],
+      "disabled": true,
+      "name": "t:general.in_press",
+      "settings": {
+        "title": "IN PRESS",
+        "title_style": "label",
+        "tint_logos": false,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027",
+        "logo_color": "",
+        "divider_color": "#3e2027"
+      }
+    },
+    "what_makes_different_kamc8a": {
+      "type": "what-makes-different",
+      "disabled": true,
+      "name": "t:sections.what_makes_different.name",
+      "settings": {
+        "heading": "What Makes Baudie Different",
+        "description": "Baudie Deodorant Enhancer — the first science-backed pre-deodorant powered by bacterial odor-control technology. It doesn't mask odor — it stops it at the source.",
+        "desktop_base": "shopify://shop_images/test.png",
+        "desktop_overlay": "shopify://shop_images/molecule-desktop-text.png",
+        "mobile_base": "shopify://shop_images/molecule-m.png",
+        "mobile_overlay": "shopify://shop_images/molecule-mobile-text.png",
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "product_faq_ciNhG7": {
+      "type": "product-faq",
+      "blocks": {
+        "faq_item_8G4ye8": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is Baudie a deodorant?",
+            "answer": "<p>No. Baudie is not a deodorant and does not replace one. It is a Deodorant Enhancer® that works before deodorant to stop odor at the source and create the perfect base for your deo to last longer.</p>"
+          }
+        },
+        "faq_item_UpwmVD": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do I need to wipe after I spray it on?",
+            "answer": "<p>Yes! This is of utmost importance. Think of this product as a cleanse for your armpits. When you cleanse your face you always wash off the cleanser. Same goes here...You want to spray and then use a tissue/towel to wipe away all the odor-causing bacteria under your arms. If you do not wipe off, the product will not work effectively.</p>"
+          }
+        },
+        "faq_item_y4DAHY": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Where exactly do I spray it + how many sprays do I need?",
+            "answer": "<p>Our armpit extends greater than just the middle area. Make sure to spray the product all around the sides, top, and middle of the armpit or the product may not be as effective. Please refer to the spray chart in the \"how to use\" section above for a reference as to how many sprays you should be using per armpit.</p>"
+          }
+        },
+        "faq_item_zBPWmx": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Will every scent work the same?",
+            "answer": "<p>This product works off of body chemistry. Therefore you may experience different results with different scents. If you notice one scent doesn’t work as well for you, do not get discouraged as we have plenty of scents for you to try and experience great results. We recommend trying our <a href=\"/products/discovery-set\" target=\"_blank\" title=\"Discovery Set\">Discovery Set</a> to start.</p>"
+          }
+        },
+        "faq_item_UxgLEU": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Will the Deodorant Enhancer®️ scent mix with my deodorant or perfume?",
+            "answer": "<p>We formulated this product to dissipate after you wipe it off. Therefore, it will not affect or change the smell of your deodorant or perfume. You can mix and match any of our scents with your deodorant.</p>"
+          }
+        },
+        "faq_item_4CXF84": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Does this work with any deodorant?",
+            "answer": "<p>This product will work with almost any deodorant and/or antiperspirant. </p>"
+          }
+        },
+        "faq_item_bNifqF": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Why do I smell worse the first week of using it?",
+            "answer": "<p>It is unlikely, but it is possible. It could mean that you are going through a detox period and you need to give your body a few days to adjust. It could also mean that the scent that you purchased does not mesh well with your body chemistry and it is likely one of the other scents will work better for you. We recommend trying our <a href=\"/products/discovery-set\" target=\"_blank\" title=\"Discovery Set\">Discovery Set</a> to start.</p>"
+          }
+        },
+        "faq_item_LQTrHm": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Will this irritate my skin?",
+            "answer": "<p>It is important to remember that every body is unique and different. Our product was tested for safety, stability and efficacy, however due to the fact that every body and skin type is unique, we advise to patch test the product first as you should do with any skin/body product. If you notice irritation or an allergy occur, please stop usage. Please note: If you are NOT wiping the product off as instructed, it can cause irritation on the skin. Applying the product on freshly shaven/waxed/lasered underarms can cause a slight sting but is nothing to be concerned about.</p>"
+          }
+        },
+        "faq_item_tehRF6": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Who can use this product?",
+            "answer": "<p>The Deodorant Enhancer® is unisex and can be used for pre-teens and up. Please make sure to patch-test before use.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_8G4ye8",
+        "faq_item_UpwmVD",
+        "faq_item_y4DAHY",
+        "faq_item_zBPWmx",
+        "faq_item_UxgLEU",
+        "faq_item_4CXF84",
+        "faq_item_bNifqF",
+        "faq_item_LQTrHm",
+        "faq_item_tehRF6"
+      ],
+      "disabled": true,
+      "name": "Product FAQ",
+      "settings": {
+        "title": "Frequently Asked Questions",
+        "intro": "<p>Got questions? We’ve got answers. This is your go-to spot for everything you might be wondering about Baudie - from how to use it, to what makes it different, to all the little details in between. Think of this as the cheat sheet to staying fresh, informed, and fully in the know.</p>",
+        "top_padding": 112,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "disabled": true,
+      "settings": {
+        "heading": "You may also like",
+        "collection": "shop",
+        "max_products": 8,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "1785729814f94b4975": {
+      "type": "apps",
+      "blocks": {
+        "simple_bundles_kits_infinite_options_selector_yEegBR": {
+          "type": "shopify://apps/simple-bundles-kits/blocks/infinite-options-selector/e553276b-36b2-446d-b80a-aa47fe5f96ac",
+          "disabled": true,
+          "settings": {
+            "select_placeholder": "Please select an option",
+            "disable_oos_options": true,
+            "show_price_variance": true,
+            "rank_options_by_price_diff": true,
+            "custom_css": "",
+            "custom_js": ""
+          }
+        }
+      },
+      "block_order": [
+        "simple_bundles_kits_infinite_options_selector_yEegBR"
+      ],
+      "settings": {}
+    },
+    "product-reviews": {
+      "type": "apps",
+      "blocks": {
+        "klaviyo_reviews_product_reviews_nThAbd": {
+          "type": "shopify://apps/klaviyo-reviews/blocks/product-reviews/db20e365-d984-4ac4-9655-e1588d951ca9",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "klaviyo_reviews_product_reviews_nThAbd"
+      ],
+      "settings": {}
     }
   },
   "order": [
