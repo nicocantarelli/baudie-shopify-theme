@@ -66,9 +66,7 @@
       ],
       "settings": {
         "heading": "Our Philosophy",
-        "intro": "<p>Staying fresh shouldn’t be this hard. Your deodorant should actually do its job...without constant checking, reapplying, or second-guessing. We create high-performance essentials that make what you already use actually work. Everything is thoughtfully formulated, intentionally designed, and built for real life. When your routine works, you don’t have to think about it... you move through your day with confidence, freedom, and zero hesitation.</p>",
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
+        "intro": "<p>Staying fresh shouldn’t be this hard. Your deodorant should actually do its job...without constant checking, reapplying, or second-guessing. We create high-performance essentials that make what you already use actually work. Everything is thoughtfully formulated, intentionally designed, and built for real life. When your routine works, you don’t have to think about it... you move through your day with confidence, freedom, and zero hesitation.</p>"
       }
     },
     "mission": {
@@ -93,9 +91,7 @@
         "image_position": "left",
         "image_aspect_ratio": "portrait",
         "container_width": "full",
-        "text_vertical_align": "center",
-        "background_color": "#e8ddd0",
-        "text_color": "#3e2027"
+        "text_vertical_align": "center"
       }
     },
     "science": {
@@ -108,9 +104,7 @@
         "image_position": "right",
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
-        "text_vertical_align": "center",
-        "background_color": "#ffcad2",
-        "text_color": "#3e2027"
+        "text_vertical_align": "center"
       }
     },
     "image_text_block_4PNkyG": {
@@ -124,9 +118,7 @@
         "image_position": "left",
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
-        "text_vertical_align": "top",
-        "background_color": "#e8ddd0",
-        "text_color": "#3e2027"
+        "text_vertical_align": "top"
       }
     }
   },

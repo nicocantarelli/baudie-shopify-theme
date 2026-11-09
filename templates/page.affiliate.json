@@ -41,9 +41,7 @@
         "heading": "",
         "content": "<p>Thank you for stopping by and for your interest in joining our affiliate community! We’re so excited to share our mission with you. As the world’s first and only patented Deodorant Enhancer®️ our goal is simple: to help people smell fresh, feel confident, and feel good in their bodies every day. We’re thrilled to partner with people who believe in spreading confidence, self-care, and body positivity.</p>",
         "width": "standard",
-        "alignment": "center",
-        "background_color": "#3e2027",
-        "text_color": "#ffffff"
+        "alignment": "center"
       }
     },
     "perks": {
@@ -108,9 +106,7 @@
         "button_link": "",
         "columns": "3",
         "alignment": "center",
-        "bottom_padding": 120,
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
+        "bottom_padding": 120
       }
     },
     "images_text_RRAy38": {
@@ -158,9 +154,7 @@
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
         "text_vertical_align": "center",
-        "padding_top": true,
-        "background_color": "#e8ddd0",
-        "text_color": "#3e2027"
+        "padding_top": true
       }
     },
     "who_you_are": {
@@ -174,9 +168,7 @@
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
         "text_vertical_align": "center",
-        "padding_top": false,
-        "background_color": "#ffcad1",
-        "text_color": "#3e2027"
+        "padding_top": false
       }
     },
     "how_it_works": {
@@ -270,9 +262,7 @@
         "button_label": "Apply now",
         "button_link": "https://baudie.socialsnowball.io/signup/5757dff7-b438-4059-a74f-1faedebb4a82",
         "layout": "inline",
-        "button_style": "filled",
-        "background_color": "#ffcad1",
-        "text_color": "#3e2027"
+        "button_style": "filled"
       }
     }
   },

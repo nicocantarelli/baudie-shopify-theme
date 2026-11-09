@@ -78,6 +78,12 @@ body {
   color: var(--color-foreground);
 }
 
+/* Shopify's policy pages (/policies/...) have no section of their own: their
+   links take the text color instead of the browser's blue. */
+.shopify-policy__container a {
+  color: inherit;
+}
+
 .visually-hidden {
   position: absolute !important;
   width: 1px;

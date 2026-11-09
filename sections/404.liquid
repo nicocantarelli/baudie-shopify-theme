@@ -6,10 +6,10 @@
 <div
   class="not-found-section full-width"
   style="
-    --section-bg: {{ section.settings.background_color }};
-    --text-color: {{ section.settings.text_color }};
-    --button-bg: {{ section.settings.button_background_color }};
-    --button-text: {{ section.settings.button_text_color }};
+    --section-bg: {{ section.settings.background_color | default: 'var(--color-background)' }};
+    --text-color: {{ section.settings.text_color | default: 'var(--color-foreground)' }};
+    --button-bg: {{ section.settings.button_background_color | default: 'var(--color-accent)' }};
+    --button-text: {{ section.settings.button_text_color | default: 'var(--color-on-accent)' }};
   ">
   <div class="not-found-section__container">
     <p class="not-found-section__eyebrow">{{ section.settings.eyebrow }}</p>
@@ -32,7 +32,7 @@
 
 {% stylesheet %}
   .not-found-section {
-    background-color: var(--section-bg, #FCE9EC);
+    background-color: var(--section-bg, var(--color-background));
     padding: calc(var(--total-header-height, 120px) + 100px) 0 160px;
     min-height: 70vh;
     display: flex;
@@ -58,7 +58,7 @@
     line-height: 1;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     margin: 0;
     opacity: 0.75;
   }
@@ -68,7 +68,7 @@
     font-size: 96px;
     font-weight: 400;
     line-height: 1;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     margin: 0;
     width: 100%;
   }
@@ -77,7 +77,7 @@
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     margin: 0;
     max-width: 520px;
   }
@@ -112,8 +112,8 @@
     line-height: normal;
     letter-spacing: -0.14px;
     text-transform: uppercase;
-    color: var(--button-text, #FFFAE6);
-    background-color: var(--button-bg, #3E2027);
+    color: var(--button-text, var(--color-on-accent));
+    background-color: var(--button-bg, var(--color-accent));
     border: none;
     cursor: pointer;
     text-decoration: none;
@@ -213,25 +213,22 @@
       "type": "color",
       "id": "background_color",
       "label": "Background color",
-      "default": "#FCE9EC"
+      "info": "t:labels.colors_info"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text color",
-      "default": "#3E2027"
+      "label": "Text color"
     },
     {
       "type": "color",
       "id": "button_background_color",
-      "label": "Button background color",
-      "default": "#3E2027"
+      "label": "Button background color"
     },
     {
       "type": "color",
       "id": "button_text_color",
-      "label": "Button text color",
-      "default": "#FFFAE6"
+      "label": "Button text color"
     }
   ]
 }

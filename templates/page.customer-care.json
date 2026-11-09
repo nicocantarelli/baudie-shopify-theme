@@ -388,9 +388,7 @@
         "privacy"
       ],
       "settings": {
-        "heading": "Customer Care",
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
+        "heading": "Customer Care"
       }
     }
   },

@@ -1,6 +1,6 @@
 {%- liquid
-  assign bg_color = section.settings.background_color | default: '#FCE9EC'
-  assign text_color = section.settings.text_color | default: '#3E2027'
+  assign bg_color = section.settings.background_color | default: 'var(--color-background)'
+  assign text_color = section.settings.text_color | default: 'var(--color-foreground)'
   assign image_position = section.settings.image_position | default: 'left'
   assign image_ratio = section.settings.image_aspect_ratio | default: 'portrait'
   assign container_width = section.settings.container_width | default: 'standard'
@@ -354,13 +354,12 @@
       "type": "color",
       "id": "background_color",
       "label": "t:labels.background_color",
-      "default": "#FCE9EC"
+      "info": "t:labels.colors_info"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "t:labels.text_color",
-      "default": "#3E2027"
+      "label": "t:labels.text_color"
     }
   ],
   "presets": [

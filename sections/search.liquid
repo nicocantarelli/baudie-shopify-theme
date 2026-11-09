@@ -51,6 +51,11 @@
 {% endif %}
 
 {% stylesheet %}
+  /* Links in the text color, not the browser's blue. */
+  .search-results a {
+    color: inherit;
+  }
+
   .search-results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

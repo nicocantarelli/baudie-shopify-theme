@@ -1,6 +1,6 @@
 {%- liquid
-  assign bg_color = section.settings.background_color | default: '#FCE9EC'
-  assign text_color = section.settings.text_color | default: '#3E2027'
+  assign bg_color = section.settings.background_color | default: 'var(--color-background)'
+  assign text_color = section.settings.text_color | default: 'var(--color-foreground)'
   assign columns = section.settings.columns | default: 4
   assign alignment = section.settings.alignment | default: 'left'
   assign bottom_padding = section.settings.bottom_padding | default: 120
@@ -285,13 +285,12 @@
       "type": "color",
       "id": "background_color",
       "label": "t:labels.background_color",
-      "default": "#FCE9EC"
+      "info": "t:labels.colors_info"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "t:labels.text_color",
-      "default": "#3E2027"
+      "label": "t:labels.text_color"
     }
   ],
   "blocks": [

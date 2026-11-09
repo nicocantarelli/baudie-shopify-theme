@@ -5,7 +5,7 @@
 
 <section
   class="contact full-width"
-  style="--section-bg: {{ section.settings.background_color }}; --text-color: {{ section.settings.text_color }}; --button-bg: {{ section.settings.button_background_color }}; --button-text: {{ section.settings.button_text_color }};"
+  style="--section-bg: {{ section.settings.background_color | default: 'var(--color-background)' }}; --text-color: {{ section.settings.text_color | default: 'var(--color-foreground)' }}; --button-bg: {{ section.settings.button_background_color | default: 'var(--color-accent)' }}; --button-text: {{ section.settings.button_text_color | default: 'var(--color-on-accent)' }};"
 >
   <div class="contact__container">
     {%- if heading != blank -%}
@@ -132,7 +132,7 @@
 
 {% stylesheet %}
   .contact {
-    background-color: var(--section-bg, #FCE9EC);
+    background-color: var(--section-bg, var(--color-background));
     padding: calc(var(--total-header-height, 120px) + 60px) 0 80px;
   }
 
@@ -151,7 +151,7 @@
     font-size: 70px;
     font-weight: 400;
     line-height: 1;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     text-align: center;
     margin: 0;
   }
@@ -160,7 +160,7 @@
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     text-align: center;
     margin: 0;
     max-width: 560px;
@@ -201,7 +201,7 @@
     font-size: 14px;
     font-weight: 600;
     line-height: 1.4;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
   }
 
   .contact__input,
@@ -212,9 +212,9 @@
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     background-color: transparent;
-    border: 1px solid var(--text-color, #3E2027);
+    border: 1px solid var(--text-color, var(--color-foreground));
     outline: none;
     box-sizing: border-box;
   }
@@ -240,15 +240,15 @@
 
   .contact__input::placeholder,
   .contact__textarea::placeholder {
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     opacity: 0.5;
   }
 
   .contact__input:focus,
   .contact__select:focus,
   .contact__textarea:focus {
-    border-color: var(--text-color, #3E2027);
-    outline: 2px solid rgba(62, 32, 39, 0.1);
+    border-color: var(--text-color, var(--color-foreground));
+    outline: 2px solid color-mix(in srgb, var(--text-color) 10%, transparent);
     outline-offset: 0;
   }
 
@@ -262,8 +262,8 @@
     line-height: normal;
     letter-spacing: -0.14px;
     text-transform: uppercase;
-    color: var(--button-text, #FFFAE6);
-    background-color: var(--button-bg, #3E2027);
+    color: var(--button-text, var(--color-on-accent));
+    background-color: var(--button-bg, var(--color-accent));
     border: none;
     cursor: pointer;
     transition: opacity 0.2s ease, transform 0.2s ease;
@@ -295,7 +295,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     margin-bottom: 8px;
   }
 
@@ -304,7 +304,7 @@
     font-size: 48px;
     font-weight: 400;
     line-height: 1.1;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     margin: 0;
   }
 
@@ -312,7 +312,7 @@
     font-family: var(--font-jokker);
     font-size: 16px;
     line-height: 1.5;
-    color: var(--text-color, #3E2027);
+    color: var(--text-color, var(--color-foreground));
     margin: 0;
     max-width: 480px;
   }
@@ -331,8 +331,8 @@
     line-height: normal;
     letter-spacing: -0.14px;
     text-transform: uppercase;
-    color: var(--button-text, #FFFAE6);
-    background-color: var(--button-bg, #3E2027);
+    color: var(--button-text, var(--color-on-accent));
+    background-color: var(--button-bg, var(--color-accent));
     text-decoration: none;
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
@@ -495,25 +495,22 @@
         "type": "color",
         "id": "background_color",
         "label": "t:labels.background_color",
-        "default": "#FCE9EC"
+        "info": "t:labels.colors_info"
       },
       {
         "type": "color",
         "id": "text_color",
-        "label": "t:labels.text_color",
-        "default": "#3E2027"
+        "label": "t:labels.text_color"
       },
       {
         "type": "color",
         "id": "button_background_color",
-        "label": "t:labels.button_background_color",
-        "default": "#3E2027"
+        "label": "t:labels.button_background_color"
       },
       {
         "type": "color",
         "id": "button_text_color",
-        "label": "t:labels.button_text_color",
-        "default": "#FFFAE6"
+        "label": "t:labels.button_text_color"
       }
     ],
     "presets": [

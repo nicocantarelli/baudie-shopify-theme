@@ -4,8 +4,8 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign bg = section.settings.background_color | default: '#ECE7DD'
-  assign text = section.settings.text_color | default: '#3E2027'
+  assign bg = section.settings.background_color | default: 'var(--color-background)'
+  assign text = section.settings.text_color | default: 'var(--color-foreground)'
   assign layout = section.settings.layout | default: 'inline'
   assign button_style = section.settings.button_style | default: 'outline'
 -%}
@@ -173,13 +173,12 @@
       "type": "color",
       "id": "background_color",
       "label": "t:labels.background_color",
-      "default": "#ECE7DD"
+      "info": "t:labels.colors_info"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "t:labels.text_color",
-      "default": "#3E2027"
+      "label": "t:labels.text_color"
     }
   ],
   "presets": [
