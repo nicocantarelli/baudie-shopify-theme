@@ -147,10 +147,12 @@
     --faq-edge: calc(100vw * 90 / 1440);
     --faq-edge-width: calc(100vw * 1543 / 1440);
     --faq-edge-left: calc(100vw * -51.5 / 1440);
+    /* The space above the band (the editor's top padding). */
+    --pf-gap: var(--pf-top);
 
     position: relative;
     isolation: isolate;
-    padding-top: var(--pf-top);
+    padding-top: var(--pf-gap);
     color: var(--faq-text);
   }
 
@@ -174,7 +176,7 @@
   .product-faq::before {
     content: '';
     position: absolute;
-    inset: var(--pf-top) 0 0;
+    inset: var(--pf-gap) 0 0;
     z-index: -1;
     background: var(--faq-band);
     -webkit-mask:
@@ -364,7 +366,14 @@
   @media (max-width: 1023px) {
     .product-faq {
       --faq-band: var(--section-bg, linear-gradient(180deg, #F88EBE 0%, #D2367C 42%, #C11562 100%));
-      --faq-edge: min(64px, 100vw * 64 / 393);
+      /* The waves keep their desktop proportions (90px on a 1440 window,
+         so 24.6px on a 393px phone; they were 64px), as gentle as on
+         desktop, as Alex asked. */
+      --faq-edge: calc(100vw * 90 / 1440);
+      /* Two thirds of the top padding, like the other sections' phone
+         spacing (64px for the default 96px), as Alex found too much
+         space on phones. */
+      --pf-gap: calc(var(--pf-top) * 2 / 3);
     }
 
     .product-faq--no-photo {

@@ -346,24 +346,26 @@
       min-height: 0;
     }
 
-    /* 30px under the button, then the 35.4px wave. */
+    /* 30px under the button, then the 20px the wave takes. */
     .subscribe-save__panel {
       width: 100%;
-      padding: 40px 0 65.4px;
+      padding: 40px 0 50px;
     }
 
-    /* The wave at the design's size (assets/shape-cream-wave.svg is 526.4px
-       tall, the wave its bottom 34.6px), kept at the panel's bottom, and
-       solid color above it. Stretched to the panel instead, a taller panel
-       made the wave deeper than the photo running up under it, leaving a
-       gap over the photo at its crest. */
+    /* The wave along the panel's bottom (assets/shape-cream-wave.svg, a
+       22px strip), solid color above it. It's half the design's depth
+       (17.3px, it was 34.6px), so it's as gentle as the desktop curves, as
+       Alex asked. The strip's top and bottom rows are left empty: Safari
+       smeared the old shape's solid top row onto the panel's bottom edge,
+       a light line across the photo on iPhones. The solid layer runs 1px
+       into the strip so the two meet without a seam. */
     .subscribe-save__panel::before {
       -webkit-mask:
-        var(--wave-mask) 0 100% / 100% 526.404px no-repeat,
-        linear-gradient(#000 0 0) 0 0 / 100% calc(100% - 40px) no-repeat;
+        var(--wave-mask) 0 100% / 100% 22px no-repeat,
+        linear-gradient(#000 0 0) 0 0 / 100% calc(100% - 20px) no-repeat;
       mask:
-        var(--wave-mask) 0 100% / 100% 526.404px no-repeat,
-        linear-gradient(#000 0 0) 0 0 / 100% calc(100% - 40px) no-repeat;
+        var(--wave-mask) 0 100% / 100% 22px no-repeat,
+        linear-gradient(#000 0 0) 0 0 / 100% calc(100% - 20px) no-repeat;
     }
 
     .subscribe-save__content {
@@ -411,7 +413,7 @@
       width: 100%;
       aspect-ratio: 393 / 374;
       min-height: 0;
-      margin-top: -35.4px;
+      margin-top: -20px;
     }
 
     .subscribe-save__img {
