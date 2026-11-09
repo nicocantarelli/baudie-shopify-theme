@@ -34,12 +34,29 @@
   aria-label="{{ 'sections.hero_product.aria_label' | t }}"
 >
   {%- comment -%}
-    The screen's height, for the phone hero to reach its bottom edge (see the
-    end of the stylesheet). Set here, before the hero is drawn, so it doesn't jump.
+    How far the screen reaches below the top of the page, for the phone hero
+    to end at the screen's bottom edge (see the end of the stylesheet): the
+    screen's height less the status bar over the page. That bar is 44px or
+    more on every iPhone with a notch (61px on Alex's), and the browser's
+    bars add more where they sit at the top. The full screen height ran the
+    hero a status bar past the edge, a long stretch of photo under the
+    button. Where the browser gives the height under the status bar as
+    outerHeight (within a status bar of the screen's height), that's used. Set
+    here, before the hero is drawn, so it doesn't jump.
   {%- endcomment -%}
   <script>
     (() => {
-      const setScreen = () => document.documentElement.style.setProperty('--hero-product-screen', `${screen.height}px`);
+      // Measured once per screen size: the browser's bars changing as the
+      // page scrolls must not move the hero.
+      let measured = 0;
+      const setScreen = () => {
+        const full = screen.height;
+        if (full === measured) return;
+        measured = full;
+        const outer = window.outerHeight;
+        const edge = outer >= full - 70 && outer <= full ? Math.min(outer, full - 44) : full - 44;
+        document.documentElement.style.setProperty('--hero-product-screen', `${edge}px`);
+      };
       setScreen();
       window.addEventListener('resize', setScreen);
     })();
@@ -1124,9 +1141,9 @@
   /* Phones and tablets, on the first screen. Browsers place their bars
      differently: with the address bar at the bottom, iOS 26 Safari shows the
      page down to the screen's edge behind its floating bar, about 120px past
-     100vh, so In the press showed there. So the hero runs at least to the
-     screen's bottom edge (--hero-product-screen, set by the script at the
-     top of the section), and the text and button sit 32px above the bottom
+     100vh, so In the press showed there. So the hero runs to the screen's
+     bottom edge (--hero-product-screen, set by the script at the top of
+     the section), and the text and button sit 32px above the bottom
      of what's visible with the browser's bars showing (100svh), whatever the
      hero's height. Short screens, like a phone on its side, keep them at
      the hero's bottom, where they don't run up under the header. */
@@ -1137,8 +1154,13 @@
         --hero-product-bottom-gap: 32px;
       }
 
+      /* Never shorter than the text and button need (what's visible), and
+         at least 560px: enough to keep In the press off an iPhone SE's
+         first screen. The 682px minimum ran most iPhones' heroes past the
+         screen's edge. */
       .hero-product__inner {
-        height: max(682px, var(--hero-product-screen, 100lvh) - var(--total-header-height, 95px));
+        min-height: 560px;
+        height: max(560px, var(--hero-product-screen, 100lvh) - var(--total-header-height, 95px), var(--hero-product-visible));
       }
     }
 
