@@ -978,6 +978,8 @@
         // label for each number of scents left, from the section's template.
         this.sticky = section.querySelector('[data-sticky-atc]');
         this.stickyLabel = this.sticky?.querySelector('[data-sticky-atc-label]');
+        this.stickyMedia = this.sticky?.querySelector('.sticky-atc__media');
+        this.stickyPicked = '';
         this.stickyLabels = {};
         section.querySelector('[data-sticky-labels]')?.content.querySelectorAll('[data-left]').forEach((label) => {
           this.stickyLabels[label.dataset.left] = label.textContent.trim();
@@ -1118,13 +1120,45 @@
           }
         }
 
-        // The sticky bar: ready once the bundle is full.
+        // The sticky bar: ready once the bundle is full, and its picture
+        // shows the bottles picked so far, in the outlines' order.
         if (this.sticky) {
           this.sticky.dataset.ready = String(remaining === 0);
           if (this.stickyLabel) {
             this.stickyLabel.textContent = remaining > 0 ? this.stickyLabels[remaining] || this.addLabel?.textContent || '' : this.text.textAdd;
           }
+          this.renderStickyBottles();
         }
+      }
+
+      // The sticky bar's picture: the picked bottles side by side (the same
+      // photos as the outlines', so they're already loaded), or the
+      // bundle's own photo while nothing is picked.
+      renderStickyBottles() {
+        if (!this.stickyMedia) return;
+        const picked = this.slots.filter((handle) => handle && this.scents[handle]?.image);
+        const key = picked.join(',');
+        if (key === this.stickyPicked) return;
+        this.stickyPicked = key;
+
+        let bottles = this.stickyMedia.querySelector('.sticky-atc__bottles');
+        if (!bottles) {
+          bottles = document.createElement('span');
+          bottles.className = 'sticky-atc__bottles';
+          this.stickyMedia.append(bottles);
+        }
+        bottles.replaceChildren(
+          ...picked.map((handle) => {
+            const bottle = document.createElement('img');
+            bottle.className = 'sticky-atc__bottle';
+            bottle.src = this.scents[handle].image;
+            bottle.alt = '';
+            bottle.width = 480;
+            bottle.height = 720;
+            return bottle;
+          })
+        );
+        this.stickyMedia.classList.toggle('has-bottles', picked.length > 0);
       }
 
       async addToCart() {

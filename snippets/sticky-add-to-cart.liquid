@@ -166,6 +166,32 @@
     object-fit: contain;
   }
 
+  /* The bundle's picked bottles (set by sections/product-bundle.liquid), in
+     place of its photo: side by side with a small gap, like the bundle's
+     photo, the same size whether one, two or three are in. The bottle
+     photos are 2:3, the bottle 80% of their height and 35% of it wide: at
+     80% of the tile's height a bottle is 28% of its width, and the margins
+     put the bottles 30% apart, center to center. */
+  .sticky-atc__bottles {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sticky-atc__bottle {
+    flex: none;
+    width: auto;
+    max-width: none;
+    height: 80%;
+    margin: 0 -11.67%;
+  }
+
+  .sticky-atc__media.has-bottles .sticky-atc__image {
+    visibility: hidden;
+  }
+
   .sticky-atc__text {
     flex: 1 1 auto;
     display: flex;
@@ -182,10 +208,12 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
   }
 
   .sticky-atc__text > .sticky-atc__title {
     -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 
   .sticky-atc__title {
@@ -247,6 +275,7 @@
 
     .sticky-atc__text > .sticky-atc__title {
       -webkit-line-clamp: 1;
+      line-clamp: 1;
     }
 
     .sticky-atc__title {
