@@ -41,21 +41,37 @@
     bars add more where they sit at the top. The full screen height ran the
     hero a status bar past the edge, a long stretch of photo under the
     button. Where the browser gives the height under the status bar as
-    outerHeight (within a status bar of the screen's height), that's used. Set
-    here, before the hero is drawn, so it doesn't jump.
+    outerHeight (within a status bar of the screen's height), that's used.
+
+    Also what's visible with the browser's bars showing (100svh), taken
+    once, for placing the text and button. Safari makes 100svh taller once
+    its bar shrinks as the page scrolls, which made the text and button
+    jump down. It's measured again only when the width changes (turning
+    the phone). Set here, before the hero is drawn, so it doesn't jump.
   {%- endcomment -%}
   <script>
     (() => {
-      // Measured once per screen size: the browser's bars changing as the
-      // page scrolls must not move the hero.
+      // Measured once per screen size and width: the browser's bars
+      // changing as the page scrolls must not move the hero.
       let measured = 0;
+      let width = 0;
+      const root = document.documentElement;
       const setScreen = () => {
         const full = screen.height;
-        if (full === measured) return;
-        measured = full;
-        const outer = window.outerHeight;
-        const edge = outer >= full - 70 && outer <= full ? Math.min(outer, full - 44) : full - 44;
-        document.documentElement.style.setProperty('--hero-product-screen', `${edge}px`);
+        if (full !== measured) {
+          measured = full;
+          const outer = window.outerHeight;
+          const edge = outer >= full - 70 && outer <= full ? Math.min(outer, full - 44) : full - 44;
+          root.style.setProperty('--hero-product-screen', `${edge}px`);
+        }
+        if (window.innerWidth !== width && CSS.supports('height', '100svh')) {
+          width = window.innerWidth;
+          const probe = document.createElement('div');
+          probe.style.cssText = 'position:fixed;top:0;width:0;height:100svh;visibility:hidden;pointer-events:none';
+          root.appendChild(probe);
+          root.style.setProperty('--hero-product-svh', `${probe.offsetHeight}px`);
+          probe.remove();
+        }
       };
       setScreen();
       window.addEventListener('resize', setScreen);
@@ -1150,7 +1166,7 @@
   @supports (height: 100svh) {
     @media (max-width: 900px) {
       .hero-product {
-        --hero-product-visible: calc(100svh - var(--total-header-height, 95px));
+        --hero-product-visible: calc(var(--hero-product-svh, 100svh) - var(--total-header-height, 95px));
         --hero-product-bottom-gap: 32px;
       }
 
