@@ -106,7 +106,8 @@
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
         "text_vertical_align": "center",
-        "background_color": "#ffffdc"
+        "background_color": "#ffdced",
+        "rounded_corners": true
       }
     },
     "image_text_block_4PNkyG": {
@@ -121,7 +122,8 @@
         "image_aspect_ratio": "portrait",
         "container_width": "standard",
         "text_vertical_align": "top",
-        "background_color": "#fdfc8d"
+        "background_color": "#ffdced",
+        "rounded_corners": true
       }
     }
   },

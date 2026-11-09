@@ -881,6 +881,8 @@
         "width_standard": "Standard",
         "width_wide": "Wide",
         "width_full": "Full width (50/50, no margins)",
+        "rounded_corners": "Rounded corners",
+        "rounded_corners_info": "Rounds the block's corners like the site's other panels. For the standard and wide widths.",
         "text_vertical_align": "Text vertical alignment",
         "align_top": "Top",
         "align_center": "Center",
