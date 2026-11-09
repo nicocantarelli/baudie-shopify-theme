@@ -2950,11 +2950,13 @@
 }
 
 /* Phones: a sheet rising from the bottom, its top edge wavy like the
-   drawer's side: a soft wave, 12px tall, exactly two across the screen
-   whatever its width. */
+   drawer's side: a soft wave, 12px from crest to trough, exactly two across
+   the screen whatever its width. The troughs stop 3px above the sheet (the
+   edge is 15px tall, solid under them), so they stay round: where they met
+   the sheet's straight top they flattened into it. */
 @media (max-width: 768px) {
   .sidecart {
-    --sidecart-wave: 12px;
+    --sidecart-wave: 15px;
   }
 
   .sidecart-item__bundle-bottle {
@@ -2989,8 +2991,8 @@
     left: 0;
     width: auto;
     height: var(--sidecart-wave);
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112.5 24' preserveAspectRatio='none'%3E%3Cpath d='M0 24V12C9.17 5.85 17.95 0 28.13 0C38.3 0 47.08 5.85 56.25 12C65.42 18.15 74.2 24 84.38 24C94.55 24 103.33 18.15 112.5 12V24Z'/%3E%3C/svg%3E") 0 100% / 50% 100% repeat-x;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112.5 24' preserveAspectRatio='none'%3E%3Cpath d='M0 24V12C9.17 5.85 17.95 0 28.13 0C38.3 0 47.08 5.85 56.25 12C65.42 18.15 74.2 24 84.38 24C94.55 24 103.33 18.15 112.5 12V24Z'/%3E%3C/svg%3E") 0 100% / 50% 100% repeat-x;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112.5 30' preserveAspectRatio='none'%3E%3Cpath d='M0 30V12C9.17 5.85 17.95 0 28.13 0C38.3 0 47.08 5.85 56.25 12C65.42 18.15 74.2 24 84.38 24C94.55 24 103.33 18.15 112.5 12V30Z'/%3E%3C/svg%3E") 0 100% / 50% 100% repeat-x;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112.5 30' preserveAspectRatio='none'%3E%3Cpath d='M0 30V12C9.17 5.85 17.95 0 28.13 0C38.3 0 47.08 5.85 56.25 12C65.42 18.15 74.2 24 84.38 24C94.55 24 103.33 18.15 112.5 12V30Z'/%3E%3C/svg%3E") 0 100% / 50% 100% repeat-x;
   }
 
   .sidecart.is-open .sidecart__drawer {
