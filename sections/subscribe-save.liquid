@@ -121,21 +121,21 @@
   }
 
   /* The cream panel, over the left of the photo. Its right edge is a gentle
-     S (assets/shape-cream-edge.svg, stretched to the panel), about the
-     middle of the screen on average: from 48.75% of the width at the top,
-     out to 52.5% 30% of the way down, in to 47.5% at 70%, to 51.25% at the
-     bottom, running straight down at both ends. The band with the photo on
-     the left mirrors it (100% minus those), so when the two bands follow
-     each other, in either order, one's edge carries on into the other's as
-     one wave: both meet at 48.75% (or 51.25%), heading straight down.
-     The content is centered in the half left of it. */
+     S (assets/shape-cream-edge.svg, stretched to the panel): from 49.2% of
+     the width at the top, already leaning out, to 51.7% a quarter of the
+     way down, in to 46.7% lower down and out again to 50.8% at the bottom.
+     The band with the photo on the left mirrors it (100% minus those), so
+     when the two bands follow each other, in either order, their edges meet
+     at the same point (49.2% or 50.8%). Alex didn't like it starting and
+     ending straight down to join them as one wave: it read as a wiggle.
+     The content is centered in the 49.2% left of it. */
   .subscribe-save__panel {
     position: relative;
     isolation: isolate;
     display: flex;
     align-items: center;
     width: 58.8%;
-    padding: 64px 8.8% 64px 0;
+    padding: 64px 9.6% 64px 0;
   }
 
   /* The panel's color and curved edge, on a layer behind the content: the
@@ -319,7 +319,7 @@
     /* Mirrored, the content is centered in the half right of the curve. */
     .subscribe-save--photo-left .subscribe-save__panel {
       padding-right: 0;
-      padding-left: 8.8%;
+      padding-left: 9.6%;
     }
 
     /* The mirrored layer mirrors its gradient too, so it's set the other way
