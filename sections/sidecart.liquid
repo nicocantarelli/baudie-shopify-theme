@@ -1464,14 +1464,19 @@
   }
 }
 
-/* The empty cart: the scents' bottles fanned out on a pink-to-peach tile. */
+/* The empty cart: the scents' bottles fanned out on a pink-to-peach tile,
+   then the title, message, button and "Have a code?" as one small group.
+   The title sits under the drawer's own "Your cart" (34px) instead of
+   matching it; the button is the code box's Apply size (44px, 13px label),
+   since Apply shows right under it once "Have a code?" opens the box; and
+   the gaps run 20 / 8 / 20 / 12. */
 .sidecart__empty-art {
   position: relative;
   display: block;
-  width: 132px;
-  height: 132px;
-  margin-bottom: 22px;
-  border-radius: 20px;
+  width: 112px;
+  height: 112px;
+  margin-bottom: 20px;
+  border-radius: 18px;
   background-image: linear-gradient(160deg, #FFD9E4, #FFE3C4);
   overflow: hidden;
 }
@@ -1497,12 +1502,12 @@
 
 .sidecart__empty-title {
   font-family: var(--font-alyona);
-  font-size: 34px;
+  font-size: 28px;
   font-weight: 400;
   line-height: 1;
   letter-spacing: -0.01em;
   color: var(--sidecart-text);
-  margin: 0 0 12px;
+  margin: 0 0 8px;
 }
 
 .sidecart__empty-message {
@@ -1510,26 +1515,27 @@
   font-size: 14px;
   line-height: 1.5;
   color: var(--sidecart-text);
-  margin: 0 0 24px;
+  margin: 0 0 20px;
 }
 
 .sidecart__continue-btn {
-  --button-height: 60px;
-  --button-padding: 32px;
-  --button-font-size: 18px;
+  --button-height: 44px;
+  --button-padding: 28px;
+  --button-font-size: 13px;
 }
 
-/* "Have a code?", and the code box once it moves in (see placeDiscountBox). */
+/* "Have a code?", and the code box once it moves in (see placeDiscountBox).
+   12px to the link's text: 8px here and its own 4px padding. */
 .sidecart__empty-code {
   width: 100%;
   max-width: 320px;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .sidecart__empty-code-open {
   padding: 4px;
   font-family: var(--font-jokker);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--sidecart-text);
   background: none;
   border: none;
@@ -2986,8 +2992,7 @@
     padding-top: 12px;
   }
 
-  .sidecart__title-text,
-  .sidecart__empty-title {
+  .sidecart__title-text {
     font-size: 34px;
   }
 
@@ -3020,11 +3025,6 @@
     --button-font-size: 14px;
   }
 
-  .sidecart__empty-art {
-    width: 112px;
-    height: 112px;
-    margin-bottom: 18px;
-  }
 }
 
 /* Compact cards (Product cards setting): a smaller photo in the same
