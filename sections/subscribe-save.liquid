@@ -121,10 +121,14 @@
   }
 
   /* The cream panel, over the left of the photo. Its right edge is a gentle
-     S (assets/shape-cream-edge.svg, stretched to the panel): out to 52.5% of
-     the width a quarter of the way down, in to 47.5% lower down, about the
-     middle of the screen on average. The content is centered in the half
-     left of it. */
+     S (assets/shape-cream-edge.svg, stretched to the panel), about the
+     middle of the screen on average: from 48.75% of the width at the top,
+     out to 52.5% 30% of the way down, in to 47.5% at 70%, to 51.25% at the
+     bottom, running straight down at both ends. The band with the photo on
+     the left mirrors it (100% minus those), so when the two bands follow
+     each other, in either order, one's edge carries on into the other's as
+     one wave: both meet at 48.75% (or 51.25%), heading straight down.
+     The content is centered in the half left of it. */
   .subscribe-save__panel {
     position: relative;
     isolation: isolate;
