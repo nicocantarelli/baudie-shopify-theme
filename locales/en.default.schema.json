@@ -921,7 +921,11 @@
         "colors_header": "Colors",
         "body": "Body",
         "embed_url": "AudioEye statement link",
-        "embed_url_info": "Shows AudioEye's accessibility statement under the body. Paste the link from the src=\"...\" part of AudioEye's embed code."
+        "embed_url_info": "Shows AudioEye's accessibility statement under the body. Paste the link from the src=\"...\" part of AudioEye's embed code.",
+        "embed_style": "Statement style",
+        "embed_style_info": "Theme shows AudioEye's standard statement as text in the theme's fonts and colors; its Report an issue and Help Desk buttons open AudioEye's tools. AudioEye page shows AudioEye's own page in a frame, in AudioEye's fonts and colors.",
+        "embed_style_theme": "Theme",
+        "embed_style_audioeye": "AudioEye page"
       }
     },
     "customer_care": {

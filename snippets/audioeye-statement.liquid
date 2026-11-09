@@ -1,0 +1,297 @@
+{% doc %}
+  Renders AudioEye's accessibility statement (its US template) as text in the
+  theme's fonts and colors, instead of AudioEye's page in an iframe. The
+  Report an issue and Help Desk buttons work through AudioEye's script, which
+  the layout loads on every page; until it's there, they open AudioEye's own
+  statement page in a new tab.
+
+  Render it inside an element with the legal page's body styles
+  (.legal-page__body), which cover its paragraphs, links and lists.
+
+  @param {string} statement_url - AudioEye's statement link, opened by the buttons when AudioEye's script isn't on the page
+  @param {string} [site] - The site named in the statement. Defaults to the store's primary domain without "www."
+
+  @example
+  {% render 'audioeye-statement', statement_url: section.settings.embed_url %}
+{% enddoc %}
+
+{%- liquid
+  if site == blank
+    assign site = shop.domain | remove_first: 'www.'
+  endif
+  assign site = site | escape
+
+  capture new_tab
+    echo '<span class="visually-hidden"> '
+    echo 'accessibility_statement.new_tab' | t
+    echo '</span>'
+  endcapture
+
+  capture audioeye_link
+    echo '<a href="https://www.audioeye.com" target="_blank" rel="noopener">AudioEye'
+    echo new_tab
+    echo '</a>'
+  endcapture
+
+  capture wcag_link
+    echo '<a href="https://www.audioeye.com/wcag-compliance" target="_blank" rel="noopener">'
+    echo 'accessibility_statement.wcag_link' | t
+    echo new_tab
+    echo '</a>'
+  endcapture
+-%}
+
+<div class="ae-statement" data-statement-url="{{ statement_url | escape }}">
+  <p class="ae-statement__lead">{{ 'accessibility_statement.lead' | t: site: site }}</p>
+
+  <h2>{{ 'accessibility_statement.inclusion_heading' | t }}</h2>
+  <p>{{ 'accessibility_statement.inclusion_body' | t: site: site }}</p>
+  <p>{{ 'accessibility_statement.monitoring_body_html' | t: site: site, audioeye_link: audioeye_link }}</p>
+
+  <img
+    class="ae-statement__badge"
+    src="{{ 'audioeye-trusted.svg' | asset_url }}"
+    alt="{{ 'accessibility_statement.badge_alt' | t | escape }}"
+    width="404"
+    height="216"
+    loading="lazy"
+  >
+  <h2>{{ 'accessibility_statement.trusted_heading' | t }}</h2>
+  <p>{{ 'accessibility_statement.trusted_body' | t: site: site }}</p>
+  <p><strong>{{ 'accessibility_statement.trusted_certifies' | t: site: site }}</strong></p>
+  <p>{{ 'accessibility_statement.testing_intro' | t }}</p>
+  <ul>
+    <li>{{ 'accessibility_statement.testing_browsers' | t }}</li>
+    <li>{{ 'accessibility_statement.testing_assistive' | t }}</li>
+  </ul>
+
+  <h2>{{ 'accessibility_statement.guidelines_heading' | t }}</h2>
+  <p>{{ 'accessibility_statement.guidelines_more_html' | t: wcag_link: wcag_link }}</p>
+  <p class="ae-statement__tagline">{{ 'accessibility_statement.guidelines_tagline' | t }}</p>
+  <p>{{ 'accessibility_statement.guidelines_body' | t: site: site }}</p>
+
+  <h3>{{ 'accessibility_statement.related_links' | t }}</h3>
+  <ul class="ae-statement__links">
+    <li>
+      <a href="https://www.w3.org/WAI/" target="_blank" rel="noopener">
+        {{- 'accessibility_statement.wai_link' | t }}{{ new_tab -}}
+      </a>
+    </li>
+  </ul>
+
+  <h3>{{ 'accessibility_statement.feedback_heading' | t }}</h3>
+  <p>
+    <button type="button" class="ae-statement__report" data-ae-client-feedback-link="true">
+      {{- 'accessibility_statement.feedback_notice' | t }}
+      <span class="ae-statement__report-link">{{ 'accessibility_statement.feedback_report' | t }}</span>
+    </button>
+  </p>
+  <p>{{ 'accessibility_statement.feedback_body' | t: site: site }}</p>
+
+  <h2>{{ 'accessibility_statement.help_desk_heading' | t }}</h2>
+  <p class="ae-statement__tagline">{{ 'accessibility_statement.help_desk_tagline' | t }}</p>
+  <p>{{ 'accessibility_statement.help_desk_body' | t }}</p>
+  <p>{{ 'accessibility_statement.help_desk_activate_body' | t }}</p>
+  <button
+    type="button"
+    class="button ae-statement__toggle"
+    data-ae-cta-optin-button="true"
+    data-ae-cta-opted-out-copy="{{ 'accessibility_statement.help_desk_activate' | t | escape }}"
+    data-ae-cta-opted-in-copy="{{ 'accessibility_statement.help_desk_deactivate' | t | escape }}"
+  >
+    {{- 'accessibility_statement.help_desk_activate' | t -}}
+  </button>
+
+  <h3>{{ 'accessibility_statement.features_heading' | t }}</h3>
+  <dl class="ae-statement__features">
+    <dt>{{ 'accessibility_statement.feature_help_desk' | t }}</dt>
+    <dd>{{ 'accessibility_statement.feature_help_desk_body' | t }}</dd>
+    <dt>{{ 'accessibility_statement.feature_personalization' | t }}</dt>
+    <dd>{{ 'accessibility_statement.feature_personalization_body' | t }}</dd>
+    <dt>{{ 'accessibility_statement.feature_navigation' | t }}</dt>
+    <dd>{{ 'accessibility_statement.feature_navigation_body' | t }}</dd>
+  </dl>
+
+  <h3>{{ 'accessibility_statement.third_party_heading' | t }}</h3>
+  <p>{{ 'accessibility_statement.third_party_body' | t: site: site }}</p>
+  <p>{{ 'accessibility_statement.third_party_policies' | t }}</p>
+  <ul class="ae-statement__links">
+    <li>
+      <a href="https://www.facebook.com/help/141636465971794/" target="_blank" rel="noopener">
+        {{- 'accessibility_statement.policy_facebook' | t }}{{ new_tab -}}
+      </a>
+    </li>
+    <li>
+      <a href="https://support.google.com/maps/answer/6396990" target="_blank" rel="noopener">
+        {{- 'accessibility_statement.policy_google_maps' | t }}{{ new_tab -}}
+      </a>
+    </li>
+    <li>
+      <a href="https://help.x.com/en/resources/accessibility" target="_blank" rel="noopener">
+        {{- 'accessibility_statement.policy_x' | t }}{{ new_tab -}}
+      </a>
+    </li>
+    <li>
+      <a href="https://www.linkedin.com/accessibility" target="_blank" rel="noopener">
+        {{- 'accessibility_statement.policy_linkedin' | t }}{{ new_tab -}}
+      </a>
+    </li>
+    <li>
+      <a href="https://help.instagram.com/1178723545597542" target="_blank" rel="noopener">
+        {{- 'accessibility_statement.policy_instagram' | t }}{{ new_tab -}}
+      </a>
+    </li>
+    <li>
+      <a href="https://support.google.com/youtube/answer/189278" target="_blank" rel="noopener">
+        {{- 'accessibility_statement.policy_youtube' | t }}{{ new_tab -}}
+      </a>
+    </li>
+  </ul>
+</div>
+
+{% stylesheet %}
+  .ae-statement__lead {
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.4;
+  }
+
+  .ae-statement h2 {
+    margin: 56px 0 16px;
+    font: 700 32px/1.2 var(--font-jokker);
+    color: inherit;
+  }
+
+  .ae-statement h3 {
+    margin: 32px 0 8px;
+    font: 700 18px/1.4 var(--font-jokker);
+    color: inherit;
+  }
+
+  .ae-statement__tagline {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  /* AudioEye's badge, shown at the size AudioEye's own statement uses. */
+  .ae-statement__badge {
+    display: block;
+    width: 187px;
+    height: auto;
+    margin-top: 48px;
+  }
+
+  .ae-statement .ae-statement__badge + h2 {
+    margin-top: 16px;
+  }
+
+  .ae-statement ul.ae-statement__links {
+    padding-left: 0;
+    list-style: none;
+  }
+
+  /* Report an issue: reads as text with a link, opens AudioEye's Help Desk. */
+  .ae-statement__report {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .ae-statement__report-link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s ease;
+  }
+
+  .ae-statement__report:hover .ae-statement__report-link {
+    opacity: 0.7;
+  }
+
+  .ae-statement__report:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .ae-statement__toggle {
+    --button-height: 50px;
+    --button-padding: 32px;
+    --button-font-size: 16px;
+
+    margin-top: 8px;
+  }
+
+  .ae-statement__features {
+    margin: 0;
+  }
+
+  .ae-statement__features dt {
+    font-weight: 600;
+  }
+
+  .ae-statement__features dd {
+    margin: 0 0 12px;
+  }
+
+  @media (max-width: 768px) {
+    .ae-statement__lead {
+      font-size: 18px;
+    }
+
+    .ae-statement h2 {
+      margin-top: 40px;
+      font-size: 24px;
+    }
+
+    .ae-statement h3 {
+      margin-top: 28px;
+      font-size: 16px;
+    }
+
+    .ae-statement__tagline {
+      font-size: 16px;
+    }
+
+    .ae-statement__badge {
+      width: 150px;
+      margin-top: 40px;
+    }
+
+    .ae-statement .ae-statement__badge + h2 {
+      margin-top: 12px;
+    }
+
+    /* The label fits on one line from 390px wide; narrower phones wrap it
+       onto two, with some room above and below. */
+    .ae-statement__toggle {
+      --button-height: 48px;
+      --button-padding: 16px;
+      --button-font-size: 14px;
+
+      width: 100%;
+      padding-block: 10px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  // AudioEye's script (loaded by the layout) wires the two buttons itself:
+  // data-ae-client-feedback-link opens its Help Desk, data-ae-cta-optin-button
+  // switches the Help Desk icon on or off, and the data-ae-cta-opted-*-copy
+  // labels follow that state. If its script isn't on the page (blocked, or
+  // still loading), the buttons open AudioEye's own statement page instead.
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest(
+      '.ae-statement [data-ae-client-feedback-link], .ae-statement [data-ae-cta-optin-button]'
+    );
+    if (!button || window.AudioEye) return;
+    const url = button.closest('.ae-statement').dataset.statementUrl;
+    if (url) window.open(url, '_blank', 'noopener');
+  });
+{% endjavascript %}

@@ -18,9 +18,15 @@
     {%- endif -%}
 
     {%- if section.settings.embed_url != blank -%}
-      <div class="legal-page__embed">
-        <iframe src="{{ section.settings.embed_url }}" title="{{ section.settings.heading | escape }}"></iframe>
-      </div>
+      {%- if section.settings.embed_style == 'audioeye' -%}
+        <div class="legal-page__embed">
+          <iframe src="{{ section.settings.embed_url }}" title="{{ section.settings.heading | escape }}"></iframe>
+        </div>
+      {%- else -%}
+        <div class="legal-page__body legal-page__statement">
+          {%- render 'audioeye-statement', statement_url: section.settings.embed_url -%}
+        </div>
+      {%- endif -%}
     {%- endif -%}
   </div>
 </section>
@@ -87,7 +93,8 @@
   margin-bottom: 6px;
 }
 
-.legal-page__body + .legal-page__embed {
+.legal-page__body + .legal-page__embed,
+.legal-page__body + .legal-page__statement {
   margin-top: 24px;
 }
 
@@ -197,6 +204,18 @@
       "id": "embed_url",
       "label": "t:sections.legal_page.settings.embed_url",
       "info": "t:sections.legal_page.settings.embed_url_info"
+    },
+    {
+      "type": "select",
+      "id": "embed_style",
+      "label": "t:sections.legal_page.settings.embed_style",
+      "info": "t:sections.legal_page.settings.embed_style_info",
+      "options": [
+        { "value": "theme", "label": "t:sections.legal_page.settings.embed_style_theme" },
+        { "value": "audioeye", "label": "t:sections.legal_page.settings.embed_style_audioeye" }
+      ],
+      "default": "theme",
+      "visible_if": "{{ section.settings.embed_url != blank }}"
     },
     {
       "type": "range",
