@@ -113,9 +113,10 @@
         "trust_badge_fcKKBw"
       ],
       "settings": {
-        "show_watch_in_action": true,
+        "show_watch_in_action": false,
         "videowise_embed": "<div class=\"reeview-app-widget\" id=\"reeview-app-widget_6a5839fb4875ff54c79b1683\"></div>",
         "popup_text_color": "#3e2027",
+        "scent_products": [],
         "show_patent_stamp": false,
         "patent_stamp_position": "image_bottom_right",
         "patent_stamp_heading": "PATENTED FORMULA",
@@ -138,41 +139,6 @@
         "key_ingredients_first": true,
         "show_full_ingredients": false
       }
-    },
-    "related-products": {
-      "type": "related-products",
-      "settings": {
-        "heading": "You may also like",
-        "collection": "shop",
-        "max_products": 8,
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
-      },
-      "disabled": true
-    },
-    "product-faq": {
-      "type": "product-faq",
-      "disabled": true,
-      "settings": {
-        "title": "Frequently Asked Questions",
-        "intro": "",
-        "top_padding": 112,
-        "background_color": "#fce9ec",
-        "text_color": "#3e2027"
-      }
-    },
-    "1781651804992d6d43": {
-      "type": "apps",
-      "blocks": {
-        "klaviyo_reviews_product_reviews_87iP9c": {
-          "type": "shopify://apps/klaviyo-reviews/blocks/product-reviews/db20e365-d984-4ac4-9655-e1588d951ca9",
-          "settings": {}
-        }
-      },
-      "block_order": [
-        "klaviyo_reviews_product_reviews_87iP9c"
-      ],
-      "settings": {}
     },
     "in_press_TBfPET": {
       "type": "in-press",
@@ -344,7 +310,7 @@
           "settings": {
             "image": "shopify://shop_images/category-men.jpg",
             "label": "Shop men",
-            "link": "shopify://pages/for-men"
+            "link": "shopify://products/deep-ritual"
           }
         },
         "card_wipes": {
@@ -367,6 +333,41 @@
         "background_color": "",
         "text_color": ""
       }
+    },
+    "related-products": {
+      "type": "related-products",
+      "disabled": true,
+      "settings": {
+        "heading": "You may also like",
+        "collection": "shop",
+        "max_products": 8,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "product-faq": {
+      "type": "product-faq",
+      "disabled": true,
+      "settings": {
+        "title": "Frequently Asked Questions",
+        "intro": "",
+        "top_padding": 112,
+        "background_color": "#fce9ec",
+        "text_color": "#3e2027"
+      }
+    },
+    "1781651804992d6d43": {
+      "type": "apps",
+      "blocks": {
+        "klaviyo_reviews_product_reviews_87iP9c": {
+          "type": "shopify://apps/klaviyo-reviews/blocks/product-reviews/db20e365-d984-4ac4-9655-e1588d951ca9",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "klaviyo_reviews_product_reviews_87iP9c"
+      ],
+      "settings": {}
     }
   },
   "order": [

@@ -386,7 +386,7 @@
           "settings": {
             "image": "shopify://shop_images/category-men.jpg",
             "label": "Shop men",
-            "link": "shopify://pages/for-men"
+            "link": "shopify://products/deep-ritual"
           }
         },
         "card_wipes": {
@@ -598,7 +598,7 @@
           "settings": {
             "image": "shopify://shop_images/category-men.jpg",
             "label": "Shop men",
-            "link": "shopify://pages/for-men"
+            "link": "shopify://products/deep-ritual"
           }
         },
         "card_wipes": {
