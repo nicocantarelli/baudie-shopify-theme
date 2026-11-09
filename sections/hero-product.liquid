@@ -844,10 +844,21 @@
     }
   }
 
+  /* Narrower computers: the card's two buttons don't fit side by side up to
+     about 1135px wide, so they stack, in a taller product panel. */
+  @media (max-width: 1150px) {
+    .hero-product {
+      --hero-product-card-panel-height: clamp(320px, 40vh, 360px);
+    }
+
+    .hero-product__actions {
+      flex-direction: column;
+    }
+  }
+
   /* Responsive - Tablet. The heading scales down with --hero-product-px. */
   @media (max-width: 1024px) {
     .hero-product {
-      --hero-product-card-panel-height: clamp(320px, 40vh, 360px);
       --hero-product-card-inline-offset: calc(var(--header-gutter) - 10px);
       --hero-product-card-top-offset: 12px;
       --hero-product-card-bottom-offset: 16px;
@@ -865,14 +876,6 @@
     .hero-product__card {
       gap: 10px;
       padding: 10px;
-    }
-
-    .hero-product__actions {
-      flex-direction: column;
-    }
-
-    .hero-product__button {
-      width: 100%;
     }
   }
 
