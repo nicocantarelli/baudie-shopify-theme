@@ -232,10 +232,27 @@
      up, narrowing with the screen down to 40px. Phones set their own. */
   --page-gutter: clamp(40px, 100vw * 80 / 1440, 80px);
 
+  /* The header's side margin, which the homepage hero's arrows and its
+     product card's text line up with (sections/hero-product.liquid): 56px,
+     44px up to 1400px wide, 26px up to 1024px. Phones set their own. */
+  --header-gutter: 56px;
+
   /* Shape */
   --radius-card: 20px;
   --radius-panel: 32px;
   --radius-pill: 999px;
+}
+
+@media (max-width: 1400px) {
+  :root {
+    --header-gutter: 44px;
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --header-gutter: 26px;
+  }
 }
 
 @media (max-width: 768px) {

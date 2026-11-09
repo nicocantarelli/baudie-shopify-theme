@@ -447,7 +447,10 @@
        not the design's bigger ones. The panel is 4px taller than the
        original for the card's 4px taller buttons. */
     --hero-product-card-panel-height: clamp(264px, calc(28vh + 4px), 324px);
-    --hero-product-card-inline-offset: 40px;
+    /* The card's text lines up with the header's side margin
+       (--header-gutter, snippets/css-variables.liquid), as do the arrows:
+       the card's sides are that, less its padding. */
+    --hero-product-card-inline-offset: calc(var(--header-gutter) - 16px);
     --hero-product-card-top-offset: 16px;
     --hero-product-card-bottom-offset: 20px;
     /* Extra height under the hero's bottom edge, for a next section that
@@ -652,7 +655,7 @@
   /* Navigation Controls - positioned on right side */
   .hero-product__controls {
     position: absolute;
-    right: 40px;
+    right: var(--header-gutter);
     top: 33px;
     display: flex;
     gap: 12px;
@@ -816,7 +819,7 @@
   /* Responsive - Smaller Desktop */
   @media (max-width: 1400px) {
     .hero-product {
-      --hero-product-card-inline-offset: 32px;
+      --hero-product-card-inline-offset: calc(var(--header-gutter) - 12px);
       --hero-product-card-top-offset: 12px;
       --hero-product-card-bottom-offset: 16px;
     }
@@ -845,7 +848,7 @@
   @media (max-width: 1024px) {
     .hero-product {
       --hero-product-card-panel-height: clamp(320px, 40vh, 360px);
-      --hero-product-card-inline-offset: 16px;
+      --hero-product-card-inline-offset: calc(var(--header-gutter) - 10px);
       --hero-product-card-top-offset: 12px;
       --hero-product-card-bottom-offset: 16px;
     }
@@ -856,7 +859,6 @@
     }
 
     .hero-product__controls {
-      right: 24px;
       top: 24px;
     }
 
