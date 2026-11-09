@@ -430,6 +430,8 @@
   --sidecart-border: color-mix(in srgb, var(--sidecart-text) 20%, transparent);
   /* The drawer's wavy left edge, past its width (see .sidecart__drawer::before). */
   --sidecart-wave: 96px;
+  /* Its shape: two bulges per 450px of height, as a mask (white = shown). */
+  --sidecart-wave-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 450' preserveAspectRatio='none'%3E%3Cpath d='M96 0H48C23.41 36.69 0 71.79 0 112.5C0 153.21 23.41 188.31 48 225C72.59 261.69 96 296.79 96 337.5C96 378.21 72.59 413.31 48 450H96Z'/%3E%3C/svg%3E");
 
   position: fixed;
   inset: 0;
@@ -483,11 +485,34 @@
   bottom: 0;
   width: var(--sidecart-wave);
   background-color: var(--sidecart-bg);
-  /* A gift line's tint, carried on into the edge (see updateEdgeTint). */
-  background-image: var(--sidecart-edge-tint, none);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 450' preserveAspectRatio='none'%3E%3Cpath d='M96 0H48C23.41 36.69 0 71.79 0 112.5C0 153.21 23.41 188.31 48 225C72.59 261.69 96 296.79 96 337.5C96 378.21 72.59 413.31 48 450H96Z'/%3E%3C/svg%3E") 0 0 / 100% 450px repeat-y;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 450' preserveAspectRatio='none'%3E%3Cpath d='M96 0H48C23.41 36.69 0 71.79 0 112.5C0 153.21 23.41 188.31 48 225C72.59 261.69 96 296.79 96 337.5C96 378.21 72.59 413.31 48 450H96Z'/%3E%3C/svg%3E") 0 0 / 100% 450px repeat-y;
+  -webkit-mask: var(--sidecart-wave-mask) 0 0 / 100% 450px repeat-y;
+  mask: var(--sidecart-wave-mask) 0 0 / 100% 450px repeat-y;
   pointer-events: none;
+}
+
+/* A gift line's tint, and a scent pick's wash over it, carried on into the
+   wavy edge instead of stopping in a straight line at the drawer's side
+   (with the gift cards; see updateEdgeTint and followEdgeWash). Two layers
+   over the edge, cut to its wave like it. The wash's layer covers just the
+   line's rows in view, its wave lined up with the edge's. */
+.sidecart__edge-tint,
+.sidecart__edge-wash {
+  position: absolute;
+  top: 0;
+  right: 100%;
+  width: var(--sidecart-wave);
+  background-repeat: no-repeat;
+  -webkit-mask: var(--sidecart-wave-mask) 0 0 / 100% 450px repeat-y;
+  mask: var(--sidecart-wave-mask) 0 0 / 100% 450px repeat-y;
+  pointer-events: none;
+}
+
+.sidecart__edge-tint {
+  bottom: 0;
+}
+
+.sidecart__edge-wash {
+  height: 0;
 }
 
 .sidecart.is-open .sidecart__drawer {
@@ -3024,13 +3049,18 @@
     left: 0;
     width: auto;
     height: var(--sidecart-wave);
-    background-image: none;
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112.5 30' preserveAspectRatio='none'%3E%3Cpath d='M0 30V12C9.17 5.85 17.95 0 28.13 0C38.3 0 47.08 5.85 56.25 12C65.42 18.15 74.2 24 84.38 24C94.55 24 103.33 18.15 112.5 12V30Z'/%3E%3C/svg%3E") 0 100% / 50% 100% repeat-x;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112.5 30' preserveAspectRatio='none'%3E%3Cpath d='M0 30V12C9.17 5.85 17.95 0 28.13 0C38.3 0 47.08 5.85 56.25 12C65.42 18.15 74.2 24 84.38 24C94.55 24 103.33 18.15 112.5 12V30Z'/%3E%3C/svg%3E") 0 100% / 50% 100% repeat-x;
   }
 
   .sidecart.is-open .sidecart__drawer {
     transform: translateY(0);
+  }
+
+  /* The sheet's sides are straight, so the gift tint reaches them as is. */
+  .sidecart__edge-tint,
+  .sidecart__edge-wash {
+    display: none;
   }
 
   .sidecart__header {
@@ -3240,16 +3270,25 @@ class Sidecart {
   }
 
   // The gift lines' tint (with the gift cards) runs on into the drawer's wavy
-  // edge instead of stopping in a straight line at the drawer's side: the
-  // edge (.sidecart__drawer::before) paints the tint's left color over the
-  // rows those lines take up, cut to the part of the scroll area in view, as
-  // --sidecart-edge-tint. Kept in step as the cart scrolls, re-renders or
-  // changes size. On phones the edge is the sheet's top, so nothing's painted.
+  // edge instead of stopping in a straight line at the drawer's side: a layer
+  // over the edge (.sidecart__edge-tint) paints the tint's left color over the
+  // rows those lines take up, cut to the part of the scroll area in view. Kept
+  // in step as the cart scrolls, re-renders or changes size. A scent pick's
+  // wash runs on into the edge too (see followEdgeWash). On phones the edge is
+  // the sheet's top, whose sides are straight, so nothing's painted.
   watchEdgeTint() {
     const scroll = this.sidecart.querySelector('.sidecart__scroll');
     if (!scroll || !this.drawer) return;
     this.edgeScroll = scroll;
     this.edgePhone = window.matchMedia('(max-width: 768px)');
+    this.edgeTint = document.createElement('div');
+    this.edgeTint.className = 'sidecart__edge-tint';
+    this.edgeWash = document.createElement('div');
+    this.edgeWash.className = 'sidecart__edge-wash';
+    this.edgeTint.setAttribute('aria-hidden', 'true');
+    this.edgeWash.setAttribute('aria-hidden', 'true');
+    this.drawer.prepend(this.edgeTint, this.edgeWash);
+    this.edgeWashFrame = 0;
     let frame = 0;
     this.scheduleEdgeTint = () => {
       if (frame) return;
@@ -3285,11 +3324,68 @@ class Sidecart {
       if (to <= from) return;
       stops.push(`transparent ${from}px`, `${tint} ${from}px`, `${tint} ${to}px`, `transparent ${to}px`);
     });
-    if (stops.length) {
-      this.drawer.style.setProperty('--sidecart-edge-tint', `linear-gradient(to bottom, ${stops.join(', ')})`);
-    } else {
-      this.drawer.style.removeProperty('--sidecart-edge-tint');
+    this.edgeTint.style.backgroundImage = stops.length ? `linear-gradient(to bottom, ${stops.join(', ')})` : '';
+  }
+
+  // A scent pick's wash (see washGift) runs on into the edge with its line:
+  // every frame while the line washes, the edge's wash layer takes the line's
+  // band and shine at the line's own size and place, read off the line's
+  // animation, so the wave comes in through the edge in one piece and fills
+  // it while it covers the line. Started by chooseGift and settleGiftWash.
+  followEdgeWash() {
+    if (!this.edgeWash || this.edgeWashFrame) return;
+    const step = () => {
+      this.edgeWashFrame = 0;
+      if (this.paintEdgeWash()) this.edgeWashFrame = requestAnimationFrame(step);
+    };
+    this.edgeWashFrame = requestAnimationFrame(step);
+  }
+
+  // Paints this frame of the edge's wash; false once no gift line washes.
+  paintEdgeWash() {
+    const layer = this.edgeWash;
+    const card =
+      this.edgePhone.matches || !this.sidecart.classList.contains('is-open')
+        ? null
+        : this.edgeScroll.querySelector(
+            '.sidecart__items--gift-cards .sidecart-item--gift.is-choosing, .sidecart__items--gift-cards .sidecart-item--gift.is-chosen'
+          );
+    if (!card) {
+      layer.removeAttribute('style');
+      return false;
     }
+    const drawerTop = this.drawer.getBoundingClientRect().top;
+    const view = this.edgeScroll.getBoundingClientRect();
+    const box = card.getBoundingClientRect();
+    const from = Math.max(box.top, view.top) - drawerTop;
+    const to = Math.min(box.bottom, view.bottom) - drawerTop;
+    if (to <= from) {
+      layer.style.height = '0px';
+      return true;
+    }
+    const style = getComputedStyle(card);
+    const at = (name) => {
+      const value = parseFloat(style.getPropertyValue(name));
+      return (Number.isFinite(value) ? value : 100) / 100;
+    };
+    // The line's backgrounds are sized and placed on its padding box (see
+    // .sidecart-item.is-choosing): the shine 300% wide, the band 340%.
+    const width = card.clientWidth;
+    const height = card.clientHeight;
+    const x = box.left + card.clientLeft - layer.getBoundingClientRect().left;
+    const y = box.top + card.clientTop - drawerTop - from;
+    const shine = 'linear-gradient(100deg, transparent 44%, rgba(255, 255, 255, 0.5) 50%, transparent 56%)';
+    layer.style.top = `${from}px`;
+    layer.style.height = `${to - from}px`;
+    layer.style.webkitMaskPosition = `0 ${-from}px`;
+    layer.style.maskPosition = `0 ${-from}px`;
+    layer.style.backgroundColor = style.backgroundColor;
+    layer.style.backgroundImage = `${shine}, ${card.style.getPropertyValue('--scent-wash') || 'none'}`;
+    layer.style.backgroundSize = `${width * 3}px ${height}px, ${width * 3.4}px ${height}px`;
+    layer.style.backgroundPosition =
+      `${x - width * 2 * at('--scent-shine-x')}px ${y}px, ` +
+      `${x - width * 2.4 * at('--scent-wash-x')}px ${y}px`;
+    return true;
   }
 
   cacheRefs() {
@@ -3666,6 +3762,7 @@ class Sidecart {
     if (option) this.washGift(card, option);
     if (option) this.colorGiftChoice(card, option.dataset.textColor);
     card.classList.add('is-choosing');
+    this.followEdgeWash();
     card.setAttribute('aria-busy', 'true');
     if (card.hasAttribute('data-gift-pending')) {
       card.setAttribute('data-gift-picked', '');
@@ -3799,6 +3896,7 @@ class Sidecart {
     card.style.setProperty('--scent-wash-elapsed', `${-elapsed}ms`);
     card.style.setProperty('--scent-wash-hold', `${Math.max(550 - elapsed, 0) + 150}ms`);
     card.classList.add('is-chosen');
+    this.followEdgeWash();
     // The bottle drops on: the rest of its fall (0.9s, see .is-dropping), or
     // all of it if its image wasn't in yet.
     const image = card.querySelector('.sidecart-item__image');
