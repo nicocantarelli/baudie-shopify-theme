@@ -137,15 +137,17 @@
       AudioEye's launcher sits 24px from the bottom-right corner (an inline
       style, not !important), right on top of the cart drawer's Checkout
       button. While the drawer is open, move it outside the drawer: just to its
-      left on desktop (over the dimmed page). On mobile the drawer is an 85vh
+      left on desktop (over the dimmed page), past the 615px drawer and the
+      96px wavy edge that hangs off its left side (--sidecart-width and
+      --sidecart-wave in the sidecart section). On mobile the drawer is an 85vh
       bottom sheet, so it goes in the dimmed strip above the sheet: 8px above
       the sheet's top, which is the visible height (dvh) minus 85vh. That isn't
       15vh on iPhone, where vh is the height with the toolbars hidden.
     {%- endcomment -%}
     <style>
       body:has(#sidecart.is-open) #ae_launcher {
-        right: calc(615px + 24px) !important;
-        inset-inline-end: calc(615px + 24px) !important;
+        right: calc(615px + 96px + 24px) !important;
+        inset-inline-end: calc(615px + 96px + 24px) !important;
       }
 
       @media (max-width: 768px) {
