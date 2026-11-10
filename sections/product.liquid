@@ -104,6 +104,15 @@
     endif
   endif
 
+  comment
+    Products picked in "Hide the videos on" don't show them, the others do.
+  endcomment
+  for hidden_product in section.settings.hide_watch_in_action_products
+    if hidden_product.id == product.id
+      assign show_watch_in_action = false
+    endif
+  endfor
+
   assign benefit_pills = section.blocks | where: 'type', 'benefit_pill'
 
   comment
@@ -2392,6 +2401,14 @@
       "id": "show_watch_in_action",
       "label": "t:sections.product.show_watch_in_action",
       "default": true
+    },
+    {
+      "type": "product_list",
+      "id": "hide_watch_in_action_products",
+      "label": "t:sections.product.hide_watch_in_action_products",
+      "info": "t:sections.product.hide_watch_in_action_products_info",
+      "limit": 50,
+      "visible_if": "{{ section.settings.show_watch_in_action }}"
     },
     {
       "type": "checkbox",

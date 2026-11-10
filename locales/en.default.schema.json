@@ -601,6 +601,8 @@
     "product": {
       "name": "Product",
       "show_watch_in_action": "Show the videos under the photo",
+      "hide_watch_in_action_products": "Hide the videos on",
+      "hide_watch_in_action_products_info": "The products picked here don't show the videos; the others still do.",
       "show_sticky_add_to_cart": "Show sticky add to cart",
       "show_sticky_add_to_cart_info": "A bar with the product and Add to cart at the bottom of the screen while the page's own Add to cart is out of view. On bundles it asks for the scents still to pick and takes the customer back up to them.",
       "videowise_embed": "Videowise embed code",
