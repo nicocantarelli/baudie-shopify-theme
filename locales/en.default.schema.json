@@ -309,7 +309,8 @@
       "custom_icon": "Custom icon",
       "custom_icon_info": "Replaces the icon above. Use a one-color icon on a transparent background; it's shown in the text color.",
       "benefit_title_info": "Shown under the icon and as the pop-up's title.",
-      "popup_text": "Pop-up text"
+      "popup_text": "Pop-up text",
+      "popup_text_align": "Pop-up text alignment"
     },
     "meet_scents": {
       "name": "Meet Your Scents",
