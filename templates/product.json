@@ -457,7 +457,7 @@
             "icon": "patent",
             "custom_icon": "shopify://shop_images/Why_do_I_need_this_icon_1e88f78c-45ef-476f-83c2-89b701922e59.png",
             "title": "Why do I need this?",
-            "text": "<p><strong>You need this if:<br/><br/></strong>+No deodorant works for you<br/>+Your deodorant fails by midday<br/>+You re-apply your deodorant many times a day<br/>+You struggle with stubborn underarm odor</p>",
+            "text": "<p><strong>You need this if:</strong></p><ul><li>No deodorant works for you</li><li>Your deodorant fails by midday</li><li>You re-apply your deodorant many times a day</li><li>You struggle with stubborn underarm odor</li></ul>",
             "text_align": "left"
           }
         },
