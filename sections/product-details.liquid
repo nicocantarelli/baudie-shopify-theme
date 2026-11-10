@@ -27,6 +27,7 @@
     class="product-details product-details--benefits{% if page_tint != blank %} product-details--on-tint{% endif %} full-width"
     style="
       --frame-mask: url('{{ 'shape-wavy-frame.svg' | asset_url }}');
+      --frame-wave: url('{{ 'shape-wavy-frame-wave.svg' | asset_url }}');
       --plus-mask: url('{{ 'icon-plus-circle.svg' | asset_url }}');
       --close-mask: url('{{ 'icon-plus.svg' | asset_url }}');
       {{ color_vars }}
@@ -34,7 +35,13 @@
     <div class="product-details__grid">
       {%- comment -%} The panel runs on under the photo, so the photo's rounded corners show pink behind them. {%- endcomment -%}
       <span class="product-details__panel" aria-hidden="true"></span>
-      <span class="product-details__frame" aria-hidden="true"></span>
+      <span class="product-details__frame" aria-hidden="true">
+        <span class="product-details__frame-art">
+          <span class="product-details__frame-top"></span>
+          <span class="product-details__frame-wave"></span>
+          <span class="product-details__frame-bottom"></span>
+        </span>
+      </span>
 
       <div class="product-details__card">
         {% if section.settings.lockup_top != blank or section.settings.lockup_main != blank %}
@@ -532,12 +539,69 @@
      width), and 31px past its top and bottom (the card is about 800px
      tall at every width). */
   .product-details__frame {
+    position: relative;
     z-index: 2;
     margin: -31px -5.5% -31px -6.2%;
+    container-type: size;
+    pointer-events: none;
+  }
+
+  /* The drawing stretched to the frame, when the frame is as wide as the
+     drawing or wider (computers). */
+  .product-details__frame-art {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
     background-color: var(--color-yellow);
     -webkit-mask: var(--frame-mask) center / 100% 100% no-repeat;
     mask: var(--frame-mask) center / 100% 100% no-repeat;
-    pointer-events: none;
+  }
+
+  .product-details__frame-art > span {
+    display: none;
+  }
+
+  /* A frame taller than the drawing (phones, and more benefits make it
+     taller) would stretch the waves out of shape. Instead the drawing's
+     top and bottom keep their proportions, and one wave of its sides
+     (shape-wavy-frame-wave.svg: from 339.75 to 526 of its 887.3 height,
+     where both sides line up with themselves) repeats in between as many
+     times as fits. The wave overlaps its neighbours by 1px so no hairline
+     shows at the joins. */
+  @container (max-aspect-ratio: 6877 / 8873) {
+    .product-details__frame-art {
+      background: none;
+      -webkit-mask: none;
+      mask: none;
+    }
+
+    .product-details__frame-art > span {
+      display: block;
+      flex: none;
+      background-color: var(--color-yellow);
+    }
+
+    .product-details__frame-top {
+      aspect-ratio: 687.7 / 339.75;
+      -webkit-mask: var(--frame-mask) top / 100% auto no-repeat;
+      mask: var(--frame-mask) top / 100% auto no-repeat;
+    }
+
+    .product-details__frame-art > .product-details__frame-wave {
+      flex: 1 1 0;
+      margin-block: -1px;
+      -webkit-mask: var(--frame-wave) top / 100% auto;
+      -webkit-mask-repeat: no-repeat round;
+      mask: var(--frame-wave) top / 100% auto;
+      mask-repeat: no-repeat round;
+    }
+
+    .product-details__frame-bottom {
+      aspect-ratio: 687.7 / 361.3;
+      -webkit-mask: var(--frame-mask) bottom / 100% auto no-repeat;
+      mask: var(--frame-mask) bottom / 100% auto no-repeat;
+    }
   }
 
   .product-details__card {
