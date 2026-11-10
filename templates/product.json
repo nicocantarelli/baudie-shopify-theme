@@ -403,6 +403,7 @@
         },
         "faq-7": {
           "type": "faq_item",
+          "disabled": true,
           "settings": {
             "question": "Why do I smell worse the first week of using it?",
             "answer": "<p>It is unlikely, but it is possible. It could mean that you are going through a detox period and you need to give your body a few days to adjust. It could also mean that the scent that you purchased does not mesh well with your body chemistry and it is likely one of the other scents will work better for you. We recommend trying our <a href=\"/products/discovery-set\" target=\"_blank\" title=\"Discovery Set\">Discovery Set</a> to start.</p>"
@@ -410,6 +411,7 @@
         },
         "faq-8": {
           "type": "faq_item",
+          "disabled": true,
           "settings": {
             "question": "Will this irritate my skin?",
             "answer": "<p>It is important to remember that every body is unique and different. Our product was tested for safety, stability and efficacy, however due to the fact that every body and skin type is unique, we advise to patch test the product first as you should do with any skin/body product. If you notice irritation or an allergy occur, please stop usage. Please note: If you are NOT wiping the product off as instructed, it can cause irritation on the skin. Applying the product on freshly shaven/waxed/lasered underarms can cause a slight sting but is nothing to be concerned about.</p>"
@@ -446,20 +448,14 @@
     "product_details_who": {
       "type": "product-details",
       "blocks": {
-        "benefit_patent": {
+        "benefit_R7Nnxr": {
           "type": "benefit",
           "settings": {
             "icon": "patent",
-            "title": "Science-backed patented formula",
-            "text": "<p>Baudie is the world’s first and only patented Deodorant Enhancer®, powered by odor-eliminating bacterial technology. It targets the real cause of body odor: the bacteria that makes sweat smell.</p>"
-          }
-        },
-        "benefit_primer": {
-          "type": "benefit",
-          "settings": {
-            "icon": "drops",
-            "title": "World’s first pre-deodorant primer",
-            "text": "<p>Spray it on before your deodorant. A refined blend of gentle AHAs and a synergistic botanical complex creates an optimized environment where bacteria can’t thrive, while maintaining a balanced skin microbiome.</p>"
+            "custom_icon": "shopify://shop_images/Why_do_I_need_this_icon_1e88f78c-45ef-476f-83c2-89b701922e59.png",
+            "title": "Why do I need this?",
+            "text": "<p><strong>You need this if:<br/><br/></strong>+No deodorant works for you<br/>+Your deodorant fails by midday<br/>+You re-apply your deodorant many times a day<br/>+You struggle with stubborn underarm odor</p>",
+            "text_align": "left"
           }
         },
         "benefit_all_day": {
@@ -467,7 +463,26 @@
           "settings": {
             "icon": "deodorant",
             "title": "Helps any deodorant last all day",
-            "text": "<p>Baudie works with any deodorant you already use. The result is science-backed freshness that helps your deodorant last longer and helps keep your sweat odorless.</p>"
+            "text": "<p>Whether you use natural deodorant or Traditional deodorant, our product goes on underneath to help it last all day. Because nobody has time for constant deodorant touch-ups!</p>",
+            "text_align": "center"
+          }
+        },
+        "benefit_primer": {
+          "type": "benefit",
+          "settings": {
+            "icon": "drops",
+            "title": "World’s first pre-deodorant primer",
+            "text": "<p>Our Deodorant Enhancer goes under the deodorant you already use at home.&nbsp;Spray it on, wipe it off, and apply your deodorant on top as normal. The scent of our enhancer will dissipate so your deo can shine! It helps any deodorant last all day + helps keep your sweat odorless.&nbsp;</p>",
+            "text_align": "center"
+          }
+        },
+        "benefit_patent": {
+          "type": "benefit",
+          "settings": {
+            "icon": "patent",
+            "title": "Science-backed patented formula",
+            "text": "<p>Baudie is the world’s first and only patented Deodorant Enhancer® that goes under the deodorant you already use, powered by odor-eliminating bacterial technology. A refined blend of gentle AHAs and a synergistic botanical complex creates an optimized environment where bacteria can’t thrive, while maintaining a balanced skin microbiome.&nbsp;</p>",
+            "text_align": "center"
           }
         },
         "benefit_plant_based": {
@@ -475,14 +490,16 @@
           "settings": {
             "icon": "leaf",
             "title": "Plant-based formula",
-            "text": "<p>Made with plant-based ingredients. Vegan, cruelty free, and free of aluminum, parabens, sulfates and phthalates.</p>"
+            "text": "<p>Our plant based formula is cruelty-free and vegan.&nbsp;<br/><br/><strong>Made without:</strong> Aluminum, Baking Soda, Phthalates, Parabens, Silicones, and Sulfates.</p>",
+            "text_align": "center"
           }
         }
       },
       "block_order": [
-        "benefit_patent",
-        "benefit_primer",
+        "benefit_R7Nnxr",
         "benefit_all_day",
+        "benefit_primer",
+        "benefit_patent",
         "benefit_plant_based"
       ],
       "settings": {
