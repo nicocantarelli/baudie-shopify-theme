@@ -1193,12 +1193,17 @@
       }
 
       /* As the page scrolls, the text and button glide down over the photo,
-         half of the hero that was below the first screen (about 57px on
-         Alex's iPhone), so less empty photo is left above In the press.
-         Driven by the scrolling itself, so they move smoothly with the
-         finger; done by the time In the press starts to show. Browsers
-         without scroll-driven animations, and people who ask for less
-         motion, keep them still. */
+         so less empty photo is left above In the press: the space under
+         them ends at a quarter of the hero that was below the first screen
+         plus half their usual gap, and never under that gap (102px on
+         Alex's iPhone, leaving 45px). Driven by the scrolling itself, so
+         they move smoothly with the finger; done by the time In the press
+         starts to show. Browsers without scroll-driven animations, and
+         people who ask for less motion, keep them still. */
+      .hero-product__mobile-content--bottom {
+        --hero-product-glide: calc(var(--hero-product-below) + var(--hero-product-bottom-gap) - max(var(--hero-product-bottom-gap), var(--hero-product-below) / 4 + var(--hero-product-bottom-gap) / 2));
+      }
+
       @supports (animation-timeline: scroll()) {
         @media (prefers-reduced-motion: no-preference) {
           .hero-product__mobile-content--bottom {
@@ -1212,7 +1217,7 @@
 
     @keyframes hero-product-glide {
       to {
-        translate: 0 calc(var(--hero-product-below) / 2);
+        translate: 0 var(--hero-product-glide);
       }
     }
 
