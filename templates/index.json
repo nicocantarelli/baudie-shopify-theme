@@ -96,6 +96,8 @@
         "use_static_image": true,
         "static_hero_image": "shopify://shop_images/hero-petal-kiss-beach.jpg",
         "static_hero_image_alt": "",
+        "desktop_fade_color": "#3e2027",
+        "desktop_fade_opacity": 20,
         "desktop_overlay_enable": false,
         "desktop_overlay_color": "#000000",
         "desktop_overlay_opacity": 0,
@@ -107,13 +109,15 @@
         "mobile_content_alignment": "right",
         "mobile_eyebrow": "",
         "mobile_heading_gap": 6,
-        "mobile_overlay_enable": false,
-        "mobile_overlay_color": "#3e2027",
-        "mobile_overlay_opacity": 0,
         "mobile_title": "",
         "mobile_subtitle": "",
         "mobile_button_text": "SHOP OUR SCENTS",
-        "mobile_button_url": "shopify://collections/shop"
+        "mobile_button_url": "shopify://collections/shop",
+        "mobile_fade_color": "#3e2027",
+        "mobile_fade_opacity": 20,
+        "mobile_overlay_enable": false,
+        "mobile_overlay_color": "#3e2027",
+        "mobile_overlay_opacity": 0
       }
     },
     "in_press_9ChkGH": {
@@ -196,20 +200,14 @@
     "product_details_XyZ123": {
       "type": "product-details",
       "blocks": {
-        "benefit_patent": {
+        "benefit_Wz9nQA": {
           "type": "benefit",
           "settings": {
             "icon": "patent",
-            "title": "Science-backed patented formula",
-            "text": "<p>Baudie is the world’s first and only patented Deodorant Enhancer®, powered by odor-eliminating bacterial technology. It targets the real cause of body odor: the bacteria that makes sweat smell.</p>"
-          }
-        },
-        "benefit_primer": {
-          "type": "benefit",
-          "settings": {
-            "icon": "drops",
-            "title": "World’s first pre-deodorant primer",
-            "text": "<p>Spray it on before your deodorant. A refined blend of gentle AHAs and a synergistic botanical complex creates an optimized environment where bacteria can’t thrive, while maintaining a balanced skin microbiome.</p>"
+            "custom_icon": "shopify://shop_images/Why_do_I_need_this_icon_1e88f78c-45ef-476f-83c2-89b701922e59.png",
+            "title": "Why do I need this?",
+            "text": "<p><strong>You need this if:</strong></p><ul><li>No deodorant works for you</li><li>Your deodorant fails by midday</li><li>You re-apply your deodorant many times a day</li><li>You struggle with stubborn underarm odor</li></ul>",
+            "text_align": "left"
           }
         },
         "benefit_all_day": {
@@ -217,7 +215,26 @@
           "settings": {
             "icon": "deodorant",
             "title": "Helps any deodorant last all day",
-            "text": "<p>Baudie works with any deodorant you already use. The result is science-backed freshness that helps your deodorant last longer and helps keep your sweat odorless.</p>"
+            "text": "<p>Whether you use natural deodorant or traditional deodorant, our product goes on underneath to help it last all day. Because nobody has time for constant deodorant touch-ups!</p>",
+            "text_align": "center"
+          }
+        },
+        "benefit_primer": {
+          "type": "benefit",
+          "settings": {
+            "icon": "drops",
+            "title": "World’s first pre-deodorant primer",
+            "text": "<p>Our Deodorant Enhancer goes under the deodorant you already use at home.&nbsp;Spray it on, wipe it off, and apply your deodorant on top as normal. The scent of our enhancer will dissipate so your deo can shine! It helps any deodorant last all day + helps keep your sweat odorless. &nbsp;</p>",
+            "text_align": "center"
+          }
+        },
+        "benefit_patent": {
+          "type": "benefit",
+          "settings": {
+            "icon": "patent",
+            "title": "Science-backed patented formula",
+            "text": "<p>Baudie is the world’s first and only patented Deodorant Enhancer® that goes under the deodorant you already use, powered by odor-eliminating bacterial technology. A refined blend of gentle AHAs and a synergistic botanical complex creates an optimized environment where bacteria can’t thrive, while maintaining a balanced skin microbiome.</p>",
+            "text_align": "center"
           }
         },
         "benefit_plant_based": {
@@ -225,14 +242,16 @@
           "settings": {
             "icon": "leaf",
             "title": "Plant-based formula",
-            "text": "<p>Made with plant-based ingredients. Vegan, cruelty free, and free of aluminum, parabens, sulfates and phthalates.</p>"
+            "text": "<p>Our plant based formula is cruelty-free and vegan.&nbsp;</p><p><br/><strong>Made without:</strong> Aluminum, Baking Soda, Phthalates, Parabens, Silicones, and Sulfates.</p>",
+            "text_align": "center"
           }
         }
       },
       "block_order": [
-        "benefit_patent",
-        "benefit_primer",
+        "benefit_Wz9nQA",
         "benefit_all_day",
+        "benefit_primer",
+        "benefit_patent",
         "benefit_plant_based"
       ],
       "settings": {
@@ -368,7 +387,7 @@
         "card_all_scents": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-all-scents.jpg",
+            "image": "shopify://shop_images/Group_Shot_17.png",
             "label": "All scents",
             "link": "shopify://collections/shop"
           }
@@ -376,7 +395,7 @@
         "card_bundles": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-bundles.jpg",
+            "image": "shopify://shop_images/the_6_bottles_I_uploaded_sits_on_the_bottom_ledge_of_an_arched_cut-out_window_in_a_smooth_pastel_lilac_wall._Through_the_arch_a_soft_dreamy_gradient_sky_fades_from_turquoise_at_the_to.png",
             "label": "Bundles",
             "link": "shopify://collections/bundles"
           }
@@ -384,7 +403,7 @@
         "card_men": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-men.jpg",
+            "image": "shopify://shop_images/Deep_Ritual_11_copy.png",
             "label": "Shop men",
             "link": "shopify://products/deep-ritual"
           }
@@ -407,9 +426,9 @@
       "name": "Smell good (phones)",
       "settings": {
         "title": "Smell good in your Baudie!",
+        "show_on": "mobile",
         "background_color": "",
-        "text_color": "",
-        "show_on": "mobile"
+        "text_color": ""
       }
     },
     "179417188242182948": {
@@ -494,7 +513,7 @@
       ],
       "name": "t:sections.subscribe_save.name",
       "settings": {
-        "image": "shopify://shop_images/subscribe-save-sweet-muse.jpg",
+        "image": "shopify://shop_images/Sweet_Muse_17.png",
         "photo_position": "right",
         "title": "Save 15% for life and smell good",
         "subtitle": "",
@@ -580,7 +599,7 @@
         "card_all_scents": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-all-scents.jpg",
+            "image": "shopify://shop_images/Group_Shot_17.png",
             "label": "All scents",
             "link": "shopify://collections/shop"
           }
@@ -588,7 +607,7 @@
         "card_bundles": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-bundles.jpg",
+            "image": "shopify://shop_images/the_6_bottles_I_uploaded_sits_on_the_bottom_ledge_of_an_arched_cut-out_window_in_a_smooth_pastel_lilac_wall._Through_the_arch_a_soft_dreamy_gradient_sky_fades_from_turquoise_at_the_to.png",
             "label": "Bundles",
             "link": "shopify://collections/bundles"
           }
@@ -596,7 +615,7 @@
         "card_men": {
           "type": "card",
           "settings": {
-            "image": "shopify://shop_images/category-men.jpg",
+            "image": "shopify://shop_images/Deep_Ritual_11_copy.png",
             "label": "Shop men",
             "link": "shopify://products/deep-ritual"
           }
@@ -619,9 +638,9 @@
       "name": "Smell good (computers)",
       "settings": {
         "title": "Smell good in your Baudie!",
+        "show_on": "desktop",
         "background_color": "",
-        "text_color": "",
-        "show_on": "desktop"
+        "text_color": ""
       }
     },
     "customer_videos_Vq7nXa": {
