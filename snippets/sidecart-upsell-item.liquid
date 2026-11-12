@@ -1,8 +1,9 @@
 {% doc %}
   Renders a single upsell offer card in the sidecart. Renders nothing when the
   product has no available variant. Shows the discounted upsell price from the
-  product's `custom.upsell_price` metafield (the Upsell deal discount from the
-  baudie-discounts app charges that same price once the item is in the cart).
+  product's `custom.upsell_price` metafield, in the customer's currency (the
+  Upsell deal discount from the baudie-discounts app charges that same price
+  once the item is in the cart).
 
   @param {product} product - The product to offer as an upsell
   @param {string} [contained_in_ids] - Comma-separated ids of bundle products
@@ -26,13 +27,43 @@
   endif
   assign card_image = product.metafields.custom.card_image_portrait | default: product.metafields.custom.card_image | default: product.featured_image
 
+  comment
+    The deal price in the customer's currency. custom.upsell_price is in the
+    shop's currency (USD). In another currency the deal takes the same share
+    off the price Shopify charges for the variant in that market (price lists,
+    rounding): market price × upsell_price ÷ the variant's shop-currency price,
+    saved in the baudie.upsell_offers shop metafield (shopCurrency, basePrices)
+    by the Upsell deals page. Mirrors the discount function
+    (baudie-discounts, src/upsell_price.js) and the checkout upsell: all three
+    must compute the same cents, so the drawer shows exactly the charge. Until
+    the page has saved the prices (no shopCurrency), every currency keeps the
+    deal price as saved, like the other two.
+  endcomment
   assign upsell_price = variant.price
   assign has_deal = false
   assign upsell_meta = product.metafields.custom.upsell_price
   if upsell_meta != blank and upsell_meta.value != blank
-    assign upsell_price = upsell_meta.value | times: 100 | round
-    if upsell_price < variant.price
-      assign has_deal = true
+    assign deal_cents = upsell_meta.value | times: 100 | round
+    assign upsell_pricing = shop.metafields.baudie.upsell_offers.value
+    if upsell_pricing.shopCurrency == blank or cart.currency.iso_code == upsell_pricing.shopCurrency
+      assign upsell_price = deal_cents
+      if upsell_price < variant.price
+        assign has_deal = true
+      endif
+    else
+      assign variant_gid = 'gid://shopify/ProductVariant/' | append: variant.id
+      assign base_price = upsell_pricing.basePrices[variant_gid]
+      if base_price != blank
+        assign base_cents = base_price | times: 100 | round
+        if base_cents > 0 and deal_cents > 0 and deal_cents < base_cents
+          assign base_cents_decimal = base_cents | times: 1.0
+          assign local_deal_cents = variant.price | times: deal_cents | divided_by: base_cents_decimal | round
+          if local_deal_cents < variant.price
+            assign upsell_price = local_deal_cents
+            assign has_deal = true
+          endif
+        endif
+      endif
     endif
   endif
 -%}
