@@ -1108,9 +1108,9 @@
       "show_countdown": "Show the countdown",
       "show_countdown_info": "Needs a date in Ends.",
       "background_color": "Background color",
-      "background_color_info": "Also the color of the numbers in the countdown's white tiles.",
+      "background_color_info": "Also the color of the numbers in the countdown's tiles.",
       "text_color": "Text color",
-      "text_color_info": "Also the color of the code chip's border."
+      "text_color_info": "Also the color of the countdown's tiles, colons and labels, and of the code chips' borders. Keep at least 4.5:1 contrast with the background color for AA (the default blush has 4.71:1 on the default pink)."
     }
   },
   "sidecart": {

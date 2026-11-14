@@ -349,7 +349,7 @@
         "id": "promo_bar_text_color",
         "label": "t:promo_bar.settings.text_color",
         "info": "t:promo_bar.settings.text_color_info",
-        "default": "#FFFFFF"
+        "default": "#FFDCED"
       }
     ]
   },

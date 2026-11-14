@@ -197,7 +197,7 @@
   */
   .promo-bar {
     --promo-bar-bg: #c11562;
-    --promo-bar-text: #ffffff;
+    --promo-bar-text: #ffdced;
     --promo-bar-tile-height: 46px;
 
     background-color: var(--promo-bar-bg);
@@ -222,11 +222,18 @@
     white-space: nowrap;
     color: inherit;
     text-decoration: none;
-    transition: opacity 0.2s ease;
   }
 
-  .promo-bar__link:hover {
-    opacity: 0.85;
+  /* No fading on hover: it would drop the text below AA contrast. */
+  .promo-bar__link:hover .promo-bar__headline,
+  .promo-bar__link:hover .promo-bar__offer {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .promo-bar__link:hover .promo-bar__code {
+    border-style: solid;
   }
 
   .promo-bar__link:focus-visible {
@@ -329,7 +336,7 @@
     width: 56px;
     height: var(--promo-bar-tile-height);
     border-radius: 8px;
-    background-color: #ffffff;
+    background-color: var(--promo-bar-text);
     color: var(--promo-bar-bg);
     font-size: 30px;
     font-weight: 700;
