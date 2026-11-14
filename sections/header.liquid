@@ -39,7 +39,21 @@
     {%- if section.settings.announcement_text_color != blank %}--announcement-text: {{ section.settings.announcement_text_color }};{% endif -%}
   ">
 
-  {% if has_announcements %}
+  {%- comment -%}
+    The promo bar takes the announcement bar's place while it's enabled and
+    has a headline or an offer (Theme settings > Promo bar).
+  {%- endcomment -%}
+  {%- liquid
+    assign show_promo_bar = false
+    if settings.promo_bar_enabled
+      if settings.promo_bar_headline != blank or settings.promo_bar_offer != blank
+        assign show_promo_bar = true
+      endif
+    endif
+  -%}
+  {% if show_promo_bar %}
+    {% render 'promo-bar' %}
+  {% elsif has_announcements %}
     {%- liquid
       assign has_stacked = false
       for block in section.blocks
@@ -72,8 +86,6 @@
       {% endfor %}
     </div>
   {% endif %}
-
-  {% render 'black-friday-bar' %}
 
   <header class="header">
     <div class="header__inner">
@@ -337,7 +349,7 @@
 {%- comment -%}
   Sets the header's height before the page content is parsed, so content
   offset by it doesn't jump when the deferred script below measures it again
-  (the Black Friday bar is taller than the announcement bar).
+  (the promo bar is taller than the fallbacks sections use).
 {%- endcomment -%}
 <script>
   (function () {
@@ -386,11 +398,6 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
-  }
-
-  /* Hidden while the Black Friday bar shows (snippets/black-friday-bar.liquid). */
-  .announcement-bar[hidden] {
-    display: none;
   }
 
   .announcement-bar__item {

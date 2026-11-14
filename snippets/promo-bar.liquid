@@ -1,0 +1,354 @@
+{% doc %}
+  Renders the promo bar at the top of the header: the headline, an optional
+  days / hours / minutes countdown to the promo's end, the offer and an
+  optional discount code chip, all inside one link. Everything comes from the
+  Promo bar theme settings. The header renders it instead of the announcement
+  bar while the bar is enabled.
+
+  With a code, the link goes through the code's discount link
+  (/discount/CODE?redirect=PATH), which applies the code at checkout and lands
+  on the Link setting's page. Without one, it goes straight to that page.
+
+  The countdown shows when Show the countdown is on and Ends has a date. It is
+  worked out in Liquid, then the inline script right after the bar corrects it
+  to the visitor's clock before first paint (Liquid's time can be cached) and
+  updates it once a minute. It holds at 00 00 00 once the end has passed.
+
+  Render it inside .header-wrapper, before .header.
+
+  @example
+  {% render 'promo-bar' %}
+{% enddoc %}
+
+{%- liquid
+  assign headline = settings.promo_bar_headline | strip
+  assign offer = settings.promo_bar_offer | strip
+  assign code = settings.promo_bar_code | strip
+  assign link = settings.promo_bar_link | default: routes.all_products_collection_url
+
+  if code != blank
+    assign link_path = link
+    if link contains '://'
+      assign link_path = link | split: '://' | last
+      assign link_host = link_path | split: '/' | first
+      assign link_path = link_path | remove_first: link_host | default: '/'
+    endif
+    assign code_param = code | url_encode
+    assign redirect_param = link_path | url_encode | replace: '%2F', '/'
+    assign link = '/discount/' | append: code_param | append: '?redirect=' | append: redirect_param
+  endif
+
+  assign label = headline | downcase | capitalize
+  if offer != blank
+    if label != blank
+      assign label = label | append: ': '
+    endif
+    assign offer_label = offer | downcase
+    assign label = label | append: offer_label
+  endif
+  if code != blank
+    assign label = 'header.promo_bar.label_with_code' | t: text: label, code: code
+  endif
+
+  assign end = settings.promo_bar_end | strip
+  assign end_seconds = end | date: '%s' | plus: 0
+  assign show_countdown = false
+  if settings.promo_bar_show_countdown and end_seconds > 0
+    assign show_countdown = true
+    assign now_seconds = 'now' | date: '%s' | plus: 0
+    assign minutes_left = end_seconds | minus: now_seconds | at_least: 0 | plus: 59 | divided_by: 60
+    assign days_left = minutes_left | divided_by: 1440
+    assign hours_left = minutes_left | modulo: 1440 | divided_by: 60
+    assign mins_left = minutes_left | modulo: 60
+    assign ends_on = end | date: '%B %-d'
+  endif
+-%}
+
+<div
+  class="promo-bar"
+  id="PromoBar"
+  role="region"
+  aria-label="{{ 'header.promo_bar.region' | t }}"
+  style="
+    {%- if settings.promo_bar_bg_color != blank %}--promo-bar-bg: {{ settings.promo_bar_bg_color }};{% endif -%}
+    {%- if settings.promo_bar_text_color != blank %}--promo-bar-text: {{ settings.promo_bar_text_color }};{% endif -%}
+  "
+  {% if show_countdown %}
+    data-end="{{ end_seconds | times: 1000 }}"
+  {% endif %}>
+  <a
+    class="promo-bar__link"
+    href="{{ link | escape }}"
+    aria-label="{{ label | escape }}"
+    {% if show_countdown %}
+      aria-describedby="PromoBarEnds"
+    {% endif %}>
+    <span class="promo-bar__main{% if show_countdown %} promo-bar__main--countdown{% endif %}">
+      {%- if headline != blank -%}
+        <span class="promo-bar__headline">{{ headline | escape }}</span>
+      {%- endif -%}
+      {%- if headline != blank and offer != blank -%}
+        <span class="promo-bar__dot" aria-hidden="true">·</span>
+      {%- endif -%}
+      {%- if show_countdown -%}
+        <span class="promo-bar__countdown" aria-hidden="true">
+          <span class="promo-bar__unit">
+            <span class="promo-bar__number" data-promo-bar-unit>{% if days_left < 10 %}0{% endif %}{{ days_left }}</span>
+            <span class="promo-bar__unit-label">{{ 'header.promo_bar.days' | t }}</span>
+          </span>
+          <span class="promo-bar__unit">
+            <span class="promo-bar__number" data-promo-bar-unit>{% if hours_left < 10 %}0{% endif %}{{ hours_left }}</span>
+            <span class="promo-bar__unit-label">{{ 'header.promo_bar.hours' | t }}</span>
+          </span>
+          <span class="promo-bar__unit">
+            <span class="promo-bar__number" data-promo-bar-unit>{% if mins_left < 10 %}0{% endif %}{{ mins_left }}</span>
+            <span class="promo-bar__unit-label">{{ 'header.promo_bar.minutes' | t }}</span>
+          </span>
+        </span>
+      {%- endif -%}
+      {%- if offer != blank -%}
+        <span class="promo-bar__offer">{{ offer | escape }}</span>
+      {%- endif -%}
+    </span>
+    {%- if code != blank -%}
+      <span class="promo-bar__code">{{ 'header.promo_bar.code' | t: code: code | escape }}</span>
+    {%- endif -%}
+    {%- if show_countdown -%}
+      <span class="visually-hidden" id="PromoBarEnds">{{ 'header.promo_bar.ends' | t: date: ends_on | escape }}</span>
+    {%- endif -%}
+  </a>
+</div>
+
+{%- comment -%}
+  Inline so the countdown is right at first paint. data-end is the end as
+  milliseconds, already parsed by Liquid, so no browser has to parse the
+  setting's text itself (Safari rejects some formats Liquid accepts). The
+  minutes round up, so it reads 00 00 00 only once the end has passed, and it
+  updates when the shown minute changes. The ResizeObserver keeps
+  --total-header-height in step if the bar's height changes (the font
+  loading, the text wrapping).
+{%- endcomment -%}
+<script>
+  (function () {
+    var bar = document.getElementById('PromoBar');
+    if (!bar) return;
+
+    var wrapper = bar.closest('.header-wrapper') || bar.parentNode;
+    var numbers = bar.querySelectorAll('[data-promo-bar-unit]');
+    var end = Number(bar.getAttribute('data-end'));
+    var timer;
+
+    function pad(value) {
+      return (value < 10 ? '0' : '') + value;
+    }
+
+    function update() {
+      clearTimeout(timer);
+      if (!bar.isConnected || numbers.length < 3 || !end) return;
+
+      var left = end - Date.now();
+      var minutes = left > 0 ? Math.ceil(left / 60000) : 0;
+
+      numbers[0].textContent = pad(Math.floor(minutes / 1440));
+      numbers[1].textContent = pad(Math.floor((minutes % 1440) / 60));
+      numbers[2].textContent = pad(minutes % 60);
+
+      if (left > 0) timer = setTimeout(update, (left % 60000 || 60000) + 50);
+    }
+
+    function updateHeaderHeight() {
+      if (!wrapper.querySelector(':scope > .header')) return;
+      document.documentElement.style.setProperty('--total-header-height', wrapper.offsetHeight + 'px');
+    }
+
+    update();
+
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) update();
+    });
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted) update();
+    });
+    if ('ResizeObserver' in window) new ResizeObserver(updateHeaderHeight).observe(bar);
+  })();
+</script>
+
+{% stylesheet %}
+  /*
+    Two rows: the headline, the countdown and the offer, then the code chip
+    under them. The countdown sits on the bar's center line, with the chip
+    centered under it. On mobile: headline · offer, then the countdown, then
+    the chip. The height comes from the padding and the content, with a
+    minimum, so nothing clips if the text wraps.
+  */
+  .promo-bar {
+    --promo-bar-bg: #c11562;
+    --promo-bar-text: #ffffff;
+
+    background-color: var(--promo-bar-bg);
+    color: var(--promo-bar-text);
+  }
+
+  .promo-bar__link {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 72px;
+    padding: 12px 24px;
+    font-family: var(--font-sweet-sans);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.2;
+    letter-spacing: var(--tracking-label-sm);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: inherit;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .promo-bar__link:hover {
+    opacity: 0.85;
+  }
+
+  .promo-bar__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -4px;
+  }
+
+  .promo-bar__main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  /* Two equal outer columns keep the countdown on the center line however
+     long the headline and the offer are. Long copy wraps in its column. */
+  .promo-bar__main--countdown {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-self: stretch;
+  }
+
+  .promo-bar__main--countdown .promo-bar__headline {
+    grid-column: 1;
+    justify-self: end;
+    white-space: normal;
+    text-align: right;
+  }
+
+  .promo-bar__main--countdown .promo-bar__countdown {
+    grid-column: 2;
+  }
+
+  .promo-bar__main--countdown .promo-bar__offer {
+    grid-column: 3;
+    justify-self: start;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .promo-bar__dot {
+    display: none;
+  }
+
+  .promo-bar__countdown {
+    display: flex;
+    gap: 6px;
+  }
+
+  /* The number and label are centered as one stack. In Sweet Sans the
+     digits leave room above them in their line box, but the small label has
+     almost none under its baseline, so a box-centered stack reads low. The
+     bottom padding lifts it until the ink sits in the middle of the circle
+     (checked on the rendered pixels at both sizes). */
+  .promo-bar__unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    width: 34px;
+    height: 34px;
+    padding-bottom: 1.5px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    color: var(--promo-bar-bg);
+    line-height: 1;
+  }
+
+  .promo-bar__number {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .promo-bar__unit-label {
+    font-size: 7px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .promo-bar__code {
+    padding: 3px 12px;
+    border: 1px dashed currentColor;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 899px) {
+    .promo-bar__link {
+      padding: 10px 16px;
+      font-size: 11px;
+      white-space: normal;
+      text-align: center;
+    }
+
+    .promo-bar__main,
+    .promo-bar__main--countdown {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .promo-bar__main--countdown .promo-bar__headline,
+    .promo-bar__main--countdown .promo-bar__offer {
+      text-align: center;
+    }
+
+    .promo-bar__headline {
+      order: 1;
+    }
+
+    .promo-bar__dot {
+      display: inline;
+      order: 2;
+    }
+
+    .promo-bar__offer {
+      order: 3;
+    }
+
+    .promo-bar__countdown {
+      order: 4;
+      flex-basis: 100%;
+      justify-content: center;
+    }
+
+    .promo-bar__unit {
+      width: 30px;
+      height: 30px;
+    }
+  }
+{% endstylesheet %}

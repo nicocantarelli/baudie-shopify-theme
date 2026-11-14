@@ -293,52 +293,63 @@
     ]
   },
   {
-    "name": "t:general.black_friday",
+    "name": "t:general.promo_bar",
     "settings": [
       {
         "type": "checkbox",
-        "id": "black_friday_enabled",
-        "label": "t:black_friday.settings.enabled",
-        "info": "t:black_friday.settings.enabled_info",
-        "default": true
+        "id": "promo_bar_enabled",
+        "label": "t:promo_bar.settings.enabled",
+        "info": "t:promo_bar.settings.enabled_info",
+        "default": false
       },
       {
         "type": "text",
-        "id": "black_friday_start",
-        "label": "t:black_friday.settings.start",
-        "info": "t:black_friday.settings.start_info",
-        "default": "2026-11-15T03:00:00-08:00"
+        "id": "promo_bar_headline",
+        "label": "t:promo_bar.settings.headline"
       },
       {
         "type": "text",
-        "id": "black_friday_end",
-        "label": "t:black_friday.settings.end",
-        "info": "t:black_friday.settings.end_info",
-        "default": "2026-12-02T23:59:00-08:00"
+        "id": "promo_bar_offer",
+        "label": "t:promo_bar.settings.offer"
       },
       {
         "type": "text",
-        "id": "black_friday_code",
-        "label": "t:black_friday.settings.code",
-        "default": "BAUDIE20"
-      },
-      {
-        "type": "text",
-        "id": "black_friday_headline",
-        "label": "t:black_friday.settings.headline",
-        "default": "BLACK FRIDAY STARTS NOW"
-      },
-      {
-        "type": "text",
-        "id": "black_friday_offer",
-        "label": "t:black_friday.settings.offer",
-        "default": "20% OFF SITEWIDE"
+        "id": "promo_bar_code",
+        "label": "t:promo_bar.settings.code",
+        "info": "t:promo_bar.settings.code_info"
       },
       {
         "type": "url",
-        "id": "black_friday_link",
-        "label": "t:black_friday.settings.link",
-        "info": "t:black_friday.settings.link_info"
+        "id": "promo_bar_link",
+        "label": "t:promo_bar.settings.link",
+        "default": "/collections/all"
+      },
+      {
+        "type": "text",
+        "id": "promo_bar_end",
+        "label": "t:promo_bar.settings.end",
+        "info": "t:promo_bar.settings.end_info"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_bar_show_countdown",
+        "label": "t:promo_bar.settings.show_countdown",
+        "info": "t:promo_bar.settings.show_countdown_info",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "promo_bar_bg_color",
+        "label": "t:promo_bar.settings.background_color",
+        "info": "t:promo_bar.settings.background_color_info",
+        "default": "#C11562"
+      },
+      {
+        "type": "color",
+        "id": "promo_bar_text_color",
+        "label": "t:promo_bar.settings.text_color",
+        "info": "t:promo_bar.settings.text_color_info",
+        "default": "#FFFFFF"
       }
     ]
   },

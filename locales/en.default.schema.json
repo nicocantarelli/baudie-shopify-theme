@@ -53,7 +53,7 @@
     "newsletter": "Newsletter",
     "reviews": "Reviews",
     "what_makes_different": "What Makes Different",
-    "black_friday": "Black Friday sale"
+    "promo_bar": "Promo bar"
   },
   "header": {
     "settings": {
@@ -1094,19 +1094,23 @@
       "cart_subscription_switch_info": "Adds a \"One-time / Subscribe & save\" dropdown to one-time items that have an Appstle subscription plan. Subscription items can always change frequency. Turn on when subscriptions launch."
     }
   },
-  "black_friday": {
+  "promo_bar": {
     "settings": {
-      "enabled": "Show the Black Friday bar during the sale",
-      "enabled_info": "Between the start and the end, the Black Friday bar replaces the announcement bar at the top of every page. To see it before the sale starts, add ?bf_preview=1 to a page's address.",
-      "start": "Sale starts",
-      "start_info": "Date and time with its UTC offset, like 2026-11-15T03:00:00-08:00 for 3:00 AM Pacific time.",
-      "end": "Sale ends",
-      "end_info": "Same format, like 2026-12-02T23:59:00-08:00. The countdown counts down to this.",
-      "code": "Discount code",
+      "enabled": "Show the promo bar",
+      "enabled_info": "Replaces the announcement bar at the top of every page while on. Needs a headline or an offer.",
       "headline": "Headline",
       "offer": "Offer",
+      "code": "Discount code",
+      "code_info": "Optional. Shows the code in a chip, and the bar's link applies it at checkout before opening the Link page.",
       "link": "Link",
-      "link_info": "Leave empty to use the code's discount link, which applies the code at checkout and opens Shop all."
+      "end": "Ends",
+      "end_info": "Date and time with its UTC offset, like 2026-12-02T23:59:00-08:00 for 11:59 PM Pacific time. The countdown counts down to this and stops at 00 00 00.",
+      "show_countdown": "Show the countdown",
+      "show_countdown_info": "Needs a date in Ends.",
+      "background_color": "Background color",
+      "background_color_info": "Also the color of the numbers in the countdown's white circles.",
+      "text_color": "Text color",
+      "text_color_info": "Also the color of the code chip's border."
     }
   },
   "sidecart": {
