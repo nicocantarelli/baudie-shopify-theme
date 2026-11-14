@@ -1,9 +1,10 @@
 {% doc %}
   Renders the promo bar at the top of the header: the headline, an optional
   days / hours / minutes countdown to the promo's end, the offer and an
-  optional discount code chip, all inside one link. Everything comes from the
-  Promo bar theme settings. The header renders it instead of the announcement
-  bar while the bar is enabled.
+  optional discount code chip, all inside one link. On desktop the code chip
+  shows on both ends of the row; on mobile it shows once, under the
+  countdown. Everything comes from the Promo bar theme settings. The header
+  renders it instead of the announcement bar while the bar is enabled.
 
   With a code, the link goes through the code's discount link
   (/discount/CODE?redirect=PATH), which applies the code at checkout and lands
@@ -48,6 +49,7 @@
   endif
   if code != blank
     assign label = 'header.promo_bar.label_with_code' | t: text: label, code: code
+    assign code_text = 'header.promo_bar.code' | t: code: code | escape
   endif
 
   assign end = settings.promo_bar_end | strip
@@ -84,9 +86,14 @@
       aria-describedby="PromoBarEnds"
     {% endif %}>
     <span class="promo-bar__main{% if show_countdown %} promo-bar__main--countdown{% endif %}">
-      {%- if headline != blank -%}
-        <span class="promo-bar__headline">{{ headline | escape }}</span>
-      {%- endif -%}
+      <span class="promo-bar__start">
+        {%- if code != blank -%}
+          <span class="promo-bar__code promo-bar__code--side" aria-hidden="true">{{ code_text }}</span>
+        {%- endif -%}
+        {%- if headline != blank -%}
+          <span class="promo-bar__headline">{{ headline | escape }}</span>
+        {%- endif -%}
+      </span>
       {%- if headline != blank and offer != blank -%}
         <span class="promo-bar__dot" aria-hidden="true">·</span>
       {%- endif -%}
@@ -108,12 +115,17 @@
           </span>
         </span>
       {%- endif -%}
-      {%- if offer != blank -%}
-        <span class="promo-bar__offer">{{ offer | escape }}</span>
-      {%- endif -%}
+      <span class="promo-bar__end">
+        {%- if offer != blank -%}
+          <span class="promo-bar__offer">{{ offer | escape }}</span>
+        {%- endif -%}
+        {%- if code != blank -%}
+          <span class="promo-bar__code promo-bar__code--side" aria-hidden="true">{{ code_text }}</span>
+        {%- endif -%}
+      </span>
     </span>
     {%- if code != blank -%}
-      <span class="promo-bar__code">{{ 'header.promo_bar.code' | t: code: code | escape }}</span>
+      <span class="promo-bar__code promo-bar__code--below">{{ code_text }}</span>
     {%- endif -%}
     {%- if show_countdown -%}
       <span class="visually-hidden" id="PromoBarEnds">{{ 'header.promo_bar.ends' | t: date: ends_on | escape }}</span>
@@ -177,10 +189,10 @@
 
 {% stylesheet %}
   /*
-    Two rows: the headline, the countdown and the offer, then the code chip
-    under them. The countdown is the focal point and sits on the bar's center
-    line, with the chip centered under it. On mobile: headline · offer, then
-    the countdown, then the chip. The height comes from the padding and the
+    One row: the code chip, the headline, the countdown, the offer and the
+    code chip again. The countdown is the focal point and sits on the bar's
+    center line. On mobile: headline · offer, then the countdown, then the
+    chip. The height comes from the padding and the
     content, with a minimum, so nothing clips if the text wraps.
   */
   .promo-bar {
@@ -203,7 +215,7 @@
     padding: 16px 24px 12px;
     font-family: var(--font-sweet-sans);
     font-weight: 700;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.2;
     letter-spacing: var(--tracking-label-sm);
     text-transform: uppercase;
@@ -238,27 +250,54 @@
     align-self: stretch;
   }
 
-  /* The headline and the offer line up with the middle of the tiles, not of
-     the tiles plus their labels. */
-  .promo-bar__main--countdown .promo-bar__headline,
-  .promo-bar__main--countdown .promo-bar__offer {
-    margin-top: calc((var(--promo-bar-tile-height) - 1.2em) / 2);
-    white-space: normal;
+  /* Each side is the code chip and the headline, or the offer and the code
+     chip, lined up with the middle of the tiles (not of the tiles plus their
+     labels). */
+  .promo-bar__start,
+  .promo-bar__end {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-width: 0;
   }
 
-  .promo-bar__main--countdown .promo-bar__headline {
+  .promo-bar__start {
+    justify-content: flex-end;
+  }
+
+  .promo-bar__end {
+    justify-content: flex-start;
+  }
+
+  .promo-bar__main--countdown .promo-bar__start,
+  .promo-bar__main--countdown .promo-bar__end {
+    min-height: var(--promo-bar-tile-height);
+  }
+
+  .promo-bar__main--countdown .promo-bar__start {
     grid-column: 1;
-    justify-self: end;
-    text-align: right;
   }
 
   .promo-bar__main--countdown .promo-bar__countdown {
     grid-column: 2;
   }
 
-  .promo-bar__main--countdown .promo-bar__offer {
+  .promo-bar__main--countdown .promo-bar__end {
     grid-column: 3;
-    justify-self: start;
+  }
+
+  .promo-bar__main--countdown .promo-bar__headline,
+  .promo-bar__main--countdown .promo-bar__offer {
+    min-width: 0;
+    white-space: normal;
+    text-wrap: balance;
+  }
+
+  .promo-bar__headline {
+    text-align: right;
+  }
+
+  .promo-bar__offer {
     text-align: left;
   }
 
@@ -319,13 +358,37 @@
   }
 
   .promo-bar__code {
-    padding: 3px 12px;
+    flex-shrink: 0;
+    padding: 4px 14px;
     border: 1px dashed currentColor;
     border-radius: 999px;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .promo-bar__code--below {
+    display: none;
+  }
+
+  /* Narrow desktops: a size down, so the headline needs at most two lines
+     next to its chip. */
+  @media (min-width: 900px) and (max-width: 1099px) {
+    .promo-bar__link {
+      font-size: 14px;
+    }
+
+    .promo-bar__start,
+    .promo-bar__end {
+      gap: 14px;
+    }
+
+    .promo-bar__code {
+      padding: 3px 12px;
+      font-size: 10px;
+    }
   }
 
   @media (max-width: 899px) {
@@ -347,10 +410,24 @@
       gap: 6px;
     }
 
-    .promo-bar__main--countdown .promo-bar__headline,
-    .promo-bar__main--countdown .promo-bar__offer {
-      margin-top: 0;
+    .promo-bar__start,
+    .promo-bar__end {
+      display: contents;
+    }
+
+    .promo-bar__headline,
+    .promo-bar__offer {
       text-align: center;
+    }
+
+    .promo-bar__code--side {
+      display: none;
+    }
+
+    .promo-bar__code--below {
+      display: block;
+      padding: 3px 12px;
+      font-size: 10px;
     }
 
     .promo-bar__headline {
