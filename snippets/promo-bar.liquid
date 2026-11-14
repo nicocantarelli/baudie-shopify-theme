@@ -96,10 +96,12 @@
             <span class="promo-bar__number" data-promo-bar-unit>{% if days_left < 10 %}0{% endif %}{{ days_left }}</span>
             <span class="promo-bar__unit-label">{{ 'header.promo_bar.days' | t }}</span>
           </span>
+          <span class="promo-bar__colon">:</span>
           <span class="promo-bar__unit">
             <span class="promo-bar__number" data-promo-bar-unit>{% if hours_left < 10 %}0{% endif %}{{ hours_left }}</span>
             <span class="promo-bar__unit-label">{{ 'header.promo_bar.hours' | t }}</span>
           </span>
+          <span class="promo-bar__colon">:</span>
           <span class="promo-bar__unit">
             <span class="promo-bar__number" data-promo-bar-unit>{% if mins_left < 10 %}0{% endif %}{{ mins_left }}</span>
             <span class="promo-bar__unit-label">{{ 'header.promo_bar.minutes' | t }}</span>
@@ -176,14 +178,15 @@
 {% stylesheet %}
   /*
     Two rows: the headline, the countdown and the offer, then the code chip
-    under them. The countdown sits on the bar's center line, with the chip
-    centered under it. On mobile: headline · offer, then the countdown, then
-    the chip. The height comes from the padding and the content, with a
-    minimum, so nothing clips if the text wraps.
+    under them. The countdown is the focal point and sits on the bar's center
+    line, with the chip centered under it. On mobile: headline · offer, then
+    the countdown, then the chip. The height comes from the padding and the
+    content, with a minimum, so nothing clips if the text wraps.
   */
   .promo-bar {
     --promo-bar-bg: #c11562;
     --promo-bar-text: #ffffff;
+    --promo-bar-tile-height: 46px;
 
     background-color: var(--promo-bar-bg);
     color: var(--promo-bar-text);
@@ -195,7 +198,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 10px;
     min-height: 72px;
     padding: 12px 24px;
     font-family: var(--font-sweet-sans);
@@ -231,13 +234,21 @@
   .promo-bar__main--countdown {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: start;
     align-self: stretch;
+  }
+
+  /* The headline and the offer line up with the middle of the tiles, not of
+     the tiles plus their labels. */
+  .promo-bar__main--countdown .promo-bar__headline,
+  .promo-bar__main--countdown .promo-bar__offer {
+    margin-top: calc((var(--promo-bar-tile-height) - 1.2em) / 2);
+    white-space: normal;
   }
 
   .promo-bar__main--countdown .promo-bar__headline {
     grid-column: 1;
     justify-self: end;
-    white-space: normal;
     text-align: right;
   }
 
@@ -248,7 +259,6 @@
   .promo-bar__main--countdown .promo-bar__offer {
     grid-column: 3;
     justify-self: start;
-    white-space: normal;
     text-align: left;
   }
 
@@ -256,41 +266,52 @@
     display: none;
   }
 
+  /* Each unit is a tile with the number and its label under the tile. The
+     colons sit between the tiles, centered on them. Sweet Sans sets its
+     colon a little low in the line box, so the bottom padding lifts it onto
+     the digits' middle (checked on the rendered pixels). */
   .promo-bar__countdown {
     display: flex;
+    align-items: flex-start;
     gap: 6px;
   }
 
-  /* The number and label are centered as one stack. In Sweet Sans the
-     digits leave room above them in their line box, but the small label has
-     almost none under its baseline, so a box-centered stack reads low. The
-     bottom padding lifts it until the ink sits in the middle of the circle
-     (checked on the rendered pixels at both sizes). */
   .promo-bar__unit {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 1px;
-    width: 34px;
-    height: 34px;
-    padding-bottom: 1.5px;
-    border-radius: 50%;
-    background-color: #ffffff;
-    color: var(--promo-bar-bg);
-    line-height: 1;
+    gap: 5px;
   }
 
   .promo-bar__number {
-    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: var(--promo-bar-tile-height);
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--promo-bar-bg);
+    font-size: 30px;
     font-weight: 700;
     line-height: 1;
     letter-spacing: 0;
     font-variant-numeric: tabular-nums;
   }
 
+  .promo-bar__colon {
+    display: flex;
+    align-items: center;
+    height: var(--promo-bar-tile-height);
+    padding-bottom: 1.5px;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
   .promo-bar__unit-label {
-    font-size: 7px;
+    font-size: 9px;
     font-weight: 700;
     line-height: 1;
     letter-spacing: 0.08em;
@@ -308,6 +329,10 @@
   }
 
   @media (max-width: 899px) {
+    .promo-bar {
+      --promo-bar-tile-height: 40px;
+    }
+
     .promo-bar__link {
       padding: 10px 16px;
       font-size: 11px;
@@ -324,6 +349,7 @@
 
     .promo-bar__main--countdown .promo-bar__headline,
     .promo-bar__main--countdown .promo-bar__offer {
+      margin-top: 0;
       text-align: center;
     }
 
@@ -344,11 +370,29 @@
       order: 4;
       flex-basis: 100%;
       justify-content: center;
+      gap: 5px;
     }
 
     .promo-bar__unit {
-      width: 30px;
-      height: 30px;
+      gap: 4px;
+    }
+
+    .promo-bar__number {
+      width: 48px;
+      border-radius: 7px;
+    }
+
+    .promo-bar__number,
+    .promo-bar__colon {
+      font-size: 26px;
+    }
+
+    .promo-bar__colon {
+      padding-bottom: 1.5px;
+    }
+
+    .promo-bar__unit-label {
+      font-size: 8px;
     }
   }
 {% endstylesheet %}
