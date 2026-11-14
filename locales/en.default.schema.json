@@ -52,7 +52,8 @@
     "explore_sets": "Explore Our Sets",
     "newsletter": "Newsletter",
     "reviews": "Reviews",
-    "what_makes_different": "What Makes Different"
+    "what_makes_different": "What Makes Different",
+    "black_friday": "Black Friday sale"
   },
   "header": {
     "settings": {
@@ -1091,6 +1092,21 @@
       "show_dynamic_checkout_info": "Display accelerated checkout options like Shop Pay, Apple Pay",
       "cart_subscription_switch": "Let customers switch to a subscription in the cart",
       "cart_subscription_switch_info": "Adds a \"One-time / Subscribe & save\" dropdown to one-time items that have an Appstle subscription plan. Subscription items can always change frequency. Turn on when subscriptions launch."
+    }
+  },
+  "black_friday": {
+    "settings": {
+      "enabled": "Show the Black Friday bar during the sale",
+      "enabled_info": "Between the start and the end, the Black Friday bar replaces the announcement bar at the top of every page. To see it before the sale starts, add ?bf_preview=1 to a page's address.",
+      "start": "Sale starts",
+      "start_info": "Date and time with its UTC offset, like 2026-11-15T03:00:00-08:00 for 3:00 AM Pacific time.",
+      "end": "Sale ends",
+      "end_info": "Same format, like 2026-12-02T23:59:00-08:00. The countdown counts down to this.",
+      "code": "Discount code",
+      "headline": "Headline",
+      "offer": "Offer",
+      "link": "Link",
+      "link_info": "Leave empty to use the code's discount link, which applies the code at checkout and opens Shop all."
     }
   },
   "sidecart": {

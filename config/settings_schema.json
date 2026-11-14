@@ -293,6 +293,56 @@
     ]
   },
   {
+    "name": "t:general.black_friday",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "black_friday_enabled",
+        "label": "t:black_friday.settings.enabled",
+        "info": "t:black_friday.settings.enabled_info",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "black_friday_start",
+        "label": "t:black_friday.settings.start",
+        "info": "t:black_friday.settings.start_info",
+        "default": "2026-11-15T03:00:00-08:00"
+      },
+      {
+        "type": "text",
+        "id": "black_friday_end",
+        "label": "t:black_friday.settings.end",
+        "info": "t:black_friday.settings.end_info",
+        "default": "2026-12-02T23:59:00-08:00"
+      },
+      {
+        "type": "text",
+        "id": "black_friday_code",
+        "label": "t:black_friday.settings.code",
+        "default": "BAUDIE20"
+      },
+      {
+        "type": "text",
+        "id": "black_friday_headline",
+        "label": "t:black_friday.settings.headline",
+        "default": "BLACK FRIDAY STARTS NOW"
+      },
+      {
+        "type": "text",
+        "id": "black_friday_offer",
+        "label": "t:black_friday.settings.offer",
+        "default": "20% OFF SITEWIDE"
+      },
+      {
+        "type": "url",
+        "id": "black_friday_link",
+        "label": "t:black_friday.settings.link",
+        "info": "t:black_friday.settings.link_info"
+      }
+    ]
+  },
+  {
     "name": "t:general.cart",
     "settings": [
       {

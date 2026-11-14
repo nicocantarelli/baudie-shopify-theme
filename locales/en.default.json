@@ -104,7 +104,16 @@
     "cart": "Cart",
     "menu": "Menu",
     "close_menu": "Close menu",
-    "categories": "Shop categories"
+    "categories": "Shop categories",
+    "black_friday": {
+      "region": "Black Friday sale",
+      "label": "{{ headline }}: {{ offer }} with code {{ code }}",
+      "ends": "Ends {{ date }}",
+      "days": "Days",
+      "hours": "Hrs",
+      "minutes": "Min",
+      "code": "Code {{ code }}"
+    }
   },
   "password": {
     "title": "This shop is private",
