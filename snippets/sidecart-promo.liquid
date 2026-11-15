@@ -53,13 +53,16 @@
     sides: the offer, a dot and the code chip on one line. If the cart is
     too narrow for one line, the chip goes under the offer and the dot drops
     out.
+    The bottom margin leaves a band of the cart's color under the strip, so
+    the items scrolling up are cut off a little below it rather than against
+    it.
   */
   .sidecart-promo {
     --promo-bar-bg: #c11562;
     --promo-bar-text: #ffdced;
 
     flex-shrink: 0;
-    margin: 16px 20px 0;
+    margin: 16px 20px 12px;
     container-type: inline-size;
   }
 
