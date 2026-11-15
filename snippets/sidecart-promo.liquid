@@ -1,0 +1,106 @@
+{% doc %}
+  Renders the promo bar's offer and discount code as a strip in the side
+  cart, under the free shipping bar: the offer, a dot, and the code in a
+  dashed chip. It reads the Promo bar theme settings, so it shows and hides
+  with the bar at the top of the page. It isn't a link: the shopper is
+  already in the cart, and the code is there to enter at checkout or in the
+  cart's discount code field.
+
+  Render it in the side cart's top area, outside the regions a cart update
+  re-renders (nothing in it depends on the cart).
+
+  @example
+  {% render 'sidecart-promo' %}
+{% enddoc %}
+
+{%- liquid
+  assign offer = settings.promo_bar_offer | strip
+  assign code = settings.promo_bar_code | strip
+
+  assign show_promo = false
+  if settings.promo_bar_enabled
+    if offer != blank or code != blank
+      assign show_promo = true
+    endif
+  endif
+-%}
+
+{%- if show_promo -%}
+  <div
+    class="sidecart-promo"
+    style="
+      {%- if settings.promo_bar_bg_color != blank %}--promo-bar-bg: {{ settings.promo_bar_bg_color }};{% endif -%}
+      {%- if settings.promo_bar_text_color != blank %}--promo-bar-text: {{ settings.promo_bar_text_color }};{% endif -%}
+    "
+  >
+    <p class="sidecart-promo__text">
+      {% if offer != blank %}
+        <span class="sidecart-promo__offer">{{ offer | escape }}</span>
+      {% endif %}
+      {% if offer != blank and code != blank %}
+        <span class="sidecart-promo__dot" aria-hidden="true">·</span>
+      {% endif %}
+      {% if code != blank %}
+        <span class="sidecart-promo__code">{{ 'header.promo_bar.code' | t: code: code | escape }}</span>
+      {% endif %}
+    </p>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  /*
+    A rounded strip in the promo bar's colors, lined up with the cart's 20px
+    sides: the offer, a dot and the code chip on one line. If the cart is
+    too narrow for one line, the chip goes under the offer and the dot drops
+    out.
+  */
+  .sidecart-promo {
+    --promo-bar-bg: #c11562;
+    --promo-bar-text: #ffdced;
+
+    flex-shrink: 0;
+    margin: 16px 20px 0;
+    container-type: inline-size;
+  }
+
+  .sidecart-promo__text {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 10px;
+    border-radius: 12px;
+    background-color: var(--promo-bar-bg);
+    color: var(--promo-bar-text);
+    font-family: var(--font-sweet-sans);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: var(--tracking-label-sm);
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .sidecart-promo__code {
+    padding: 4px 10px;
+    border: 1px dashed currentColor;
+    border-radius: 999px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  /* One line needs about 315px; this leaves room for font rendering to
+     differ, so the chip never wraps on its own with the dot left behind. */
+  @container (max-width: 324px) {
+    .sidecart-promo__text {
+      flex-direction: column;
+    }
+
+    .sidecart-promo__dot {
+      display: none;
+    }
+  }
+{% endstylesheet %}

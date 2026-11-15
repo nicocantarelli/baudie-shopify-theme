@@ -187,7 +187,7 @@
               {% endif %}
     </div>
   </div>
-</div>{{ gift_bar }}{% render 'promo-banner', location: 'sidecart-top' %}{% else %}{{ gift_bar }}{% endif %}<div class="sidecart__scroll"><div class="sidecart__content" data-sidecart-content>
+</div>{{ gift_bar }}{% render 'promo-banner', location: 'sidecart-top' %}{% else %}{{ gift_bar }}{% endif %}{% render 'sidecart-promo' %}<div class="sidecart__scroll"><div class="sidecart__content" data-sidecart-content>
 {%- unless gift_layout == 'bar' -%}
   {% render 'sidecart-gift-bar',
     layout: gift_layout,

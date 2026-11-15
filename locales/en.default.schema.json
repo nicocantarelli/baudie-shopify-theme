@@ -1097,7 +1097,7 @@
   "promo_bar": {
     "settings": {
       "enabled": "Show the promo bar",
-      "enabled_info": "Replaces the announcement bar at the top of every page while on. Needs a headline or an offer.",
+      "enabled_info": "Replaces the announcement bar at the top of every page while on. Needs a headline or an offer. Also shows the offer and the code in a strip in the side cart.",
       "headline": "Headline",
       "offer": "Offer",
       "code": "Discount code",

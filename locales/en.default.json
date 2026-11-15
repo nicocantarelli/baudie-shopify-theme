@@ -112,7 +112,7 @@
       "days": "Days",
       "hours": "Hrs",
       "minutes": "Min",
-      "code": "Code {{ code }}"
+      "code": "Code: {{ code }}"
     }
   },
   "password": {
