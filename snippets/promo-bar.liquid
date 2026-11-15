@@ -94,9 +94,6 @@
           <span class="promo-bar__headline">{{ headline | escape }}</span>
         {%- endif -%}
       </span>
-      {%- if headline != blank and offer != blank -%}
-        <span class="promo-bar__dot" aria-hidden="true">·</span>
-      {%- endif -%}
       {%- if show_countdown -%}
         <span class="promo-bar__countdown" aria-hidden="true">
           <span class="promo-bar__unit">
@@ -191,9 +188,10 @@
   /*
     One row: the code chip, the headline, the countdown, the offer and the
     code chip again. The countdown is the focal point and sits on the bar's
-    center line. On mobile: headline · offer, then the countdown, then the
-    chip. The height comes from the padding and the
-    content, with a minimum, so nothing clips if the text wraps.
+    center line. On mobile the text leads: the headline and the offer on
+    their own lines, then a compact countdown, then the chip. The height
+    comes from the padding and the content, with a minimum, so nothing clips
+    if the text wraps.
   */
   .promo-bar {
     --promo-bar-bg: #c11562;
@@ -308,10 +306,6 @@
     text-align: left;
   }
 
-  .promo-bar__dot {
-    display: none;
-  }
-
   /* Each unit is a tile with the number and its label under the tile. The
      colons sit between the tiles, centered on them. Sweet Sans sets its
      colon a little low in the line box, so the bottom padding lifts it onto
@@ -400,12 +394,13 @@
 
   @media (max-width: 899px) {
     .promo-bar {
-      --promo-bar-tile-height: 40px;
+      --promo-bar-tile-height: 28px;
     }
 
     .promo-bar__link {
+      gap: 8px;
       padding: 10px 16px;
-      font-size: 11px;
+      font-size: 16px;
       white-space: normal;
       text-align: center;
     }
@@ -413,8 +408,9 @@
     .promo-bar__main,
     .promo-bar__main--countdown {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
     }
 
     .promo-bar__start,
@@ -433,50 +429,44 @@
 
     .promo-bar__code--below {
       display: block;
-      padding: 3px 12px;
-      font-size: 10px;
+      padding: 4px 14px;
+      font-size: 12px;
     }
 
     .promo-bar__headline {
       order: 1;
     }
 
-    .promo-bar__dot {
-      display: inline;
+    .promo-bar__offer {
       order: 2;
     }
 
-    .promo-bar__offer {
-      order: 3;
-    }
-
     .promo-bar__countdown {
-      order: 4;
-      flex-basis: 100%;
-      justify-content: center;
-      gap: 5px;
-    }
-
-    .promo-bar__unit {
+      order: 3;
+      margin-top: 6px;
       gap: 4px;
     }
 
+    .promo-bar__unit {
+      gap: 3px;
+    }
+
     .promo-bar__number {
-      width: 48px;
-      border-radius: 7px;
+      width: 34px;
+      border-radius: 6px;
     }
 
     .promo-bar__number,
     .promo-bar__colon {
-      font-size: 26px;
+      font-size: 17px;
     }
 
     .promo-bar__colon {
-      padding-bottom: 1.5px;
+      padding-bottom: 2.5px;
     }
 
     .promo-bar__unit-label {
-      font-size: 8px;
+      font-size: 7px;
     }
   }
 {% endstylesheet %}
