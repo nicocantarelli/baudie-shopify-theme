@@ -3,8 +3,12 @@
   cart, under the free shipping bar: the offer, a dot, and the code in a
   dashed chip. It reads the Promo bar theme settings, so it shows and hides
   with the bar at the top of the page. It isn't a link: the shopper is
-  already in the cart, and the code is there to enter at checkout or in the
-  cart's discount code field.
+  already in the cart.
+
+  It also hands the code (data-promo-code) and the promo's end, if Ends is
+  set (data-promo-end, in milliseconds), to the side cart's script, which
+  puts the code on the cart by itself once the cart can use it (see
+  applyPromoCode in sections/sidecart.liquid).
 
   Render it in the side cart's top area, outside the regions a cart update
   re-renders (nothing in it depends on the cart).
@@ -16,6 +20,7 @@
 {%- liquid
   assign offer = settings.promo_bar_offer | strip
   assign code = settings.promo_bar_code | strip
+  assign end_seconds = settings.promo_bar_end | strip | date: '%s' | plus: 0
 
   assign show_promo = false
   if settings.promo_bar_enabled
@@ -32,6 +37,12 @@
       {%- if settings.promo_bar_bg_color != blank %}--promo-bar-bg: {{ settings.promo_bar_bg_color }};{% endif -%}
       {%- if settings.promo_bar_text_color != blank %}--promo-bar-text: {{ settings.promo_bar_text_color }};{% endif -%}
     "
+    {% if code != blank %}
+      data-promo-code="{{ code | escape }}"
+    {% endif %}
+    {% if end_seconds > 0 %}
+      data-promo-end="{{ end_seconds | times: 1000 }}"
+    {% endif %}
   >
     <p class="sidecart-promo__text">
       {% if offer != blank %}

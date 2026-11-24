@@ -3280,6 +3280,7 @@ class Sidecart {
     // function makes the gifts free at checkout from the same settings.
     this.giftPromo = this.readGiftPromo();
     this.giftSynced = true; // cleared by every queued job, so sync runs once per drain
+    this.promoSynced = true; // the same for the promo bar's code (see applyPromoCode)
     this.giftBlocked = this.loadBlockedGifts(); // gifts that came out at full price
     this.openOnEmailCode = false; // the load sync opens the drawer for an email link's VIP gift or shipping code
     this.giftChoices = new Map(); // gift value -> the variant picked in the drawer (see pickGiftChoice)
@@ -3740,9 +3741,12 @@ class Sidecart {
   // job rejects, but the returned promise rejects so callers (e.g. add-to-cart)
   // can surface errors. A single authoritative re-render runs once the queue
   // fully drains.
-  enqueue(job, { giftSync = false } = {}) {
-    // Any cart change may earn or lose a gift, so the next drain re-syncs them.
-    if (!giftSync) this.giftSynced = false;
+  enqueue(job, { giftSync = false, promoSync = false } = {}) {
+    // Any cart change may earn or lose a gift, or make the promo code usable,
+    // so the next drain re-syncs them. The gift sync can take codes off, so
+    // the promo code step runs again after it.
+    if (!giftSync && !promoSync) this.giftSynced = false;
+    if (!promoSync) this.promoSynced = false;
     this.busy++;
     const run = this.chain.then(() => job());
     this.chain = run
@@ -3758,6 +3762,12 @@ class Sidecart {
           if (this.giftPromo && !this.giftSynced) {
             this.giftSynced = true;
             this.enqueue(() => this.syncGifts(), { giftSync: true });
+            return;
+          }
+          // Then the promo bar's code, once per drain, the same way.
+          if (!this.promoSynced) {
+            this.promoSynced = true;
+            this.enqueue(() => this.applyPromoCode(), { promoSync: true });
             return;
           }
           // Add / external update / open changes the set of cards -> full Liquid
@@ -4732,6 +4742,7 @@ class Sidecart {
     });
     this.updateUpsell();
     this.initGiftPromo();
+    this.initPromoCode();
   }
 
   // ---- Upsell visibility --------------------------------------------------
@@ -5630,16 +5641,20 @@ class Sidecart {
     this.sidecart.classList.remove('is-checking-out');
   }
 
-  // Resolves once no cart write, debounced quantity change or gift sync is
-  // pending (the re-render after them may still be running), or after the
-  // timeout, so checkout is never held up for good.
+  // Resolves once no cart write, debounced quantity change, gift sync or
+  // promo code step is pending (the re-render after them may still be
+  // running), or after the timeout, so checkout is never held up for good.
   cartSettled(timeout = 10000) {
     const start = Date.now();
     return new Promise((resolve) => {
       const check = () => {
         // Without gift settings on the page the sync never runs (giftSynced
         // stays false), so there's nothing to wait for there.
-        const idle = this.busy === 0 && this.pendingTargets.size === 0 && (this.giftSynced || !this.giftPromo);
+        const idle =
+          this.busy === 0 &&
+          this.pendingTargets.size === 0 &&
+          (this.giftSynced || !this.giftPromo) &&
+          this.promoSynced;
         if (idle || Date.now() - start > timeout) resolve();
         else setTimeout(check, 50);
       };
@@ -5656,6 +5671,8 @@ class Sidecart {
       this.setDiscountMessage(this.codesBlockedMessage(), 'error');
       return;
     }
+    // Typed back in: the promo bar's code may go on by itself again.
+    if (this.promoCodeTakenOff() === code.toUpperCase()) this.setPromoCodeTakenOff(null);
     this.setDiscountMessage(null);
     this.setDiscountBusy(true);
     this.requestStructureRender();
@@ -5673,6 +5690,9 @@ class Sidecart {
 
   removeDiscountCode(code) {
     if (!code) return;
+    // The promo bar's code, taken off by the customer, stays off in this tab.
+    const promo = this.promoSettings();
+    if (promo && promo.code.toUpperCase() === code.toUpperCase()) this.setPromoCodeTakenOff(code);
     this.removeDiscountCodes((existing) => existing.toUpperCase() === code.toUpperCase());
   }
 
@@ -5740,6 +5760,108 @@ class Sidecart {
     this.lastCart = cart;
     this.lastCartFresh = true;
     return cart;
+  }
+
+  // ---- The promo bar's code -----------------------------------------------
+  // While the promo bar is on, its code goes on the cart by itself once the
+  // cart can use it: something one-time is in it (the code skips
+  // subscriptions), it holds no other code (they don't combine, so the promo
+  // code would knock that one out), no gift promo is running (codes come off
+  // then, see syncGifts) and the customer hasn't taken it off in this tab.
+  // snippets/sidecart-promo.liquid hands over the code and the promo's end.
+  // Once the promo has ended, a code Shopify no longer applies comes off
+  // quietly rather than staying as a dimmed chip, also after the bar is
+  // switched off: this browser remembers the code it saw on the bar.
+  initPromoCode() {
+    // A cart filled earlier gets the code (or loses an ended one) on load.
+    if (this.promoSettings() || this.rememberedPromo()) this.enqueue(async () => {});
+  }
+
+  // The bar's { code, end } (end in ms, 0 without an end), or null while the
+  // bar is off or has no code.
+  promoSettings() {
+    const el = this.sidecart.querySelector('[data-promo-code]');
+    const code = el ? String(el.dataset.promoCode || '').trim() : '';
+    return code ? { code, end: Number(el.dataset.promoEnd) || 0 } : null;
+  }
+
+  rememberedPromo() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('baudie:promo-code') || 'null');
+      return saved && saved.code ? saved : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  rememberPromo(promo) {
+    try {
+      if (promo) localStorage.setItem('baudie:promo-code', JSON.stringify(promo));
+      else localStorage.removeItem('baudie:promo-code');
+    } catch (e) {}
+  }
+
+  // The promo code the customer took off in this tab (upper case), or ''.
+  promoCodeTakenOff() {
+    try {
+      return sessionStorage.getItem('baudie:promo-code-off') || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  setPromoCodeTakenOff(code) {
+    try {
+      if (code) sessionStorage.setItem('baudie:promo-code-off', String(code).toUpperCase());
+      else sessionStorage.removeItem('baudie:promo-code-off');
+    } catch (e) {}
+  }
+
+  // Runs once per drain, after the gift sync (see enqueue).
+  async applyPromoCode() {
+    const live = this.promoSettings();
+    const promo = live || this.rememberedPromo();
+    if (!promo) return;
+    if (live) this.rememberPromo(live);
+    try {
+      const cart = this.lastCartFresh && this.lastCart ? this.lastCart : await this.fetchCart();
+      const codes = (cart.discount_codes || []).map((entry) => String(entry.code));
+      const upper = promo.code.toUpperCase();
+      const entry = (cart.discount_codes || []).find((existing) => String(existing.code).toUpperCase() === upper);
+      const ended = !live || (promo.end > 0 && Date.now() >= promo.end);
+      const hasItems = (cart.item_count || 0) > 0;
+
+      if (entry) {
+        // An empty cart applies no code, so that waits for something in it.
+        if (ended && hasItems && !entry.applicable) {
+          await this.updateCartDiscounts(codes.filter((code) => code.toUpperCase() !== upper));
+          if (!live) this.rememberPromo(null);
+          this.dirty = true;
+          this.needsStructureRender = true;
+        }
+        return;
+      }
+      if (!live) {
+        this.rememberPromo(null); // the bar is off and the code is gone: nothing left to do
+        return;
+      }
+
+      const oneTime = (cart.items || []).some((line) => !line.selling_plan_allocation && !this.isGiftLine(line));
+      if (
+        ended ||
+        !oneTime ||
+        codes.length ||
+        this.giftPromoRunning(cart) ||
+        this.promoCodeTakenOff() === upper
+      ) {
+        return;
+      }
+      await this.updateCartDiscounts([promo.code]);
+      this.dirty = true;
+      this.needsStructureRender = true;
+    } catch (err) {
+      console.error('Sidecart promo code failed:', err);
+    }
   }
 
   // After the render that follows applying a code: a code the cart can't use
