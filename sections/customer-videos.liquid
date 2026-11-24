@@ -21,8 +21,6 @@
 <div
   class="customer-videos full-width"
   style="
-    --wave-back: url('{{ 'shape-ugc-wave-back.svg' | asset_url }}');
-    --wave-front: url('{{ 'shape-ugc-wave-front.svg' | asset_url }}');
     {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
   ">
@@ -125,8 +123,8 @@
     top: -17.5px;
     left: -3.53%;
     height: 808px;
-    -webkit-mask: var(--wave-back) 0 0 / 100% 100% no-repeat;
-    mask: var(--wave-back) 0 0 / 100% 100% no-repeat;
+    -webkit-mask: var(--shape-ugc-wave-back) 0 0 / 100% 100% no-repeat;
+    mask: var(--shape-ugc-wave-back) 0 0 / 100% 100% no-repeat;
     transform: rotate(-175.02deg);
   }
 
@@ -137,10 +135,10 @@
     bottom: 18px;
     left: -3.33%;
     -webkit-mask:
-      var(--wave-front) center bottom / 100% var(--wave-front-height) no-repeat,
+      var(--shape-ugc-wave-front) center bottom / 100% var(--wave-front-height) no-repeat,
       linear-gradient(#000 0 0) center top / 100% max(0px, 100% - var(--wave-front-height) + 1px) no-repeat;
     mask:
-      var(--wave-front) center bottom / 100% var(--wave-front-height) no-repeat,
+      var(--shape-ugc-wave-front) center bottom / 100% var(--wave-front-height) no-repeat,
       linear-gradient(#000 0 0) center top / 100% max(0px, 100% - var(--wave-front-height) + 1px) no-repeat;
     transform: rotate(180deg);
   }

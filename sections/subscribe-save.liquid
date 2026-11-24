@@ -17,8 +17,6 @@
 <div
   class="subscribe-save subscribe-save--photo-{{ section.settings.photo_position }} subscribe-save--{{ section.settings.panel_style }} full-width"
   style="
-    --edge-mask: url('{{ 'shape-cream-edge.svg' | asset_url }}');
-    --wave-mask: url('{{ 'shape-cream-wave.svg' | asset_url }}');
     {%- if section.settings.background_color != blank %}--panel-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }}; --text-fill: {{ section.settings.text_color }};{% endif -%}
   ">
@@ -148,8 +146,8 @@
     inset: 0;
     z-index: -1;
     background: var(--panel-bg, var(--panel-fill));
-    -webkit-mask: var(--edge-mask) 0 0 / 100% 100% no-repeat;
-    mask: var(--edge-mask) 0 0 / 100% 100% no-repeat;
+    -webkit-mask: var(--shape-cream-edge) 0 0 / 100% 100% no-repeat;
+    mask: var(--shape-cream-edge) 0 0 / 100% 100% no-repeat;
   }
 
   .subscribe-save__content {
@@ -361,10 +359,10 @@
        into the strip so the two meet without a seam. */
     .subscribe-save__panel::before {
       -webkit-mask:
-        var(--wave-mask) 0 100% / 100% 22px no-repeat,
+        var(--shape-cream-wave) 0 100% / 100% 22px no-repeat,
         linear-gradient(#000 0 0) 0 0 / 100% calc(100% - 20px) no-repeat;
       mask:
-        var(--wave-mask) 0 100% / 100% 22px no-repeat,
+        var(--shape-cream-wave) 0 100% / 100% 22px no-repeat,
         linear-gradient(#000 0 0) 0 0 / 100% calc(100% - 20px) no-repeat;
     }
 

@@ -43,7 +43,7 @@
   data-section-id="{{ section.id }}"
   data-product-faq
   aria-label="{{ section.settings.title | default: 'FAQ' | escape }}"
-  style="--pf-top: {{ top_padding }}px; --faq-wave-top: url('{{ 'shape-faq-wave-top.svg' | asset_url }}'); --faq-wave-bottom: url('{{ 'shape-faq-wave-bottom.svg' | asset_url }}');
+  style="--pf-top: {{ top_padding }}px;
     {%- if section.settings.background_color != blank %} --section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %} --text-color: {{ section.settings.text_color }};{% endif -%}
     {%- if light_band != blank %} --page-tint: {{ page_tint }}; --faq-light: {{ light_band }};{% endif -%}
@@ -180,13 +180,13 @@
     z-index: -1;
     background: var(--faq-band);
     -webkit-mask:
-      var(--faq-wave-top) var(--faq-edge-left) top / var(--faq-edge-width) var(--faq-edge) no-repeat,
+      var(--shape-faq-wave-top) var(--faq-edge-left) top / var(--faq-edge-width) var(--faq-edge) no-repeat,
       linear-gradient(#000 0 0) 0 calc(var(--faq-edge) - 1px) / 100% calc(100% - 2 * var(--faq-edge) + 2px) no-repeat,
-      var(--faq-wave-bottom) var(--faq-edge-left) bottom / var(--faq-edge-width) var(--faq-edge) no-repeat;
+      var(--shape-faq-wave-bottom) var(--faq-edge-left) bottom / var(--faq-edge-width) var(--faq-edge) no-repeat;
     mask:
-      var(--faq-wave-top) var(--faq-edge-left) top / var(--faq-edge-width) var(--faq-edge) no-repeat,
+      var(--shape-faq-wave-top) var(--faq-edge-left) top / var(--faq-edge-width) var(--faq-edge) no-repeat,
       linear-gradient(#000 0 0) 0 calc(var(--faq-edge) - 1px) / 100% calc(100% - 2 * var(--faq-edge) + 2px) no-repeat,
-      var(--faq-wave-bottom) var(--faq-edge-left) bottom / var(--faq-edge-width) var(--faq-edge) no-repeat;
+      var(--shape-faq-wave-bottom) var(--faq-edge-left) bottom / var(--faq-edge-width) var(--faq-edge) no-repeat;
   }
 
   .product-faq__inner {

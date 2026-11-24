@@ -45,7 +45,6 @@
 <div
   class="in-press wave-top full-width in-press--title-{{ section.settings.title_style | default: 'label' }}{% if section.settings.tint_logos %} in-press--tinted{% endif %}{% if pink_band %} in-press--pink{% endif %}{% if page_tint != blank %} in-press--on-tint{% endif %}"
   style="
-    --soft-wave: url('{{ 'shape-wave-soft.svg' | asset_url }}');
     {%- if page_tint != blank %}--page-tint: {{ page_tint }};{% endif -%}
     {%- if section.settings.background_color != blank %}--section-bg: {{ section.settings.background_color }};{% endif -%}
     {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
@@ -370,10 +369,10 @@
        color on a 20px wave, and its 1px overlap cut their bottoms flat. */
     .in-press.wave-top::before {
       -webkit-mask:
-        var(--soft-wave) left top / 128.7% var(--wave-height) no-repeat,
+        var(--shape-wave-soft) left top / 128.7% var(--wave-height) no-repeat,
         linear-gradient(#000 0 0) 0 calc(var(--wave-height) - 1px) / 100% 100% no-repeat;
       mask:
-        var(--soft-wave) left top / 128.7% var(--wave-height) no-repeat,
+        var(--shape-wave-soft) left top / 128.7% var(--wave-height) no-repeat,
         linear-gradient(#000 0 0) 0 calc(var(--wave-height) - 1px) / 100% 100% no-repeat;
     }
 

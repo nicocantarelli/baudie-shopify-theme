@@ -33,7 +33,6 @@
 <div
   class="product-features product-features--{{ section.settings.band_shape | default: 'straight' }}{% if section.settings.padding_top %} product-features--pad-top{% endif %}{% if section.settings.padding_bottom %} product-features--pad-bottom{% endif %} full-width"
   style="
-    --band-mask: url('{{ 'shape-ribbon.svg' | asset_url }}');
     {%- if band_bg != blank %}--section-bg: {{ band_bg }};{% endif -%}
     {%- if section.settings.text_color != blank %}--text-color: {{ section.settings.text_color }};{% endif -%}
     {%- if section.settings.icon_color != blank %}--icon-color: {{ section.settings.icon_color }};{% endif -%}
@@ -90,8 +89,8 @@
   /* Wavy band: one wave of the design's ribbon at its own size, repeated
      and started half a wave in like in the design. */
   .product-features--wavy .product-features__container {
-    -webkit-mask: var(--band-mask) -88.75px 0 / 177.5px 100% repeat-x;
-    mask: var(--band-mask) -88.75px 0 / 177.5px 100% repeat-x;
+    -webkit-mask: var(--shape-ribbon) -88.75px 0 / 177.5px 100% repeat-x;
+    mask: var(--shape-ribbon) -88.75px 0 / 177.5px 100% repeat-x;
   }
 
   .product-features--wavy .product-features__text {
@@ -205,8 +204,8 @@
     /* On phones the band keeps its waves, scaled with it to the design's
        64px phone band, and smaller badges. */
     .product-features--wavy .product-features__container {
-      -webkit-mask: var(--band-mask) -63.1px 0 / 126.2px 100% repeat-x;
-      mask: var(--band-mask) -63.1px 0 / 126.2px 100% repeat-x;
+      -webkit-mask: var(--shape-ribbon) -63.1px 0 / 126.2px 100% repeat-x;
+      mask: var(--shape-ribbon) -63.1px 0 / 126.2px 100% repeat-x;
     }
 
     .product-features--wavy .product-features__group {

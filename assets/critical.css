@@ -196,6 +196,26 @@ body {
   outline-offset: 2px;
 }
 
+/* Decorative shapes (assets/shape-*.svg) as data URIs, so they arrive with
+   this file. A mask whose image fails to load (a dropped request on a weak
+   signal) is transparent, which hides the squiggles and flattens the
+   waves. The shapes sections mask with are defined here too, once. The
+   product-details frame is larger and stays in that section. */
+:root {
+  --shape-squiggle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='177.5' height='36' viewBox='0 0 177.5 36' fill='none'%3E%3Cpath d='M-88.75 18C-59.17 32.2-29.58 32.2 0 18C29.58 3.8 59.17 3.8 88.75 18C118.33 32.2 147.92 32.2 177.5 18C207.08 3.8 236.67 3.8 266.25 18' stroke='%23000' stroke-width='7'/%3E%3C/svg%3E");
+  --shape-squiggle-bold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='177.5' height='36' viewBox='0 0 177.5 36' fill='none'%3E%3Cpath d='M-88.75 18C-59.17 32.2-29.58 32.2 0 18C29.58 3.8 59.17 3.8 88.75 18C118.33 32.2 147.92 32.2 177.5 18C207.08 3.8 236.67 3.8 266.25 18' stroke='%23000' stroke-width='14'/%3E%3C/svg%3E");
+  --shape-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1853.45' height='60' viewBox='0 0 1853.45 60' preserveAspectRatio='none'%3E%3Cpath d='M0 30.55C62.45 52.15 246.75 82.55 482.85 30.55C577.8 9.94 659.68 2.74 727.03 2.74C937.4 2.74 937.4 58.87 1147.77 58.87C1222.85 58.87 1311.85 51.37 1409.55 30.55C1647.55 -24.05 1804.35 6.45 1853.45 30.55V60H0Z' fill='%23000'/%3E%3C/svg%3E");
+  --shape-burst: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' overflow='visible' width='52' height='55' viewBox='0 0 52 55' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cpath d='M26 0L28 21.1L42.1 5.2L31.3 23.5L52 18.9L32.5 27.3L52 35.8L31.3 31.2L42.1 49.5L28 33.5L26 54.7L24 33.5L9.9 49.5L20.7 31.2L0 35.8L19.5 27.3L0 18.9L20.7 23.5L9.9 5.2L24 21.1L26 0Z' fill='url(%23paint0_linear_0_6)'/%3E%3C/g%3E%3Cdefs%3E%3ClinearGradient id='paint0_linear_0_6' x1='0' y1='27.35' x2='52' y2='27.35' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23E65C9A'/%3E%3Cstop offset='0.5' stop-color='%23F88EBE'/%3E%3Cstop offset='1' stop-color='%23FFC8E4'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E");
+  --shape-ugc-wave-back: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' overflow='visible' width='1543.5' height='808.099' viewBox='0 0 1543.5 808.099' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1543.5 0H0V724.91C82.1 787.69 344.82 875.57 738.91 724.91C1133 574.25 1439.51 662.14 1543.5 724.91V0Z' fill='url(%23paint0_linear_0_10)'/%3E%3Cdefs%3E%3ClinearGradient id='paint0_linear_0_10' x1='0' y1='404.049' x2='1543.5' y2='404.049' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23FDFC8D'/%3E%3Cstop offset='0.5' stop-color='%23FEFDB6'/%3E%3Cstop offset='1' stop-color='%23FFFFDC'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E");
+  --shape-ugc-wave-front: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' overflow='visible' width='1543.5' height='905.7' viewBox='0 0 1543.5 905.7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1543.5 0H0V812.47C82.1 882.82 344.82 981.32 738.91 812.47C1133 643.61 1439.51 742.11 1543.5 812.47V0Z' fill='url(%23paint0_linear_0_16)'/%3E%3Cdefs%3E%3ClinearGradient id='paint0_linear_0_16' x1='0' y1='452.85' x2='1543.5' y2='452.85' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23FDFC8D'/%3E%3Cstop offset='0.5' stop-color='%23FEFDB6'/%3E%3Cstop offset='1' stop-color='%23FFFFDC'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E");
+  --shape-wave-soft: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1853.45' height='60' viewBox='0 0 1853.45 60' preserveAspectRatio='none'%3E%3Cpath d='M0 35.1C63.33 43.38 128.34 50 200 50C391.51 50 535.49 2.74 727 2.74C891.62 2.74 1015.38 50 1180 50C1376.24 50 1523.76 2.74 1720 2.74C1766.98 2.74 1810.94 5.9 1853.45 10.58V60H0Z' fill='%23000'/%3E%3C/svg%3E");
+  --shape-faq-wave-top: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1543' height='180' viewBox='0 0 1543 180' preserveAspectRatio='none'%3E%3Cpath d='M1543 180H0V92.06C103.96 146.44 410.37 222.56 804.33 92.06C1198.29 -38.45 1460.93 37.68 1543 92.06Z' fill='%23000'/%3E%3C/svg%3E");
+  --shape-faq-wave-bottom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1543' height='180' viewBox='0 0 1543 180' preserveAspectRatio='none'%3E%3Cpath d='M0 0H1543V87.94C1439.04 33.56 1132.63 -42.56 738.67 87.94C344.71 218.45 82.07 142.32 0 87.94Z' fill='%23000'/%3E%3C/svg%3E");
+  --shape-cream-edge: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' width='588' height='1000' viewBox='0 0 588 1000' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H492C503.8 83 517 167 517 250C517 400 467 550 467 700C467 800 485.4 900 508 1000H0Z' fill='%23FFFFDC'/%3E%3C/svg%3E");
+  --shape-cream-wave: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' width='393' height='22' viewBox='0 0 393 22' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 1H393V7.486C343.3 1.066 277.7 -0.519 199.8 11.036C112.11 24.036 45.37 20.766 0 12.736V1Z' fill='%23FFFFDC'/%3E%3C/svg%3E");
+  --shape-ribbon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='177.5' height='90' viewBox='0 0 177.5 90.0005' preserveAspectRatio='none'%3E%3Cpath d='M0 7.10025C29.583 -2.36675 59.167 -2.36675 88.75 7.10025C118.333 16.5672 147.917 16.5672 177.5 7.10025V82.9003C147.917 92.3673 118.333 92.3673 88.75 82.9003C59.167 73.4333 29.583 73.4333 0 82.9003Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
 /* Wavy divider line. Set its color with `color` and its size with `height`. */
 .squiggle {
   display: block;
@@ -203,14 +223,14 @@ body {
   height: 16px;
   color: var(--color-yellow);
   background-color: currentColor;
-  -webkit-mask: url('shape-squiggle.svg') left center / auto 100% repeat-x;
-  mask: url('shape-squiggle.svg') left center / auto 100% repeat-x;
+  -webkit-mask: var(--shape-squiggle) left center / auto 100% repeat-x;
+  mask: var(--shape-squiggle) left center / auto 100% repeat-x;
 }
 
 /* Twice the stroke, as the homepage's squiggles use. */
 .squiggle--bold {
-  -webkit-mask-image: url('shape-squiggle-bold.svg');
-  mask-image: url('shape-squiggle-bold.svg');
+  -webkit-mask-image: var(--shape-squiggle-bold);
+  mask-image: var(--shape-squiggle-bold);
 }
 
 /* Band with a wavy top edge, painted behind the element's content.
@@ -229,10 +249,10 @@ body {
   z-index: -1;
   background: var(--wave-fill, var(--color-cream));
   -webkit-mask:
-    url('shape-wave.svg') left top / 128.7% var(--wave-height, 60px) no-repeat,
+    var(--shape-wave) left top / 128.7% var(--wave-height, 60px) no-repeat,
     linear-gradient(#000 0 0) 0 calc(var(--wave-height, 60px) - 1px) / 100% 100% no-repeat;
   mask:
-    url('shape-wave.svg') left top / 128.7% var(--wave-height, 60px) no-repeat,
+    var(--shape-wave) left top / 128.7% var(--wave-height, 60px) no-repeat,
     linear-gradient(#000 0 0) 0 calc(var(--wave-height, 60px) - 1px) / 100% 100% no-repeat;
 }
 
@@ -262,8 +282,8 @@ body {
   width: 52px;
   aspect-ratio: 52 / 55;
   background: var(--gradient-button);
-  -webkit-mask: url('shape-burst.svg') center / contain no-repeat;
-  mask: url('shape-burst.svg') center / contain no-repeat;
+  -webkit-mask: var(--shape-burst) center / contain no-repeat;
+  mask: var(--shape-burst) center / contain no-repeat;
 }
 
 /* Gradient heading text. The default gradient runs from the main pink to the
