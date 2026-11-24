@@ -363,7 +363,8 @@
     data-invalid-msg="{{ 'sidecart.discount.invalid' | t }}"
     data-saved-msg="{{ 'sidecart.discount.saved' | t }}"
     data-error-msg="{{ 'sidecart.discount.error' | t }}"
-    data-blocked-msg="{{ 'sidecart.discount.blocked' | t }}">
+    data-blocked-msg="{{ 'sidecart.discount.blocked' | t }}"
+    data-promo-kept-msg="{{ 'sidecart.discount.promo_kept' | t }}">
     {%- comment -%}
       Folded away by default to save room; the script keeps it open across
       re-renders once opened. Applied codes and messages show either way.
@@ -5677,15 +5678,111 @@ class Sidecart {
     this.setDiscountBusy(true);
     this.requestStructureRender();
     this.enqueue(async () => {
-      const cart = await this.fetchCart();
+      let cart = await this.fetchCart();
       const codes = (cart.discount_codes || []).map((entry) => entry.code);
       if (!codes.some((existing) => existing.toUpperCase() === code.toUpperCase())) codes.push(code);
-      await this.updateCartDiscounts(codes);
+      const promo = this.promoClash(cart, code);
+      const giftAdded = promo ? await this.addGiftForCode(cart, code) : false;
+      const before = cart;
+      cart = await this.updateCartDiscounts(codes);
       this.pendingDiscountCode = code;
+      if (promo) await this.settlePromoClash(code, promo, before, cart, giftAdded);
       this.dirty = true;
     })
       .catch(() => this.setDiscountMessage(this.discountText('errorMsg'), 'error'))
       .finally(() => this.setDiscountBusy(false));
+  }
+
+  // The promo bar's code, when it's on the cart and applied and `code` is
+  // another one: the two may not combine. Else null.
+  promoClash(cart, code) {
+    const promo = this.promoSettings();
+    if (!promo || promo.code.toUpperCase() === code.toUpperCase()) return null;
+    const entry = (cart.discount_codes || []).find(
+      (existing) => String(existing.code).toUpperCase() === promo.code.toUpperCase()
+    );
+    return entry && entry.applicable ? String(entry.code) : null;
+  }
+
+  // A VIP gift code's gift, put in before the code goes on (syncGifts would
+  // add it right after), so Shopify weighs the codes on the cart the customer
+  // will have. Only a gift with nothing to pick (the scent gift waits for its
+  // pick). True if it went in.
+  async addGiftForCode(cart, code) {
+    if (!this.giftPromo || this.giftPromoRunning(cart)) return false;
+    const row = this.vipRowForCode(code);
+    if (!row || row.choices) return false;
+    const value = 'vip:' + row.prefix;
+    const missing = this.missingGifts({ ...cart, discount_codes: [...(cart.discount_codes || []), { code }] }).filter(
+      (item) => item.properties._gift === value
+    );
+    if (!missing.length) return false;
+    const res = await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ items: missing })
+    });
+    if (!res.ok) {
+      // E.g. sold out since the page loaded, as in syncGifts.
+      missing.forEach((item) => this.blockGift(this.giftKey(item.properties._gift, item.id)));
+      return false;
+    }
+    return true;
+  }
+
+  // A code typed while the promo bar's code is on, after both went on the
+  // cart (`cart`, `before` being the cart before). Two codes that don't
+  // combine can't both apply, and Shopify applies the one that saves more:
+  // - both applied (they combine, e.g. free shipping): both stay;
+  // - the typed one applied: it stays, the promo code comes off and stays off
+  //   in this tab, like one the customer took off;
+  // - the promo code applied: the typed code goes on alone, to see what it
+  //   gives. If that's a lower total, it stays (as above); otherwise the promo
+  //   code goes back on, with a note if the typed code works (the promo code
+  //   gives the better price) or the usual message if it doesn't apply at all
+  //   (invalid, expired, or nothing in the cart it covers).
+  // A gift put in for the typed code (see addGiftForCode) goes with it.
+  async settlePromoClash(code, promoCode, before, cart, giftAdded) {
+    const find = (from, wanted) =>
+      (from.discount_codes || []).find((entry) => String(entry.code).toUpperCase() === wanted.toUpperCase());
+    const typed = find(cart, code);
+    const promo = find(cart, promoCode);
+    if (!typed || !promo || (typed.applicable && promo.applicable)) return;
+    const others = (cart.discount_codes || [])
+      .map((entry) => String(entry.code))
+      .filter((existing) => ![code.toUpperCase(), promoCode.toUpperCase()].includes(existing.toUpperCase()));
+    const keepTyped = async (current) => {
+      if (find(current, promoCode)) await this.updateCartDiscounts([...others, typed.code]);
+      this.setPromoCodeTakenOff(promoCode);
+    };
+    const putPromoBack = async (current) => {
+      const keep = [...others, promo.code];
+      const updates = giftAdded ? this.giftFixes({ ...current, discount_codes: keep.map((entry) => ({ code: entry })) }) : {};
+      await this.updateCartDiscounts(keep, updates);
+    };
+
+    if (typed.applicable) {
+      // A gift put in changed the lines since `before`: Shopify's pick is
+      // the comparison then.
+      if (giftAdded || cart.total_price < before.total_price) {
+        await keepTyped(cart);
+        return;
+      }
+      await putPromoBack(cart);
+    } else if (promo.applicable) {
+      const alone = await this.updateCartDiscounts([...others, typed.code]);
+      const works = !!(find(alone, code) || {}).applicable;
+      if (works && alone.total_price < cart.total_price) {
+        await keepTyped(alone);
+        return;
+      }
+      await putPromoBack(alone);
+      if (!works) return; // the usual message (see reportPendingDiscount)
+    } else {
+      return;
+    }
+    this.pendingDiscountCode = null;
+    this.setDiscountMessage(this.discountText('promoKeptMsg').replace('CODE', promo.code), 'info');
   }
 
   removeDiscountCode(code) {
@@ -5830,12 +5927,23 @@ class Sidecart {
       const entry = (cart.discount_codes || []).find((existing) => String(existing.code).toUpperCase() === upper);
       const ended = !live || (promo.end > 0 && Date.now() >= promo.end);
       const hasItems = (cart.item_count || 0) > 0;
+      const oneTime = (cart.items || []).some((line) => !line.selling_plan_allocation && !this.isGiftLine(line));
 
       if (entry) {
+        // Shopify applied another code over it (they don't combine and that
+        // one saves more, e.g. a VIP scent gift's code once the scent is
+        // picked): it comes off, and stays off in this tab like one the
+        // customer took off (see settlePromoClash for a code typed in).
+        const beaten =
+          !ended &&
+          !entry.applicable &&
+          oneTime &&
+          (cart.discount_codes || []).some((other) => other !== entry && other.applicable);
         // An empty cart applies no code, so that waits for something in it.
-        if (ended && hasItems && !entry.applicable) {
+        if ((ended && hasItems && !entry.applicable) || beaten) {
           await this.updateCartDiscounts(codes.filter((code) => code.toUpperCase() !== upper));
           if (!live) this.rememberPromo(null);
+          if (beaten) this.setPromoCodeTakenOff(promo.code);
           this.dirty = true;
           this.needsStructureRender = true;
         }
@@ -5846,7 +5954,6 @@ class Sidecart {
         return;
       }
 
-      const oneTime = (cart.items || []).some((line) => !line.selling_plan_allocation && !this.isGiftLine(line));
       if (
         ended ||
         !oneTime ||
