@@ -56,6 +56,7 @@
         {% render 'product-card',
           product: item,
           custom_button_text: button_text,
+          card_image_override: block.settings.card_image,
           show_rating: true
         %}
       </li>
@@ -142,7 +143,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 4px;
     margin-bottom: 48px;
     text-align: center;
   }
@@ -322,7 +323,7 @@
     }
 
     .best-sellers__header {
-      gap: 10px;
+      gap: 2px;
       margin-bottom: 32px;
     }
 
@@ -500,6 +501,12 @@
           "id": "custom_button_text",
           "label": "t:blocks.product_card.settings.custom_button_text",
           "info": "t:sections.best_sellers.settings.custom_button_text_info"
+        },
+        {
+          "type": "image_picker",
+          "id": "card_image",
+          "label": "t:blocks.product_card.settings.card_image",
+          "info": "t:blocks.product_card.settings.card_image_info"
         }
       ]
     }
