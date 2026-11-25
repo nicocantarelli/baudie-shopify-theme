@@ -269,6 +269,11 @@
       display: none;
     }
 
+    /* Until the shopper first touches the row (see settle() in the script). */
+    .best-sellers[data-settling] .best-sellers__track {
+      scroll-snap-type: none;
+    }
+
     .best-sellers__item {
       flex: 0 0 min(78%, 300px);
       scroll-snap-align: start;
@@ -361,6 +366,27 @@
       this.dots = [...this.querySelectorAll('[data-dot]')];
       if (!this.track) return;
 
+      this.settle();
+
+      // The first touch, swipe, wheel or key in the row hands it over.
+      this.onInteract = () => this.release();
+      ['pointerdown', 'touchstart', 'wheel', 'keydown', 'focusin'].forEach((type) => {
+        this.track.addEventListener(type, this.onInteract, { passive: true });
+      });
+
+      // The page has finished loading: anything the browser restored or
+      // re-snapped by now is undone.
+      this.onLoad = () => this.rewind();
+      if (document.readyState === 'complete') this.rewind();
+      else window.addEventListener('load', this.onLoad, { once: true });
+
+      // Back to a page the browser kept (the back button, a reopened tab):
+      // the row starts over.
+      this.onPageShow = (event) => {
+        if (event.persisted) this.settle();
+      };
+      window.addEventListener('pageshow', this.onPageShow);
+
       // Only a change of width matters; moving the prices changes the height.
       this.resizeObserver = new ResizeObserver(([entry]) => {
         const width = Math.round(entry.contentRect.width);
@@ -396,9 +422,49 @@
 
     disconnectedCallback() {
       this.resizeObserver?.disconnect();
+      this.visibilityObserver?.disconnect();
       if (this.frame) cancelAnimationFrame(this.frame);
-      this.track?.removeEventListener('scroll', this.onScroll);
+      window.removeEventListener('load', this.onLoad);
+      window.removeEventListener('pageshow', this.onPageShow);
+      if (this.track) {
+        this.track.removeEventListener('scroll', this.onScroll);
+        ['pointerdown', 'touchstart', 'wheel', 'keydown', 'focusin'].forEach((type) => {
+          this.track.removeEventListener(type, this.onInteract);
+        });
+      }
       this.removeEventListener('shopify:block:select', this.onBlockSelect);
+    }
+
+    /* The row always opens on its first card. Phones could show it already
+       moved along (on St.Tropez): the browser puts back a row's scroll when
+       it restores a page, and Safari can re-snap a row while the page is
+       still loading. So until the shopper touches the row, it has no snap
+       points and goes back to the start when the script starts, when the
+       page has loaded, when the browser restores the page, and when the row
+       first comes into view. */
+    settle() {
+      this.setAttribute('data-settling', '');
+      this.rewind();
+
+      this.visibilityObserver?.disconnect();
+      this.visibilityObserver = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        this.rewind();
+        this.visibilityObserver.disconnect();
+      });
+      this.visibilityObserver.observe(this.track);
+    }
+
+    rewind() {
+      if (!this.hasAttribute('data-settling')) return;
+      if (this.track.scrollLeft !== 0) this.track.scrollLeft = 0;
+      this.update();
+    }
+
+    release() {
+      if (!this.hasAttribute('data-settling')) return;
+      this.removeAttribute('data-settling');
+      this.visibilityObserver?.disconnect();
     }
 
     /* The stylesheet sizes the button text to the card; where that comes out
@@ -446,6 +512,7 @@
     }
 
     goTo(index, smooth = true) {
+      this.release();
       if (!this.stops) this.measure();
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       this.track.scrollTo({
