@@ -11,6 +11,7 @@
   @param {string} [custom_button_text] - Replaces add to cart with a link to the product page
   @param {image} [card_image_override] - Override the product's card_image metafield
   @param {boolean} [lazy_load] - Whether to lazy load images, default true
+  @param {boolean} [show_rating] - Shows the star rating and review count above the name, default false
 {% enddoc %}
 
 {%- liquid
@@ -161,6 +162,22 @@
 
   <div class="product-card__content">
     <div class="product-card__text">
+      {%- if show_rating -%}
+        {%- liquid
+          assign rating = product.metafields.reviews.rating.value.rating | default: 0 | round: 1
+          assign rating_scale = product.metafields.reviews.rating.value.scale_max | default: 5
+          assign review_count = product.metafields.reviews.rating_count.value | default: 0
+        -%}
+        {%- if review_count > 0 -%}
+          {% render 'star-rating',
+            rating: rating,
+            count: review_count,
+            scale_max: rating_scale,
+            class: 'product-card__rating',
+            count_style: 'reviews'
+          %}
+        {%- endif -%}
+      {%- endif -%}
       <h3 class="product-card__title">
         <a href="{{ product.url }}" class="product-card__title-link">{{ product.title }}</a>
       </h3>

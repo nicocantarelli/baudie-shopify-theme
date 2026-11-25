@@ -723,6 +723,14 @@
         "text_color_info": "Leave empty for the design's pink gradient title."
       }
     },
+    "best_sellers": {
+      "name": "Best sellers",
+      "settings": {
+        "custom_button_text_info": "Replaces add to cart with a link to the product page. Bundles where shoppers pick scents always link there.",
+        "background_color_info": "Leave empty for white.",
+        "text_color_info": "Leave empty for the design's pink gradient title."
+      }
+    },
     "about_hero": {
       "name": "About hero",
       "settings": {

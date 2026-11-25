@@ -239,6 +239,10 @@
       "choose_scent": "Choose your scent",
       "choose_scents": "Choose your scents"
     },
+    "best_sellers": {
+      "pagination_label": "Best sellers pagination",
+      "go_to_product": "Go to {{ name }}"
+    },
     "product_bundle": {
       "choose_scent": "Choose your scent",
       "add_to_cart": "Add to cart",
