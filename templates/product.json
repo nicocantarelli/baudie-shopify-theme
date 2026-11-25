@@ -121,6 +121,7 @@
         "patent_stamp_background": "#3e2027",
         "patent_stamp_text_color": "#fcf5de",
         "bundle_upsell_default_product": "bundle-of-3",
+        "bundle_upsell_default_image": "shopify://shop_images/bundle-of-3-card-portrait.png",
         "bundle_upsell_default_text": "Bundle & save [saving] - Shop 3 for [price]",
         "bundle_upsell_products": [
           "st-tropez",

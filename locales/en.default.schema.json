@@ -629,6 +629,8 @@
       "bundle_upsell_header": "Bundle upsell",
       "bundle_upsell_default_product": "Default bundle",
       "bundle_upsell_default_product_info": "Where the banner links on the products picked below, unless a product's bundle_upsell_product metafield names another bundle.",
+      "bundle_upsell_default_image": "Default banner picture",
+      "bundle_upsell_default_image_info": "Shown in the middle of the banners that link to the default bundle, cropped to the picture's space in the banner. Leave empty for the bundle's Card image metafield.",
       "bundle_upsell_default_text": "Default banner text",
       "bundle_upsell_default_text_info": "\" - \" starts a second line. [price] shows the bundle's price and [saving] what it saves over 3 of the product, from live prices; a line with [saving] is left out when there's no saving. A product's bundle_upsell_text metafield replaces this text.",
       "bundle_upsell_products": "Show the banner on",

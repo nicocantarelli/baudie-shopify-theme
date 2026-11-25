@@ -526,9 +526,20 @@
             text to its longest line: about 0.82em for each letter or figure
             and 0.26em for each space, in the banner's font. On desktop it
             wraps like the wipes banner.
+
+            A banner to the default bundle shows the section's Default banner
+            picture when one is picked (the Bundle of 3's card picture: the
+            bottles in the middle of a taller, see-through picture), in the
+            middle of the banner, cropped to the bottles, rather than standing
+            on its bottom edge like the bundle's own picture.
           {%- endcomment -%}
           {%- liquid
             assign upsell_image = bundle_upsell_product.metafields.custom.card_image | default: bundle_upsell_product.featured_image
+            assign upsell_image_class = 'product-main__bundle-upsell-image'
+            if section.settings.bundle_upsell_default_image != blank and bundle_upsell_product.id == section.settings.bundle_upsell_default_product.id
+              assign upsell_image = section.settings.bundle_upsell_default_image
+              assign upsell_image_class = 'product-main__bundle-upsell-image product-main__bundle-upsell-image--centered'
+            endif
             assign upsell_text = bundle_upsell_text | strip
             assign upsell_lines = upsell_text | split: ' - '
 
@@ -582,7 +593,7 @@
                 screens (the width attribute alone limits the sizes to 124px).
               {%- endcomment -%}
               {{ upsell_image | image_url: width: 372 | image_tag:
-                class: 'product-main__bundle-upsell-image',
+                class: upsell_image_class,
                 loading: 'lazy',
                 alt: '',
                 width: 124,
@@ -1614,6 +1625,21 @@
     object-position: bottom center;
   }
 
+  /* The Default banner picture: in the banner's middle, with the same room
+     above and below, cropped to the 124:108 shape of the picture's column
+     (which holds the Bundle of 3's bottles). It narrows to fit the column
+     on small phones. */
+  .product-main__bundle-upsell-image.product-main__bundle-upsell-image--centered {
+    align-self: center;
+    justify-self: center;
+    width: auto;
+    max-width: 100%;
+    height: 84%;
+    aspect-ratio: 124 / 108;
+    object-fit: cover;
+    object-position: center;
+  }
+
   .product-main__bundle-upsell-text {
     display: flex;
     flex-direction: column;
@@ -2602,6 +2628,12 @@
       "id": "bundle_upsell_default_product",
       "label": "t:sections.product.bundle_upsell_default_product",
       "info": "t:sections.product.bundle_upsell_default_product_info"
+    },
+    {
+      "type": "image_picker",
+      "id": "bundle_upsell_default_image",
+      "label": "t:sections.product.bundle_upsell_default_image",
+      "info": "t:sections.product.bundle_upsell_default_image_info"
     },
     {
       "type": "text",
