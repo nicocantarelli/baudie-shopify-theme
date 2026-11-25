@@ -241,6 +241,7 @@
       "settings": {
         "heading": "Say hello to odorless pits",
         "subheading": "Shop our top sellers",
+        "show_on": "mobile",
         "background_color": "",
         "text_color": ""
       }

@@ -727,6 +727,11 @@
       "name": "Best sellers",
       "settings": {
         "subheading": "Subheading",
+        "show_on": "Show on",
+        "show_on_info": "To put this section in a different place on phones, add a second copy there and set one to each.",
+        "show_on_all": "Computers and phones",
+        "show_on_desktop": "Computers and tablets only",
+        "show_on_mobile": "Phones only",
         "custom_button_text_info": "Replaces add to cart with a link to the product page. Bundles where shoppers pick scents always link there.",
         "background_color_info": "Leave empty for white.",
         "text_color_info": "Leave empty for the design's pink gradient title."

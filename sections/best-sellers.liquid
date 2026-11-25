@@ -10,6 +10,10 @@
 
   Colors left empty in the editor give a white section and the gradient
   title; picked ones replace them.
+
+  "Show on" (as in category cards) keeps the section to computers and
+  tablets or to phones; phones are up to 768px wide. The homepage shows it on
+  phones only.
 {%- endcomment -%}
 {%- liquid
   assign card_count = 0
@@ -79,7 +83,7 @@
 
 {%- if card_count > 0 -%}
   <best-sellers
-    class="best-sellers full-width"
+    class="best-sellers full-width{% if section.settings.show_on != 'all' %} best-sellers--{{ section.settings.show_on }}-only{% endif %}"
     style="
       --bs-label-chars: {{ label_chars }};
       --bs-label-only-chars: {{ label_only_chars }};
@@ -356,6 +360,22 @@
       transition: none;
     }
   }
+
+  /* "Show on": the whole section (Shopify's wrapper too) leaves the page on
+     the other kind of screen. */
+  @media (min-width: 769px) {
+    .best-sellers-section:has(> .best-sellers--mobile-only),
+    .best-sellers--mobile-only {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .best-sellers-section:has(> .best-sellers--desktop-only),
+    .best-sellers--desktop-only {
+      display: none;
+    }
+  }
 {% endstylesheet %}
 
 {% javascript %}
@@ -544,6 +564,18 @@
       "id": "subheading",
       "label": "t:sections.best_sellers.settings.subheading",
       "default": "Shop our top sellers"
+    },
+    {
+      "type": "select",
+      "id": "show_on",
+      "label": "t:sections.best_sellers.settings.show_on",
+      "info": "t:sections.best_sellers.settings.show_on_info",
+      "options": [
+        { "value": "all", "label": "t:sections.best_sellers.settings.show_on_all" },
+        { "value": "desktop", "label": "t:sections.best_sellers.settings.show_on_desktop" },
+        { "value": "mobile", "label": "t:sections.best_sellers.settings.show_on_mobile" }
+      ],
+      "default": "all"
     },
     {
       "type": "header",
