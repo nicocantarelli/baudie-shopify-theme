@@ -57,6 +57,8 @@
           product: item,
           custom_button_text: button_text,
           card_image_override: block.settings.card_image,
+          show_badge: block.settings.show_badge,
+          badge_text: block.settings.badge_text,
           show_rating: true
         %}
       </li>
@@ -501,6 +503,17 @@
           "id": "custom_button_text",
           "label": "t:blocks.product_card.settings.custom_button_text",
           "info": "t:sections.best_sellers.settings.custom_button_text_info"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_badge",
+          "label": "t:labels.show_badge",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "t:labels.badge_text"
         },
         {
           "type": "image_picker",
