@@ -226,7 +226,7 @@ Custom product metafields used throughout the theme. All live under the `custom`
 
 | Key | Purpose |
 |---|---|
-| `bundle_upsell_text` / `bundle_upsell_product` | PDP button linking a scent to a bundle (replaces the "Explore other scents" dropdown when both are set) |
+| `bundle_upsell_text` / `bundle_upsell_product` | The pink bundle banner under the PDP's Add to cart, shown when both are set (the wipes link to their 3-pack). The products picked in the Product section's **Show the banner on** (the six scents) fall back to its **Default bundle** and **Default banner text** (the Bundle of 3), so on those these only override. `[price]` and `[saving]` in the text show the bundle's price and what it saves over three of the product |
 | `bundle_companion` | Fixed bundle component (e.g. the duo's Cotton Dry Wipes) shown on the bundle's cart line, since Simple Bundles doesn't put it on the line itself |
 
 ### Upsell system

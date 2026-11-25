@@ -35,6 +35,19 @@
   assign bundle_upsell_product = product.metafields.custom.bundle_upsell_product.value
 
   comment
+    The bundle banner's text and bundle: the product's bundle_upsell_text and
+    bundle_upsell_product metafields, or else, on the products picked in
+    "Show the banner on", the section's default text and bundle.
+  endcomment
+  for item in section.settings.bundle_upsell_products
+    if item.id == product.id
+      assign bundle_upsell_text = bundle_upsell_text | default: section.settings.bundle_upsell_default_text
+      assign bundle_upsell_product = bundle_upsell_product | default: section.settings.bundle_upsell_default_product
+      break
+    endif
+  endfor
+
+  comment
     Title, as in the design: the brand above, and on a scent's page the
     product line ("Deodorant Enhancer", or the product type when one is set)
     as the title, the scent itself picked below. The scent's name is still
@@ -503,17 +516,64 @@
             text (split in two lines at " - ", so "Bundle and save - Shop 3
             pack" reads as in the design) and a round arrow. Colors picked in
             the editor replace the pink.
+
+            [price] in the text is the bundle's price and [saving] what it
+            saves over three of this product (the Bundle of 3 holds three
+            scents, the wipes' 3-pack three packs), both from the live prices
+            of the shopper's market. A line with [saving] is left out when
+            there's no saving. Prices change how long the lines are, so on
+            phones, where each line stays on one row, such a banner sizes its
+            text to its longest line: about 0.82em for each letter or figure
+            and 0.26em for each space, in the banner's font. On desktop it
+            wraps like the wipes banner.
           {%- endcomment -%}
           {%- liquid
             assign upsell_image = bundle_upsell_product.metafields.custom.card_image | default: bundle_upsell_product.featured_image
-            assign upsell_lines = bundle_upsell_text | split: ' - '
+            assign upsell_text = bundle_upsell_text | strip
+            assign upsell_lines = upsell_text | split: ' - '
+
+            assign upsell_fit = false
+            if upsell_text contains '[price]' or upsell_text contains '[saving]'
+              assign upsell_fit = true
+              assign upsell_bundle_price = bundle_upsell_product.selected_or_first_available_variant.price
+              assign upsell_saving = current_variant.price | times: 3 | minus: upsell_bundle_price
+              assign upsell_price_text = upsell_bundle_price | money_without_trailing_zeros
+              assign upsell_saving_text = upsell_saving | money_without_trailing_zeros
+              assign upsell_ems = 0
+            endif
           -%}
+          {%- capture upsell_lines_html -%}
+            {%- for line in upsell_lines -%}
+              {%- liquid
+                assign show_line = true
+                assign line_text = line | strip
+                if upsell_fit
+                  if upsell_saving <= 0 and line contains '[saving]'
+                    assign show_line = false
+                  endif
+                  assign line_plain = line_text | replace: '[price]', upsell_price_text | replace: '[saving]', upsell_saving_text
+                  assign line_gaps = line_plain | split: ' ' | size | minus: 1 | times: 0.26
+                  assign line_ems = line_plain | remove: ' ' | size | times: 0.82 | plus: line_gaps
+                  if show_line and line_ems > upsell_ems
+                    assign upsell_ems = line_ems
+                  endif
+
+                  # Where the text wraps (desktop), an amount stays with the word before it.
+                  assign line_text = line_text | replace: ' [price]', '&nbsp;[price]' | replace: ' [saving]', '&nbsp;[saving]' | replace: '[price]', upsell_price_text | replace: '[saving]', upsell_saving_text
+                endif
+              -%}
+              {%- if show_line -%}
+                <span class="product-main__bundle-upsell-line">{{ line_text }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endcapture -%}
           <a
             href="{{ bundle_upsell_product.url }}"
-            class="product-main__bundle-upsell{% if upsell_image == blank %} product-main__bundle-upsell--no-image{% endif %}"
+            class="product-main__bundle-upsell{% if upsell_image == blank %} product-main__bundle-upsell--no-image{% endif %}{% if upsell_fit %} product-main__bundle-upsell--fit{% endif %}"
             style="
               {%- if section.settings.bundle_upsell_bg_color != blank %}--bundle-upsell-bg: {{ section.settings.bundle_upsell_bg_color }};{% endif -%}
               {%- if section.settings.bundle_upsell_text_color != blank %}--bundle-upsell-text: {{ section.settings.bundle_upsell_text_color }};{% endif -%}
+              {%- if upsell_fit %}--bundle-upsell-ems: {{ upsell_ems | round: 2 }};{% endif -%}
             "
           >
             {%- if upsell_image != blank -%}
@@ -532,9 +592,7 @@
               }}
             {%- endif -%}
             <span class="product-main__bundle-upsell-text">
-              {%- for line in upsell_lines -%}
-                <span class="product-main__bundle-upsell-line">{{ line | strip }}</span>
-              {%- endfor -%}
+              {{- upsell_lines_html -}}
             </span>
             <span class="product-main__bundle-upsell-arrow" aria-hidden="true">
               {{ arrow_icon }}
@@ -2261,6 +2319,17 @@
       white-space: nowrap;
     }
 
+    /* A banner with live prices: the size that fits its longest line in
+       the text's column instead (--bundle-upsell-ems, that line's width in
+       em, comes from the markup). */
+    .product-main__bundle-upsell--fit .product-main__bundle-upsell-text {
+      container-type: inline-size;
+    }
+
+    .product-main__bundle-upsell--fit .product-main__bundle-upsell-line {
+      font-size: clamp(10px, 100cqi / var(--bundle-upsell-ems), 14px);
+    }
+
     .product-main__bundle-upsell-arrow {
       width: 36px;
       height: 36px;
@@ -2527,6 +2596,26 @@
     {
       "type": "header",
       "content": "t:sections.product.bundle_upsell_header"
+    },
+    {
+      "type": "product",
+      "id": "bundle_upsell_default_product",
+      "label": "t:sections.product.bundle_upsell_default_product",
+      "info": "t:sections.product.bundle_upsell_default_product_info"
+    },
+    {
+      "type": "text",
+      "id": "bundle_upsell_default_text",
+      "label": "t:sections.product.bundle_upsell_default_text",
+      "info": "t:sections.product.bundle_upsell_default_text_info",
+      "default": "Bundle & save [saving] - Shop 3 for [price]"
+    },
+    {
+      "type": "product_list",
+      "id": "bundle_upsell_products",
+      "label": "t:sections.product.bundle_upsell_products",
+      "info": "t:sections.product.bundle_upsell_products_info",
+      "limit": 50
     },
     {
       "type": "color",
